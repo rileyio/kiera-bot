@@ -7,15 +7,21 @@
   "license": "MIT",
   "scripts": {
     "start": "node ./app/index.js",
+    "start:ps:debug": "@powershell -Command $env:DEBUG='lovense-discord-bot:*'; node ./app/index.js",
     "dev": "tsc -w",
-    "dev:ps": "@powershell -Command $env:DEBUG='lovense-discord-bot'; node ./app/index.js",
     "build": "tsc"
   },
   "dependencies": {
+    "buttplug": "^0.10.0",
+    "discord.js": "^11.4.2",
+    "dotenv": "^6.2.0",
+    "nedb": "^1.8.0",
     "typescript": "^3.2.2"
   },
   "devDependencies": {
     "@types/debug": "^0.0.31",
+    "@types/nedb": "^1.8.6",
+    "@types/node": "^10.12.18",
     "debug": "^4.1.0"
   }
 }
