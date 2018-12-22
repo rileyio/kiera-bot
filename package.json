@@ -1,0 +1,21 @@
+{
+  "name": "lovensediscordintegration",
+  "version": "1.0.0",
+  "main": "app/index.js",
+  "repository": "https://github.com/sudoaptgetupgrade/lovensediscordintegration.git",
+  "author": "TBD",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./app/index.js",
+    "dev": "tsc -w",
+    "dev:ps": "@powershell -Command $env:DEBUG='lovense-discord-bot'; node ./app/index.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "typescript": "^3.2.2"
+  },
+  "devDependencies": {
+    "@types/debug": "^0.0.31",
+    "debug": "^4.1.0"
+  }
+}
