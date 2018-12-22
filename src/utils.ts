@@ -33,3 +33,7 @@ export function getChannel(channelCollection: Discord.Collection<string, Discord
   const channel = channelCollection.array().find(ch => ch.id === channelId)
   return channel
 }
+
+export function getArgs(msg: string) {
+  return msg.replace(/^\!/, '').split(' ')
+}
