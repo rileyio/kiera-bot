@@ -10,7 +10,7 @@ export class TrackedMessage {
   public flag_track: boolean = false
   // Storage Settings
   public storage_keep_in_chat_for: number
-  public storage_keep_in_mem_for: number
+  public storage_keep_in_mem_for: number = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
 
   constructor(init: Partial<TrackedMessage>) {
     Object.assign(this, init);

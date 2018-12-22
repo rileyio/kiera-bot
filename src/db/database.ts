@@ -15,8 +15,9 @@ export class MsgTracker extends EventEmitter {
   private msgProcesserRunning = false
   private msgCleanupInProgress = false
   private msgDeletionCleanupInProgress = false
-  private msgProcesserInterval = Number(process.env.BOT_MESSAGE_CLEANUP_INTERVAL) // Current: 10 Seconds
-  private msgCleanupAge = Number(process.env.BOT_MESSAGE_CLEANUP_AGE) // Current: 30 Seconds
+  private msgProcesserInterval = Number(process.env.BOT_MESSAGE_CLEANUP_INTERVAL)
+  private msgProcesserMemInterval = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
+  private msgDeletionCleanupAge = Number(process.env.BOT_MESSAGE_CLEANUP_AGE)
   public DEBUG_MSG_TRACKER = Debug('lovense-discord-bot:MsgTracker');
 
   constructor() {
@@ -25,7 +26,7 @@ export class MsgTracker extends EventEmitter {
     if (!this.msgProcesserRunning) {
       this.DEBUG_MSG_TRACKER('starting MsgTracker...')
       // Memory cleanup, remove old messages tracked beyond TrackedMessage.storage_keep_for age
-      setInterval(() => this.trackedMsgCleanup(), this.msgProcesserInterval)
+      setInterval(() => this.trackedMsgCleanup(), this.msgProcesserMemInterval)
       // Scan msgArray for messages with TrackedMessage.flag_auto_delete === true beyond
       // their defined period
       setInterval(() => this.trackedMsgDeletionCleanup(), this.msgProcesserInterval)
@@ -42,7 +43,7 @@ export class MsgTracker extends EventEmitter {
     var toCleanupArray = this.msgTrackingArr.filter(msg => {
       // Calculate message age
       const age = Math.round(now - msg.message_createdAt)
-      if (age > msg.storage_keep_in_chat_for) return true
+      if (age > msg.storage_keep_in_mem_for) return true
     })
 
     // Process cleanup
@@ -68,9 +69,9 @@ export class MsgTracker extends EventEmitter {
 
       // Calculate message age
       const age = Math.round(now - msg.message_createdAt)
-      const deleteAfter = msg.storage_keep_in_chat_for > 0 
+      const deleteAfter = msg.storage_keep_in_chat_for > 0
         ? msg.storage_keep_in_chat_for
-        : this.msgCleanupAge
+        : this.msgDeletionCleanupAge
       // If age of message meets the criteria (First check the TrackedMessage retain else fallback to .env)
       if (age > deleteAfter) {
         this.DEBUG_MSG_TRACKER(`cleanup => id:${msg.message_id} createdAt:${msg.message_createdAt} age:${age}`)
@@ -85,7 +86,7 @@ export class MsgTracker extends EventEmitter {
         this.removeTrackedMsg(msgToClean.message_id, msgToClean.channel_id)
       }
       // end cleanup
-      this.msgCleanupInProgress = false
+      this.msgDeletionCleanupInProgress = false
     }
   }
 
