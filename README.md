@@ -68,3 +68,48 @@ BOT_MESSAGE_CLEANUP_MEMORY_AGE=20000
 BOT_MESSAGE_CLEANUP_INTERVAL=5000
 BOT_MESSAGE_PREFIX=!
 ```
+
+
+## Bot Commands
+
+Notes about commands:
+- Times will always be in minutes
+- User commands won't use any `@user#0000` arguments unless specified
+- Keyholder commands must always specify a `@user#0000` if command is to target a user
+- Commands listed as [x] are completed, [ ] are inprogress or planned
+
+### Generic/Stats/Test Commands
+- [x] `!version` Gets the bot's current version
+- [x] `!devices` Requires additional args
+  - [x] `connected` View total count of connected devices
+
+### Lockee Commands (Must be entered by the device owner)
+- [ ] `!limit` Defines limits
+  - [ ] `time` `1-120`
+  - [ ] `intensity`
+
+### Keyholder Commands
+
+> **Reminder:** Keyholder commands must include a user `!react @emma#1366 time 5`
+
+- [ ] `!react @user#0000`
+  - [ ] `time` `1-10` sets how much time to be added/removed per react
+- [ ] `!duration @user#0000`
+  - [ ] `time` `1-120` sets a duration (`!react time #` can add to this)
+- [ ] `!intensity`
+  - [ ] `set`
+    - [ ] `min` `0-100`
+    - [ ] `max` `0-100`
+
+- [ ] `!ma'amoverride` Let's ma'am override any setting `{MistressAlyona exclusive command}`
+
+
+## Available chat interactions (emotes)
+
+:smile: = Low level
+
+:smirk: = Low-medium
+
+:grimacing: = Medium-high
+
+:sob: = High
