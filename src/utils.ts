@@ -65,7 +65,9 @@ export function validateArgs(args: Array<string>, validation: Array<TypeValidati
 
 export function validateType(expected: string, value: boolean | number | string) {
   if (expected === 'user')
-    return /^(\@((?!@|#|:|`).)*\#[0-9]{4,5})$/i.test(value.toString())
+    // From a server channel it should look like: <@146439529824256000>
+    // Check that first
+    return /^\<\@([0-9]*)\>$/i.test(value.toString()) || /^(\@((?!@|#|:|`).)*\#[0-9]{4,5})$/i.test(value.toString())
   if (expected === 'string')
     return typeof value === 'string'
   if (expected === 'number') {

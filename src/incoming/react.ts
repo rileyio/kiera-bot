@@ -18,6 +18,6 @@ export async function setReactTime(bot: Bot, msg: Message, args: Array<string>) 
     return;
   }
 
-  await msg.channel.send(`:white_check_mark: Setting react time for ${args[1]} to: \`${args[3]}\` minutes`)
+  await msg.channel.send(`:white_check_mark: Setting react time for ${v.o.user} to: \`${v.o.time}\` minutes`)
   bot.DEBUG_MSG_COMMAND(`!react ${v.o.user} time ${v.o.time}`)
 }
