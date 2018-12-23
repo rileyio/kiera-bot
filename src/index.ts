@@ -4,7 +4,7 @@ import * as Debug from "debug";
 import * as Discord from "discord.js";
 
 import { incoming } from './incoming/msg';
-import { MsgTracker } from "./db/database";
+import { MsgTracker, UserDB } from "./db/database";
 import { getChannel, deleteMessage, deleteAllMessages } from "./utils";
 import { Lovense } from "./integration/lovense";
 
@@ -17,6 +17,9 @@ export class Bot {
   public DEBUG_MSG_COMMAND = Debug('lovense-discord-bot:command');
   public MsgTracker: MsgTracker
   public version: string
+
+  // Databases
+  public DB_Users: UserDB = new UserDB()
 
   // Connections/Integrations
   public Lovense: Lovense = new Lovense()

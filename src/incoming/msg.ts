@@ -27,6 +27,8 @@ export function incoming(bot: Bot, msg: Message) {
  * @param {Message} msg
  */
 function prefixRouter(bot: Bot, msg: Message) {
+  // Register Controller
+  if (msg.content.startsWith(`${prefix}register`)) return Commands.registerUser(bot, msg, getArgs(msg.content))
   // Version Controller
   if (msg.content.startsWith(`${prefix}version`)) return Commands.versionCheck(bot, msg)
   // Devices Connected Count
