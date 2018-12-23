@@ -1,6 +1,4 @@
 import * as NEDB from 'nedb';
-import * as Debug from "debug";
-import { Bot } from '..';
 import { TrackedUser } from '../user';
 
 var UsersDB = new NEDB({
@@ -28,5 +26,13 @@ export class UserDB {
   }
 
   public remove() { }
-  public update() { }
+
+  public update(user: TrackedUser) {
+    return new Promise<TrackedUser>((ret) => {
+      UsersDB.update<TrackedUser>({ id: user.id }, user, { upsert: true }, (err, _user) => {
+        if (err) throw err
+        return ret(user)
+      })
+    })
+  }
 }
