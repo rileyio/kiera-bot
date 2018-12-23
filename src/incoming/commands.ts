@@ -42,6 +42,6 @@ export async function versionCheck(bot: Bot, msg: Message) {
   await msg.channel.send(bot.version, { code: true })
 }
 
-export async function devicesConnectedCount(bot: Bot, msg: Message, args: Array<string>) {
-  await msg.channel.send(`Devices Connected: \`${bot.Lovense.devicesConnected.length}\``)
-}
+export * from './devices'
+export * from './react'
+export * from './duration'

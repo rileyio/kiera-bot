@@ -14,6 +14,7 @@ export class Bot {
   public DEBUG = Debug('lovense-discord-bot:Bot');
   public DEBUG_MSG_INCOMING = Debug('lovense-discord-bot:incoming');
   public DEBUG_MSG_SCHEDULED = Debug('lovense-discord-bot:scheduled');
+  public DEBUG_MSG_COMMAND = Debug('lovense-discord-bot:command');
   public MsgTracker: MsgTracker
   public version: string
 
