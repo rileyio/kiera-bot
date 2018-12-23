@@ -106,10 +106,12 @@ Notes about commands:
 
 ## Available chat interactions (emotes)
 
-:smile: = Low level
+:smile: = Low
 
 :smirk: = Low-medium
 
-:grimacing: = Medium-high
+:grimacing: = Medium
 
-:sob: = High
+:sob: = Medium-high
+
+:roll_eyes: = High
