@@ -14,11 +14,11 @@ export async function setDurationTime(bot: Bot, msg: Message, args: Array<string
 
   if (!v.valid) {
     bot.DEBUG_MSG_COMMAND(`!duration ${v.o.user} time ${v.o.time} -> validation check 'failed'`)
-    await msg.channel.send(`Command error, must be formatted like: \`!duration @user#0000 time 10\``)
+    await msg.channel.send(`:warning: Command error, must be formatted like: \`!duration @user#0000 time 10\``)
     return;
   }
 
   // Process command
-  await msg.channel.send(`Setting duration to: \`${args[3]}\` minutes`)
+  await msg.channel.send(`:white_check_mark: Setting duration for ${v.o.user} to: \`${v.o.time}\` minutes`)
   bot.DEBUG_MSG_COMMAND(`!duration ${v.o.user} time ${v.o.time}`)
 }

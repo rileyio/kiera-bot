@@ -27,6 +27,8 @@ export function incoming(bot: Bot, msg: Message) {
  * @param {Message} msg
  */
 function prefixRouter(bot: Bot, msg: Message) {
+  // Register Controller
+  if (msg.content.startsWith(`${prefix}register`)) return Commands.registerUser(bot, msg, getArgs(msg.content))
   // Version Controller
   if (msg.content.startsWith(`${prefix}version`)) return Commands.versionCheck(bot, msg)
   // Devices Connected Count
@@ -43,6 +45,12 @@ function prefixRouter(bot: Bot, msg: Message) {
  * @param {Message} msg
  */
 async function devicesRouter(bot: Bot, msg: Message) {
+  // Verify user is registered first
+  if (!await bot.DB_Users.verify(msg.author.id)) {
+    await msg.channel.send(`:exclamation: You'll need to register first with the \`!register\` command in order to proceed`)
+    return;
+  }
+
   const args = getArgs(msg.content)
   if (args[1] === 'connected') return Commands.devicesConnectedCount(bot, msg, args)
 }
@@ -53,6 +61,12 @@ async function devicesRouter(bot: Bot, msg: Message) {
  * @param {Message} msg
  */
 async function reactRouter(bot: Bot, msg: Message) {
+  // Verify user is registered first
+  if (!await bot.DB_Users.verify(msg.author.id)) {
+    await msg.channel.send(`:exclamation: You'll need to register first with the \`!register\` command in order to proceed`)
+    return;
+  }
+
   const args = getArgs(msg.content)
   if (args[2] === 'time') return Commands.setReactTime(bot, msg, args)
 }
@@ -63,6 +77,12 @@ async function reactRouter(bot: Bot, msg: Message) {
  * @param {Message} msg
  */
 async function durationRouter(bot: Bot, msg: Message) {
+  // Verify user is registered first
+  if (!await bot.DB_Users.verify(msg.author.id)) {
+    await msg.channel.send(`:exclamation: You'll need to register first with the \`!register\` command in order to proceed`)
+    return;
+  }
+
   const args = getArgs(msg.content)
   if (args[2] === 'time') return Commands.setDurationTime(bot, msg, args)
 }

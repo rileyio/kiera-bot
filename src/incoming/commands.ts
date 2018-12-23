@@ -42,6 +42,7 @@ export async function versionCheck(bot: Bot, msg: Message) {
   await msg.channel.send(bot.version, { code: true })
 }
 
+export * from './user'
 export * from './devices'
 export * from './react'
 export * from './duration'

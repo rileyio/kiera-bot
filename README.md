@@ -79,7 +79,8 @@ Notes about commands:
 - Keyholder commands must always specify a `@user#0000` if command is to target a user
 - Commands listed as [x] are completed, [ ] are in progress or planned
 
-### Generic/Stats/Test Commands
+### Generic/Stats/Test Commands (Available to everyone)
+- [ ] `!register` Registers the user with the bot
 - [x] `!version` Gets the bot's current version
 - [x] `!devices` Requires additional args
   - [x] `connected` View total count of connected devices
