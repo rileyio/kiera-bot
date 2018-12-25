@@ -4,30 +4,41 @@ import * as Debug from "debug";
 import * as Discord from "discord.js";
 
 import { incoming } from './incoming/msg';
-import { MsgTracker, UserDB } from "./db/database";
+import { MsgTracker, DB, Databases, DBLoader } from "./db/database";
 import { getChannel, deleteMessage, deleteAllMessages } from "./utils";
 import { Lovense } from "./integration/lovense";
+import { TrackedUser } from "./objects/user";
+import { TrackedServer } from "./objects/server";
+import { TrackedMessage } from "./objects/message";
 
 export class Bot {
   private client = new Discord.Client();
   private serverChannels: Discord.Collection<string, Discord.Channel>;
-  public DEBUG = Debug('lovense-discord-bot:Bot');
-  public DEBUG_MSG_INCOMING = Debug('lovense-discord-bot:incoming');
-  public DEBUG_MSG_SCHEDULED = Debug('lovense-discord-bot:scheduled');
-  public DEBUG_MSG_COMMAND = Debug('lovense-discord-bot:command');
+  public DEBUG = Debug('ldi:Bot');
+  public DEBUG_MSG_INCOMING = Debug('ldi:incoming');
+  public DEBUG_MSG_SCHEDULED = Debug('ldi:scheduled');
+  public DEBUG_MSG_COMMAND = Debug('ldi:command');
   public MsgTracker: MsgTracker
   public version: string
 
   // Databases
-  public DB_Users: UserDB = new UserDB()
+  public Messages: DB<TrackedMessage>
+  public Servers: DB<TrackedServer>
+  public Users: DB<TrackedUser>
 
   // Connections/Integrations
   public Lovense: Lovense = new Lovense()
 
-  constructor() {
+  public async start() {
     this.DEBUG('getting things setup...');
     this.version = packagejson.version
     this.MsgTracker = new MsgTracker(this);
+
+    // Load DBs
+    // this.Messages = await DBLoader(Databases.MESSAGES)
+    this.Servers = await DBLoader(Databases.SERVERS)
+    this.Users = await DBLoader(Databases.USERS)
+
     // On application startup & login
     this.client.on('ready', async () => {
       this.DEBUG(`Logged in as ${this.client.user.tag}!`);
@@ -37,20 +48,46 @@ export class Bot {
       if (process.env.BOT_MESSAGE_CLEANUP_CLEAR_CHANNEL === 'true') {
         await deleteAllMessages(getChannel(this.serverChannels, process.env.DISCORD_TEST_CHANNEL))
       }
+
+      /////// TESTING ///////
+      var guilds = this.client.guilds.array()
+
+      for (let index = 0; index < guilds.length; index++) {
+        const guild = guilds[index];
+        this.DEBUG(`connecting to server => ${guild.name}`)
+        this.Servers.update({ id: guild.id }, new TrackedServer(guild), true)
+      }
+
     });
 
     ////// Incoming message router //////
     this.client.on('message', (msg) => incoming(this, msg));
 
-    //////   Connect application  //////
+    //////     Connect account     //////
     this.client.login(process.env.DISCORD_APP_TOKEN);
+
+    //////Server connect/disconnect//////
+    //joined a server
+    this.client.on("guildCreate", async guild => {
+      this.DEBUG("Joined a new server: " + guild.name);
+      // Save some info about the server in db
+      this.Servers.update({ id: guild.id }, new TrackedServer(guild), true)
+    })
+
+    //removed from a server
+    this.client.on("guildDelete", async guild => {
+      await this.Servers.remove({ id: guild.id })
+      this.DEBUG("Left a guild: " + guild.name);
+    })
 
     //////    Internal Events     //////
     this.MsgTracker.on('msg-tracker--remove-msg', async (id, channelId) => {
       await deleteMessage(getChannel(this.serverChannels, channelId), id, this.DEBUG_MSG_SCHEDULED)
     })
   }
+
 }
 
 // Start bot (may be moved elsewhere later)
-new Bot();
+const bot = new Bot();
+bot.start()

@@ -1,7 +1,7 @@
 import * as NEDB from 'nedb';
 import * as Debug from "debug";
 import { EventEmitter } from 'events';
-import { TrackedMessage } from '../message';
+import { TrackedMessage } from '../objects/message';
 import { Bot } from '..';
 
 // var DB_MSG_TRACKING = new NEDB({
@@ -17,8 +17,8 @@ export class MsgTracker extends EventEmitter {
   private msgDeletionCleanupInProgress = false
   private msgProcesserInterval = Number(process.env.BOT_MESSAGE_CLEANUP_INTERVAL)
   private msgProcesserMemInterval = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
-  private msgDeletionCleanupAge = Number(process.env.BOT_MESSAGE_CLEANUP_AGE)
-  public DEBUG_MSG_TRACKER = Debug('lovense-discord-bot:MsgTracker');
+  private msgDeletionCleanupAge = Number(process.env.BOT_MESSAGE_CLEANUldiP_AGE)
+  public DEBUG_MSG_TRACKER = Debug('ldi:MsgTracker');
 
   constructor(bot: Bot) {
     super()

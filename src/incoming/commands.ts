@@ -1,11 +1,10 @@
 import { performance } from "perf_hooks";
 import { Bot } from "..";
 import { Message, Channel } from "discord.js";
-import { TrackedMessage } from "../message";
+import { TrackedMessage } from "../objects/message";
 
 export async function pingPong(bot: Bot, msg: Message) {
   const startTime = performance.now()
-  const channel = msg.channel
 
   // Track all incoming messages
   bot.MsgTracker.trackMsg(new TrackedMessage({
@@ -20,7 +19,7 @@ export async function pingPong(bot: Bot, msg: Message) {
   }))
 
   const ms = Math.round((performance.now() - startTime) * 100) / 100
-  const response = await channel.sendMessage(`pong ${ms}ms`);
+  const response = await msg.reply(`pong \`${ms}ms\``);
 
   if (!Array.isArray(response)) {
     bot.MsgTracker.trackMsg(new TrackedMessage({
@@ -39,10 +38,11 @@ export async function pingPong(bot: Bot, msg: Message) {
 }
 
 export async function versionCheck(bot: Bot, msg: Message) {
-  await msg.channel.send(bot.version, { code: true })
+  await msg.reply(bot.version, { code: true })
 }
 
-export * from './user'
+export * from './admin'
 export * from './devices'
-export * from './react'
 export * from './duration'
+export * from './react'
+export * from './user'

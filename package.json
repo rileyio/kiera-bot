@@ -1,13 +1,14 @@
 {
-  "name": "lovensediscordintegration",
+  "name": "ldi-bot",
   "version": "1.0.0",
   "main": "app/index.js",
   "repository": "https://github.com/sudoaptgetupgrade/lovensediscordintegration.git",
-  "author": "TBD",
+  "author": "Emma (RileyIO)",
+  "contributors": [],
   "license": "MIT",
   "scripts": {
     "start": "node ./app/index.js",
-    "start:ps:debug": "@powershell -Command $env:DEBUG='lovense-discord-bot:*'; node ./app/index.js",
+    "start:ps:debug": "@powershell -Command $env:DEBUG='ldi:*'; node ./app/index.js",
     "dev": "tsc -w",
     "build": "tsc"
   },
@@ -22,6 +23,7 @@
     "@types/debug": "^0.0.31",
     "@types/nedb": "^1.8.6",
     "@types/node": "^10.12.18",
-    "debug": "^4.1.0"
+    "debug": "^4.1.0",
+    "xregexp": "^4.2.0"
   }
 }

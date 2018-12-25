@@ -33,8 +33,8 @@ Example output:
 PS F:\GitHub\lovensediscordintegration> yarn run dev:ps
 yarn run v1.10.1
 
-$ @powershell -Command $env:DEBUG='lovense-discord-bot'; node ./app/index.js
-  lovense-discord-bot just a test... getting things setup +0ms
+$ @powershell -Command $env:DEBUG='ldi'; node ./app/index.js
+  ldi just a test... getting things setup +0ms
 Done in 0.79s.
 
 PS F:\GitHub\lovensediscordintegration>

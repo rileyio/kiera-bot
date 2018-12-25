@@ -1,7 +1,7 @@
 import { performance } from "perf_hooks";
 import { Bot } from "..";
 import { Message, Channel } from "discord.js";
-import { TrackedMessage } from "../message";
+import { TrackedMessage } from "../objects/message";
 import { validateArgs } from "../utils";
 
 export async function setDurationTime(bot: Bot, msg: Message, args: Array<string>) {
@@ -14,11 +14,11 @@ export async function setDurationTime(bot: Bot, msg: Message, args: Array<string
 
   if (!v.valid) {
     bot.DEBUG_MSG_COMMAND(`!duration ${v.o.user} time ${v.o.time} -> validation check 'failed'`)
-    await msg.channel.send(`:warning: Command error, must be formatted like: \`!duration @user#0000 time 10\``)
+    await msg.reply(`:warning: Command error, must be formatted like: \`!duration @user#0000 time 10\``)
     return;
   }
 
   // Process command
-  await msg.channel.send(`:white_check_mark: Setting duration for ${v.o.user} to: \`${v.o.time}\` minutes`)
+  await msg.reply(`:white_check_mark: Setting duration for ${v.o.user} to: \`${v.o.time}\` minutes`)
   bot.DEBUG_MSG_COMMAND(`!duration ${v.o.user} time ${v.o.time}`)
 }
