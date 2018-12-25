@@ -1,4 +1,5 @@
-## Project structure
+.03
+00202## Project structure
 
 ```
 app/ - Compiled to directory (~ will get overwritten ~)
@@ -22,7 +23,7 @@ To start the application
 
 ## Additional notes (WIP)
 
-General notes on running the application with the built in debug turrned on to see
+General notes on running the application with the built in debug turned on to see
 console output.
 
 
@@ -76,7 +77,7 @@ Notes about commands:
 - Times will always be in minutes
 - User commands won't use any `@user#0000` arguments unless specified
 - Keyholder commands must always specify a `@user#0000` if command is to target a user
-- Commands listed as [x] are completed, [ ] are inprogress or planned
+- Commands listed as [x] are completed, [ ] are in progress or planned
 
 ### Generic/Stats/Test Commands (Available to everyone)
 - [ ] `!register` Registers the user with the bot
