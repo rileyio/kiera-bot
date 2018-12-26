@@ -2,7 +2,7 @@ import { performance } from "perf_hooks";
 import { Bot } from "..";
 import { Message, Channel } from "discord.js";
 import { TrackedMessage } from "../objects/message";
-import { validateArgs } from "../utils";
+import { validateArgs, verifyUserRefType, buildUserQuery, buildUserChatAt } from "../utils";
 
 export async function setDurationTime(bot: Bot, msg: Message, args: Array<string>) {
   const v = validateArgs(args, [
@@ -18,7 +18,9 @@ export async function setDurationTime(bot: Bot, msg: Message, args: Array<string
     return;
   }
 
+  const userArgType = verifyUserRefType(v.o.user)
+
   // Process command
-  await msg.reply(`:white_check_mark: Setting duration for ${v.o.user} to: \`${v.o.time}\` minutes`)
-  bot.DEBUG_MSG_COMMAND(`!duration ${v.o.user} time ${v.o.time}`)
+  await msg.reply(`:white_check_mark: Setting duration for ${buildUserChatAt(v.o.user, userArgType)} to: \`${v.o.time}\` minutes`)
+  bot.DEBUG_MSG_COMMAND(`!duration ${buildUserChatAt(v.o.user, userArgType)} time ${v.o.time}`)
 }

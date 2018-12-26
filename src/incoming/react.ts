@@ -2,7 +2,7 @@ import { performance } from "perf_hooks";
 import { Bot } from "..";
 import { Message, Channel } from "discord.js";
 import { TrackedMessage } from "../objects/message";
-import { validateArgs } from "../utils";
+import { validateArgs, verifyUserRefType, buildUserChatAt } from "../utils";
 
 export async function setReactTime(bot: Bot, msg: Message, args: Array<string>) {
   const v = validateArgs(args, [
@@ -18,6 +18,8 @@ export async function setReactTime(bot: Bot, msg: Message, args: Array<string>) 
     return;
   }
 
-  await msg.reply(`:white_check_mark: Setting react time for ${v.o.user} to: \`${v.o.time}\` minutes`)
-  bot.DEBUG_MSG_COMMAND(`!react ${v.o.user} time ${v.o.time}`)
+  const userArgType = verifyUserRefType(v.o.user)
+
+  await msg.reply(`:white_check_mark: Setting react time for ${buildUserChatAt(v.o.user, userArgType)} to: \`${v.o.time}\` minutes`)
+  bot.DEBUG_MSG_COMMAND(`!react ${buildUserChatAt(v.o.user, userArgType)} time ${v.o.time}`)
 }
