@@ -87,62 +87,6 @@ export function getArgs(msg: string) {
 }
 
 /**
- * Validates the chat arguments against the TypeValidations provided to determine
- * if all arguments meet the defined type
- * @export
- * @param {Array<string>} args
- * @param {Array<TypeValidation>} validation
- * @returns
- */
-export function validateArgs(args: Array<string>, validation: Array<TypeValidation>) {
-  var allValid = true
-  var ret: any = {}
-  var validated = validation.map((v: TypeValidation, i: number) => {
-    // Check if type matches
-    v.valid = validateType(v.type, args[i])
-    v.value = (v.type === 'user') ? extractUserIdFromString(args[i]) : args[i]
-    // Fix: If expected type is valid and is a number, convert it to a number
-    v.value = (v.type === 'number' && v.valid) ? Number(v.value) : args[i]
-    // Update allValid
-    if (!v.valid && v.required) {
-      // If the value fails a check (or is empty) but IS required
-      allValid = false
-    }
-    // Add v to ret
-    ret[v.name] = v.value
-    return v
-  })
-
-  return { valid: allValid, validated: validated, o: ret }
-}
-
-/**
- * Basic type validator - Validates:
- * - `user` (this can be both a snowflake or @user#0000)
- * - `string`
- * - `number`
- * - `boolean`
- * @export
- * @param {string} expected
- * @param {(boolean | number | string)} value
- * @returns
- */
-export function validateType(expected: string, value: boolean | number | string) {
-  if (expected === 'user')
-    // From a server channel it should look like: <@146439529824256000>
-    // Check that first
-    return /^\<\@([0-9]*)\>$/i.test(value.toString()) || /^(\@((?!@|#|:|`).*)\#[0-9]{4,5})$/i.test(value.toString())
-  if (expected === 'string')
-    return typeof value === 'string'
-  if (expected === 'number') {
-    return Number.isNaN(Number(value)) === false
-  }
-  if (expected === 'boolean')
-    return value.toString().toLowerCase() === 'true' || value.toString().toLowerCase() === 'false'
-  return false
-}
-
-/**
  * Extract id from a snowflake if still wrapped like: <@146439529824256000>
  * Has built in fallback so can be used on normal @user#0000 values as well
  * @export
@@ -185,7 +129,7 @@ export function buildUserQuery(input: string, type: UserRefType): TrackedUserQue
   if (type === UserRefType.usernameFull) {
     const regex = XRegex('^(\\@(?<username>(?!@|#|:|`).*)\\#(?<discriminator>[0-9]{4,5}))$', 'i')
     const match = XRegex.exec(input, regex)
-    return { username: match.username, discriminator: match.discriminator }
+    return { username: match['username'], discriminator: match['discriminator'] }
   }
 }
 

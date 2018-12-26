@@ -1,8 +1,5 @@
-import { performance } from "perf_hooks";
-import { Bot } from "..";
-import { Message, Channel } from "discord.js";
-import { TrackedMessage } from "../objects/message";
+import { RouterRouted } from "../utils/router";
 
-export async function devicesConnectedCount(bot: Bot, msg: Message, args: Array<string>) {
-  await msg.reply(`Devices Connected: \`${bot.Lovense.devicesConnected.length}\``)
+export async function devicesConnectedCount(routed: RouterRouted) {
+  await routed.message.reply(`Devices Connected: \`${routed.bot.Lovense.devicesConnected.length}\``)
 }

@@ -3,18 +3,21 @@ const packagejson = require('../package.json')
 import * as Debug from "debug";
 import * as Discord from "discord.js";
 
-import { incoming } from './incoming/msg';
+// import { incoming } from './incoming/msg';
 import { MsgTracker, DB, Databases, DBLoader } from "./db/database";
 import { getChannel, deleteMessage, deleteAllMessages } from "./utils";
 import { Lovense } from "./integration/lovense";
 import { TrackedUser } from "./objects/user";
 import { TrackedServer } from "./objects/server";
 import { TrackedMessage } from "./objects/message";
+import { Router } from "./utils/router";
+import { Routes } from "./routes";
 
 export class Bot {
   private serverChannels: Discord.Collection<string, Discord.Channel>;
   public client = new Discord.Client();
   public DEBUG = Debug('ldi:Bot');
+  public DEBUG_MIDDLEWARE = Debug('ldi:midddleware');
   public DEBUG_MSG_INCOMING = Debug('ldi:incoming');
   public DEBUG_MSG_SCHEDULED = Debug('ldi:scheduled');
   public DEBUG_MSG_COMMAND = Debug('ldi:command');
@@ -28,6 +31,9 @@ export class Bot {
 
   // Connections/Integrations
   public Lovense: Lovense = new Lovense()
+
+  // Bot msg router
+  public Router: Router = new Router(Routes(), this)
 
   public async start() {
     this.DEBUG('getting things setup...');
@@ -61,7 +67,7 @@ export class Bot {
     });
 
     ////// Incoming message router //////
-    this.client.on('message', (msg) => incoming(this, msg));
+    this.client.on('message', (msg) => this.Router.route(msg));
 
     //////     Connect account     //////
     this.client.login(process.env.DISCORD_APP_TOKEN);

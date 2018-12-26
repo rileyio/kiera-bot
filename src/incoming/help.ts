@@ -1,16 +1,12 @@
-import { performance } from "perf_hooks";
-import { Bot } from "..";
-import { Message, Channel } from "discord.js";
-import { TrackedMessage } from "../objects/message";
-import { validateArgs, verifyUserRefType, buildUserChatAt } from "../utils";
 import * as Instructions from '../usage-instructions';
+import { RouterRouted } from "../utils/router";
 
-export async function genericFallback(bot: Bot, msg: Message) {
-  await msg.reply(Instructions.help);
+export async function genericFallback(routed: RouterRouted) {
+  await routed.message.reply(Instructions.help);
 }
 
-export async function commandHelp(bot: Bot, msg: Message, command: string) {
-  await msg.reply(Instructions[command])
+export async function commandHelp(routed: RouterRouted) {
+  await routed.message.reply(Instructions[routed.v.o.command])
 }
 
 // embed: {

@@ -7,10 +7,10 @@
     "experimentalDecorators": true,
     "preserveConstEnums": true,
     "declaration": true,
-    "sourceMap": true,
+    // "sourceMap": true,
     "outDir": "app",
     "rootDir": "./src",
-    "watch": true,
+    "inlineSourceMap": true,
     "lib": [
       "es6"
     ]
