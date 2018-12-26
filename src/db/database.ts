@@ -1,5 +1,5 @@
 import * as NEDB from 'nedb';
-import * as Debug from "debug";
+import * as Debug from 'debug';
 
 export interface ConfiguredDatabase {
   [key: string]: NEDB.DataStoreOptions
@@ -25,7 +25,7 @@ export class DB<T> {
 
   constructor(connectionConfig: NEDB.DataStoreOptions) {
     this.DEBUG_DB = Debug('ldi:database')
-    this.dbConnection = new NEDB(connectionConfig);
+    this.dbConnection = new NEDB(connectionConfig)
 
     this.DEBUG_DB(`starting up db: ${connectionConfig.filename}`)
   }
@@ -89,11 +89,15 @@ export class DB<T> {
    */
   public update<Q>(query: Q, update: T, upsert?: boolean) {
     return new Promise<number>((ret) => {
+      // Need to remove _id from any updates sent as it will cause issues
+      delete update['_id']
+
       this.dbConnection.update<T>(query, update, { upsert: upsert || false }, (err, updated) => {
         if (err) throw err
         return ret(updated)
       })
     })
+
   }
 
   /**

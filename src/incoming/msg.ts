@@ -46,6 +46,8 @@ function prefixRouter(bot: Bot, msg: Message) {
   if (msg.content.startsWith(`${prefix}duration`)) return durationRouter(bot, msg)
   // Admin    -> to router
   if (msg.content.startsWith(`${prefix}admin`)) return adminRouter(bot, msg)
+  // CK       -> to router
+  if (msg.content.startsWith(`${prefix}ck`)) return chastiKeyRouter(bot, msg)
 }
 
 /**
@@ -54,11 +56,13 @@ function prefixRouter(bot: Bot, msg: Message) {
  * @param {Message} msg
  */
 async function help(bot: Bot, msg: Message) {
-  if (getArgs(msg.content)[1] === 'register') return Commands.commandHelp(bot, msg, 'register')
-  if (getArgs(msg.content)[1] === 'react') return Commands.commandHelp(bot, msg, 'react')
-  if (getArgs(msg.content)[1] === 'duration') return Commands.commandHelp(bot, msg, 'duration')
-  if (getArgs(msg.content)[1] === 'intensity') return Commands.commandHelp(bot, msg, 'intensity')
-  if (getArgs(msg.content)[1] === 'limit') return Commands.commandHelp(bot, msg, 'limit')
+  const args = getArgs(msg.content)
+  
+  if (args[1] === 'register') return Commands.commandHelp(bot, msg, 'register')
+  if (args[1] === 'react') return Commands.commandHelp(bot, msg, 'react')
+  if (args[1] === 'duration') return Commands.commandHelp(bot, msg, 'duration')
+  if (args[1] === 'intensity') return Commands.commandHelp(bot, msg, 'intensity')
+  if (args[1] === 'limit') return Commands.commandHelp(bot, msg, 'limit')
   // Fallback, show main help text
   return Commands.genericFallback(bot, msg)
 }
@@ -109,6 +113,23 @@ async function durationRouter(bot: Bot, msg: Message) {
 
   const args = getArgs(msg.content)
   if (args[2] === 'time') return Commands.setDurationTime(bot, msg, args)
+}
+
+/**
+ * Final routing for `!ck` commands
+ * @param {Bot} bot
+ * @param {Message} msg
+ */
+async function chastiKeyRouter(bot: Bot, msg: Message) {
+  if (!await bot.Users.verify(msg.author.id)) {
+    await msg.reply(`:exclamation: You'll need to register first with the \`!register\` command in order to proceed`)
+    return;
+  }
+
+  const args = getArgs(msg.content)
+
+  if (args[1] === 'username') return Commands.setUsername(bot, msg, args)
+  if (args[1] === 'ticker') return Commands.adminRemoveUser(bot, msg, args)
 }
 
 /**

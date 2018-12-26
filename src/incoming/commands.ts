@@ -42,6 +42,7 @@ export async function versionCheck(bot: Bot, msg: Message) {
 }
 
 export * from './admin'
+export * from './chastikey'
 export * from './devices'
 export * from './duration'
 export * from './help'
