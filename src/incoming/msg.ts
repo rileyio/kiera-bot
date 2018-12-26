@@ -33,26 +33,34 @@ export function incoming(bot: Bot, msg: Message) {
  * @param {Message} msg
  */
 function prefixRouter(bot: Bot, msg: Message) {
+  if (msg.content.startsWith(`${prefix}help`)) return help(bot, msg)
   // Register Controller
   if (msg.content.startsWith(`${prefix}register`)) return Commands.registerUser(bot, msg, getArgs(msg.content))
   // Version Controller
   if (msg.content.startsWith(`${prefix}version`)) return Commands.versionCheck(bot, msg)
   // Devices Connected Count
   if (msg.content.startsWith(`${prefix}devices`)) return devicesRouter(bot, msg)
-  // React -> to router
+  // React    -> to router
   if (msg.content.startsWith(`${prefix}react`)) return reactRouter(bot, msg)
   // Duration -> to router
   if (msg.content.startsWith(`${prefix}duration`)) return durationRouter(bot, msg)
-  // Admin -> to router
+  // Admin    -> to router
   if (msg.content.startsWith(`${prefix}admin`)) return adminRouter(bot, msg)
+}
 
-  // Fallback
-  msg.reply({
-    embed: {
-      color: 3447003,
-      description: "Fallback - Coming soon"
-    }
-  });
+/**
+ * Final routing for help menu(s)
+ * @param {Bot} bot
+ * @param {Message} msg
+ */
+async function help(bot: Bot, msg: Message) {
+  if (getArgs(msg.content)[1] === 'register') return Commands.commandHelp(bot, msg, 'register')
+  if (getArgs(msg.content)[1] === 'react') return Commands.commandHelp(bot, msg, 'react')
+  if (getArgs(msg.content)[1] === 'duration') return Commands.commandHelp(bot, msg, 'duration')
+  if (getArgs(msg.content)[1] === 'intensity') return Commands.commandHelp(bot, msg, 'intensity')
+  if (getArgs(msg.content)[1] === 'limit') return Commands.commandHelp(bot, msg, 'limit')
+  // Fallback, show main help text
+  return Commands.genericFallback(bot, msg)
 }
 
 /**

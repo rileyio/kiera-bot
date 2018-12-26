@@ -12,8 +12,8 @@ import { TrackedServer } from "./objects/server";
 import { TrackedMessage } from "./objects/message";
 
 export class Bot {
-  private client = new Discord.Client();
   private serverChannels: Discord.Collection<string, Discord.Channel>;
+  public client = new Discord.Client();
   public DEBUG = Debug('ldi:Bot');
   public DEBUG_MSG_INCOMING = Debug('ldi:incoming');
   public DEBUG_MSG_SCHEDULED = Debug('ldi:scheduled');

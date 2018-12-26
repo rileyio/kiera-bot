@@ -44,5 +44,6 @@ export async function versionCheck(bot: Bot, msg: Message) {
 export * from './admin'
 export * from './devices'
 export * from './duration'
+export * from './help'
 export * from './react'
 export * from './user'
