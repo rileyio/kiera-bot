@@ -84,6 +84,10 @@ Notes about commands:
 - [x] `!version` Gets the bot's current version
 - [x] `!devices` Requires additional args
   - [x] `connected` View total count of connected devices
+- [x] `!ck`
+  - [x] `username YourUsername` Used to set your ChastiKey username 
+  - [x] `ticker` Using just this will return your configured ticker
+    - [x] `set type` `1` = Keyholder `2` = Lockee
 
 ### Lockee Commands (Must be entered by the device owner)
 - [ ] `!limit` Defines limits

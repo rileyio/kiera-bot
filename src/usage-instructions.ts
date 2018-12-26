@@ -98,3 +98,25 @@ Usage Example:
 !limit time 75
 \`\`\`
 `
+
+export const ck = `
+**\`!ck\` Command Usage**
+
+Constraints: [Keyholder or Lockees]
+
+Used to configure and return from ChastiKey API.
+Currently returns:
+  - Tickers (Keyholder and Lockees)
+
+Usage Example
+\`\`\`sh
+// Returns your ticker
+!ck ticker
+
+// Configures ChastiKey username
+!ck username YourUsername
+
+// Configures if your ticker should return as a (1) Keyholder or (2) Lockee
+!ck ticker set type 2
+\`\`\`
+`

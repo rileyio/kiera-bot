@@ -63,6 +63,7 @@ async function help(bot: Bot, msg: Message) {
   if (args[1] === 'duration') return Commands.commandHelp(bot, msg, 'duration')
   if (args[1] === 'intensity') return Commands.commandHelp(bot, msg, 'intensity')
   if (args[1] === 'limit') return Commands.commandHelp(bot, msg, 'limit')
+  if (args[1] === 'ck') return Commands.commandHelp(bot, msg, 'ck')
   // Fallback, show main help text
   return Commands.genericFallback(bot, msg)
 }
