@@ -30,3 +30,14 @@ test('Utils:Validate => Route Regex generator', t => {
   // Validate object generator & output
   t.pass()
 })
+
+test('Utils:Validate => Multiple similar signatures', t => {
+  t.plan(4)
+  const v1 = new Validate('/help:string/command=string')
+  const v2 = new Validate('/help:string')
+
+  t.is(v1.test('!help ck'), true)
+  t.is(v1.test('!help'), false)
+  t.is(v2.test('!help ck'), false)
+  t.is(v2.test('!help'), true)
+})
