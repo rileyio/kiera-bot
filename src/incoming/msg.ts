@@ -57,7 +57,7 @@ function prefixRouter(bot: Bot, msg: Message) {
  */
 async function help(bot: Bot, msg: Message) {
   const args = getArgs(msg.content)
-  
+
   if (args[1] === 'register') return Commands.commandHelp(bot, msg, 'register')
   if (args[1] === 'react') return Commands.commandHelp(bot, msg, 'react')
   if (args[1] === 'duration') return Commands.commandHelp(bot, msg, 'duration')
@@ -129,7 +129,11 @@ async function chastiKeyRouter(bot: Bot, msg: Message) {
   const args = getArgs(msg.content)
 
   if (args[1] === 'username') return Commands.setUsername(bot, msg, args)
-  if (args[1] === 'ticker') return Commands.adminRemoveUser(bot, msg, args)
+  if (args[1] === 'ticker') {
+    if (args[2] === 'set' && args[3] === 'type') return Commands.setTickerType(bot, msg, args)
+    // No additional args - just return the ticker based on the user's store data
+    return Commands.getTicker(bot, msg, args)
+  }
 }
 
 /**

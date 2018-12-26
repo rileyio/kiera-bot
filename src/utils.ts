@@ -101,8 +101,13 @@ export function validateArgs(args: Array<string>, validation: Array<TypeValidati
     // Check if type matches
     v.valid = validateType(v.type, args[i])
     v.value = (v.type === 'user') ? extractUserIdFromString(args[i]) : args[i]
+    // Fix: If expected type is valid and is a number, convert it to a number
+    v.value = (v.type === 'number' && v.valid) ? Number(v.value) : args[i]
     // Update allValid
-    if (!v.valid) allValid = false
+    if (!v.valid && v.required) {
+      // If the value fails a check (or is empty) but IS required
+      allValid = false
+    }
     // Add v to ret
     ret[v.name] = v.value
     return v
