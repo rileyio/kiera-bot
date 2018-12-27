@@ -1,5 +1,7 @@
 import * as NEDB from 'nedb';
 import * as Debug from 'debug';
+import { MongoClient } from 'mongodb';
+import * as assert from 'assert';
 
 export interface ConfiguredDatabase {
   [key: string]: NEDB.DataStoreOptions
@@ -23,12 +25,28 @@ export class DB<T> {
   public dbConnection: NEDB
   public DEBUG_DB: Debug.IDebugger
 
+  // public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}`
+  // public dbName = `${process.env.DB_NAME}`
+  // public client = new MongoClient(this.dbUrl);
+
   constructor(connectionConfig: NEDB.DataStoreOptions) {
     this.DEBUG_DB = Debug('ldi:database')
     this.dbConnection = new NEDB(connectionConfig)
 
     this.DEBUG_DB(`starting up db: ${connectionConfig.filename}`)
   }
+
+  // public connectTest() {
+  //   return new Promise(r => {
+  //     this.client.connect(async (err) => {
+  //       assert.equal(null, err);
+  //       console.log("Connected successfully to server");
+  //       const db = this.client.db(this.dbName);
+
+  //       r(this.client.close())
+  //     });
+  //   })
+  // }
 
   public loadDB() {
     return this.dbConnection.loadDatabase()

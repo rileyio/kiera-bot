@@ -1,5 +1,5 @@
-import test from 'ava'
-import { Validate } from './validate'
+import test from 'ava';
+import { Validate } from './validate';
 import { getArgs } from '../utils';
 
 var validate: Validate;

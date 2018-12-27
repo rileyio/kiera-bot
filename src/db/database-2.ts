@@ -1,0 +1,141 @@
+import * as Debug from 'debug';
+import { MongoClient, MongoClientOptions, Db, MongoError } from 'mongodb';
+
+export class DB<T> {
+  public DEBUG_DB: Debug.IDebugger
+
+  // public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}`
+  public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/ldi`
+  public dbName = `${process.env.DB_NAME}`
+  public dbOpts: MongoClientOptions = {
+    useNewUrlParser: true,
+    auth: {
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+    }
+  }
+  public dbCollection: string
+
+  constructor(collection: string) {
+    this.dbCollection = collection
+    this.DEBUG_DB = Debug(`ldi:database collection=${collection}`)
+  }
+
+  public async connect() {
+    const client = await MongoClient.connect(this.dbUrl, this.dbOpts)
+    if (client.isConnected()) {
+      const db = client.db(this.dbName)
+      return { db: db, client: client }
+    }
+  }
+
+  // MongoClient.connect(this.dbUrl, this.dbOpts, (err, client) => {
+  //   assert.equal(null, err)
+  //   console.log('Connected successfully to server', this.dbName)
+  //   const db = client.db(this.dbName)
+  //   return cb(db, client, err)
+  // })
+
+  public async connectionTest() {
+    const connection = await this.connect()
+    const collection = connection.db.collection(this.dbCollection)
+    const results = await collection.find({ username: 'emma' }).toArray()
+    connection.client.close()
+    return results
+  }
+
+  /**
+   * Adds a new record to the DB
+   * @param {T} record
+   * @returns
+   * @memberof DB
+   */
+  public async add<T>(record: T, opts?: { insertOne?: boolean }) {
+    const insertOptions = Object.assign({ insertOne: true }, opts)
+    const connection = await this.connect()
+    const collection = connection.db.collection(this.dbCollection)
+    // const insertMethod = insertOptions.insertOne ? 'insertOne' : 'insertMany'
+    const results = await collection.insertOne(record)
+    connection.client.close()
+    return results.result.n === 1 ? record : null
+  }
+
+  /**
+   * Check if record is in the db
+   * @param {string} id
+   * @returns
+   * @memberof DB
+   */
+  public async verify<Q, T>(id: string) {
+    const connection = await this.connect()
+    const collection = connection.db.collection(this.dbCollection)
+    const results = await collection.find<T[]>({ id: id }).toArray()
+    return results.length > 0
+  }
+
+  /**
+   * Remove record from db
+   * @param {string} id
+   * @returns
+   * @memberof DB
+   */
+  public async remove<Q>(query: string | Q, opts?: { deleteOne?: boolean }) {
+    const deleteOptions = Object.assign({ deleteOne: true }, opts)
+    const connection = await this.connect()
+    const collection = connection.db.collection(this.dbCollection)
+    const deletionMethod = deleteOptions.deleteOne ? 'deleteOne' : 'deleteMany'
+    const result = await collection[deletionMethod](typeof query === 'string' ? { id: query } : query)
+    connection.client.close()
+    return result.result.n
+  }
+
+  /**
+   * Update stored record (or insert a new record if does not exist)
+   * @param {Q} query
+   * @param {T} update
+   * @param {boolean} [upsert]
+   * @returns
+   * @memberof DB
+   */
+  public async update<Q, T>(query: Q, update: T, opts?: { upsert?: boolean, updateOne?: boolean }) {
+    const updateOptions = Object.assign({ upsert: false, updateOne: true }, opts)
+    const connection = await this.connect()
+    const collection = connection.db.collection(this.dbCollection)
+    const updateMethod = updateOptions.updateOne ? 'updateOne' : 'updateMany'
+    const result = await collection[updateMethod](query, update, { upsert: updateOptions.upsert })
+    connection.client.close()
+    return result.result.ok === 1 // 1=good
+  }
+
+  /**
+   * Fetch a record from the db
+   * 
+   * This can accept one of the following formats in q:
+   * - `object` `{ id: '146439529824256000', username: 'emma', discriminator: '1336' }`
+   * 
+   * @param {Q} q
+   * @returns
+   * @memberof DB
+   */
+  public async get<Q, T>(query: Q, discriminator?: string) {
+    const connection = await this.connect()
+    const collection = connection.db.collection(this.dbCollection)
+    const result = await collection.findOne<T>(query)
+    connection.client.close()
+    return result
+  }
+
+  // public get<Q, T>(query: Q, discriminator?: string) {
+  //   return new Promise<T>(r => {
+  //     this.connect(async (db: Db, client: MongoClient, err: MongoError) => {
+  //       const collection = db.collection(this.dbCollection)
+  //       const result = await collection.findOne<T>(query)
+  //       client.close()
+  //       r(result)
+  //     })
+  //   })
+  // }
+}
+
+export * from './messages'
+export * from './users'

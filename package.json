@@ -7,17 +7,18 @@
   "contributors": [],
   "license": "MIT",
   "scripts": {
+    "clean": "trash app",
     "start": "node ./app/index.js",
     "start:ps:debug": "@powershell -Command $env:DEBUG='ldi:*'; node ./app/index.js",
     "dev": "tsc -w",
     "build": "tsc",
-    "test": "run-s build test:n",
-    "test:verbose": "run-s build test:v",
-    "test:v": "nyc --silent ava --verbose",
-    "test:n": "nyc --silent ava --tap | tnyan"
+    "test": "run-s clean build test:n",
+    "test:verbose": "run-s clean build test:v",
+    "test:v": "nyc --silent ava --verbose --serial",
+    "test:n": "nyc --silent ava --tap --serial | tnyan"
   },
   "ava": {
-    "failFast": true,
+    "failFast": false,
     "files": [
       "app/**/*.spec.js"
     ],
@@ -29,11 +30,13 @@
     "deep-extend": "^0.6.0",
     "discord.js": "^11.4.2",
     "dotenv": "^6.2.0",
+    "mongodb": "^3.1.10",
     "nedb": "^1.8.0"
   },
   "devDependencies": {
     "@types/debug": "^0.0.31",
     "@types/deep-extend": "^0.4.31",
+    "@types/mongodb": "^3.1.18",
     "@types/nedb": "^1.8.6",
     "@types/node": "^10.12.18",
     "@types/xregexp": "^3.0.29",
@@ -42,6 +45,7 @@
     "npm-run-all": "^4.1.5",
     "nyc": "^13.1.0",
     "tap-nyan": "^1.1.0",
+    "trash-cli": "^1.4.0",
     "typescript": "^3.2.2",
     "xregexp": "^4.2.0"
   }
