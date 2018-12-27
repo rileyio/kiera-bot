@@ -1,10 +1,17 @@
 import * as Debug from 'debug';
-import { MongoClient, MongoClientOptions, Db, MongoError } from 'mongodb';
+import { MongoClient, MongoClientOptions, Cursor } from 'mongodb';
 
-export class DB<T> {
+export async function MongoDBLoader<T>(collection: string) {
+  return new Promise<MongoDB<T>>(async (ret) => {
+    var db = new MongoDB<T>(collection);
+    // await db.connectionTest()
+    return ret(db)
+  })
+}
+
+export class MongoDB<T> {
   public DEBUG_DB: Debug.IDebugger
 
-  // public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}`
   public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/ldi`
   public dbName = `${process.env.DB_NAME}`
   public dbOpts: MongoClientOptions = {
@@ -15,10 +22,11 @@ export class DB<T> {
     }
   }
   public dbCollection: string
+  public dbConnectionOK: boolean = false
 
   constructor(collection: string) {
     this.dbCollection = collection
-    this.DEBUG_DB = Debug(`ldi:database collection=${collection}`)
+    this.DEBUG_DB = Debug(`ldi:database::${collection}`)
   }
 
   public async connect() {
@@ -36,13 +44,21 @@ export class DB<T> {
   //   return cb(db, client, err)
   // })
 
-  public async connectionTest() {
-    const connection = await this.connect()
-    const collection = connection.db.collection(this.dbCollection)
-    const results = await collection.find({ username: 'emma' }).toArray()
-    connection.client.close()
-    return results
-  }
+  // public async connectionTest() {
+  //   try {
+  //     const connection = await this.connect()
+  //     const collection = connection.db.collection(this.dbCollection)
+  //     const results = await collection.estimatedDocumentCount({
+  //       _id: "$_id", count: { $sum: 1 }
+  //     }, { limit: 10 })
+  //     connection.client.close()
+  //     this.DEBUG_DB(`connection test results => ${results}`)
+  //     this.dbConnectionOK = (results) ? true : false
+  //     return (results) ? true : false
+  //   } catch (error) {
+  //     return false
+  //   }
+  // }
 
   /**
    * Adds a new record to the DB
@@ -69,8 +85,8 @@ export class DB<T> {
   public async verify<Q, T>(id: string) {
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
-    const results = await collection.find<T[]>({ id: id }).toArray()
-    return results.length > 0
+    const results = await collection.find<T>({ id: id })
+    return await results.count() > 0
   }
 
   /**
@@ -97,14 +113,15 @@ export class DB<T> {
    * @returns
    * @memberof DB
    */
-  public async update<Q, T>(query: Q, update: T, opts?: { upsert?: boolean, updateOne?: boolean }) {
-    const updateOptions = Object.assign({ upsert: false, updateOne: true }, opts)
+  public async update<Q, T>(query: Q, update: T, opts?: { upsert?: boolean, updateOne?: boolean, atomic?: boolean }) {
+    const uopts = Object.assign({ atomic: false, upsert: false, updateOne: true }, opts)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
-    const updateMethod = updateOptions.updateOne ? 'updateOne' : 'updateMany'
-    const result = await collection[updateMethod](query, update, { upsert: updateOptions.upsert })
+    const result = uopts.updateOne
+      ? await collection.updateOne(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
+      : await collection.updateMany(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
     connection.client.close()
-    return result.result.ok === 1 // 1=good
+    return result.result.n
   }
 
   /**
@@ -117,12 +134,30 @@ export class DB<T> {
    * @returns
    * @memberof DB
    */
-  public async get<Q, T>(query: Q, discriminator?: string) {
+  public async get<Q>(query: Q) {
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
     const result = await collection.findOne<T>(query)
     connection.client.close()
-    return result
+    return (<T>result)
+  }
+
+  /**
+   * Fetch records from the db
+   * 
+   * This can accept one of the following formats in q:
+   * - `object` `{ id: '146439529824256000', username: 'emma', discriminator: '1336' }`
+   * 
+   * @param {Q} q
+   * @returns
+   * @memberof DB
+   */
+  public async getMultiple<Q>(query: Q) {
+    const connection = await this.connect()
+    const collection = connection.db.collection(this.dbCollection)
+    const result = await collection.find<T>(query)
+    connection.client.close()
+    return (<Cursor<T>>result).toArray()
   }
 
   // public get<Q, T>(query: Q, discriminator?: string) {

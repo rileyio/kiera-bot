@@ -1,10 +1,8 @@
-import * as NEDB from 'nedb';
-import * as Debug from 'debug';
-import { MongoClient } from 'mongodb';
-import * as assert from 'assert';
+import * as Nedb from 'nedb';
+import * as Debug from "debug";
 
 export interface ConfiguredDatabase {
-  [key: string]: NEDB.DataStoreOptions
+  [key: string]: Nedb.DataStoreOptions
 }
 
 export const Databases: ConfiguredDatabase = {
@@ -13,25 +11,25 @@ export const Databases: ConfiguredDatabase = {
   USERS: { filename: './db/USERS.db' }
 }
 
-export async function DBLoader<T>(connectionConfig: NEDB.DataStoreOptions) {
-  return new Promise<DB<T>>((ret) => {
-    var db = new DB<T>(connectionConfig);
+export async function NEDBLoader<T>(connectionConfig: Nedb.DataStoreOptions) {
+  return new Promise<NEDB<T>>((ret) => {
+    var db = new NEDB<T>(connectionConfig);
     db.loadDB()
     return ret(db)
   })
 }
 
-export class DB<T> {
-  public dbConnection: NEDB
+export class NEDB<T> {
+  public dbConnection: Nedb
   public DEBUG_DB: Debug.IDebugger
 
   // public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}`
   // public dbName = `${process.env.DB_NAME}`
   // public client = new MongoClient(this.dbUrl);
 
-  constructor(connectionConfig: NEDB.DataStoreOptions) {
+  constructor(connectionConfig: Nedb.DataStoreOptions) {
     this.DEBUG_DB = Debug('ldi:database')
-    this.dbConnection = new NEDB(connectionConfig)
+    this.dbConnection = new Nedb(connectionConfig)
 
     this.DEBUG_DB(`starting up db: ${connectionConfig.filename}`)
   }
@@ -138,5 +136,6 @@ export class DB<T> {
   }
 }
 
+export * from './database-mongo'
 export * from './messages'
 export * from './users'

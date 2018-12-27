@@ -4,7 +4,7 @@ import * as Debug from "debug";
 import * as Discord from "discord.js";
 
 // import { incoming } from './incoming/msg';
-import { MsgTracker, DB, Databases, DBLoader } from "./db/database";
+import { MsgTracker, MongoDB, Databases, MongoDBLoader } from "./db/database-nedb";
 import { getChannel, deleteMessage, deleteAllMessages } from "./utils";
 import { Lovense } from "./integration/lovense";
 import { TrackedUser } from "./objects/user";
@@ -25,9 +25,9 @@ export class Bot {
   public version: string
 
   // Databases
-  public Messages: DB<TrackedMessage>
-  public Servers: DB<TrackedServer>
-  public Users: DB<TrackedUser>
+  public Messages: MongoDB<TrackedMessage>
+  public Servers: MongoDB<TrackedServer>
+  public Users: MongoDB<TrackedUser>
 
   // Connections/Integrations
   public Lovense: Lovense = new Lovense()
@@ -41,9 +41,12 @@ export class Bot {
     this.MsgTracker = new MsgTracker(this);
 
     // Load DBs
+    this.Messages = await MongoDBLoader('messages')
+    this.Servers = await MongoDBLoader('server')
+    this.Users = await MongoDBLoader('users')
     // this.Messages = await DBLoader(Databases.MESSAGES)
-    this.Servers = await DBLoader(Databases.SERVERS)
-    this.Users = await DBLoader(Databases.USERS)
+    // this.Servers = await DBLoader(Databases.SERVERS)
+    // this.Users = await DBLoader(Databases.USERS)
 
     // On application startup & login
     this.client.on('ready', async () => {
@@ -61,7 +64,7 @@ export class Bot {
       for (let index = 0; index < guilds.length; index++) {
         const guild = guilds[index];
         this.DEBUG(`connecting to server => ${guild.name}`)
-        this.Servers.update({ id: guild.id }, new TrackedServer(guild), true)
+        this.Servers.update({ id: guild.id }, new TrackedServer(guild), { upsert: true })
       }
 
     });
@@ -77,7 +80,7 @@ export class Bot {
     this.client.on("guildCreate", async guild => {
       this.DEBUG("Joined a new server: " + guild.name);
       // Save some info about the server in db
-      this.Servers.update({ id: guild.id }, new TrackedServer(guild), true)
+      this.Servers.update({ id: guild.id }, new TrackedServer(guild), { upsert: true })
     })
 
     //removed from a server
