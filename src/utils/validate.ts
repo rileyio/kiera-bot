@@ -1,5 +1,5 @@
 import * as XRegex from 'xregexp';
-import { extractUserIdFromString } from '../utils';
+import * as Utils from '../utils';
 
 export const validationRegex = XRegex('(\\/(?<name>[a-z0-9]*)(?<optional>\\?\\:|\\:|\\=|\\?=)(?<type>[a-z]*))', 'img')
 
@@ -92,7 +92,7 @@ export class Validate {
     var validated = this.validation.map((v: any, i: number) => {
       // Check if type matches
       v.valid = this.validateType(v.type, args[i])
-      v.value = (v.type === 'user') ? extractUserIdFromString(args[i]) : args[i]
+      v.value = (v.type === 'user') ? Utils.User.extractUserIdFromString(args[i]) : args[i]
       // Fix: If expected type is valid and is a number, convert it to a number
       v.value = (v.type === 'number' && v.valid) ? Number(v.value) : args[i]
       // Update allValid
@@ -124,7 +124,7 @@ export class Validate {
 
       // Handling for user input values
       if (match.optional === '=' || match.optional === '?=') {
-        sig += `(\\@[\\w\\s-]*\\#[0-9]+|[\\w-]+)\\s?`
+        sig += `(\\@[\\w\\s-]*\\#[0-9]+|[\\w-]+|\\<\\@[0-9]*\\>)\\s?`
       }
     });
 

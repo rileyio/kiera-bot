@@ -1,5 +1,5 @@
 import * as NEDB from 'nedb';
-import * as Debug from "debug";
+import * as Debug from 'debug';
 import { EventEmitter } from 'events';
 import { TrackedMessage } from '../objects/message';
 import { Bot } from '..';
@@ -45,7 +45,8 @@ export class MsgTracker extends EventEmitter {
       // Calculate message age
       const age = Math.round(now - msg.message_createdAt)
       if (age > msg.storage_keep_in_mem_for) {
-        this.Bot.DEBUG_MSG_SCHEDULED(`mem cleanup => id:${msg.message_id} createdAt:${msg.message_createdAt} age:${age}`)
+        this.Bot
+          .DEBUG_MSG_SCHEDULED(`mem cleanup => id:${msg.message_id} createdAt:${msg.message_createdAt} age:${age}`)
         return true
       }
     })

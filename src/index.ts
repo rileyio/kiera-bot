@@ -1,17 +1,15 @@
 require('dotenv').config()
 const packagejson = require('../package.json')
-import * as Debug from "debug";
-import * as Discord from "discord.js";
-
-// import { incoming } from './incoming/msg';
-import { MsgTracker, MongoDB, Databases, MongoDBLoader } from "./db/database-nedb";
-import { getChannel, deleteMessage, deleteAllMessages } from "./utils";
-import { Lovense } from "./integration/lovense";
-import { TrackedUser } from "./objects/user";
-import { TrackedServer } from "./objects/server";
-import { TrackedMessage } from "./objects/message";
-import { Router } from "./utils/router";
-import { Routes } from "./routes";
+import * as Debug from 'debug';
+import * as Discord from 'discord.js';
+import * as Utils from './utils';
+import { MsgTracker, MongoDB, Databases, MongoDBLoader } from './db/database-nedb';
+import { Lovense } from './integration/lovense';
+import { TrackedUser } from './objects/user';
+import { TrackedServer } from './objects/server';
+import { TrackedMessage } from './objects/message';
+import { Router } from './utils/router';
+import { Routes } from './routes';
 
 export class Bot {
   private serverChannels: Discord.Collection<string, Discord.Channel>;
@@ -55,7 +53,10 @@ export class Bot {
       this.serverChannels = this.client.channels
       // Cleanup channel - if set in .env
       if (process.env.BOT_MESSAGE_CLEANUP_CLEAR_CHANNEL === 'true') {
-        await deleteAllMessages(getChannel(this.serverChannels, process.env.DISCORD_TEST_CHANNEL))
+        await Utils.Channel.cleanTextChat(
+          Utils.Channel.getTextChannel(this.client.channels, process.env.DISCORD_TEST_CHANNEL),
+          this.DEBUG_MSG_SCHEDULED
+        )
       }
 
       /////// TESTING ///////
@@ -77,21 +78,25 @@ export class Bot {
 
     //////Server connect/disconnect//////
     //joined a server
-    this.client.on("guildCreate", async guild => {
-      this.DEBUG("Joined a new server: " + guild.name);
+    this.client.on('guildCreate', async guild => {
+      this.DEBUG('Joined a new server: ' + guild.name);
       // Save some info about the server in db
       this.Servers.update({ id: guild.id }, new TrackedServer(guild), { upsert: true })
     })
 
     //removed from a server
-    this.client.on("guildDelete", async guild => {
+    this.client.on('guildDelete', async guild => {
       await this.Servers.remove({ id: guild.id })
-      this.DEBUG("Left a guild: " + guild.name);
+      this.DEBUG('Left a guild: ' + guild.name);
     })
 
     //////    Internal Events     //////
     this.MsgTracker.on('msg-tracker--remove-msg', async (id, channelId) => {
-      await deleteMessage(getChannel(this.serverChannels, channelId), id, this.DEBUG_MSG_SCHEDULED)
+      await Utils.Channel.deleteMessage(
+        Utils.Channel.getTextChannel(this.serverChannels, channelId),
+        id,
+        this.DEBUG_MSG_SCHEDULED
+      )
     })
   }
 

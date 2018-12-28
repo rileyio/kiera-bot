@@ -1,11 +1,11 @@
 import * as Nedb from 'nedb';
-import * as Debug from "debug";
+import * as Debug from 'debug';
 
-export interface ConfiguredDatabase {
+export interface ConfiguredNEDBDatabase {
   [key: string]: Nedb.DataStoreOptions
 }
 
-export const Databases: ConfiguredDatabase = {
+export const Databases: ConfiguredNEDBDatabase = {
   MESSAGES: { filename: './db/MESSAGES.db' },
   SERVERS: { filename: './db/SERVERS.db' },
   USERS: { filename: './db/USERS.db' }

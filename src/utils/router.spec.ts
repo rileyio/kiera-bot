@@ -1,7 +1,7 @@
 import test from 'ava';
 import { Route, Router } from './router';
 import { Bot } from '..';
-import * as Commands from '../incoming/commands';
+import * as Commands from '../controllers/commands';
 
 var router: Router;
 var bot: Bot = new Bot()

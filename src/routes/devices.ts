@@ -1,5 +1,5 @@
 import { RouteConfiguration } from '../utils/router';
-import * as Commands from '../incoming/commands';
+import * as Commands from '../controllers/commands';
 
 export const Routes: Array<RouteConfiguration> = [
   {

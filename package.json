@@ -7,15 +7,16 @@
   "contributors": [],
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
     "clean": "trash app",
+    "dev": "tsc -w",
+    "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "start": "node ./app/index.js",
     "start:ps:debug": "@powershell -Command $env:DEBUG='ldi:*'; node ./app/index.js",
-    "dev": "tsc -w",
-    "build": "tsc",
     "test": "run-s clean build test:n",
-    "test:verbose": "run-s clean build test:v",
+    "test:n": "nyc --silent ava --tap --serial | tnyan",
     "test:v": "nyc --silent ava --verbose --serial",
-    "test:n": "nyc --silent ava --tap --serial | tnyan"
+    "test:verbose": "run-s clean build test:v"
   },
   "ava": {
     "failFast": false,
@@ -25,6 +26,9 @@
     "sources": [
       "app/**/*.js"
     ]
+  },
+  "prettier": {
+    "singleQuote": true
   },
   "dependencies": {
     "deep-extend": "^0.6.0",
@@ -44,8 +48,10 @@
     "debug": "^4.1.0",
     "npm-run-all": "^4.1.5",
     "nyc": "^13.1.0",
+    "prettier": "^1.15.3",
     "tap-nyan": "^1.1.0",
     "trash-cli": "^1.4.0",
+    "tslint": "^5.12.0",
     "typescript": "^3.2.2",
     "xregexp": "^4.2.0"
   }

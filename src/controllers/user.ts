@@ -1,9 +1,9 @@
-import { buildUserChatAt, verifyUserRefType } from "../utils";
+import * as Utils from "../utils";
 import { TrackedUser } from "../objects/user";
 import { RouterRouted } from "../utils/router";
 
 export async function registerUser(routed: RouterRouted) {
-  const userArgType = verifyUserRefType(routed.message.author.id)
+  const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
   const isRegistered = await routed.bot.Users.verify(routed.message.author.id)
 
   if (!isRegistered) {
@@ -15,11 +15,11 @@ export async function registerUser(routed: RouterRouted) {
       createdTimestamp: routed.message.author.createdTimestamp,
     }))
 
-    await routed.message.reply(`:white_check_mark: ${buildUserChatAt(user, userArgType)}, You're now registered! ^_^`)
-    routed.bot.DEBUG_MSG_COMMAND(`!register ${buildUserChatAt(user, userArgType)}`)
+    await routed.message.reply(`:white_check_mark: ${Utils.User.buildUserChatAt(user, userArgType)}, You're now registered! ^_^`)
+    routed.bot.DEBUG_MSG_COMMAND(`!register ${Utils.User.buildUserChatAt(user, userArgType)}`)
   }
   else {
     await routed.message.reply(`You're already registered! :wink:`)
-    routed.bot.DEBUG_MSG_COMMAND(`!register ${buildUserChatAt(routed.message.author.id, userArgType)} - user already registered`)
+    routed.bot.DEBUG_MSG_COMMAND(`!register ${Utils.User.buildUserChatAt(routed.message.author.id, userArgType)} - user already registered`)
   }
 }

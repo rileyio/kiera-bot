@@ -1,4 +1,4 @@
-import { TrackedChastiKey } from "./chastikey";
+import { TrackedChastiKey } from './chastikey';
 import * as deepExtend from 'deep-extend';
 
 export class TrackedUser {

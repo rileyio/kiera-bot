@@ -1,6 +1,6 @@
 import * as deepExtend from 'deep-extend';
 import * as XRegex from 'xregexp';
-import { Validate, ValidationType } from "./validate";
+import { Validate, ValidationType } from './validate';
 import { Message } from 'discord.js';
 import { Bot } from '..';
 import { getArgs } from '../utils';
@@ -75,17 +75,29 @@ export class Router {
     const containsPrefix = message.content.startsWith(prefix)
 
     if (containsPrefix) {
-      this.bot.DEBUG_MSG_COMMAND(`Router -> ${message.content}`)
+      this.bot.DEBUG_MSG_COMMAND(`Router -> incoming: '${message.content}'`)
 
       const args = getArgs(message.content)
       // Find appropriate routes based on prefix command
       const routes = this.routes.filter(r => r.command === args[0])
-      const route = routes.find(r => r.test(message.content.replace(/\s+/g, ' ')) === true)
-      this.bot.DEBUG_MSG_COMMAND('Router -> Routes by command:', routes.length)
+      this.bot.DEBUG_MSG_COMMAND(`Router -> Routes by '${args[0]}' command: ${routes.length}`)
 
       // If no routes matched, stop here
-      if (!route) return;
-      this.bot.DEBUG_MSG_COMMAND('Router -> Route:', route.name)
+      if (routes.length === 0) return;
+
+      // Try to find a route
+      const route = await routes.find(r => { return r.test(message.content) === true})
+      this.bot.DEBUG_MSG_COMMAND(route)
+
+      // Stop if there's no specific route found
+      if (route === undefined) {
+        this.bot.DEBUG_MSG_COMMAND(`Router -> Failed to match '${message.content}' to a route - ending routing`)
+        // End routing
+        return;
+      }
+
+      // Process route
+      this.bot.DEBUG_MSG_COMMAND('Router -> Route:', route)
 
       // Normal routed behaviour
       var routed = new RouterRouted({
@@ -95,7 +107,8 @@ export class Router {
         args: args,
       })
 
-      var middlewareRemaining = Array.isArray(route.middleware) ? route.middleware.length : 0
+      const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
+      var mwareProcessed = 0
 
       // Process middleware
       for (const middleware of route.middleware) {
@@ -105,11 +118,13 @@ export class Router {
           break;
         }
         // When everything is ok, continue
-        middlewareRemaining -= 1
+        mwareProcessed += 1
       }
 
+      this.bot.DEBUG_MSG_COMMAND(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
+
       // Stop execution of route if middleware is halted
-      if (middlewareRemaining === 0) await route.controller(routed)
+      if (mwareProcessed === mwareCount) await route.controller(routed)
       return
     }
   }
