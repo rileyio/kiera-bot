@@ -11,7 +11,7 @@ export const Routes: Array<RouteConfiguration> = [
     validate: '/duration:string/user=user/time:string/newtime=number',
     middleware: [
       Middleware.middlewareTest,
-      Middleware.hasRole('keyholder')
+      Middleware.hasRole(['keyholder', 'developer'])
     ]
   },
 ]

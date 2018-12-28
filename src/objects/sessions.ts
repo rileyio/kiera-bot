@@ -26,7 +26,16 @@ export class Session {
    * @memberof DeviceSession
    */
   public uid: ObjectID
+  /**
+   * Server ID that the message originated from
+   * @type {ObjectID}
+   * @memberof Session
+   */
+  public sid: ObjectID
   public type: SessionTypes
+  public isActive: boolean = false
+  public activateTimestamp: number = 0
+  public deactivateTimestamp: number = 0
 }
 
 /**

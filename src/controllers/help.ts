@@ -1,5 +1,5 @@
 import * as Instructions from '../usage-instructions';
-import { RouterRouted } from "../utils/router";
+import { RouterRouted } from '../utils/router';
 
 export async function genericFallback(routed: RouterRouted) {
   await routed.message.reply(Instructions.help);

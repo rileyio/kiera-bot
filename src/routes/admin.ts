@@ -10,7 +10,7 @@ export const Routes: Array<RouteConfiguration> = [
     name: 'admin-version',
     validate: '/version:string',
     middleware: [
-      Middleware.hasRole('developer')
+      Middleware.hasRole(['tester', 'developer'])
     ]
   },
   {
@@ -20,7 +20,7 @@ export const Routes: Array<RouteConfiguration> = [
     name: 'admin-ping',
     validate: '/ping:string',
     middleware: [
-      Middleware.hasRole('developer')
+      Middleware.hasRole(['tester', 'developer'])
     ]
   },
   {

@@ -1,18 +1,43 @@
 import { RouterRouted } from '../utils/router';
 
-export function hasRole(role: string) {
+export function hasRole(role: string | Array<string>) {
   return async (routed: RouterRouted) => {
     // If its a DM, stop processing
     if (routed.message.channel.type === 'dm') return;
 
-    routed.bot.DEBUG_MIDDLEWARE('user\'s roles', routed.message.member.roles.array()
-      .map(r => r.name))
-    routed.bot.DEBUG_MIDDLEWARE('hasRole', role, routed.message.member.roles.array()
-      .find(r => r.name === role) !== undefined)
+    routed.bot.DEBUG_MIDDLEWARE(
+      'user\'s roles',
+      routed.message.member.roles.array().map(r => r.name)
+    )
 
+    // Test if its an array
+    if (Array.isArray(role)) {
+      var contains = false
+
+      role.forEach(r => {
+        contains = routed.message.member.roles.array().find(sr => sr.name === r) !== undefined
+
+        routed.bot.DEBUG_MIDDLEWARE(
+          'hasRole',
+          r,
+          contains
+        )
+      })
+
+      // If theres a match between the 2 arrays
+      if (contains) return routed
+      return // Returns nothing which halts going any further
+    }
+
+    // Test if its a single string
     if (routed.message.member.roles.array().find(r => r.name === role)) {
+      routed.bot.DEBUG_MIDDLEWARE(
+        'hasRole',
+        role,
+        routed.message.member.roles.array().find(r => r.name === role) !== undefined
+      )
+
       return routed
     }
-    return // Returns nothing which halts going any further
   }
 }
