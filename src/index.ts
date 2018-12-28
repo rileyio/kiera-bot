@@ -10,6 +10,7 @@ import { TrackedServer } from './objects/server';
 import { TrackedMessage } from './objects/message';
 import { Router } from './utils/router';
 import { Routes } from './routes';
+import { Session, DeviceSession } from './objects/sessions';
 
 export class Bot {
   private serverChannels: Discord.Collection<string, Discord.Channel>;
@@ -25,6 +26,7 @@ export class Bot {
   // Databases
   public Messages: MongoDB<TrackedMessage>
   public Servers: MongoDB<TrackedServer>
+  public Sessions: MongoDB<Session | DeviceSession<any>>
   public Users: MongoDB<TrackedUser>
 
   // Connections/Integrations
@@ -41,6 +43,7 @@ export class Bot {
     // Load DBs
     this.Messages = await MongoDBLoader('messages')
     this.Servers = await MongoDBLoader('server')
+    this.Sessions = await MongoDBLoader('sessions')
     this.Users = await MongoDBLoader('users')
     // this.Messages = await DBLoader(Databases.MESSAGES)
     // this.Servers = await DBLoader(Databases.SERVERS)

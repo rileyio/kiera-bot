@@ -3,7 +3,7 @@ import * as XRegex from 'xregexp';
 import { Validate, ValidationType } from './validate';
 import { Message } from 'discord.js';
 import { Bot } from '..';
-import { getArgs } from '../utils';
+import * as Utils from '../utils';
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
 
@@ -14,8 +14,14 @@ export interface RouteConfiguration {
   help?: string
   middleware?: Array<(routed: RouterRouted) => Promise<RouterRouted | void>>
   name: string
+  commandTarget: RouteActionUserTarget
   validate: string
 }
+
+export type RouteActionUserTarget = 'none'
+  | 'author'
+  | 'argument'
+  | 'controller-decision'
 
 ///
 // Route example
@@ -35,6 +41,7 @@ export class Route {
   public help: string
   public middleware: Array<(routed: RouterRouted) => Promise<RouterRouted | void>> = []
   public name: string
+  public commandTarget: RouteActionUserTarget = 'none' // Default to none
   public validate: string
   public validation: Validate
 
@@ -43,7 +50,7 @@ export class Route {
     deepExtend(this, route)
     // Set command branch for sorting
     this.command = this.getCommand(route.validate)
-    // Process validation
+    // Setup validation for route
     this.validation = new Validate(route.validate)
   }
 
@@ -77,7 +84,7 @@ export class Router {
     if (containsPrefix) {
       this.bot.DEBUG_MSG_COMMAND(`Router -> incoming: '${message.content}'`)
 
-      const args = getArgs(message.content)
+      const args = Utils.getArgs(message.content)
       // Find appropriate routes based on prefix command
       const routes = this.routes.filter(r => r.command === args[0])
       this.bot.DEBUG_MSG_COMMAND(`Router -> Routes by '${args[0]}' command: ${routes.length}`)
@@ -86,7 +93,7 @@ export class Router {
       if (routes.length === 0) return;
 
       // Try to find a route
-      const route = await routes.find(r => { return r.test(message.content) === true})
+      const route = await routes.find(r => { return r.test(message.content) === true })
       this.bot.DEBUG_MSG_COMMAND(route)
 
       // Stop if there's no specific route found
@@ -104,7 +111,7 @@ export class Router {
         bot: this.bot,
         message: message,
         route: route,
-        args: args,
+        args: args
       })
 
       const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0

@@ -77,10 +77,17 @@ Available Range: \`0-100\`
 Sets intensity thresholds for the session (10 = 10%), reacts will remain at or below the
 lockee's defined limit.
 
+Setting the modifier means when a react (for example using :rolling_eyes:) will only result
+in nudging the intensity towards 100%. A modifier of 10 where a intensity min is also 10
+when \`:rolling_eyes:\` is used would nudge the intensity up/down by { -10%, -5%, 0, +5%, +10% }
+
+Example: Where modifier (%) is 10    { \`-%\`, \`-%/2\`, \`no-change\`, \`+%*2\`,\`+%\` }
+
 Usage Example:
 \`\`\`md
 !intensity @user#0000 set min 10
 !intensity @user#0000 set max 80
+!intensity @user#0000 set modifier 10
 \`\`\`
 `
 

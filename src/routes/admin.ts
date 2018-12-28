@@ -4,6 +4,7 @@ import * as Middleware from '../middleware';
 
 export const Routes: Array<RouteConfiguration> = [
   {
+    commandTarget: 'none',
     controller: Commands.versionCheck,
     example: '!version',
     name: 'admin-version',
@@ -13,6 +14,7 @@ export const Routes: Array<RouteConfiguration> = [
     ]
   },
   {
+    commandTarget: 'none',
     controller: Commands.pingPong,
     example: '!ping',
     name: 'admin-ping',
@@ -22,6 +24,7 @@ export const Routes: Array<RouteConfiguration> = [
     ]
   },
   {
+    commandTarget: 'argument',
     controller: Commands.adminRemoveUser,
     example: '!admin user delete @user#0000',
     name: 'admin-user-delete',

@@ -82,10 +82,10 @@ export class MongoDB<T> {
    * @returns
    * @memberof DB
    */
-  public async verify<Q, T>(id: string) {
+  public async verify<Q, T>(query: string | Q) {
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
-    const results = await collection.find<T>({ id: id })
+    const results = await collection.find<T>(typeof query === 'string' ? { id: query } : query)
     return await results.count() > 0
   }
 
@@ -173,4 +173,3 @@ export class MongoDB<T> {
 }
 
 export * from './messages'
-export * from './users'

@@ -138,4 +138,3 @@ export class NEDB<T> {
 
 export * from './database-mongo'
 export * from './messages'
-export * from './users'

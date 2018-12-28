@@ -16,3 +16,9 @@ export class TrackedUser {
     deepExtend(this, init);
   }
 }
+
+export interface TrackedUserQuery {
+  id?: string
+  username?: string
+  discriminator?: string
+}

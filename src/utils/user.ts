@@ -1,6 +1,5 @@
 import * as XRegex from 'xregexp';
-import { TrackedUserQuery } from '../db/users';
-import { TrackedUser } from '../objects/user';
+import { TrackedUser, TrackedUserQuery } from '../objects/user';
 
 export namespace User {
   export enum UserRefType {

@@ -4,6 +4,7 @@ import * as Middleware from '../middleware';
 
 export const Routes: Array<RouteConfiguration> = [
   {
+    commandTarget: 'author',
     controller: Commands.registerUser,
     example: '!register',
     name: 'register',
@@ -12,5 +13,4 @@ export const Routes: Array<RouteConfiguration> = [
       Middleware.middlewareTest
     ]
   },
-
 ]
