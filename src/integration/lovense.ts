@@ -1,4 +1,4 @@
-import { Device } from "./lovense/device";
+import { Device } from './lovense/device';
 
 export class Lovense {
   public devicesConnected: Array<Device> = []

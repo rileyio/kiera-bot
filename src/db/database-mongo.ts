@@ -51,7 +51,7 @@ export class MongoDB<T> {
   //     const results = await collection.estimatedDocumentCount({
   //       _id: "$_id", count: { $sum: 1 }
   //     }, { limit: 10 })
-  //     connection.client.close()
+  // connection.client.close()
   //     this.DEBUG_DB(`connection test results => ${results}`)
   //     this.dbConnectionOK = (results) ? true : false
   //     return (results) ? true : false
@@ -66,14 +66,15 @@ export class MongoDB<T> {
    * @returns
    * @memberof DB
    */
-  public async add<T>(record: T, opts?: { insertOne?: boolean }) {
-    const insertOptions = Object.assign({ insertOne: true }, opts)
+  public async add<T>(record: T, opts?: {}) {
+    const insertOptions = Object.assign({}, opts)
+    this.DEBUG_DB(`.add =>`, record)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
-    // const insertMethod = insertOptions.insertOne ? 'insertOne' : 'insertMany'
     const results = await collection.insertOne(record)
-    connection.client.close()
-    return results.result.n === 1 ? record : null
+    this.DEBUG_DB(`.add results => inserted: ${results.insertedCount}, id: ${results.insertedId}`)
+    // connection.client.close()
+    return results.result.n === 1 ? results.insertedId : null
   }
 
   /**
@@ -101,7 +102,7 @@ export class MongoDB<T> {
     const collection = connection.db.collection(this.dbCollection)
     const deletionMethod = deleteOptions.deleteOne ? 'deleteOne' : 'deleteMany'
     const result = await collection[deletionMethod](typeof query === 'string' ? { id: query } : query)
-    connection.client.close()
+    // connection.client.close()
     return result.result.n
   }
 
@@ -120,7 +121,7 @@ export class MongoDB<T> {
     const result = uopts.updateOne
       ? await collection.updateOne(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
       : await collection.updateMany(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
-    connection.client.close()
+    // connection.client.close()
     return result.result.n
   }
 
@@ -135,10 +136,12 @@ export class MongoDB<T> {
    * @memberof DB
    */
   public async get<Q>(query: Q) {
+    this.DEBUG_DB(`.get =>`, query)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
     const result = await collection.findOne<T>(query)
-    connection.client.close()
+    this.DEBUG_DB(`.get results =>`, !!result)
+    // connection.client.close()
     return (<T>result)
   }
 
@@ -153,10 +156,12 @@ export class MongoDB<T> {
    * @memberof DB
    */
   public async getMultiple<Q>(query: Q) {
+    this.DEBUG_DB(`.get =>`, query)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
     const result = await collection.find<T>(query)
-    connection.client.close()
+    this.DEBUG_DB(`.get results =>`, await result.count())
+    // connection.client.close()
     return (<Cursor<T>>result).toArray()
   }
 

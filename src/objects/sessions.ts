@@ -2,7 +2,8 @@ import deepExtend = require('deep-extend');
 import { ObjectID } from 'mongodb';
 
 export type SessionTypes =
-  | 'Device';
+  | 'Device'
+  | 'lovense';
 
 /**
  * Anything that requires a session should extend off this.
@@ -34,8 +35,12 @@ export class Session {
   public sid: ObjectID
   public type: SessionTypes
   public isActive: boolean = false
+  public isDeactivated: boolean = false
   public activateTimestamp: number = 0
   public deactivateTimestamp: number = 0
+  public activatedBy: ObjectID
+  public deactivatedBy: ObjectID
+  public name: string = ''
 }
 
 /**
@@ -86,6 +91,7 @@ export class DeviceSession<T> extends Session {
     time: number
     intensity: number
   }
+  public reacts: Array<number>
 
   constructor(init: Partial<DeviceSession<T>>) {
     super()
@@ -97,8 +103,23 @@ export class DeviceSession<T> extends Session {
         duration: { min: 0, max: 0 },                   // Base duration (not a max), max cannot be exceeded
         intensity: { min: 0, max: 100, modifier: 10 },  // Minimum & Maximum intensity, min used as starting
         // Lockee
-        limit: { time: 0, intensity: 100 }              // User hard limits
+        limit: { time: 0, intensity: 100 },              // User hard limits
+        // Reacts tracked by system
+        reacts: [3],
+        reactsCompleted: 0
       },
       init)
   }
+
+  public getTotalReactTime() {
+    // const startTime = this.activateTimestamp / 1000
+    // const currentTime = Date.now() / 1000
+    // const timeDelta = currentTime - startTime
+
+    // const userLimitDelta = (this.limit.time > 0)
+    //   ? timeDelta - this.limit.time
+    //   : 
+    return ((this.reacts.length) * this.react.time)
+  }
+
 }

@@ -10,7 +10,6 @@ export const Routes: Array<RouteConfiguration> = [
     name: 'duration-set-time',
     validate: '/duration:string/user=user/time:string/newtime=number',
     middleware: [
-      Middleware.middlewareTest,
       Middleware.hasRole(['keyholder', 'developer'])
     ]
   },

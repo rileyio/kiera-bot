@@ -14,7 +14,7 @@ const newUser = new TrackedUser({
 
 test('DB2:insert => Insert a record', async t => {
   const added = await db.add(newUser)
-  t.is(added.id, newUser.id)
+  t.not(added, null)
 })
 
 test('DB2:verify => Verify records (do not)exist', async t => {

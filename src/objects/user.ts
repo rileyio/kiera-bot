@@ -1,8 +1,9 @@
 import { TrackedChastiKey } from './chastikey';
 import * as deepExtend from 'deep-extend';
+import { ObjectId } from 'bson';
 
 export class TrackedUser {
-  public _id: string
+  public _id: ObjectId
   public id: string
   public username: string
   public discriminator: string

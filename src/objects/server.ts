@@ -1,14 +1,15 @@
-import { TrackedRole } from "./role";
-import { TrackedEmoji } from "./emojis";
-import { TrackedChannel } from "./channel";
-import { Guild } from "discord.js";
+import { TrackedRole } from './role';
+import { TrackedEmoji } from './emojis';
+import { TrackedChannel } from './channel';
+import { Guild } from 'discord.js';
+import { ObjectId } from 'bson';
 
 function isTrackedServer(inc: TrackedServer | Guild): inc is TrackedServer {
   return Array.isArray((<TrackedServer>inc).channels);
 }
 
 export class TrackedServer {
-  public _id: string
+  public _id: ObjectId
   public id: string
   public name: string
   public region: string
