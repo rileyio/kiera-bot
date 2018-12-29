@@ -15,6 +15,8 @@ export function hasRole(role: string | Array<string>) {
       var contains = false
 
       role.forEach(r => {
+        // Skip further processing if a positive match is found
+        if (contains) return;
         contains = routed.message.member.roles.array().find(sr => sr.name === r) !== undefined
 
         routed.bot.DEBUG_MIDDLEWARE(
