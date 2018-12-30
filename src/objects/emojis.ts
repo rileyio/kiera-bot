@@ -1,4 +1,4 @@
-import { Emoji } from "discord.js";
+import { Emoji } from 'discord.js';
 
 export class TrackedEmoji {
   public _id: string

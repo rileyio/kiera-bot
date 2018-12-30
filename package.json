@@ -34,6 +34,7 @@
     "deep-extend": "^0.6.0",
     "discord.js": "^11.4.2",
     "dotenv": "^6.2.0",
+    "joi": "^14.3.1",
     "mongodb": "^3.1.10",
     "nedb": "^1.8.0",
     "restify": "^7.3.0"
@@ -41,9 +42,12 @@
   "devDependencies": {
     "@types/debug": "^0.0.31",
     "@types/deep-extend": "^0.4.31",
+    "@types/joi": "^14.0.1",
     "@types/mongodb": "^3.1.18",
     "@types/nedb": "^1.8.6",
     "@types/node": "^10.12.18",
+    "@types/restify": "^7.2.6",
+    "@types/restify-errors": "^4.3.3",
     "@types/xregexp": "^3.0.29",
     "ava": "^1.0.1",
     "debug": "^4.1.0",

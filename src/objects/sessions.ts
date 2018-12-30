@@ -1,5 +1,5 @@
-import deepExtend = require('deep-extend');
 import { ObjectID } from 'mongodb';
+import { Device } from '../integration/lovense/device';
 
 export type SessionTypes =
   | 'Device'
@@ -17,27 +17,29 @@ export type SessionTypes =
 export class Session {
   /**
    * Will be used as the session id
-   * @type {ObjectID}
+   * @type {ObjectID | string}
    * @memberof DeviceSession
    */
   public _id: ObjectID
   /**
    * User's ID reference to their 'users' collection record
-   * @type {ObjectID}
+   * @type {ObjectID | string}
    * @memberof DeviceSession
    */
   public uid: ObjectID
   /**
    * Server ID that the message originated from
-   * @type {ObjectID}
+   * @type {ObjectID | string}
    * @memberof Session
    */
   public sid: ObjectID
   public type: SessionTypes
   public isActive: boolean = false
   public isDeactivated: boolean = false
+  public isCompleted: boolean = false
   public activateTimestamp: number = 0
   public deactivateTimestamp: number = 0
+  public timeRemaining: number = 0
   public activatedBy: ObjectID
   public deactivatedBy: ObjectID
   public name: string = ''
@@ -51,14 +53,13 @@ export class Session {
  * @extends {Session}
  * @template T
  */
-export class DeviceSession<T> extends Session {
-
-  /**
-   * Will be the reference to the specific device like from /integrations/lovense/device.ts
-   * @type {T}
-   * @memberof DeviceSession
-   */
-  public device: T
+export class DeviceSession extends Session {
+  // /**
+  //  * Will be the reference to the specific device like from /integrations/lovense/device.ts
+  //  * @type {T}
+  //  * @memberof DeviceSession
+  //  */
+  // public device: T
   public react: {
     /**
      * Time per react
@@ -93,9 +94,9 @@ export class DeviceSession<T> extends Session {
   }
   public reacts: Array<number>
 
-  constructor(init: Partial<DeviceSession<T>>) {
+  constructor(init: Partial<DeviceSession | Device>) {
     super()
-    deepExtend(
+    Object.assign(
       this,
       {
         // KH
@@ -111,15 +112,45 @@ export class DeviceSession<T> extends Session {
       init)
   }
 
-  public getTotalReactTime() {
-    // const startTime = this.activateTimestamp / 1000
-    // const currentTime = Date.now() / 1000
-    // const timeDelta = currentTime - startTime
+  public activate(uid: ObjectID) {
+    this.activateTimestamp = Date.now()
+    this.isActive = true
+    this.activatedBy = uid
+    // Calculate the current end time and store it
+    this.deactivateTimestamp = this.getDeactivateTime()
+    // Calculate the time remaining value, this should be used by clients fetching
+    // from the API in order to not spoof their actual end time (or clock drifting)
+    this.timeRemaining = this.getRemainingTime()
+  }
 
-    // const userLimitDelta = (this.limit.time > 0)
-    //   ? timeDelta - this.limit.time
-    //   : 
+  public update() {
+    // Calculate the current end time and store it
+    this.deactivateTimestamp = this.getDeactivateTime()
+    // Calculate the time remaining value, this should be used by clients fetching
+    // from the API in order to not spoof their actual end time (or clock drifting)
+    this.timeRemaining = this.getRemainingTime()
+    // Determine if it should still be active, if not change it
+    this.isActive = this.timeRemaining <= 0 ? false : true
+    this.isDeactivated = this.timeRemaining <= 0 ? true : false
+    this.isCompleted = this.timeRemaining <= 0 ? true : false
+  }
+
+  public getDeactivateTime() {
+    return (this.activateTimestamp + (this.getTotalReactTime() * 60000))
+  }
+
+  public getRemainingTime() {
+    const nowDiff = (this.deactivateTimestamp - Date.now())
+    const isPastEnd = nowDiff <= 0
+    return !isPastEnd ? nowDiff : 0
+  }
+
+  public getTotalReactTime() {
     return ((this.reacts.length) * this.react.time)
   }
 
+  public apiOutput() {
+    const output = new DeviceSession(this)
+    return output
+  }
 }

@@ -22,7 +22,6 @@ To see more about a specific command's usage, type \`!help command\`
 **[Keyholder] Commands**
 \`!react\` - Sets how much time to be added per react
 \`!duration\` - Sets base duration (reacts can add to this)
-\`!intensity\` - Sets lockee's device intensity
 \`!task\` - *Coming Soon*
 \`!punishment\` - *Coming Soon*
 `

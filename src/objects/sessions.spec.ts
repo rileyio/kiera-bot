@@ -18,9 +18,24 @@ const device = new DeviceSession({
   uid: new ObjectID('5c26c497d99a4172787131be'),
   type: 'lovense'
 });
+var firstRemainingTime = 0
 
-test('DeviceSession:CalculateRemaining => Calculate remaining react time', async t => {
+test('DeviceSession:Calculate => react time', async t => {
   t.is(device.getTotalReactTime(), 15)
 })
 
+test('DeviceSession:Activate => Activate Session', async t => {
+  t.plan(3)
+  device.activate(new ObjectID('5c26c497d99a4172787131be'))
 
+  firstRemainingTime = device.timeRemaining
+
+  t.not(device.activateTimestamp, 0) // No real control over this outside method
+  t.is(device.isActive, true)
+  t.is(device.timeRemaining > 0, true)
+})
+
+test('DeviceSession:Activate => Update Session', async t => {
+  device.update()
+  t.is(firstRemainingTime > device.timeRemaining, true)
+})

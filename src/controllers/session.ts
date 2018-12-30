@@ -89,6 +89,7 @@ export async function createNewSession(routed: RouterRouted) {
 export async function activateSession(routed: RouterRouted) {
   // Check if session is in the db
   var session = await routed.bot.Sessions.get({ _id: new ObjectID(routed.v.o.id) })
+  var nsession: DeviceSession
   if (session) {
     // Verify if the session is still active - block if so
     if (session.isActive) {
@@ -98,7 +99,7 @@ export async function activateSession(routed: RouterRouted) {
 
     switch (session.type) {
       case 'lovense':
-        session = new DeviceSession(session)
+        nsession = new DeviceSession(session)
         break;
     }
 
@@ -106,12 +107,14 @@ export async function activateSession(routed: RouterRouted) {
     const user = await routed.bot.Users.get({ id: routed.message.author.id })
 
     // Update session details
-    session.activateTimestamp = Date.now()
-    session.isActive = true
-    session.activatedBy = user._id
+    nsession.activateTimestamp = Date.now()
+    // Update the record
+    nsession.update()
+    nsession.isActive = true
+    nsession.activatedBy = user._id
 
     // Update db record
-    const updateResult = await routed.bot.Sessions.update({ _id: session._id }, session)
+    const updateResult = await routed.bot.Sessions.update({ _id: session._id }, nsession)
     if (updateResult) await routed.message.reply(`Session id:\`${routed.v.o.id}\` activated!`)
     return; // Stop here
   }

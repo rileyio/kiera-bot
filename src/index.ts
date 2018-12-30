@@ -11,9 +11,10 @@ import { TrackedMessage } from './objects/message';
 import { Router } from './utils/router';
 import { Routes } from './routes';
 import { Session, DeviceSession } from './objects/sessions';
+import { WebAPI } from './api/web-api';
 
 export class Bot {
-  private serverChannels: Discord.Collection<string, Discord.Channel>;
+  private WebAPI: WebAPI
   public client = new Discord.Client();
   public DEBUG = Debug('ldi:Bot');
   public DEBUG_MIDDLEWARE = Debug('ldi:midddleware');
@@ -26,7 +27,7 @@ export class Bot {
   // Databases
   public Messages: MongoDB<TrackedMessage>
   public Servers: MongoDB<TrackedServer>
-  public Sessions: MongoDB<Session | DeviceSession<any>>
+  public Sessions: MongoDB<Session | DeviceSession>
   public Users: MongoDB<TrackedUser>
 
   // Connections/Integrations
@@ -34,6 +35,7 @@ export class Bot {
 
   // Bot msg router
   public Router: Router = new Router(Routes(), this)
+
 
   public async start() {
     this.DEBUG('getting things setup...');
@@ -53,7 +55,6 @@ export class Bot {
     this.client.on('ready', async () => {
       this.DEBUG(`Logged in as ${this.client.user.tag}!`);
       // Get channels
-      this.serverChannels = this.client.channels
       // Cleanup channel - if set in .env
       if (process.env.BOT_MESSAGE_CLEANUP_CLEAR_CHANNEL === 'true') {
         await Utils.Channel.cleanTextChat(
@@ -96,11 +97,17 @@ export class Bot {
     //////    Internal Events     //////
     this.MsgTracker.on('msg-tracker--remove-msg', async (id, channelId) => {
       await Utils.Channel.deleteMessage(
-        Utils.Channel.getTextChannel(this.serverChannels, channelId),
+        Utils.Channel.getTextChannel(this.client.channels, channelId),
         id,
         this.DEBUG_MSG_SCHEDULED
       )
     })
+  }
+
+  public startWebAPI() {
+    // Start WebAPI
+    this.WebAPI = new WebAPI(this)
+    this.WebAPI.listen()
   }
 
 }
@@ -108,3 +115,4 @@ export class Bot {
 // Start bot (may be moved elsewhere later)
 const bot = new Bot();
 bot.start()
+bot.startWebAPI()
