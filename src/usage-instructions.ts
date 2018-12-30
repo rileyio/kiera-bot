@@ -14,6 +14,7 @@ To see more about a specific command's usage, type \`!help command\`
 \`!ck\` - ChastiKey Commands
 
 **[Lockee] Commands (*Must be entered by the device owner*)**
+\`!session\` - Creates a new session for playing with a device (required for: \`!limit\` \`!duration\` \`!react\`)
 \`!limit\` - Lockee defined limits (Cannot be surpassed by KH.. at this time..)
 \`!task\` - *Coming Soon*
 \`!punishment\` - *Coming Soon*
