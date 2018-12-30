@@ -33,4 +33,14 @@ export const Routes: Array<RouteConfiguration> = [
       Middleware.hasRole('developer')
     ]
   },
+  {
+    commandTarget: 'none',
+    controller: Commands.adminPurgeChannelMessages,
+    example: '!admin channel purge',
+    name: 'admin-channel-purge',
+    validate: '/admin:string/channel:string/purge:string',
+    middleware: [
+      Middleware.hasRole('developer')
+    ]
+  },
 ]

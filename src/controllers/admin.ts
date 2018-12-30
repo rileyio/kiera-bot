@@ -1,5 +1,6 @@
 import * as Utils from '../utils';
 import { RouterRouted } from '../utils/router';
+import { TextChannel } from 'discord.js';
 
 export async function adminRemoveUser(routed: RouterRouted) {
   const userArgType = Utils.User.verifyUserRefType(routed.v.o.user)
@@ -13,4 +14,11 @@ export async function adminRemoveUser(routed: RouterRouted) {
   await routed.message
     .reply(`:white_check_mark: Removing user ${Utils.User.buildUserChatAt(user, userArgType)} from db`)
   routed.bot.DEBUG_MSG_COMMAND(`!admin user delete ${Utils.User.buildUserChatAt(user, userArgType)}`)
+}
+
+export async function adminPurgeChannelMessages(routed: RouterRouted) {
+  await Utils.Channel.cleanTextChat(
+    <TextChannel>routed.message.channel,
+    routed.bot.DEBUG_MSG_SCHEDULED
+  )
 }

@@ -10,10 +10,10 @@ export namespace Channel {
   export async function cleanTextChat(channel: Discord.TextChannel, DEBUG: Debug.IDebugger) {
     var messages: Discord.Collection<string, Discord.Message>;
     do {
-      messages = await channel.fetchMessages({ limit: 50 })
+      messages = await channel.fetchMessages({ limit: 100 })
       DEBUG(`bulk channel message cleanup, deleting batch of ${messages.size} messages`)
       await channel.bulkDelete(messages)
-    } while (messages.size >= 2);
+    } while (messages.size > 0);
   }
 
   /**
