@@ -37,5 +37,5 @@ test('DeviceSession:Activate => Activate Session', async t => {
 
 test('DeviceSession:Activate => Update Session', async t => {
   device.update()
-  t.is(firstRemainingTime > device.timeRemaining, true)
+  t.is(firstRemainingTime >= device.timeRemaining, true)
 })
