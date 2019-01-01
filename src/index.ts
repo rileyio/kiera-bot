@@ -12,6 +12,8 @@ import { Router } from './utils/router';
 import { Routes } from './routes';
 import { Session, DeviceSession } from './objects/sessions';
 import { WebAPI } from './api/web-api';
+import { BotStatistics } from './objects/statistics';
+import { Statistics } from './stats';
 
 export class Bot {
   private WebAPI: WebAPI
@@ -29,6 +31,11 @@ export class Bot {
   public Servers: MongoDB<TrackedServer>
   public Sessions: MongoDB<Session | DeviceSession>
   public Users: MongoDB<TrackedUser>
+  public BotStatistics: MongoDB<BotStatistics>
+  public ServerStatistics: MongoDB<BotStatistics>
+
+  // Stats tracking
+  public Stats: Statistics
 
   // Connections/Integrations
   public Lovense: Lovense = new Lovense()
@@ -47,10 +54,13 @@ export class Bot {
     this.Servers = await MongoDBLoader('server')
     this.Sessions = await MongoDBLoader('sessions')
     this.Users = await MongoDBLoader('users')
-    // this.Messages = await DBLoader(Databases.MESSAGES)
-    // this.Servers = await DBLoader(Databases.SERVERS)
-    // this.Users = await DBLoader(Databases.USERS)
+    this.BotStatistics = await MongoDBLoader('stats-bot')
+    this.ServerStatistics = await MongoDBLoader('stats-servers')
 
+    // Initialize Stats
+    this.Stats = new Statistics(this)
+    await this.Stats.loadExisting()
+    
     // On application startup & login
     this.client.on('ready', async () => {
       this.DEBUG(`Logged in as ${this.client.user.tag}!`);

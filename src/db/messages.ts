@@ -1,5 +1,4 @@
 import * as Debug from 'debug';
-import { EventEmitter } from 'events';
 import { TrackedMessage } from '../objects/message';
 import { Bot } from '..';
 import { TextChannel } from 'discord.js';

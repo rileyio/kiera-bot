@@ -11,3 +11,4 @@ export class Controller {
 }
 
 export * from './sessions'
+export * from './stats'

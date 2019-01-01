@@ -36,7 +36,7 @@ export type RouteActionUserTarget = 'none'
 
 export class Route {
   public command: string
-  public controller: Function
+  public controller: (routed: RouterRouted) => Promise<Boolean>
   public example: string
   public help: string
   public middleware: Array<(routed: RouterRouted) => Promise<RouterRouted | void>> = []
@@ -76,10 +76,24 @@ export class Router {
   }
 
   public async route(message: Message) {
-    // // Block my own messages
-    // if (msg.author.id === '526039977247899649') return; // Hard block
+    // Block my own messages
+    if (message.author.id === this.bot.client.user.id) {
+      // Track my own messages when they are seen
+      this.bot.Stats.increment('messages-sent')
+      // Track if its a dm as well
+      if (message.channel.type === 'dm') {
+        this.bot.Stats.increment('dms-sent')
+      }
+      return; // Hard block
+    }
+
+    // Messages incoming as DMs
+    if (message.channel.type === 'dm') {
+      this.bot.Stats.increment('dms-received')
+    }
 
     const containsPrefix = message.content.startsWith(prefix)
+    this.bot.Stats.increment('messages-seen')
 
     if (containsPrefix) {
       this.bot.DEBUG_MSG_COMMAND(`Router -> incoming: '${message.content}'`)
@@ -99,6 +113,7 @@ export class Router {
       // Stop if there's no specific route found
       if (route === undefined) {
         this.bot.DEBUG_MSG_COMMAND(`Router -> Failed to match '${message.content}' to a route - ending routing`)
+        this.bot.Stats.increment('commands-invalid')
         // End routing
         return;
       }
@@ -131,7 +146,14 @@ export class Router {
       this.bot.DEBUG_MSG_COMMAND(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
 
       // Stop execution of route if middleware is halted
-      if (mwareProcessed === mwareCount) await route.controller(routed)
+      if (mwareProcessed === mwareCount) {
+        this.bot.Stats.increment('commands-routed')
+        const status = await route.controller(routed)
+        this.bot.Stats.increment('commands-completed')
+        return // End routing here
+      }
+
+      this.bot.Stats.increment('commands-invalid')
       return
     }
   }

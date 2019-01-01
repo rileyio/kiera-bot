@@ -26,5 +26,7 @@ export namespace User {
       const userAt = Utils.User.buildUserChatAt(routed.message.author.id, userArgType)
       routed.bot.DEBUG_MSG_COMMAND(`!register ${userAt} - user already registered`)
     }
+
+    return true
   }
 }
