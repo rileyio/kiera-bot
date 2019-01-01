@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 import test from 'ava';
-import { MongoDB } from './database-mongo';
+import { MongoDB } from './database';
 import { TrackedUser } from '../objects/user';
 
 const db = new MongoDB<TrackedUser>('users');

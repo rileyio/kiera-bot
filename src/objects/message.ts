@@ -1,16 +1,19 @@
+import { ObjectID } from "bson";
+
 export class TrackedMessage {
+  public _id: ObjectID
   // Msg data
-  public author_id: string
-  public author_username: string
-  public message_id: string
-  public message_createdAt: number
-  public channel_id: string
+  public authorId: string
+  public authorUsername: string
+  public messageId: string
+  public messageCreatedAt: number
+  public channelId: string
   // Flags
-  public flag_auto_delete: boolean = false
-  public flag_track: boolean = false
+  public flagAutoDelete: boolean = false
+  public flagTrack: boolean = false
   // Storage Settings
-  public storage_keep_in_chat_for: number
-  public storage_keep_in_mem_for: number = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
+  public storageKeepInChatFor: number
+  public storageKeepInMemFor: number = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
 
   constructor(init: Partial<TrackedMessage>) {
     Object.assign(this, init);

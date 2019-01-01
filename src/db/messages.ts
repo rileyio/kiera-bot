@@ -1,15 +1,10 @@
-import * as NEDB from 'nedb';
 import * as Debug from 'debug';
 import { EventEmitter } from 'events';
 import { TrackedMessage } from '../objects/message';
 import { Bot } from '..';
+import { TextChannel } from 'discord.js';
 
-// var DB_MSG_TRACKING = new NEDB({
-//   filename: '../db/MSG_TRACKING.db',
-//   autoload: true
-// });
-
-export class MsgTracker extends EventEmitter {
+export class MsgTracker {
   private Bot: Bot
   private msgTrackingArr: Array<TrackedMessage> = []
   private msgProcesserRunning = false
@@ -18,23 +13,30 @@ export class MsgTracker extends EventEmitter {
   private msgProcesserInterval = Number(process.env.BOT_MESSAGE_CLEANUP_INTERVAL)
   private msgProcesserMemInterval = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
   private msgDeletionCleanupAge = Number(process.env.BOT_MESSAGE_CLEANUldiP_AGE)
+  private msgDeletionPreviousCount = 0
   public DEBUG_MSG_TRACKER = Debug('ldi:MsgTracker');
 
   constructor(bot: Bot) {
-    super()
     this.Bot = bot
     // Block duplicates - if that somehow were possible......
     if (!this.msgProcesserRunning) {
       this.DEBUG_MSG_TRACKER('starting MsgTracker...')
       // Memory cleanup, remove old messages tracked beyond TrackedMessage.storage_keep_for age
       setInterval(() => this.trackedMsgCleanup(), this.msgProcesserMemInterval)
-      // Scan msgArray for messages with TrackedMessage.flag_auto_delete === true beyond
+      // Scan msgArray for messages with TrackedMessage.flagAutoDelete === true beyond
       // their defined period
       setInterval(() => this.trackedMsgDeletionCleanup(), this.msgProcesserInterval)
     }
   }
 
-  trackedMsgCleanup() {
+  public async trackMsg(msg: TrackedMessage) {
+    // Track message in array
+    this.msgTrackingArr.push(msg)
+    // Store in db
+    await this.Bot.Messages.update({ _id: msg._id }, msg, { upsert: true })
+  }
+
+  private trackedMsgCleanup() {
     // Block duplicate cleanups if a previous is still running
     if (this.msgCleanupInProgress) return
     // Continue with cleanup
@@ -43,10 +45,10 @@ export class MsgTracker extends EventEmitter {
     // Check for any messages past the memory threshold
     var toCleanupArray = this.msgTrackingArr.filter(msg => {
       // Calculate message age
-      const age = Math.round(now - msg.message_createdAt)
-      if (age > msg.storage_keep_in_mem_for) {
+      const age = Math.round(now - msg.messageCreatedAt)
+      if (age > msg.storageKeepInMemFor) {
         this.Bot
-          .DEBUG_MSG_SCHEDULED(`mem cleanup => id:${msg.message_id} createdAt:${msg.message_createdAt} age:${age}`)
+          .DEBUG_MSG_SCHEDULED(`mem cleanup => id:${msg.messageId} createdAt:${msg.messageCreatedAt} age:${age}`)
         return true
       }
     })
@@ -55,66 +57,74 @@ export class MsgTracker extends EventEmitter {
     if (toCleanupArray.length > 0) {
       for (let index = 0; index < toCleanupArray.length; index++) {
         const msgToClean = toCleanupArray[index];
-        this.removeMemTrackedMsg(msgToClean.message_id, true)
+        this.removeMemTrackedMsg(msgToClean.messageId, true)
       }
       // end cleanup
       this.msgCleanupInProgress = false
     }
   }
 
-  trackedMsgDeletionCleanup() {
+  private async trackedMsgDeletionCleanup() {
     // Block duplicate cleanups if a previous is still running
     if (this.msgDeletionCleanupInProgress) return
+    this.msgDeletionCleanupInProgress = true
     // Continue with cleanup
     const now = Date.now()
+    // Array to track messages from the same server
+    var messagesByChannel: { [channel: string]: Array<string> } = {}
+    var messagesFound = 0
+
     // Check for any messages past 10 seconds old
-    var toCleanupArray = this.msgTrackingArr.filter(msg => {
-      // Skip if TrackedMessage.flag_auto_delete === false
-      if (!msg.flag_auto_delete) return;
+    for (const key in this.msgTrackingArr) {
+      const msg = this.msgTrackingArr[key];
+      // Skip if TrackedMessage.flagAutoDelete === false
+      if (!msg.flagAutoDelete) return;
 
       // Calculate message age
-      const age = Math.round(now - msg.message_createdAt)
-      const deleteAfter = msg.storage_keep_in_chat_for > 0
-        ? msg.storage_keep_in_chat_for
+      const age = Math.round(now - msg.messageCreatedAt)
+      const deleteAfter = msg.storageKeepInChatFor > 0
+        ? msg.storageKeepInChatFor
         : this.msgDeletionCleanupAge
+
       // If age of message meets the criteria (First check the TrackedMessage retain else fallback to .env)
       if (age > deleteAfter) {
-        this.DEBUG_MSG_TRACKER(`cleanup => id:${msg.message_id} createdAt:${msg.message_createdAt} age:${age}`)
-        return true
+        this.DEBUG_MSG_TRACKER(`cleanup => id:${msg.messageId} createdAt:${msg.messageCreatedAt} age:${age}`)
+        // Create an object if channel is not yet tracked
+        if (!messagesByChannel[msg.channelId]) messagesByChannel[msg.channelId] = []
+        // Add it to the cleanup array
+        messagesByChannel[msg.channelId].push(msg.messageId)
+        messagesFound += 1
       }
-    })
-
-    // Process cleanup
-    if (toCleanupArray.length > 0) {
-      for (let index = 0; index < toCleanupArray.length; index++) {
-        const msgToClean = toCleanupArray[index];
-        this.removeTrackedMsg(msgToClean.message_id, msgToClean.channel_id)
-      }
-      // end cleanup
-      this.msgDeletionCleanupInProgress = false
     }
+
+    // Only pring to debug if the previous was not 0
+    if (this.msgDeletionPreviousCount > 0) {
+      // Process cleanup
+      this.Bot.DEBUG_MSG_SCHEDULED(`Cleanup found [${messagesFound}] to delete from chat`)
+    }
+
+    for (const key in messagesByChannel) {
+      const channelMessageIDs = messagesByChannel[key];
+      const channel = (<TextChannel>this.Bot.client.channels.find(ch => ch.id === key))
+      await channel.bulkDelete(channelMessageIDs)
+      // Remove from memory tracking too
+      for (let index = 0; index < channelMessageIDs.length; index++) {
+        const msgID = channelMessageIDs[index];
+        this.removeMemTrackedMsg(msgID, true)
+      }
+    }
+
+    // Update deletion count
+    this.msgDeletionPreviousCount = messagesFound
+    this.msgDeletionCleanupInProgress = false
   }
 
-  trackMsg(msg: TrackedMessage) {
-    // Track message in array
-    this.msgTrackingArr.push(msg)
-  }
-
-  removeTrackedMsg(messageId: string, channelId: string) {
-    // Trigger delete of message for keeping chat clean
-    this.emit('msg-tracker--remove-msg', messageId, channelId)
-    this.removeMemTrackedMsg(messageId)
-  }
-
-  removeMemTrackedMsg(messageId: string, oldCleanup?: boolean) {
+  private async removeMemTrackedMsg(messageId: string, oldCleanup?: boolean) {
     // Find msg id's index
-    const foundMsgIndex = this.msgTrackingArr.findIndex(msg => msg.message_id === messageId)
+    const foundMsgIndex = this.msgTrackingArr.findIndex(msg => msg.messageId === messageId)
     // Remove msg from tracking
     this.msgTrackingArr.splice(foundMsgIndex, 1)
+    await this.Bot.Messages.remove({ messageId: messageId })
     if (oldCleanup) this.Bot.DEBUG_MSG_SCHEDULED(`deleted old message in mem id:${messageId}`)
   }
 }
-
-// export function trackNewMsg(msg: TrackedMessage, debug: Debug.IDebugger) {
-//   DB_MSG_TRACKING.insert<TrackedMessage>(msg)
-// }

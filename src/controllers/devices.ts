@@ -1,5 +1,7 @@
 import { RouterRouted } from '../utils/router';
 
-export async function devicesConnectedCount(routed: RouterRouted) {
-  await routed.message.reply(`Devices Connected: \`${routed.bot.Lovense.devicesConnected.length}\``)
+export namespace Devices {
+  export async function devicesConnectedCount(routed: RouterRouted) {
+    await routed.message.reply(`Devices Connected: \`${routed.bot.Lovense.devicesConnected.length}\``)
+  }
 }

@@ -1,6 +1,8 @@
 import * as Debug from 'debug';
 import { MongoClient, MongoClientOptions, Cursor } from 'mongodb';
 
+export * from './messages'
+
 export async function MongoDBLoader<T>(collection: string) {
   return new Promise<MongoDB<T>>(async (ret) => {
     var db = new MongoDB<T>(collection);
@@ -176,5 +178,3 @@ export class MongoDB<T> {
   //   })
   // }
 }
-
-export * from './messages'

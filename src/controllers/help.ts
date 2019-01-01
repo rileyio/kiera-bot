@@ -1,12 +1,14 @@
 import * as Instructions from '../usage-instructions';
 import { RouterRouted } from '../utils/router';
 
-export async function genericFallback(routed: RouterRouted) {
-  await routed.message.reply(Instructions.help);
-}
+export namespace Help {
+  export async function genericFallback(routed: RouterRouted) {
+    await routed.message.reply(Instructions.help);
+  }
 
-export async function commandHelp(routed: RouterRouted) {
-  await routed.message.reply(Instructions[routed.v.o.command])
+  export async function commandHelp(routed: RouterRouted) {
+    await routed.message.reply(Instructions[routed.v.o.command])
+  }
 }
 
 // embed: {

@@ -13,6 +13,7 @@
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "start": "node ./app/index.js",
     "start:ps:debug": "@powershell -Command $env:DEBUG='ldi:*'; node ./app/index.js",
+    "start:term:debug": "DEBUG='ldi:*' node ./app/index.js",
     "test": "run-s clean build test:n",
     "test:n": "nyc --silent ava --tap --serial | tnyan",
     "test:v": "nyc --silent ava --verbose --serial",
@@ -36,7 +37,6 @@
     "dotenv": "^6.2.0",
     "joi": "^14.3.1",
     "mongodb": "^3.1.10",
-    "nedb": "^1.8.0",
     "restify": "^7.3.0"
   },
   "devDependencies": {
@@ -44,7 +44,6 @@
     "@types/deep-extend": "^0.4.31",
     "@types/joi": "^14.0.1",
     "@types/mongodb": "^3.1.18",
-    "@types/nedb": "^1.8.6",
     "@types/node": "^10.12.18",
     "@types/restify": "^7.2.6",
     "@types/restify-errors": "^4.3.3",

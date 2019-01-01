@@ -1,11 +1,11 @@
 import { RouteConfiguration } from '../utils/router';
-import * as Commands from '../controllers/commands';
+import * as Commands from '../commands';
 import * as Middleware from '../middleware';
 
 export const Routes: Array<RouteConfiguration> = [
   {
     commandTarget: 'argument',
-    controller: Commands.setUserSessionTimeLimit,
+    controller: Commands.Limit.setUserSessionTimeLimit,
     example: '!limit session time 10',
     name: 'limit-set-session-limits',
     validate: '/limit:string/session:string/key=string/value=number',

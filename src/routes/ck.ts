@@ -1,11 +1,11 @@
 import { RouteConfiguration } from '../utils/router';
-import * as Commands from '../controllers/commands';
+import * as Commands from '../commands';
 import * as Middleware from '../middleware';
 
 export const Routes: Array<RouteConfiguration> = [
   {
     commandTarget: 'author',
-    controller: Commands.setUsername,
+    controller: Commands.ChastiKey.setUsername,
     example: '!ck username MyUsername',
     name: 'ck-set-username',
     validate: '/ck:string/username:string/ckusername=string',
@@ -15,7 +15,7 @@ export const Routes: Array<RouteConfiguration> = [
   },
   {
     commandTarget: 'author',
-    controller: Commands.setTickerType,
+    controller: Commands.ChastiKey.Ticker.setTickerType,
     example: '!ck ticker set type 2',
     name: 'ck-set-tickerType',
     validate: '/ck:string/ticker:string/set:string/type:string/number=number',
@@ -25,7 +25,7 @@ export const Routes: Array<RouteConfiguration> = [
   },
   {
     commandTarget: 'author',
-    controller: Commands.getTicker,
+    controller: Commands.ChastiKey.Ticker.getTicker,
     example: '!ck ticker',
     name: 'ck-get-ticker',
     validate: '/ck:string/ticker:string',

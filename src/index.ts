@@ -3,7 +3,7 @@ const packagejson = require('../package.json')
 import * as Debug from 'debug';
 import * as Discord from 'discord.js';
 import * as Utils from './utils';
-import { MsgTracker, MongoDB, Databases, MongoDBLoader } from './db/database-nedb';
+import { MsgTracker, MongoDB, MongoDBLoader } from './db/database';
 import { Lovense } from './integration/lovense';
 import { TrackedUser } from './objects/user';
 import { TrackedServer } from './objects/server';
@@ -95,13 +95,6 @@ export class Bot {
     })
 
     //////    Internal Events     //////
-    this.MsgTracker.on('msg-tracker--remove-msg', async (id, channelId) => {
-      await Utils.Channel.deleteMessage(
-        Utils.Channel.getTextChannel(this.client.channels, channelId),
-        id,
-        this.DEBUG_MSG_SCHEDULED
-      )
-    })
   }
 
   public startWebAPI() {
