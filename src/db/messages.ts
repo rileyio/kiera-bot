@@ -13,7 +13,7 @@ export class MsgTracker {
   private msgProcesserMemInterval = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
   private msgDeletionCleanupAge = Number(process.env.BOT_MESSAGE_CLEANUldiP_AGE)
   private msgDeletionPreviousCount = 0
-  public DEBUG_MSG_TRACKER = new Debug('ldi:MsgTracker');
+  public DEBUG_MSG_TRACKER = new Debug('ldi:msgTracker');
 
   constructor(bot: Bot) {
     this.Bot = bot

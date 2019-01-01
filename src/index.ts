@@ -14,11 +14,12 @@ import { WebAPI } from './api/web-api';
 import { BotStatistics } from './objects/statistics';
 import { Statistics } from './stats';
 import { Debug } from './logger';
+import { AuthKey } from './objects/authkey';
 
 export class Bot {
   private WebAPI: WebAPI
   public client = new Discord.Client();
-  public DEBUG = new Debug('ldi:Bot');
+  public DEBUG = new Debug('ldi:bot');
   public DEBUG_MIDDLEWARE = new Debug('ldi:midddleware');
   public DEBUG_MSG_INCOMING = new Debug('ldi:incoming');
   public DEBUG_MSG_SCHEDULED = new Debug('ldi:scheduled');
@@ -27,12 +28,13 @@ export class Bot {
   public version: string
 
   // Databases
+  public AuthKeys: MongoDB<AuthKey>
+  public BotStatistics: MongoDB<BotStatistics>
   public Messages: MongoDB<TrackedMessage>
   public Servers: MongoDB<TrackedServer>
+  public ServerStatistics: MongoDB<BotStatistics>
   public Sessions: MongoDB<Session | DeviceSession>
   public Users: MongoDB<TrackedUser>
-  public BotStatistics: MongoDB<BotStatistics>
-  public ServerStatistics: MongoDB<BotStatistics>
 
   // Stats tracking
   public Stats: Statistics
@@ -43,19 +45,19 @@ export class Bot {
   // Bot msg router
   public Router: Router = new Router(Routes(), this)
 
-
   public async start() {
     this.DEBUG.log('getting things setup...');
     this.version = packagejson.version
     this.MsgTracker = new MsgTracker(this);
 
     // Load DBs
+    this.AuthKeys = await MongoDBLoader('authkeys')
+    this.BotStatistics = await MongoDBLoader('stats-bot')
     this.Messages = await MongoDBLoader('messages')
     this.Servers = await MongoDBLoader('server')
+    this.ServerStatistics = await MongoDBLoader('stats-servers')
     this.Sessions = await MongoDBLoader('sessions')
     this.Users = await MongoDBLoader('users')
-    this.BotStatistics = await MongoDBLoader('stats-bot')
-    this.ServerStatistics = await MongoDBLoader('stats-servers')
 
     // Initialize Stats
     this.Stats = new Statistics(this)
@@ -114,8 +116,3 @@ export class Bot {
   }
 
 }
-
-// Start bot (may be moved elsewhere later)
-const bot = new Bot();
-bot.start()
-bot.startWebAPI()

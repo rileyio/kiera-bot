@@ -10,7 +10,7 @@ export class Debug {
     this.name = name
     this._debug = _Debug(name)
     this._winston = _Winston.createLogger({
-      level: process.env.BOT_LOGGING,
+      level: process.env.BOT_LOGGING || 'debug',
       transports: [
         new _Winston.transports.File({ filename: `./logs/${this.name}.log` })
       ],

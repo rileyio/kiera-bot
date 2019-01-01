@@ -13,4 +13,24 @@ export const Routes: Array<RouteConfiguration> = [
       Middleware.middlewareTest
     ]
   },
+  {
+    commandTarget: 'author',
+    controller: Commands.User.registerAPIAuthKey,
+    example: '!user authkey generate',
+    name: 'user-api-authkey-create',
+    validate: '/user:string/key:string/new:string',
+    middleware: [
+      Middleware.isUserRegistered
+    ]
+  },
+  {
+    commandTarget: 'author',
+    controller: Commands.User.destroyAPIAuthKey,
+    example: '!user authkey',
+    name: 'user-api-authkey-destroy',
+    validate: '/user:string/key:string/destroy:string/authkey=string',
+    middleware: [
+      Middleware.isUserRegistered
+    ]
+  }
 ]

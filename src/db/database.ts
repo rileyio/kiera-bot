@@ -151,11 +151,11 @@ export class MongoDB<T> {
    * @memberof DB
    */
   public async getMultiple<Q>(query: Q) {
-    this.DEBUG_DB.log(`.get =>`, query)
+    this.DEBUG_DB.log(`.getMultiple =>`, query)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
     const result = await collection.find<T>(query)
-    this.DEBUG_DB.log(`.get results =>`, await result.count())
+    this.DEBUG_DB.log(`.getMultiple results =>`, await result.count())
     // connection.client.close()
     return (<Cursor<T>>result).toArray()
   }

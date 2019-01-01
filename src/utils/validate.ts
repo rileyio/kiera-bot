@@ -124,7 +124,7 @@ export class Validate {
 
       // Handling for user input values
       if (match.optional === '=' || match.optional === '?=') {
-        sig += `(\\@[\\w\\s-]*\\#[0-9]+|[\\w-]+|\\<\\@[0-9]*\\>)\\s?`
+        sig += `(\\@[\\w\\s-]*\\#[0-9]+|[\\w-\\:]+|\\<\\@[0-9]*\\>)\\s?`
       }
     });
 

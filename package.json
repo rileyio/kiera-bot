@@ -11,10 +11,10 @@
     "clean": "trash app",
     "dev": "tsc -w",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
-    "start": "node ./app/index.js",
-    "start:rtail": "DEBUG=ldi:* node ./app/index.js | rtail --id ldi --host 127.0.0.1 --port 9999",
-    "start:ps:debug": "@powershell -Command $env:DEBUG='ldi:*'; node ./app/index.js",
-    "start:term:debug": "DEBUG='ldi:*' node ./app/index.js",
+    "start:nodebug": "node ./start.js",
+    "start": "DEBUG=ldi:* node ./start.js | rtail --id ldi --host 127.0.0.1 --port 9999",
+    "start:ps:debug": "@powershell -Command $env:DEBUG='ldi:*'; node ./start.js",
+    "start:term:debug": "DEBUG='ldi:*' node ./start.js",
     "test": "run-s clean build test:n",
     "test:n": "nyc --silent ava --tap --serial | tnyan",
     "test:v": "nyc --silent ava --verbose --serial",
@@ -33,6 +33,7 @@
     "singleQuote": true
   },
   "dependencies": {
+    "crypto-js": "^3.1.9-1",
     "deep-extend": "^0.6.0",
     "discord.js": "^11.4.2",
     "dotenv": "^6.2.0",
@@ -42,6 +43,7 @@
     "winston": "^3.1.0"
   },
   "devDependencies": {
+    "@types/crypto-js": "^3.1.43",
     "@types/debug": "^0.0.31",
     "@types/deep-extend": "^0.4.31",
     "@types/joi": "^14.0.1",
