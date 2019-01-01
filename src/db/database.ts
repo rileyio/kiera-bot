@@ -1,5 +1,5 @@
-import * as Debug from 'debug';
 import { MongoClient, MongoClientOptions, Cursor } from 'mongodb';
+import { Debug } from '../logger';
 
 export * from './messages'
 
@@ -12,7 +12,7 @@ export async function MongoDBLoader<T>(collection: string) {
 }
 
 export class MongoDB<T> {
-  public DEBUG_DB: Debug.IDebugger
+  public DEBUG_DB: Debug
 
   public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/ldi`
   public dbName = `${process.env.DB_NAME}`
@@ -28,7 +28,7 @@ export class MongoDB<T> {
 
   constructor(collection: string) {
     this.dbCollection = collection
-    this.DEBUG_DB = Debug(`ldi:database::${collection}`)
+    this.DEBUG_DB = new Debug(`ldi:database::${collection}`)
   }
 
   public async connect() {
@@ -38,13 +38,6 @@ export class MongoDB<T> {
       return { db: db, client: client }
     }
   }
-
-  // MongoClient.connect(this.dbUrl, this.dbOpts, (err, client) => {
-  //   assert.equal(null, err)
-  //   console.log('Connected successfully to server', this.dbName)
-  //   const db = client.db(this.dbName)
-  //   return cb(db, client, err)
-  // })
 
   // public async connectionTest() {
   //   try {
@@ -70,11 +63,11 @@ export class MongoDB<T> {
    */
   public async add<T>(record: T, opts?: {}) {
     const insertOptions = Object.assign({}, opts)
-    this.DEBUG_DB(`.add =>`, record)
+    this.DEBUG_DB.log(`.add =>`, record)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
     const results = await collection.insertOne(record)
-    this.DEBUG_DB(`.add results => inserted: ${results.insertedCount}, id: ${results.insertedId}`)
+    this.DEBUG_DB.log(`.add results => inserted: ${results.insertedCount}, id: ${results.insertedId}`)
     // connection.client.close()
     return results.result.n === 1 ? results.insertedId : null
   }
@@ -138,11 +131,11 @@ export class MongoDB<T> {
    * @memberof DB
    */
   public async get<Q>(query: Q) {
-    this.DEBUG_DB(`.get =>`, query)
+    this.DEBUG_DB.log(`.get =>`, query)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
     const result = await collection.findOne<T>(query)
-    this.DEBUG_DB(`.get results =>`, !!result)
+    this.DEBUG_DB.log(`.get results =>`, !!result)
     // connection.client.close()
     return (<T>result)
   }
@@ -158,11 +151,11 @@ export class MongoDB<T> {
    * @memberof DB
    */
   public async getMultiple<Q>(query: Q) {
-    this.DEBUG_DB(`.get =>`, query)
+    this.DEBUG_DB.log(`.get =>`, query)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
     const result = await collection.find<T>(query)
-    this.DEBUG_DB(`.get results =>`, await result.count())
+    this.DEBUG_DB.log(`.get results =>`, await result.count())
     // connection.client.close()
     return (<Cursor<T>>result).toArray()
   }

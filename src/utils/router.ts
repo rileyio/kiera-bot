@@ -72,7 +72,7 @@ export class Router {
   constructor(routes: Array<RouteConfiguration>, bot?: Bot) {
     this.bot = bot
     this.routes = routes.map(r => new Route(r))
-    this.bot.DEBUG(`routes configured = ${this.routes.length}`)
+    this.bot.DEBUG.log(`routes configured = ${this.routes.length}`)
   }
 
   public async route(message: Message) {
@@ -96,30 +96,30 @@ export class Router {
     this.bot.Stats.increment('messages-seen')
 
     if (containsPrefix) {
-      this.bot.DEBUG_MSG_COMMAND(`Router -> incoming: '${message.content}'`)
+      this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming: '${message.content}'`)
 
       const args = Utils.getArgs(message.content)
       // Find appropriate routes based on prefix command
       const routes = this.routes.filter(r => r.command === args[0])
-      this.bot.DEBUG_MSG_COMMAND(`Router -> Routes by '${args[0]}' command: ${routes.length}`)
+      this.bot.DEBUG_MSG_COMMAND.log(`Router -> Routes by '${args[0]}' command: ${routes.length}`)
 
       // If no routes matched, stop here
       if (routes.length === 0) return;
 
       // Try to find a route
       const route = await routes.find(r => { return r.test(message.content) === true })
-      this.bot.DEBUG_MSG_COMMAND(route)
+      this.bot.DEBUG_MSG_COMMAND.log(route)
 
       // Stop if there's no specific route found
       if (route === undefined) {
-        this.bot.DEBUG_MSG_COMMAND(`Router -> Failed to match '${message.content}' to a route - ending routing`)
+        this.bot.DEBUG_MSG_COMMAND.log(`Router -> Failed to match '${message.content}' to a route - ending routing`)
         this.bot.Stats.increment('commands-invalid')
         // End routing
         return;
       }
 
       // Process route
-      this.bot.DEBUG_MSG_COMMAND('Router -> Route:', route)
+      this.bot.DEBUG_MSG_COMMAND.log('Router -> Route:', route)
 
       // Normal routed behaviour
       var routed = new RouterRouted({
@@ -143,7 +143,7 @@ export class Router {
         mwareProcessed += 1
       }
 
-      this.bot.DEBUG_MSG_COMMAND(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
+      this.bot.DEBUG_MSG_COMMAND.log(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
 
       // Stop execution of route if middleware is halted
       if (mwareProcessed === mwareCount) {

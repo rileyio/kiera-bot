@@ -1,7 +1,7 @@
-import * as Debug from 'debug';
 import { TrackedMessage } from '../objects/message';
 import { Bot } from '..';
 import { TextChannel } from 'discord.js';
+import { Debug } from '../logger';
 
 export class MsgTracker {
   private Bot: Bot
@@ -13,13 +13,13 @@ export class MsgTracker {
   private msgProcesserMemInterval = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
   private msgDeletionCleanupAge = Number(process.env.BOT_MESSAGE_CLEANUldiP_AGE)
   private msgDeletionPreviousCount = 0
-  public DEBUG_MSG_TRACKER = Debug('ldi:MsgTracker');
+  public DEBUG_MSG_TRACKER = new Debug('ldi:MsgTracker');
 
   constructor(bot: Bot) {
     this.Bot = bot
     // Block duplicates - if that somehow were possible......
     if (!this.msgProcesserRunning) {
-      this.DEBUG_MSG_TRACKER('starting MsgTracker...')
+      this.DEBUG_MSG_TRACKER.log('starting MsgTracker...')
       // Memory cleanup, remove old messages tracked beyond TrackedMessage.storage_keep_for age
       setInterval(() => this.trackedMsgCleanup(), this.msgProcesserMemInterval)
       // Scan msgArray for messages with TrackedMessage.flagAutoDelete === true beyond
@@ -47,7 +47,7 @@ export class MsgTracker {
       const age = Math.round(now - msg.messageCreatedAt)
       if (age > msg.storageKeepInMemFor) {
         this.Bot
-          .DEBUG_MSG_SCHEDULED(`mem cleanup => id:${msg.messageId} createdAt:${msg.messageCreatedAt} age:${age}`)
+          .DEBUG_MSG_SCHEDULED.log(`mem cleanup => id:${msg.messageId} createdAt:${msg.messageCreatedAt} age:${age}`)
         return true
       }
     })
@@ -87,7 +87,7 @@ export class MsgTracker {
 
       // If age of message meets the criteria (First check the TrackedMessage retain else fallback to .env)
       if (age > deleteAfter) {
-        this.DEBUG_MSG_TRACKER(`cleanup => id:${msg.messageId} createdAt:${msg.messageCreatedAt} age:${age}`)
+        this.DEBUG_MSG_TRACKER.log(`cleanup => id:${msg.messageId} createdAt:${msg.messageCreatedAt} age:${age}`)
         // Create an object if channel is not yet tracked
         if (!messagesByChannel[msg.channelId]) messagesByChannel[msg.channelId] = []
         // Add it to the cleanup array
@@ -99,7 +99,7 @@ export class MsgTracker {
     // Only pring to debug if the previous was not 0
     if (this.msgDeletionPreviousCount > 0) {
       // Process cleanup
-      this.Bot.DEBUG_MSG_SCHEDULED(`Cleanup found [${messagesFound}] to delete from chat`)
+      this.Bot.DEBUG_MSG_SCHEDULED.log(`Cleanup found [${messagesFound}] to delete from chat`)
     }
 
     for (const key in messagesByChannel) {
@@ -124,6 +124,6 @@ export class MsgTracker {
     // Remove msg from tracking
     this.msgTrackingArr.splice(foundMsgIndex, 1)
     await this.Bot.Messages.remove({ messageId: messageId })
-    if (oldCleanup) this.Bot.DEBUG_MSG_SCHEDULED(`deleted old message in mem id:${messageId}`)
+    if (oldCleanup) this.Bot.DEBUG_MSG_SCHEDULED.log(`deleted old message in mem id:${messageId}`)
   }
 }

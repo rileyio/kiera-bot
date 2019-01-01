@@ -12,6 +12,7 @@
     "dev": "tsc -w",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "start": "node ./app/index.js",
+    "start:rtail": "DEBUG=ldi:* node ./app/index.js | rtail --id ldi --host 127.0.0.1 --port 9999",
     "start:ps:debug": "@powershell -Command $env:DEBUG='ldi:*'; node ./app/index.js",
     "start:term:debug": "DEBUG='ldi:*' node ./app/index.js",
     "test": "run-s clean build test:n",
@@ -37,7 +38,8 @@
     "dotenv": "^6.2.0",
     "joi": "^14.3.1",
     "mongodb": "^3.1.10",
-    "restify": "^7.3.0"
+    "restify": "^7.3.0",
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "@types/debug": "^0.0.31",

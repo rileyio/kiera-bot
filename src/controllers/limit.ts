@@ -42,6 +42,6 @@ export namespace Limit {
     // Process command
     const timeOrIntensityStr = key === 'time' ? 'minutes' : '%'
     await routed.message.reply(`:white_check_mark: Setting your ${key} limit to: \`${newValue}\` ${timeOrIntensityStr}`)
-    routed.bot.DEBUG_MSG_COMMAND(`!limit time ${newValue}`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`!limit time ${newValue}`)
   }
 }

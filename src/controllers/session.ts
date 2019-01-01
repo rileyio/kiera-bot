@@ -83,7 +83,7 @@ export namespace Session {
     const insertedRecordID = await routed.bot.Sessions.add(newSession)
 
     await routed.message.channel.send(`New Device session (id:\`${insertedRecordID}\`) created!`)
-    routed.bot.DEBUG_MSG_COMMAND(`!session new ${type}`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`!session new ${type}`)
   }
 
   export async function activateSession(routed: RouterRouted) {

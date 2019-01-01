@@ -18,5 +18,5 @@ export async function removeUser(routed: RouterRouted) {
   // Process command
   await routed.message
     .reply(`:white_check_mark: Removing user ${Utils.User.buildUserChatAt(user, userArgType)} from db`)
-  routed.bot.DEBUG_MSG_COMMAND(`!admin user delete ${Utils.User.buildUserChatAt(user, userArgType)}`)
+  routed.bot.DEBUG_MSG_COMMAND.log(`!admin user delete ${Utils.User.buildUserChatAt(user, userArgType)}`)
 }

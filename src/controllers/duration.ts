@@ -43,6 +43,6 @@ export namespace Duration {
     // Process command
     await routed.message.reply(
       `:white_check_mark: Setting duration ${userAt} ${key} to: \`${newTime}\` minutes`)
-    routed.bot.DEBUG_MSG_COMMAND(`!duration ${userAt} ${key} ${newTime}`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`!duration ${userAt} ${key} ${newTime}`)
   }
 }

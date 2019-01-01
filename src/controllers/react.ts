@@ -34,6 +34,6 @@ export namespace React {
 
     await routed.message.channel.send(
       `:white_check_mark: Setting react time for ${userAt} to: \`${newTime}\` minutes`)
-    routed.bot.DEBUG_MSG_COMMAND(`!react ${userAt} time ${newTime}`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`!react ${userAt} time ${newTime}`)
   }
 }

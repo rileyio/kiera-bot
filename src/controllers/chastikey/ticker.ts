@@ -35,10 +35,10 @@ export async function setTickerType(routed: RouterRouted) {
   if (updateResult > 0) {
     await routed.message.author
       .send(`:white_check_mark: ChastiKey Ticker type now set to: \`${newTickerTypeAsString}\``)
-    routed.bot.DEBUG_MSG_COMMAND(`!ck ticker set type ${newTickerTypeAsString}`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`!ck ticker set type ${newTickerTypeAsString}`)
   }
   else {
-    routed.bot.DEBUG_MSG_COMMAND(`!ck ticker set type ${newTickerTypeAsString} -> update unsuccessful!`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`!ck ticker set type ${newTickerTypeAsString} -> update unsuccessful!`)
   }
 }
 

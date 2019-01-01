@@ -1,6 +1,5 @@
 require('dotenv').config()
 const packagejson = require('../package.json')
-import * as Debug from 'debug';
 import * as Discord from 'discord.js';
 import * as Utils from './utils';
 import { MsgTracker, MongoDB, MongoDBLoader } from './db/database';
@@ -14,15 +13,16 @@ import { Session, DeviceSession } from './objects/sessions';
 import { WebAPI } from './api/web-api';
 import { BotStatistics } from './objects/statistics';
 import { Statistics } from './stats';
+import { Debug } from './logger';
 
 export class Bot {
   private WebAPI: WebAPI
   public client = new Discord.Client();
-  public DEBUG = Debug('ldi:Bot');
-  public DEBUG_MIDDLEWARE = Debug('ldi:midddleware');
-  public DEBUG_MSG_INCOMING = Debug('ldi:incoming');
-  public DEBUG_MSG_SCHEDULED = Debug('ldi:scheduled');
-  public DEBUG_MSG_COMMAND = Debug('ldi:command');
+  public DEBUG = new Debug('ldi:Bot');
+  public DEBUG_MIDDLEWARE = new Debug('ldi:midddleware');
+  public DEBUG_MSG_INCOMING = new Debug('ldi:incoming');
+  public DEBUG_MSG_SCHEDULED = new Debug('ldi:scheduled');
+  public DEBUG_MSG_COMMAND = new Debug('ldi:command');
   public MsgTracker: MsgTracker
   public version: string
 
@@ -45,7 +45,7 @@ export class Bot {
 
 
   public async start() {
-    this.DEBUG('getting things setup...');
+    this.DEBUG.log('getting things setup...');
     this.version = packagejson.version
     this.MsgTracker = new MsgTracker(this);
 
@@ -63,7 +63,7 @@ export class Bot {
     
     // On application startup & login
     this.client.on('ready', async () => {
-      this.DEBUG(`Logged in as ${this.client.user.tag}!`);
+      this.DEBUG.log(`Logged in as ${this.client.user.tag}!`);
       // Get channels
       // Cleanup channel - if set in .env
       if (process.env.BOT_MESSAGE_CLEANUP_CLEAR_CHANNEL === 'true') {
@@ -78,7 +78,7 @@ export class Bot {
 
       for (let index = 0; index < guilds.length; index++) {
         const guild = guilds[index];
-        this.DEBUG(`connecting to server => ${guild.name}`)
+        this.DEBUG.log(`connecting to server => ${guild.name}`)
         this.Servers.update({ id: guild.id }, new TrackedServer(guild), { upsert: true })
       }
 
@@ -93,7 +93,7 @@ export class Bot {
     //////Server connect/disconnect//////
     //joined a server
     this.client.on('guildCreate', async guild => {
-      this.DEBUG('Joined a new server: ' + guild.name);
+      this.DEBUG.log('Joined a new server: ' + guild.name);
       // Save some info about the server in db
       this.Servers.update({ id: guild.id }, new TrackedServer(guild), { upsert: true })
     })
@@ -101,7 +101,7 @@ export class Bot {
     //removed from a server
     this.client.on('guildDelete', async guild => {
       await this.Servers.remove({ id: guild.id })
-      this.DEBUG('Left a guild: ' + guild.name);
+      this.DEBUG.log('Left a guild: ' + guild.name);
     })
 
     //////    Internal Events     //////

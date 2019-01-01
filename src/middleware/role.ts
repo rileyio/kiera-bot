@@ -5,7 +5,7 @@ export function hasRole(role: string | Array<string>) {
     // If its a DM, stop processing
     if (routed.message.channel.type === 'dm') return;
 
-    routed.bot.DEBUG_MIDDLEWARE(
+    routed.bot.DEBUG_MIDDLEWARE.log(
       'user\'s roles',
       routed.message.member.roles.array().map(r => r.name)
     )
@@ -19,7 +19,7 @@ export function hasRole(role: string | Array<string>) {
         if (contains) return;
         contains = routed.message.member.roles.array().find(sr => sr.name === r) !== undefined
 
-        routed.bot.DEBUG_MIDDLEWARE(
+        routed.bot.DEBUG_MIDDLEWARE.log(
           'hasRole',
           r,
           contains
@@ -33,7 +33,7 @@ export function hasRole(role: string | Array<string>) {
 
     // Test if its a single string
     if (routed.message.member.roles.array().find(r => r.name === role)) {
-      routed.bot.DEBUG_MIDDLEWARE(
+      routed.bot.DEBUG_MIDDLEWARE.log(
         'hasRole',
         role,
         routed.message.member.roles.array().find(r => r.name === role) !== undefined

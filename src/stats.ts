@@ -14,6 +14,7 @@ export class Statistics {
     this._Bot = bot
   }
 
+
   public increment(stat: Statistic, valueOverride?: number) {
     switch (stat) {
       case 'discord-api-calls':

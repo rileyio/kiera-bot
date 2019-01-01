@@ -1,5 +1,5 @@
-import * as Debug from 'debug';
 import * as Discord from 'discord.js';
+import { Debug } from '../logger';
 
 export namespace Channel {
   /**  
@@ -7,11 +7,11 @@ export namespace Channel {
    * @export
    * @param {Discord.TextChannel} channel
    */
-  export async function cleanTextChat(channel: Discord.TextChannel, DEBUG: Debug.IDebugger) {
+  export async function cleanTextChat(channel: Discord.TextChannel, DEBUG: Debug) {
     var messages: Discord.Collection<string, Discord.Message>;
     do {
       messages = await channel.fetchMessages({ limit: 100 })
-      DEBUG(`bulk channel message cleanup, deleting batch of ${messages.size} messages`)
+      DEBUG.log(`bulk channel message cleanup, deleting batch of ${messages.size} messages`)
       await channel.bulkDelete(messages)
     } while (messages.size > 0);
   }
