@@ -2,10 +2,13 @@ import { RouterRouted } from '../../utils/router';
 
 export async function getBotStats(routed: RouterRouted) {
   const stats = routed.bot.Stats.Bot
-  const sec = Math.floor(stats.uptime / 1000)
-  const min = Math.floor(sec / 60)
-  const hrs = Math.floor(min / 60)
-  const days = Math.floor(hrs / 24)
+  var sec = Math.floor(stats.uptime / 1000)
+  var min = Math.floor(sec / 60)
+  sec = sec % 60
+  var hrs = Math.floor(min / 60)
+  min = min % 60
+  var days = Math.floor(hrs / 24)
+  hrs = hrs % 24
 
   const timeToShowDays = `${days > 9 ? + days : '0' + days} days`
   const timeToShowHours = `${hrs > 9 ? + hrs : '0' + hrs}`
