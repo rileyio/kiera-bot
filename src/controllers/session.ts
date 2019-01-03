@@ -1,4 +1,4 @@
-import { RouterRouted } from '../utils/router';
+import { RouterRouted, RouterReactionRouted } from '../utils/router';
 import { DeviceSession } from '../objects/sessions';
 import { ObjectID } from 'bson';
 
@@ -154,5 +154,8 @@ export namespace Session {
     }
 
     await routed.message.reply(`Session id:\`${routed.v.o.id}\` was not found!`)
+  }
+  export async function handleReact(routed: RouterReactionRouted) {
+    routed.reaction
   }
 }

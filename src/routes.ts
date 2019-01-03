@@ -5,14 +5,19 @@ import { Routes as DurationRoutes } from './routes/duration';
 import { Routes as HelpRoutes } from './routes/help';
 import { Routes as LimitRoutes } from './routes/limit';
 import { Routes as ReactRoutes } from './routes/react';
-import { Routes as SessionRoutes } from './routes/session';
+import { Routes as SessionRoutes, Reactions as _ReactionRoutes } from './routes/session';
 import { Routes as UserRoutes } from './routes/user';
 
 export function Routes() {
-  const routes = Array().concat(
+  return Array().concat(
     HelpRoutes, UserRoutes, DeviceRoutes, CKRoutes,
     AdminRoutes, DurationRoutes, ReactRoutes, SessionRoutes,
     LimitRoutes
   )
-  return routes
+}
+
+export function ReactionRoutes() {
+  return Array().concat(
+    _ReactionRoutes
+  )
 }

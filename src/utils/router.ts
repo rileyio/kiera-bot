@@ -1,7 +1,7 @@
 import * as deepExtend from 'deep-extend';
 import * as XRegex from 'xregexp';
 import { Validate, ValidationType } from './validate';
-import { Message } from 'discord.js';
+import { Message, MessageReaction, User } from 'discord.js';
 import { Bot } from '..';
 import * as Utils from '../utils';
 
@@ -16,6 +16,14 @@ export interface RouteConfiguration {
   name: string
   commandTarget: RouteActionUserTarget
   validate: string
+}
+
+export interface ReactionRouteConfiguration {
+  command?: string
+  controller: Function | void
+  middleware?: Array<(routed: RouterRouted) => Promise<RouterRouted | void>>
+  name: string
+  commandTarget: RouteActionUserTarget
 }
 
 export type RouteActionUserTarget = 'none'
@@ -75,7 +83,17 @@ export class Router {
     this.bot.DEBUG.log(`routes configured = ${this.routes.length}`)
   }
 
-  public async route(message: Message) {
+  public async routeReaction(reaction: MessageReaction, user: User, direction: 'added' | 'removed') {
+    this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming reaction <@${user.id}> ${direction} "${reaction.emoji.name}".`)
+    var routed = new RouterReactionRouted({
+      bot: this.bot,
+      reaction: reaction,
+      state: direction,
+      user: user
+    })
+  }
+
+  public async routeMessage(message: Message) {
     // Block my own messages
     if (message.author.id === this.bot.client.user.id) {
       // Track my own messages when they are seen
@@ -96,7 +114,7 @@ export class Router {
     this.bot.Stats.increment('messages-seen')
 
     if (containsPrefix) {
-      this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming: '${message.content}'`)
+      this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming message: '${message.content}'`)
 
       const args = Utils.getArgs(message.content)
       // Find appropriate routes based on prefix command
@@ -177,5 +195,18 @@ export class RouterRouted {
     this.args = init.args
     // Generate v.*
     this.v = this.route.validation.validateArgs(this.args)
+  }
+}
+
+export class RouterReactionRouted {
+  public bot: Bot
+  public reaction: MessageReaction
+  public state: 'added' | 'removed'
+  public user: User
+
+  constructor(init: Partial<RouterReactionRouted>) {
+    this.bot = init.bot
+    this.reaction = init.reaction
+    this.user = init.user
   }
 }

@@ -1,4 +1,4 @@
-import { RouteConfiguration } from '../utils/router';
+import { RouteConfiguration, ReactionRouteConfiguration } from '../utils/router';
 import * as Commands from '../commands';
 import * as Middleware from '../middleware';
 
@@ -31,6 +31,18 @@ export const Routes: Array<RouteConfiguration> = [
     example: '!session',
     name: 'session-deactivate',
     validate: '/session:string/deactivate:string/id=string',
+    middleware: [
+      Middleware.isUserRegistered,
+      Middleware.hasRole(['developer', 'keyholder', 'lockee'])
+    ]
+  },
+]
+
+export const Reactions: Array<ReactionRouteConfiguration> = [
+  {
+    commandTarget: 'controller-decision',
+    controller: Commands.Session.handleReact,
+    name: 'session-react',
     middleware: [
       Middleware.isUserRegistered,
       Middleware.hasRole(['developer', 'keyholder', 'lockee'])
