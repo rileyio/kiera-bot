@@ -122,9 +122,10 @@ export class Validate {
         sig += `(${match.name})\\s?`
       }
 
-      // Handling for user input values
+      // Handling for user's input values
       if (match.optional === '=' || match.optional === '?=') {
-        sig += `(\\@[\\w\\s-]*\\#[0-9]+|[\\w-\\:]+|\\<\\@[0-9]*\\>)\\s?`
+        if (match.type === 'user') sig += `(\\@[\\w\\s-]*\\#[0-9]+|\\<\\@[0-9]*\\>)\\s?`
+        else sig += `(\\@[\\w\\s-]*\\#[0-9]+|[\\w-\\:]+|\\<\\@[0-9]*\\>)\\s?`
       }
     });
 

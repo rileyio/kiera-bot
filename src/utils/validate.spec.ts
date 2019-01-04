@@ -13,6 +13,12 @@ test('Utils:Validate => Generate Validate', t => {
   t.is(validate.validation.filter(_v => !_v.required).length, 1)
 })
 
+test('Utils:Validate =>  Only allowed Username/Snowflake types are valid', t => {
+  const validateInvalid = new Validate('/react:string/user=user/time:string/newtime=number')
+  const v = validateInvalid.validateArgs(getArgs('!react Emma time 2'))
+  t.false(v.valid)
+})
+
 test('Utils:Validate => Incoming args', t => {
   const v = validate.validateArgs(getArgs('!ck ticker set type 2'))
   // Verify that its passed all the args successfully
