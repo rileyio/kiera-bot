@@ -12,26 +12,26 @@ const newUser = new TrackedUser({
   createdTimestamp: 1454984304625
 })
 
-test('DB2:insert => Insert a record', async t => {
+test('DB:insert => Insert a record', async t => {
   const added = await db.add(newUser)
   t.not(added, null)
 })
 
-test('DB2:verify => Verify records (do not)exist', async t => {
+test('DB:verify => Verify records (do not)exist', async t => {
   t.plan(2)
   t.true(await db.verify('526039977247899649'))
   t.false(await db.verify('526039977247899650'))
 })
 
-test('DB2:update => Update record', async t => {
+test('DB:update => Update record', async t => {
   t.is(await db.update({ id: '526039977247899649' }, { discriminator: '0000' }), 1)
 })
 
-test('DB2:get => Get record', async t => {
+test('DB:get => Get record', async t => {
   const fetched = new TrackedUser(await db.get({ id: '526039977247899649' }))
   t.is(fetched.id, '526039977247899649')
 })
 
-test('DB2:remove => Remove record', async t => {
+test('DB:remove => Remove record', async t => {
   t.is(await db.remove({ id: '526039977247899649' }), 1)
 })
