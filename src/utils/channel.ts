@@ -33,14 +33,14 @@ export namespace Channel {
    * Deletes a message from a textChannel
    * @export
    * @param {*} textChannel
-   * @param {string} messageId
+   * @param {string} id
    */
-  export async function deleteMessage(textChannel: any, messageId: string, debug: debug.IDebugger) {
+  export async function deleteMessage(textChannel: any, id: string, debug: debug.IDebugger) {
     // Find message in channel
-    const msg: Discord.Message = await textChannel.fetchMessage(messageId)
+    const msg: Discord.Message = await textChannel.fetchMessage(id)
     // Race Condition check: Double check something was found (that it wasn't deleted by a user too quick)
     // Delete message
     await msg.delete()
-    debug(`deleted message id:${messageId} channelId:${textChannel.id}`)
+    debug(`deleted message id:${id} channelId:${textChannel.id}`)
   }
 }

@@ -4,6 +4,7 @@ import * as Middleware from '../../middleware';
 
 export const Routes: Array<RouteConfiguration> = [
   {
+    type: 'message',
     commandTarget: 'argument',
     controller: Commands.Admin.Statistics.getBotStats,
     example: '!admin stats',
@@ -12,5 +13,5 @@ export const Routes: Array<RouteConfiguration> = [
     middleware: [
       Middleware.hasRole('developer')
     ]
-  },
+  }
 ]

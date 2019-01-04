@@ -97,6 +97,7 @@ export class MongoDB<T> {
     const collection = connection.db.collection(this.dbCollection)
     const deletionMethod = deleteOptions.deleteOne ? 'deleteOne' : 'deleteMany'
     const result = await collection[deletionMethod](typeof query === 'string' ? { id: query } : query)
+    this.DEBUG_DB.log(`.update results => updated: ${result.result.n}`)
     // connection.client.close()
     return result.result.n
   }
@@ -135,7 +136,7 @@ export class MongoDB<T> {
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
     const result = await collection.findOne<T>(query)
-    this.DEBUG_DB.log(`.get results =>`, !!result)
+    this.DEBUG_DB.log(`.get results =>`, result)
     // connection.client.close()
     return (<T>result)
   }

@@ -1,4 +1,5 @@
 import { RouterRouted } from '../../utils/router';
+import { TrackedMessage } from '../../objects/message';
 
 export async function getBotStats(routed: RouterRouted) {
   const stats = routed.bot.Stats.Bot
@@ -17,7 +18,7 @@ export async function getBotStats(routed: RouterRouted) {
 
   const combined = `${timeToShowDays} ${timeToShowHours}:${timeToShowMins}:${timeToShowSecs}`
 
-  await routed.message.channel.send({
+  const msgSent = await routed.message.channel.send({
     content: 'Here are some of my statistics!!',
     embed: {
       title: 'Bot Statistics',

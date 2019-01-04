@@ -13,6 +13,7 @@ export function getArgs(msg: string) {
 
 export * from './utils/chastikey';
 export * from './utils/channel';
+export * from './utils/react';
 export * from './utils/router';
 export * from './utils/validate';
 export * from './utils/user';

@@ -67,8 +67,10 @@ export class Bot {
 
     //////      Event hndling for non-cached (prior to restart)      //////
     this.client.on('raw', async event => {
+      if (event.t === null) return
       // Skip event types that are not mapped
       console.log('raw:', event.t)
+      // if (event.t === 'PRESENCE_UPDATE') console.log(event)
       if (!DISCORD_CLIENT_EVENTS.hasOwnProperty(event.t)) return;
       this.onMessageNonCachedReact(event)
     });
@@ -112,14 +114,12 @@ export class Bot {
     await this.Router.routeMessage(message)
   }
 
-  private async onMessageCachedReactionAdd(reaction: Discord.MessageReaction, user: Discord.User) {
-    this.DEBUG.log(`<@${user.id}> reacted '${reaction.emoji.name}'.`);
-    this.Router.routeReaction(reaction, user, 'added')
+  private async onMessageCachedReactionAdd(message: Discord.Message, reaction: Discord.MessageReaction, user: Discord.User) {
+    this.Router.routeReaction(message, reaction, user, 'added')
   }
 
-  private async onMessageCachedReactionRemove(reaction: Discord.MessageReaction, user: Discord.User) {
-    this.DEBUG.log(`<@${user.id}> removed '${reaction.emoji.name}' reaction.`);
-    this.Router.routeReaction(reaction, user, 'removed')
+  private async onMessageCachedReactionRemove(message: Discord.Message, reaction: Discord.MessageReaction, user: Discord.User) {
+    this.Router.routeReaction(message, reaction, user, 'removed')
   }
 
   private async onGuildCreate(guild: Discord.Guild) {
@@ -134,7 +134,6 @@ export class Bot {
   }
 
   private async onMessageNonCachedReact(event: { t: Discord.WSEventType, d: any }) {
-    console.log(event)
     const user = this.client.users.get(event.d.user_id)
     const channel = this.client.channels.get(event.d.channel_id) || await user.createDM()
     // Skip firing events for cached messages as these will already be properly handled
@@ -145,15 +144,13 @@ export class Bot {
     const emojiKey = event.d.emoji.id
       ? `${event.d.emoji.name}:${event.d.emoji.id}`
       : event.d.emoji.name;
-    // console.log('emojiKey', emojiKey)
-    const reaction = message.reactions.get(emojiKey)
-    console.log('react', !!reaction)
+    console.log('emojiKey', emojiKey)
     // Emit to handle in the regular handling used for cached messages
     // this.client.emit(DISCORD_CLIENT_EVENTS[event.t], reaction, user)
     if (event.t === 'MESSAGE_REACTION_ADD')
-      return await this.onMessageCachedReactionAdd(reaction, user)
+      return await this.onMessageCachedReactionAdd(message, event.d, user)
     if (event.t === 'MESSAGE_REACTION_REMOVE')
-      return await this.onMessageCachedReactionRemove(reaction, user)
+      return await this.onMessageCachedReactionRemove(message, event.d, user)
   }
 
   public startWebAPI() {

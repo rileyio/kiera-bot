@@ -4,6 +4,7 @@ import * as Middleware from '../middleware';
 
 export const Routes: Array<RouteConfiguration> = [
   {
+    type: 'message',
     commandTarget: 'author',
     controller: Commands.User.registerUser,
     example: '!register',
@@ -14,6 +15,7 @@ export const Routes: Array<RouteConfiguration> = [
     ]
   },
   {
+    type: 'message',
     commandTarget: 'author',
     controller: Commands.User.registerAPIAuthKey,
     example: '!user authkey generate',
@@ -24,6 +26,7 @@ export const Routes: Array<RouteConfiguration> = [
     ]
   },
   {
+    type: 'message',
     commandTarget: 'author',
     controller: Commands.User.destroyAPIAuthKey,
     example: '!user authkey',

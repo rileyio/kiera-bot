@@ -4,6 +4,7 @@ import * as Middleware from '../middleware';
 
 export const Routes: Array<RouteConfiguration> = [
   {
+    type: 'message',
     commandTarget: 'argument',
     controller: Commands.React.setReactTime,
     example: '!react',

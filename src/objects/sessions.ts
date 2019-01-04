@@ -20,7 +20,7 @@ export class Session {
    * @type {ObjectID | string}
    * @memberof DeviceSession
    */
-  public _id: ObjectID
+  public _id: ObjectID = new ObjectID()
   /**
    * User's ID reference to their 'users' collection record
    * @type {ObjectID | string}
@@ -33,6 +33,12 @@ export class Session {
    * @memberof Session
    */
   public sid: ObjectID
+  /**
+   * Message ID that should contain the reacts
+   * @type {ObjectID}
+   * @memberof Session
+   */
+  public mid: ObjectID
   public type: SessionTypes
   public isActive: boolean = false
   public isDeactivated: boolean = false

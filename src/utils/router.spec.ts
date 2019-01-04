@@ -1,5 +1,5 @@
 import test from 'ava';
-import { Route, Router } from './router';
+import { MessageRoute, Router } from './router';
 import { Bot } from '..';
 import * as Commands from '../commands';
 
@@ -9,6 +9,7 @@ var bot: Bot = new Bot()
 test('Utils:Router', t => {
   router = new Router([
     {
+      type: 'message',
       commandTarget: 'argument',
       controller: Commands.Duration.setDurationTime,
       example: '!duration @user#0000 time 10',
@@ -17,6 +18,7 @@ test('Utils:Router', t => {
       validate: '/command:string/user=user/action/time=number'
     },
     {
+      type: 'message',
       commandTarget: 'author',
       controller: Commands.ChastiKey.Ticker.setTickerType,
       example: '!ck ticker set type 2',
@@ -30,7 +32,8 @@ test('Utils:Router', t => {
 })
 
 test('Utils:Router:Route => Generate Route', t => {
-  const r = new Route({
+  const r = new MessageRoute({
+    type: 'message',
     commandTarget: 'author',
     controller: Commands.ChastiKey.Ticker.setTickerType,
     example: '!ck ticker set type 2',

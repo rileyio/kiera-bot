@@ -1,9 +1,10 @@
-import { RouteConfiguration, ReactionRouteConfiguration } from '../utils/router';
+import { RouteConfiguration } from '../utils/router';
 import * as Commands from '../commands';
 import * as Middleware from '../middleware';
 
 export const Routes: Array<RouteConfiguration> = [
   {
+    type: 'message',
     commandTarget: 'controller-decision',
     controller: Commands.Session.createNewSession,
     example: '!session',
@@ -15,6 +16,7 @@ export const Routes: Array<RouteConfiguration> = [
     ]
   },
   {
+    type: 'message',
     commandTarget: 'controller-decision',
     controller: Commands.Session.activateSession,
     example: '!session',
@@ -26,6 +28,7 @@ export const Routes: Array<RouteConfiguration> = [
     ]
   },
   {
+    type: 'message',
     commandTarget: 'controller-decision',
     controller: Commands.Session.deactivateSession,
     example: '!session',
@@ -36,13 +39,11 @@ export const Routes: Array<RouteConfiguration> = [
       Middleware.hasRole(['developer', 'keyholder', 'lockee'])
     ]
   },
-]
-
-export const Reactions: Array<ReactionRouteConfiguration> = [
   {
+    type: 'reaction',
     commandTarget: 'controller-decision',
     controller: Commands.Session.handleReact,
-    name: 'session-react',
+    name: 'session-active-react',
     middleware: [
       Middleware.isUserRegistered,
       Middleware.hasRole(['developer', 'keyholder', 'lockee'])

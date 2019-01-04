@@ -5,6 +5,7 @@ import * as Middleware from '../../middleware';
 export const Routes: Array<RouteConfiguration> = [
   /////// Clear channel messages
   {
+    type: 'message',
     commandTarget: 'none',
     controller: Commands.Admin.Channel.purgeChannelMessages,
     example: '!admin channel purge',

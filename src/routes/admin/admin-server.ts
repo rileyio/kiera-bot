@@ -4,6 +4,7 @@ import * as Middleware from '../../middleware';
 
 export const Routes: Array<RouteConfiguration> = [
   {
+    type: 'message',
     commandTarget: 'none',
     controller: Commands.Admin.Server.versionCheck,
     example: '!version',
@@ -15,6 +16,7 @@ export const Routes: Array<RouteConfiguration> = [
   },
   /////// Ping Pong Test
   {
+    type: 'message',
     commandTarget: 'none',
     controller: Commands.Admin.Server.pingPong,
     example: '!ping',

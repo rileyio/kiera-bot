@@ -3,6 +3,7 @@ import * as Commands from '../commands';
 
 export const Routes: Array<RouteConfiguration> = [
   {
+    type: 'message',
     commandTarget: 'none',
     controller: Commands.Devices.devicesConnectedCount,
     example: '!devices',

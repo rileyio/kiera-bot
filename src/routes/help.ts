@@ -3,6 +3,7 @@ import * as Commands from '../commands';
 
 export const Routes: Array<RouteConfiguration> = [
   {
+    type: 'message',
     commandTarget: 'author',
     controller: Commands.Help.commandHelp,
     example: '!help ck',
@@ -10,6 +11,7 @@ export const Routes: Array<RouteConfiguration> = [
     validate: '/help:string/command=string'
   },
   {
+    type: 'message',
     commandTarget: 'author',
     controller: Commands.Help.genericFallback,
     example: '!help',

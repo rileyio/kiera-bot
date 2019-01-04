@@ -9,7 +9,7 @@ export async function pingPong(routed: RouterRouted) {
   routed.bot.MsgTracker.trackMsg(new TrackedMessage({
     authorId: routed.message.author.id,
     authorUsername: routed.message.author.username,
-    messageId: routed.message.id,
+    id: routed.message.id,
     messageCreatedAt: routed.message.createdAt.getTime(),
     channelId: routed.message.channel.id,
     // Flags
@@ -26,7 +26,7 @@ export async function pingPong(routed: RouterRouted) {
     routed.bot.MsgTracker.trackMsg(new TrackedMessage({
       authorId: response.author.id,
       authorUsername: response.author.username,
-      messageId: response.id,
+      id: response.id,
       messageCreatedAt: response.createdAt.getTime(),
       channelId: response.channel.id,
       // Flags

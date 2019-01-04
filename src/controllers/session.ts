@@ -1,6 +1,9 @@
-import { RouterRouted, RouterReactionRouted } from '../utils/router';
+import { RouterRouted } from '../utils/router';
 import { DeviceSession } from '../objects/sessions';
 import { ObjectID } from 'bson';
+import * as Utils from '../utils';
+import { TrackedMessageReaction } from '../objects/message';
+import { Message } from 'discord.js';
 
 export namespace Session {
   export async function createNewSession(routed: RouterRouted) {
@@ -113,9 +116,16 @@ export namespace Session {
       nsession.isActive = true
       nsession.activatedBy = user._id
 
-      // Update db record
+      // Update session db record
       const updateResult = await routed.bot.Sessions.update({ _id: session._id }, nsession)
-      if (updateResult) await routed.message.reply(`Session id:\`${routed.v.o.id}\` activated!`)
+      if (updateResult) {
+        const msgSent = await routed.message.reply(`Session id:\`${routed.v.o.id}\` activated!`)
+        // Track message for reactions later
+        const mid = await routed.bot.MsgTracker.trackNewMsg(msgSent, { reactionRoute: 'session-active-react' })
+        // Update DB record for associated message id that will be tracking reactions
+        await routed.bot.Sessions.update({ _id: session._id }, { mid: mid })
+      }
+
       return; // Stop here
     }
 
@@ -155,7 +165,30 @@ export namespace Session {
 
     await routed.message.reply(`Session id:\`${routed.v.o.id}\` was not found!`)
   }
-  export async function handleReact(routed: RouterReactionRouted) {
-    routed.reaction
+
+  export async function handleReact(routed: RouterRouted) {
+    // Get session from db
+    const dsession = await routed.bot.Sessions.get({ mid: routed.trackedMessage._id })
+    // Ensure it exists
+    if (!dsession) return
+    const session = new DeviceSession(dsession)
+    // Filter to only desired reacts
+    const specificReacts = Utils.React.filter(
+      ['😄', '😏', '😬', '😭', '🙄'],
+      (<TrackedMessageReaction[]>routed.trackedMessage.reactions))
+    // Convert reacts (emoji) to ints
+    const reactsAsInts = Utils.React.toInt({
+      '😄': 1,
+      '😏': 2,
+      '😬': 3,
+      '😭': 4,
+      '🙄': 5
+    }, specificReacts)
+    // Update session
+    session.reacts = reactsAsInts
+    session.update()
+    // Commit session
+    const result = await routed.bot.Sessions.update({ mid: routed.trackedMessage._id }, session)
+    console.log('session react handling, record updated:', result)
   }
 }

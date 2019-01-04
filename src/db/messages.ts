@@ -1,6 +1,6 @@
 import { TrackedMessage } from '../objects/message';
 import { Bot } from '..';
-import { TextChannel } from 'discord.js';
+import { TextChannel, Message } from 'discord.js';
 import { Debug } from '../logger';
 
 export class MsgTracker {
@@ -28,11 +28,52 @@ export class MsgTracker {
     }
   }
 
+  public async trackNewMsg(msg: Message | Array<Message>, opts?: { reactionRoute?: string }) {
+    const isArray = Array.isArray(msg)
+
+    // If msg param comes in as an Array
+    if (isArray) {
+      for (let index = 0; index < (<Array<Message>>msg).length; index++) {
+        const message = Object.assign((<Array<Message>>msg)[index], opts || {});
+
+        return await this.trackMsg(new TrackedMessage({
+          authorId: message.author.id,
+          authorUsername: message.author.username,
+          id: message.id,
+          messageCreatedAt: message.createdAt.getTime(),
+          channelId: message.channel.id,
+          // Flags
+          flagTrack: true,
+          // React tracking
+          reactions: message.reactions.array(),
+          reactionRoute: message.reactionRoute
+        }))
+      }
+    }
+
+    // If msg is just a regular Discord.Message type
+    const message = Object.assign((<Message>msg), opts || {});
+    return await this.trackMsg(new TrackedMessage({
+      authorId: message.author.id,
+      authorUsername: message.author.username,
+      id: message.id,
+      messageCreatedAt: message.createdAt.getTime(),
+      channelId: message.channel.id,
+      // Flags
+      flagTrack: true,
+      // React tracking
+      reactions: message.reactions.array(),
+      reactionRoute: message.reactionRoute
+    }))
+  }
+
   public async trackMsg(msg: TrackedMessage) {
     // Track message in array
     this.msgTrackingArr.push(msg)
     // Store in db
     await this.Bot.Messages.update({ _id: msg._id }, msg, { upsert: true })
+    // Return message object id
+    return msg._id
   }
 
   private trackedMsgCleanup() {
@@ -47,7 +88,7 @@ export class MsgTracker {
       const age = Math.round(now - msg.messageCreatedAt)
       if (age > msg.storageKeepInMemFor) {
         this.Bot
-          .DEBUG_MSG_SCHEDULED.log(`mem cleanup => id:${msg.messageId} createdAt:${msg.messageCreatedAt} age:${age}`)
+          .DEBUG_MSG_SCHEDULED.log(`mem cleanup => id:${msg.id} createdAt:${msg.messageCreatedAt} age:${age}`)
         return true
       }
     })
@@ -56,7 +97,7 @@ export class MsgTracker {
     if (toCleanupArray.length > 0) {
       for (let index = 0; index < toCleanupArray.length; index++) {
         const msgToClean = toCleanupArray[index];
-        this.removeMemTrackedMsg(msgToClean.messageId, true)
+        this.removeMemTrackedMsg(msgToClean.id, !msgToClean.flagAutoDelete)
       }
       // end cleanup
       this.msgCleanupInProgress = false
@@ -77,7 +118,7 @@ export class MsgTracker {
     for (const key in this.msgTrackingArr) {
       const msg = this.msgTrackingArr[key];
       // Skip if TrackedMessage.flagAutoDelete === false
-      if (!msg.flagAutoDelete) return;
+      if (!msg.flagAutoDelete) continue
 
       // Calculate message age
       const age = Math.round(now - msg.messageCreatedAt)
@@ -87,11 +128,11 @@ export class MsgTracker {
 
       // If age of message meets the criteria (First check the TrackedMessage retain else fallback to .env)
       if (age > deleteAfter) {
-        this.DEBUG_MSG_TRACKER.log(`cleanup => id:${msg.messageId} createdAt:${msg.messageCreatedAt} age:${age}`)
+        this.DEBUG_MSG_TRACKER.log(`cleanup => id:${msg.id} createdAt:${msg.messageCreatedAt} age:${age}`)
         // Create an object if channel is not yet tracked
         if (!messagesByChannel[msg.channelId]) messagesByChannel[msg.channelId] = []
         // Add it to the cleanup array
-        messagesByChannel[msg.channelId].push(msg.messageId)
+        messagesByChannel[msg.channelId].push(msg.id)
         messagesFound += 1
       }
     }
@@ -103,12 +144,12 @@ export class MsgTracker {
     }
 
     for (const key in messagesByChannel) {
-      const channelMessageIDs = messagesByChannel[key];
+      const channelids = messagesByChannel[key];
       const channel = (<TextChannel>this.Bot.client.channels.find(ch => ch.id === key))
-      await channel.bulkDelete(channelMessageIDs)
+      await channel.bulkDelete(channelids)
       // Remove from memory tracking too
-      for (let index = 0; index < channelMessageIDs.length; index++) {
-        const msgID = channelMessageIDs[index];
+      for (let index = 0; index < channelids.length; index++) {
+        const msgID = channelids[index];
         this.removeMemTrackedMsg(msgID, true)
       }
     }
@@ -118,12 +159,12 @@ export class MsgTracker {
     this.msgDeletionCleanupInProgress = false
   }
 
-  private async removeMemTrackedMsg(messageId: string, oldCleanup?: boolean) {
+  private async removeMemTrackedMsg(id: string, keepInDB: boolean = true) {
     // Find msg id's index
-    const foundMsgIndex = this.msgTrackingArr.findIndex(msg => msg.messageId === messageId)
+    const foundMsgIndex = this.msgTrackingArr.findIndex(msg => msg.id === id)
     // Remove msg from tracking
     this.msgTrackingArr.splice(foundMsgIndex, 1)
-    await this.Bot.Messages.remove({ messageId: messageId })
-    if (oldCleanup) this.Bot.DEBUG_MSG_SCHEDULED.log(`deleted old message in mem id:${messageId}`)
+    if (!keepInDB) await this.Bot.Messages.remove({ id: id })
+    this.Bot.DEBUG_MSG_SCHEDULED.log(`deleted old message in mem id:${id}`)
   }
 }

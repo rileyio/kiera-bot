@@ -4,26 +4,20 @@ import { Validate, ValidationType } from './validate';
 import { Message, MessageReaction, User } from 'discord.js';
 import { Bot } from '..';
 import * as Utils from '../utils';
+import { TrackedMessage } from '../objects/message';
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
 
 export interface RouteConfiguration {
   command?: string
+  commandTarget: RouteActionUserTarget
   controller: Function | void
-  example: string
+  example?: string
   help?: string
   middleware?: Array<(routed: RouterRouted) => Promise<RouterRouted | void>>
   name: string
-  commandTarget: RouteActionUserTarget
-  validate: string
-}
-
-export interface ReactionRouteConfiguration {
-  command?: string
-  controller: Function | void
-  middleware?: Array<(routed: RouterRouted) => Promise<RouterRouted | void>>
-  name: string
-  commandTarget: RouteActionUserTarget
+  type: 'message' | 'reaction'
+  validate?: string
 }
 
 export type RouteActionUserTarget = 'none'
@@ -42,7 +36,7 @@ export type RouteActionUserTarget = 'none'
 //   validate: '/command:string/subroute:string/action:string/action2:string/type:number'
 // }
 
-export class Route {
+export class MessageRoute {
   public command: string
   public controller: (routed: RouterRouted) => Promise<Boolean>
   public example: string
@@ -50,14 +44,15 @@ export class Route {
   public middleware: Array<(routed: RouterRouted) => Promise<RouterRouted | void>> = []
   public name: string
   public commandTarget: RouteActionUserTarget = 'none' // Default to none
+  public type: 'message' | 'reaction'
   public validate: string
   public validation: Validate
 
   constructor(route: RouteConfiguration) {
     // Merge props from RouteConfiguration passed
     deepExtend(this, route)
-    // Set command branch for sorting
-    this.command = this.getCommand(route.validate)
+    // Set command branch for sorting - only set this if the type is a message
+    this.command = (this.type === 'message') ? this.getCommand(route.validate) : undefined
     // Setup validation for route
     this.validation = new Validate(route.validate)
   }
@@ -75,22 +70,56 @@ export class Route {
 
 export class Router {
   public bot: Bot
-  public routes: Array<Route>
+  public routes: Array<MessageRoute>
 
   constructor(routes: Array<RouteConfiguration>, bot?: Bot) {
     this.bot = bot
-    this.routes = routes.map(r => new Route(r))
-    this.bot.DEBUG.log(`routes configured = ${this.routes.length}`)
+    this.routes = routes.map(r => new MessageRoute(r))
+    this.bot.DEBUG.log(`routes configured = ${this.routes.filter(r => r.type === 'message').length}`)
+    this.bot.DEBUG.log(`reacts configured = ${this.routes.filter(r => r.type === 'reaction').length}`)
   }
 
-  public async routeReaction(reaction: MessageReaction, user: User, direction: 'added' | 'removed') {
-    this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming reaction <@${user.id}> ${direction} "${reaction.emoji.name}".`)
-    var routed = new RouterReactionRouted({
+  public async routeReaction(message: Message, reaction: MessageReaction, user: User, direction: 'added' | 'removed') {
+    // console.log('user', user)
+    this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming reaction <@${user.id}> ${direction}`)
+    // console.log('reaction', reaction)
+
+    // Lookup tracked message in db
+    var storedMessage = await this.bot.Messages.get<Partial<TrackedMessage>>({ id: message.id })
+
+    // Stop routing if no message is tracked
+    if (!storedMessage) return
+
+    // Init stored message
+    storedMessage = new TrackedMessage(storedMessage)
+
+    // Update stored record if it gets this far with any react changes
+    // console.log('router sees:', message.reactions.array())
+    storedMessage.update('reactions', message.reactions.array())
+    await this.bot.Messages.update({ _id: storedMessage._id }, storedMessage)
+
+    // Ensure stored message has a route name to properly route it
+    if (!storedMessage.reactionRoute) return
+
+    // Find route to send this message reaction upon
+    const route = this.routes.find(r => { return r.name === storedMessage.reactionRoute && r.type === 'reaction' })
+    this.bot.DEBUG_MSG_COMMAND.log('Router -> Route:', route)
+
+    // Stop routing if no route match
+    if (!route) return
+
+    var routed = new RouterRouted({
       bot: this.bot,
-      reaction: reaction,
+      // reaction: reaction,
+      message: message,
+      route: route,
       state: direction,
-      user: user
+      trackedMessage: storedMessage,
+      user: user,
     })
+
+    // Check status returns later for stats tracking
+    const status = await route.controller(routed)
   }
 
   public async routeMessage(message: Message) {
@@ -181,7 +210,11 @@ export class RouterRouted {
   public args: Array<string>
   public bot: Bot
   public message: Message
-  public route: Route
+  public reaction: MessageReaction
+  public route: MessageRoute
+  public state: 'added' | 'removed'
+  public trackedMessage: TrackedMessage
+  public user: User
   public v: {
     valid: boolean;
     validated: ValidationType[];
@@ -189,24 +222,12 @@ export class RouterRouted {
   }
 
   constructor(init: Partial<RouterRouted>) {
-    this.bot = init.bot
-    this.message = init.message
-    this.route = init.route
-    this.args = init.args
+    Object.assign(this, init)
+    // this.bot = init.bot
+    // this.message = init.message
+    // this.route = init.route
+    // this.args = init.args
     // Generate v.*
     this.v = this.route.validation.validateArgs(this.args)
-  }
-}
-
-export class RouterReactionRouted {
-  public bot: Bot
-  public reaction: MessageReaction
-  public state: 'added' | 'removed'
-  public user: User
-
-  constructor(init: Partial<RouterReactionRouted>) {
-    this.bot = init.bot
-    this.reaction = init.reaction
-    this.user = init.user
   }
 }

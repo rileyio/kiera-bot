@@ -4,6 +4,7 @@ import * as Middleware from '../middleware';
 
 export const Routes: Array<RouteConfiguration> = [
   {
+    type: 'message',
     commandTarget: 'author',
     controller: Commands.ChastiKey.setUsername,
     example: '!ck username MyUsername',
@@ -14,6 +15,7 @@ export const Routes: Array<RouteConfiguration> = [
     ]
   },
   {
+    type: 'message',
     commandTarget: 'author',
     controller: Commands.ChastiKey.Ticker.setTickerType,
     example: '!ck ticker set type 2',
@@ -24,6 +26,7 @@ export const Routes: Array<RouteConfiguration> = [
     ]
   },
   {
+    type: 'message',
     commandTarget: 'author',
     controller: Commands.ChastiKey.Ticker.getTicker,
     example: '!ck ticker',
