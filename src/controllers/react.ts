@@ -23,7 +23,7 @@ export namespace React {
 
     // Ensure session exists
     if (!userSession) return await routed.message.reply(
-      `User: \`${userAt}\` needs to create a session \`!session new lovense\``)
+      `User: ${userAt} needs to create a session \`!session new lovense\` and must not have activated it!`)
 
     // Update props
     const nsession = new DeviceSession(userSession)

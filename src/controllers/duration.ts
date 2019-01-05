@@ -20,7 +20,7 @@ export namespace Duration {
 
     // Ensure target user is setup & has a session
     if (!targetUser) return await routed.message.reply(
-      `User: \`@user#0000\` could not be found, make sure they've used the following: \`!register\``)
+      `User: ${userAt} could not be found, make sure they've used the following: \`!register\``)
 
     const userSession = await routed.bot.Sessions.get({
       uid: targetUser._id,
@@ -31,7 +31,7 @@ export namespace Duration {
 
     // Ensure session exists
     if (!userSession) return await routed.message.reply(
-      `User: \`@user#0000\` needs to create a session \`!session new lovense\``)
+      `User: ${userAt} needs to create a session \`!session new lovense\` and must not have activated it!`)
 
     // Update props
     const nsession = new DeviceSession(userSession)
