@@ -47,3 +47,12 @@ test('Utils:Validate => Multiple similar signatures', t => {
   t.is(v2.test('!help ck'), false)
   t.is(v2.test('!help'), true)
 })
+
+test('Utils:Validate => Quotes', t => {
+  t.plan(3)
+  const v1 = new Validate('/react:string/user=user/time:string/newtime=number')
+
+  t.is(v1.test(`!react @emma#1366 time '10'`), true)
+  t.is(v1.test(`!react @emma#1366 time "10"`), true)
+  t.is(v1.test(`!react @emma#1366 time 10`), true)
+})

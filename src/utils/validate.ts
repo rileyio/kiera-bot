@@ -114,7 +114,7 @@ export class Validate {
     XRegex.forEach(str, validationRegex, (match: any, i: number) => {
       // Handling for 'text block' values
       if (match.optional === '*=') {
-        sig += '\\`([a-z0-9\\s]*)\\`\\s?'
+        sig += `'["|']?([\\w-\\:\\@\\_\\#]+)["|']?\\s?'`
       }
 
       // Handling of static route values
@@ -125,7 +125,7 @@ export class Validate {
       // Handling for user's input values
       if (match.optional === '=' || match.optional === '?=') {
         if (match.type === 'user') sig += `(\\@[\\w\\s-]*\\#[0-9]+|\\<\\@[0-9]*\\>)\\s?`
-        else sig += `(\\@[\\w\\s-]*\\#[0-9]+|[\\w-\\:]+|\\<\\@[0-9]*\\>)\\s?`
+        else sig += `["|']?(\\@[\\w\\s-]*\\#[0-9]+|[\\w-\\:\\@\\_]+|\\<\\@[0-9]*\\>)["|']?\\s?`
       }
     });
 
