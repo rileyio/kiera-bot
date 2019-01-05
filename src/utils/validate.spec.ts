@@ -49,10 +49,10 @@ test('Utils:Validate => Multiple similar signatures', t => {
 })
 
 test('Utils:Validate => Quotes', t => {
-  t.plan(3)
+  t.plan(4)
   const v1 = new Validate('/react:string/user=user/time:string/newtime=number')
-
   t.is(v1.test(`!react @emma#1366 time '10'`), true)
   t.is(v1.test(`!react @emma#1366 time "10"`), true)
   t.is(v1.test(`!react @emma#1366 time 10`), true)
+  t.is(v1.validateArgs(getArgs(`!react @emma#1366 time '10'`)).o.newtime, 10)
 })

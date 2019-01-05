@@ -90,11 +90,21 @@ export class Validate {
     var allValid = true
     var ret: any = {}
     var validated = this.validation.map((v: any, i: number) => {
+      const strRegexp = /^[\"|\'](\@[\w\s-]*\#[0-9]+|[\w-\:\@\_\s+]+|\<\@[0-9]*\>)[\"|\']\s?$/im
+      // is wrapped by quotes
+      const isWrappedByQuotes = strRegexp.test(args[i])
+      // Store in a temp variable to determine in the next step if something was found in the regex.exec
+      const _tempValRegex = isWrappedByQuotes ? strRegexp.exec(args[i]) : args[i]
+      const _tempVal = Array.isArray(_tempValRegex) ? _tempValRegex[1] : args[i]
+
       // Check if type matches
-      v.valid = this.validateType(v.type, args[i])
-      v.value = (v.type === 'user') ? Utils.User.extractUserIdFromString(args[i]) : args[i]
+      v.valid = this.validateType(v.type, _tempVal)
+
+      if (v.type === 'user') v.value = Utils.User.extractUserIdFromString(args[i])
+      if (v.type === 'string') v.value = _tempVal
+
       // Fix: If expected type is valid and is a number, convert it to a number
-      v.value = (v.type === 'number' && v.valid) ? Number(v.value) : args[i]
+      if (v.type === 'number' && v.valid) v.value = Number(_tempVal)
       // Update allValid
       if (!v.valid && v.required) {
         // If the value fails a check (or is empty) but IS required
@@ -114,7 +124,7 @@ export class Validate {
     XRegex.forEach(str, validationRegex, (match: any, i: number) => {
       // Handling for 'text block' values
       if (match.optional === '*=') {
-        sig += `'["|']?([\\w-\\:\\@\\_\\#]+)["|']?\\s?'`
+        sig += `'[\\"|\\']?([\\w-\\:\\@\\_\\#\\s+]+)[\\"|\\']?\\s?'`
       }
 
       // Handling of static route values
@@ -125,7 +135,7 @@ export class Validate {
       // Handling for user's input values
       if (match.optional === '=' || match.optional === '?=') {
         if (match.type === 'user') sig += `(\\@[\\w\\s-]*\\#[0-9]+|\\<\\@[0-9]*\\>)\\s?`
-        else sig += `["|']?(\\@[\\w\\s-]*\\#[0-9]+|[\\w-\\:\\@\\_]+|\\<\\@[0-9]*\\>)["|']?\\s?`
+        else sig += `[\\"|\\']?(\\@[\\w\\s-]*\\#[0-9]+|[\\w-\\:\\@\\_\\#\\s+]+|\\<\\@[0-9]*\\>)[\\"|\\']?\\s?`
       }
     });
 
