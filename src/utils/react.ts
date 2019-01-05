@@ -6,8 +6,13 @@ export namespace React {
       return limitTo.findIndex(lr => lr === r.emoji.name) > -1
     })
   }
+  
 
   export function toInt(mapping: { [emoji: string]: number }, reacts: Array<TrackedMessageReaction>) {
     return reacts.map(r => mapping[r.emoji.name])
+  }
+
+  export function convertToInt(mapping: { [emoji: string]: number }, emoji: string) {
+    return mapping[emoji]
   }
 }

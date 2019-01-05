@@ -4,6 +4,7 @@ import { ObjectID } from 'bson';
 import * as Utils from '../utils';
 import { TrackedMessageReaction } from '../objects/message';
 import { Message } from 'discord.js';
+import { sessionInteractive } from '../embedded/session-embed';
 
 export namespace Session {
   export async function createNewSession(routed: RouterRouted) {
@@ -92,7 +93,7 @@ export namespace Session {
   export async function activateSession(routed: RouterRouted) {
     // Check if session is in the db
     var session = await routed.bot.Sessions.get({ _id: new ObjectID(routed.v.o.id) })
-    var nsession: DeviceSession
+    var ns: DeviceSession
     if (session) {
       // Verify if the session is still active - block if so
       if (session.isActive) {
@@ -102,7 +103,7 @@ export namespace Session {
 
       switch (session.type) {
         case 'lovense':
-          nsession = new DeviceSession(session)
+          ns = new DeviceSession(session)
           break;
       }
 
@@ -110,17 +111,25 @@ export namespace Session {
       const user = await routed.bot.Users.get({ id: routed.message.author.id })
 
       // Update session details
-      nsession.activateTimestamp = Date.now()
+      ns.activateTimestamp = Date.now()
       // Update the record
-      nsession.update()
-      nsession.isActive = true
-      nsession.activatedBy = user._id
+      ns.update()
+      ns.isActive = true
+      ns.activatedBy = user._id
 
       // Update session db record
-      const updateResult = await routed.bot.Sessions.update({ _id: session._id }, nsession)
+      const updateResult = await routed.bot.Sessions.update({ _id: session._id }, ns)
       if (updateResult) {
-        const msgSent = await routed.message.reply(`Session id:\`${routed.v.o.id}\` activated!`)
+
+        const msgSent = await routed.message.reply(sessionInteractive(routed.v.o.id, ns))
+        // Add some default reactions to save user's time
+        await (<Message>msgSent).react('😄')
+        await (<Message>msgSent).react('😏')
+        await (<Message>msgSent).react('😬')
+        await (<Message>msgSent).react('😭')
+        await (<Message>msgSent).react('🙄')
         // Track message for reactions later
+        // const newMessage = new Message(routed.message.channel.type, `wq`, routed.bot.client)
         const mid = await routed.bot.MsgTracker.trackNewMsg(msgSent, { reactionRoute: 'session-active-react' })
         // Update DB record for associated message id that will be tracking reactions
         await routed.bot.Sessions.update({ _id: session._id }, { mid: mid })
@@ -168,27 +177,23 @@ export namespace Session {
 
   export async function handleReact(routed: RouterRouted) {
     // Get session from db
-    const dsession = await routed.bot.Sessions.get({ mid: routed.trackedMessage._id })
+    const dsession = await routed.bot.Sessions.get({
+      mid: routed.trackedMessage._id,
+      isActive: true,
+      isDeactivated: false,
+    })
     // Ensure it exists
     if (!dsession) return
     const session = new DeviceSession(dsession)
-    // Filter to only desired reacts
-    const specificReacts = Utils.React.filter(
-      ['😄', '😏', '😬', '😭', '🙄'],
-      (<TrackedMessageReaction[]>routed.trackedMessage.reactions))
-    // Convert reacts (emoji) to ints
-    const reactsAsInts = Utils.React.toInt({
-      '😄': 1,
-      '😏': 2,
-      '😬': 3,
-      '😭': 4,
-      '🙄': 5
-    }, specificReacts)
+    // Update stored reactions
+    routed.state === 'added'
+      ? session.addReaction(routed.reaction.snowflake, routed.reaction.reaction)
+      : session.removeReaction(routed.reaction.snowflake, routed.reaction.reaction)
     // Update session
-    session.reacts = reactsAsInts
     session.update()
     // Commit session
     const result = await routed.bot.Sessions.update({ mid: routed.trackedMessage._id }, session)
-    console.log('session react handling, record updated:', result)
+    routed.bot.DEBUG_MSG_COMMAND.log('session react handling, record updated:', result)
+    routed.message.edit(sessionInteractive(routed.v.o.id, session))
   }
 }

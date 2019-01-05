@@ -114,11 +114,11 @@ export class Bot {
     await this.Router.routeMessage(message)
   }
 
-  private async onMessageCachedReactionAdd(message: Discord.Message, reaction: Discord.MessageReaction, user: Discord.User) {
+  private async onMessageCachedReactionAdd(message: Discord.Message, reaction: string, user: Discord.User) {
     this.Router.routeReaction(message, reaction, user, 'added')
   }
 
-  private async onMessageCachedReactionRemove(message: Discord.Message, reaction: Discord.MessageReaction, user: Discord.User) {
+  private async onMessageCachedReactionRemove(message: Discord.Message, reaction: string, user: Discord.User) {
     this.Router.routeReaction(message, reaction, user, 'removed')
   }
 
@@ -148,9 +148,9 @@ export class Bot {
     // Emit to handle in the regular handling used for cached messages
     // this.client.emit(DISCORD_CLIENT_EVENTS[event.t], reaction, user)
     if (event.t === 'MESSAGE_REACTION_ADD')
-      return await this.onMessageCachedReactionAdd(message, event.d, user)
+      return await this.onMessageCachedReactionAdd(message, emojiKey, user)
     if (event.t === 'MESSAGE_REACTION_REMOVE')
-      return await this.onMessageCachedReactionRemove(message, event.d, user)
+      return await this.onMessageCachedReactionRemove(message, emojiKey, user)
   }
 
   public startWebAPI() {

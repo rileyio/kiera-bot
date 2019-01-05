@@ -1,5 +1,6 @@
 import { ObjectID } from 'mongodb';
 import { Device } from '../integration/lovense/device';
+import * as Utils from '../utils';
 
 export type SessionTypes =
   | 'Device'
@@ -98,7 +99,7 @@ export class DeviceSession extends Session {
     time: number
     intensity: number
   }
-  public reacts: Array<number>
+  public reacts: Array<{ user: string, reaction: string, level: number }>
 
   constructor(init: Partial<DeviceSession | Device>) {
     super()
@@ -112,7 +113,7 @@ export class DeviceSession extends Session {
         // Lockee
         limit: { time: 0, intensity: 100 },              // User hard limits
         // Reacts tracked by system
-        reacts: [3],
+        reacts: [],
         reactsCompleted: 0
       },
       init)
@@ -142,7 +143,17 @@ export class DeviceSession extends Session {
   }
 
   public getDeactivateTime() {
-    return (this.activateTimestamp + (this.getTotalReactTime() * 60000))
+    // (duration.min x 60000) + ( activateTimestamp + ( getTotalReactTime() x 60000) ) )
+    const calculatedMin = ((this.duration.min * 60000) + (this.getTotalReactTime() * 60000))
+    const calculatedMax = ((this.duration.max * 60000) + this.activateTimestamp)
+    // If duration.max is 0 assume no limit is set
+    const isOverMax = calculatedMin > calculatedMax && this.duration.max > 0
+
+    return isOverMax
+      ? calculatedMax % calculatedMin
+      : this.activateTimestamp + calculatedMin
+
+    // return (this.activateTimestamp + (this.getTotalReactTime() * 60000))
   }
 
   public getRemainingTime() {
@@ -153,6 +164,19 @@ export class DeviceSession extends Session {
 
   public getTotalReactTime() {
     return ((this.reacts.length) * this.react.time)
+  }
+
+  public addReaction(snowflake: string, reaction: string) {
+    this.reacts.push({
+      user: snowflake,
+      reaction: reaction,
+      level: Utils.React.convertToInt({ '😄': 1, '😏': 2, '😬': 3, '😭': 4, '🙄': 5 }, reaction)
+    })
+  }
+
+  public removeReaction(snowflake: string, reaction: string) {
+    const index = this.reacts.findIndex(r => r.user === snowflake && r.reaction === reaction)
+    if (index > -1) this.reacts.splice(index, 1)
   }
 
   public apiOutput() {

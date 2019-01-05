@@ -46,7 +46,7 @@ export const Routes: Array<RouteConfiguration> = [
     name: 'session-active-react',
     middleware: [
       Middleware.isUserRegistered,
-      Middleware.hasRole(['developer', 'keyholder', 'lockee'])
+      Middleware.permittedReaction(['😄', '😏', '😬', '😭', '🙄'])
     ]
   },
 ]

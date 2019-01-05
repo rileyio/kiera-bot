@@ -79,10 +79,21 @@ export class Router {
     this.bot.DEBUG.log(`reacts configured = ${this.routes.filter(r => r.type === 'reaction').length}`)
   }
 
-  public async routeReaction(message: Message, reaction: MessageReaction, user: User, direction: 'added' | 'removed') {
+  public async routeReaction(message: Message, reaction: string, user: User, direction: 'added' | 'removed') {
     // console.log('user', user)
-    this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming reaction <@${user.id}> ${direction}`)
+    this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming reaction <@${user.id}> reaction:${reaction} ${direction}`)
     // console.log('reaction', reaction)
+    // Block my own messages
+    if (user.id === this.bot.client.user.id) {
+      // Track my own messages when they are seen
+      // this.bot.Stats.increment('messages-sent')
+      // Track if its a dm as well
+      if (message.channel.type === 'dm') {
+        // this.bot.Stats.increment('dms-sent')
+      }
+      return; // Hard block
+    }
+
 
     // Lookup tracked message in db
     var storedMessage = await this.bot.Messages.get<Partial<TrackedMessage>>({ id: message.id })
@@ -110,16 +121,42 @@ export class Router {
 
     var routed = new RouterRouted({
       bot: this.bot,
-      // reaction: reaction,
+      reaction: {
+        snowflake: user.id,
+        reaction: reaction
+      },
       message: message,
       route: route,
       state: direction,
       trackedMessage: storedMessage,
+      type: 'reaction',
       user: user,
     })
 
-    // Check status returns later for stats tracking
-    const status = await route.controller(routed)
+    // Process middleware
+    const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
+    var mwareProcessed = 0
+
+    for (const middleware of route.middleware) {
+      const fromMiddleware = await middleware(routed)
+      // If the returned item is empty stop here
+      if (!fromMiddleware) {
+        break;
+      }
+      // When everything is ok, continue
+      mwareProcessed += 1
+    }
+
+    this.bot.DEBUG_MSG_COMMAND.log(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
+
+    // Stop execution of route if middleware is halted
+    if (mwareProcessed === mwareCount) {
+      // this.bot.Stats.increment('commands-routed')
+      // Check status returns later for stats tracking
+      const status = await route.controller(routed)
+      // this.bot.Stats.increment('commands-completed')
+      return // End routing here
+    }
   }
 
   public async routeMessage(message: Message) {
@@ -170,10 +207,12 @@ export class Router {
 
       // Normal routed behaviour
       var routed = new RouterRouted({
+        args: args,
         bot: this.bot,
         message: message,
         route: route,
-        args: args
+        type: 'message',
+        user: message.author
       })
 
       const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
@@ -191,6 +230,8 @@ export class Router {
       }
 
       this.bot.DEBUG_MSG_COMMAND.log(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
+
+      // console.log(routed)
 
       // Stop execution of route if middleware is halted
       if (mwareProcessed === mwareCount) {
@@ -210,10 +251,14 @@ export class RouterRouted {
   public args: Array<string>
   public bot: Bot
   public message: Message
-  public reaction: MessageReaction
+  public reaction: {
+    snowflake: string,
+    reaction: string
+  }
   public route: MessageRoute
   public state: 'added' | 'removed'
   public trackedMessage: TrackedMessage
+  public type: 'message' | 'reaction'
   public user: User
   public v: {
     valid: boolean;
@@ -222,11 +267,21 @@ export class RouterRouted {
   }
 
   constructor(init: Partial<RouterRouted>) {
-    Object.assign(this, init)
-    // this.bot = init.bot
-    // this.message = init.message
-    // this.route = init.route
-    // this.args = init.args
+    // Object.assign(this, init)
+    this.args = init.args
+    this.bot = init.bot
+    this.message = init.message
+    this.reaction = init.reaction
+      ? {
+        snowflake: init.reaction.snowflake,
+        reaction: init.reaction.reaction
+      }
+      : undefined
+    this.route = init.route
+    this.state = init.state
+    this.trackedMessage = init.trackedMessage
+    this.type = init.type
+    this.user = init.user
     // Generate v.*
     this.v = this.route.validation.validateArgs(this.args)
   }
