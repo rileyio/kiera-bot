@@ -1,13 +1,13 @@
-import * as Instructions from '../usage-instructions';
 import { RouterRouted } from '../utils/router';
+import { sb, en } from '../string-builder';
 
 export namespace Help {
   export async function genericFallback(routed: RouterRouted) {
-    await routed.message.reply(Instructions.help);
+    await routed.message.reply(sb(en.help.main, { prefix: process.env.BOT_MESSAGE_PREFIX }));
   }
 
   export async function commandHelp(routed: RouterRouted) {
-    await routed.message.reply(Instructions[routed.v.o.command])
+    await routed.message.reply(sb(en.help[routed.v.o.command], { prefix: process.env.BOT_MESSAGE_PREFIX }))
   }
 }
 

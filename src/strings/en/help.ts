@@ -1,33 +1,33 @@
-export const help = `
+export const main = `
 **Commands Available**
 
-Commands will always begin with the \`!\` prefix.
+Commands will always begin with the \`{{prefix}}\` prefix.
 
 - Times will always be in minutes & Ranges such as \`1-10\` means \`1\` is the lowest and \`10\` is the highest
 - User/Lockee commands won't use any @user#0000 arguments unless specified
 - Keyholder commands must always specify a @user#0000 if command is to target a user
 
-To see more about a specific command's usage, type \`!help command\`
+To see more about a specific command's usage, type \`{{prefix}}help command\`
 
 **[Everyone] Generic/Stats/User**
-\`!register\` - Registers the user with the bot (Required before access to most commands becomes available)
-\`!ck\` - ChastiKey Commands
+\`{{prefix}}register\` - Registers the user with the bot (Required before access to most commands becomes available)
+\`{{prefix}}ck\` - ChastiKey Commands
 
 **[Lockee] Commands (*Must be entered by the device owner*)**
-\`!session\` - Creates a new session for playing with a device (required for: \`!limit\` \`!duration\` \`!react\`)
-\`!limit\` - Lockee defined limits (Cannot be surpassed by KH.. at this time..)
-\`!task\` - *Coming Soon*
-\`!punishment\` - *Coming Soon*
+\`{{prefix}}session\` - Creates a new session for playing with a device (required for: \`{{prefix}}limit\` \`{{prefix}}duration\` \`{{prefix}}react\`)
+\`{{prefix}}limit\` - Lockee defined limits (Cannot be surpassed by KH.. at this time..)
+\`{{prefix}}task\` - *Coming Soon*
+\`{{prefix}}punishment\` - *Coming Soon*
 
 **[Keyholder] Commands**
-\`!react\` - Sets how much time to be added per react
-\`!duration\` - Sets base duration (reacts can add to this)
-\`!task\` - *Coming Soon*
-\`!punishment\` - *Coming Soon*
+\`{{prefix}}react\` - Sets how much time to be added per react
+\`{{prefix}}duration\` - Sets base duration (reacts can add to this)
+\`{{prefix}}task\` - *Coming Soon*
+\`{{prefix}}punishment\` - *Coming Soon*
 `
 
 export const register = `
-**\`!register\` Command Usage**
+**\`{{prefix}}register\` Command Usage**
 
 **Constraints:** [None]
 
@@ -36,12 +36,12 @@ Using this means you agree to having some basic information stored (IDs, etc) fo
 
 Usage Example:
 \`\`\`md
-!register
+{{prefix}}register
 \`\`\`
 `
 
 export const react = `
-**\`!react\` Command Usage**
+**\`{{prefix}}react\` Command Usage**
 
 Constraints: [Keyholder's Only]
 Available Range (Per react): \`1-10\`
@@ -50,12 +50,12 @@ Sets how much time to be added/removed per react.
 
 Usage Example:
 \`\`\`md
-!react @user#0000 time 10
+{{prefix}}react @user#0000 time 10
 \`\`\`
 `
 
 export const duration = `
-**\`!duration\` Command Usage**
+**\`{{prefix}}duration\` Command Usage**
 
 Constraints: [Keyholder's Only]
 Available Range: \`1-10\`
@@ -64,12 +64,12 @@ Sets a duration of the session, time can be added to this via reacts.
 
 Usage Example:
 \`\`\`md
-!duration @user#0000 time 60
+{{prefix}}duration @user#0000 time 60
 \`\`\`
 `
 
 export const intensity = `
-**\`!intensity\` Command Usage**
+**\`{{prefix}}intensity\` Command Usage**
 
 Constraints: [Keyholder's Only]
 Available Range: \`0-100\`
@@ -85,14 +85,14 @@ Example: Where modifier (%) is 10    { \`-%\`, \`-%/2\`, \`no-change\`, \`+%*2\`
 
 Usage Example:
 \`\`\`md
-!intensity @user#0000 set min 10
-!intensity @user#0000 set max 80
-!intensity @user#0000 set modifier 10
+{{prefix}}intensity @user#0000 set min 10
+{{prefix}}intensity @user#0000 set max 80
+{{prefix}}intensity @user#0000 set modifier 10
 \`\`\`
 `
 
 export const limit = `
-**\`!limit\` Command Usage**
+**\`{{prefix}}limit\` Command Usage**
 
 Constraints: [Lockee's Only]
 Available Limits: \`time\` \`intensity\`
@@ -101,13 +101,13 @@ Sets intensity lockee's thresholds/limits.
 
 Usage Example:
 \`\`\`md
-!limit intensity 80
-!limit time 75
+{{prefix}}limit intensity 80
+{{prefix}}limit time 75
 \`\`\`
 `
 
 export const ck = `
-**\`!ck\` Command Usage**
+**\`{{prefix}}ck\` Command Usage**
 
 Constraints: [Keyholder or Lockees]
 
@@ -118,12 +118,12 @@ Currently returns:
 Usage Example
 \`\`\`sh
 // Returns your ticker
-!ck ticker
+{{prefix}}ck ticker
 
 // Configures ChastiKey username
-!ck username YourUsername
+{{prefix}}ck username YourUsername
 
 // Configures if your ticker should return as a (1) Keyholder or (2) Lockee
-!ck ticker set type 2
+{{prefix}}ck ticker set type 2
 \`\`\`
 `
