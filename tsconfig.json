@@ -12,7 +12,8 @@
     "rootDir": "./src",
     "inlineSourceMap": true,
     "lib": [
-      "es6"
+      "es6",
+      "es2016"
     ]
   },
   "include": [

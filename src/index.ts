@@ -69,7 +69,7 @@ export class Bot {
     this.client.on('raw', async event => {
       if (event.t === null) return
       // Skip event types that are not mapped
-      console.log('raw:', event.t)
+      this.DEBUG_MSG_INCOMING.log('raw:', event.t)
       // if (event.t === 'PRESENCE_UPDATE') console.log(event)
       if (!DISCORD_CLIENT_EVENTS.hasOwnProperty(event.t)) return;
       this.onMessageNonCachedReact(event)
@@ -144,7 +144,7 @@ export class Bot {
     const emojiKey = event.d.emoji.id
       ? `${event.d.emoji.name}:${event.d.emoji.id}`
       : event.d.emoji.name;
-    console.log('emojiKey', emojiKey)
+    this.DEBUG_MSG_INCOMING.log('emojiKey', emojiKey)
     // Emit to handle in the regular handling used for cached messages
     // this.client.emit(DISCORD_CLIENT_EVENTS[event.t], reaction, user)
     if (event.t === 'MESSAGE_REACTION_ADD')

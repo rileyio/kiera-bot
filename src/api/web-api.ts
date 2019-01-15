@@ -1,13 +1,24 @@
 import * as restify from 'restify';
 import * as Debug from 'debug';
 import * as Controllers from './controllers/index';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as corsMiddleware from 'restify-cors-middleware';
+// import * as ws from 'ws';
+import * as SocketIO from 'socket.io';
+import * as url from 'url';
 import { Bot } from '..';
 import { SessionsAPI, StatsAPI } from './controllers/index';
 import { AuthKey } from '../objects/authkey';
 
 export class WebAPI {
   protected Bot: Bot
+  protected https = {
+    key: fs.readFileSync(path.join(process.env.API_HTTPS_KEY)),
+    certificate: fs.readFileSync(path.join(process.env.API_HTTPS_CRT))
+  }
   protected server: restify.Server
+  protected socket: SocketIO.Server
   protected readonly port: number = Number(process.env.API_PORT || 8234)
   protected readonly prefix: string = '/api'
   protected DEBUG_WEBAPI = Debug('ldi:WebAPI');
@@ -23,18 +34,40 @@ export class WebAPI {
     this.Sessions = new SessionsAPI(this.Bot, this.DEBUG_WEBAPI)
     this.Stats = new StatsAPI(this.Bot, this.DEBUG_WEBAPI)
 
-    this.server = restify.createServer()
+    this.server = restify.createServer(this.https)
 
     // API config
     this.server.use(restify.plugins.bodyParser({ mapParams: true }))
+
+    // Cors
+    const cors = corsMiddleware({
+      preflightMaxAge: 5, //Optional
+      origins: ['*'],
+      allowHeaders: ['*'],
+      exposeHeaders: ['API-Token-Expiry']
+    })
+
+    this.server.pre(cors.preflight)
+    this.server.use(cors.actual)
 
     // Auth middleware
     this.server.use((rq, rs, n) => this.auth(rq, rs, n))
 
     // Configured routes
-    this.server.get(`${this.prefix}/sessions`, (req, res, next) => this.Sessions.getAll(req, res, next))
-    this.server.get(`${this.prefix}/session`, (req, res, next) => this.Sessions.get(req, res, next))
+    this.server.post(`${this.prefix}/sessions`, (req, res, next) => this.Sessions.getAll(req, res, next))
+    this.server.post(`${this.prefix}/session`, (req, res, next) => this.Sessions.get(req, res, next))
     this.server.get(`${this.prefix}/stats`, (req, res, next) => this.Stats.getAll(req, res, next))
+
+    // Setup SocketIO
+    this.socket = SocketIO.listen(this.server.server)
+    this.socket.sockets.on('connection', (socket) => {
+      this.DEBUG_WEBAPI('socket connection')
+      socket.emit('news', { hello: 'world' });
+      socket.on('my other event', (data) => {
+        this.DEBUG_WEBAPI(data);
+      });
+      socket.emit('heartbeat', { stats: this.Bot.Stats.Bot })
+    });
   }
 
   public listen() {

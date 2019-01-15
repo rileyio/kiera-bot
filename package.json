@@ -40,6 +40,8 @@
     "joi": "^14.3.1",
     "mongodb": "^3.1.10",
     "restify": "^7.3.0",
+    "restify-cors-middleware": "^1.1.1",
+    "socket.io": "^2.2.0",
     "winston": "^3.1.0"
   },
   "devDependencies": {
@@ -50,7 +52,9 @@
     "@types/mongodb": "^3.1.18",
     "@types/node": "^10.12.18",
     "@types/restify": "^7.2.6",
+    "@types/restify-cors-middleware": "^1.0.1",
     "@types/restify-errors": "^4.3.3",
+    "@types/socket.io": "^2.1.2",
     "@types/xregexp": "^3.0.29",
     "ava": "^1.0.1",
     "debug": "^4.1.0",
