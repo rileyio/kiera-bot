@@ -8,7 +8,10 @@
  * @returns
  */
 export function getArgs(msg: string) {
-  return msg.replace(/^\!/, '').replace(/\s+/g, ' ').split(' ')
+  return msg
+    .replace(/^\!/, '')
+    .replace(/(?!"\B[^"|']*)\s+(?![^"|']*"\B)/g, ' ')
+    .split(/(?!"\B[^"|']*)\s+(?![^"|']*"\B)/g)
 }
 
 export * from './utils/chastikey';
