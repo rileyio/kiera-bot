@@ -56,3 +56,8 @@ test('Utils:Validate => Quotes', t => {
   t.is(v1.test(`!react @emma#1366 time 10`), true)
   t.is(v1.validateArgs(getArgs(`!react @emma#1366 time '10'`)).o.newtime, 10)
 })
+
+test('Utils:Validate => Multi String Quoted', t => {
+  const v1 = new Validate('/decision:string/new:string/name=string')
+  t.is(v1.test(`!decision new "Question goes here?"`), true)
+})
