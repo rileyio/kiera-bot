@@ -1,5 +1,6 @@
 export * from './controllers/admin';
 export * from './controllers/chastikey';
+export * from './controllers/decision';
 export * from './controllers/devices';
 export * from './controllers/duration';
 export * from './controllers/help';

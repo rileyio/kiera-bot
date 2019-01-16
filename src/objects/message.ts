@@ -1,4 +1,4 @@
-import { ObjectID } from "bson";
+import { ObjectID } from 'bson';
 import { MessageReaction } from 'discord.js';
 
 export class TrackedMessage {

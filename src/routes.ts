@@ -1,5 +1,6 @@
 import { Routes as AdminRoutes } from './routes/admin';
 import { Routes as CKRoutes } from './routes/ck';
+import { Routes as DecisionRoutes } from './routes/decision';
 import { Routes as DeviceRoutes } from './routes/devices';
 import { Routes as DurationRoutes } from './routes/duration';
 import { Routes as HelpRoutes } from './routes/help';
@@ -10,8 +11,15 @@ import { Routes as UserRoutes } from './routes/user';
 
 export function Routes() {
   return Array().concat(
-    HelpRoutes, UserRoutes, DeviceRoutes, CKRoutes,
-    AdminRoutes, DurationRoutes, ReactRoutes, SessionRoutes,
-    LimitRoutes
+    AdminRoutes,
+    CKRoutes,
+    DecisionRoutes,
+    DeviceRoutes,
+    DurationRoutes,
+    HelpRoutes,
+    LimitRoutes,
+    ReactRoutes,
+    SessionRoutes,
+    UserRoutes
   )
 }

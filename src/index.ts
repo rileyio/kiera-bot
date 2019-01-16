@@ -16,6 +16,7 @@ import { Statistics } from './stats';
 import { Debug } from './logger';
 import { AuthKey } from './objects/authkey';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
+import { TrackedDecision } from './objects/decision';
 
 export class Bot {
   private WebAPI: WebAPI
@@ -31,6 +32,7 @@ export class Bot {
   // Databases
   public AuthKeys: MongoDB<AuthKey>
   public BotStatistics: MongoDB<BotStatistics>
+  public Decision: MongoDB<TrackedDecision>
   public Messages: MongoDB<TrackedMessage>
   public Servers: MongoDB<TrackedServer>
   public ServerStatistics: MongoDB<BotStatistics>
@@ -54,6 +56,7 @@ export class Bot {
     // Load DBs
     this.AuthKeys = await MongoDBLoader('authkeys')
     this.BotStatistics = await MongoDBLoader('stats-bot')
+    this.Decision = await MongoDBLoader('decision')
     this.Messages = await MongoDBLoader('messages')
     this.Servers = await MongoDBLoader('server')
     this.ServerStatistics = await MongoDBLoader('stats-servers')

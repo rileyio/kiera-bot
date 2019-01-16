@@ -8,12 +8,12 @@ import * as CKTicker from './chastikey/ticker';
 export namespace ChastiKey {
   export const Ticker = CKTicker
 
-/**
- *  Sets username for ChastiKey
- * @export
- * @param {RouterRouted} routed
- */
-export async function setUsername(routed: RouterRouted) {
+  /**
+   *  Sets username for ChastiKey
+   * @export
+   * @param {RouterRouted} routed
+   */
+  export async function setUsername(routed: RouterRouted) {
     const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
     const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
 

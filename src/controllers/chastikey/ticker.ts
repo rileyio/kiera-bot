@@ -1,5 +1,5 @@
 import * as Utils from '../../utils';
-import { RouterRouted } from "../../utils/router";
+import { RouterRouted } from '../../utils/router';
 import { TextChannel, Attachment } from 'discord.js';
 import { ChastiKeyTickerType } from '../../objects/chastikey';
 import { TrackedUser } from '../../objects/user';

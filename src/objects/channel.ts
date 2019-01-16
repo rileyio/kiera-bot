@@ -1,4 +1,4 @@
-import { Channel, TextChannel } from "discord.js";
+import { Channel, TextChannel } from 'discord.js';
 
 export class TrackedChannel {
   public _id: string
