@@ -3,6 +3,7 @@ import { RouterRouted } from '../utils/router';
 import { TrackedUser } from '../objects/user';
 import { TrackedDecision, TrackedDecisionOption } from '../objects/decision';
 import { ObjectID } from 'bson';
+import { decisionFromSaved } from '../embedded/decision-embed';
 
 export namespace Decision {
   /**
@@ -18,9 +19,6 @@ export namespace Decision {
     const user = new TrackedUser(await routed.bot.Users.get(userQuery))
     // Create a new question & 
     const nd = new TrackedDecision({ name: routed.v.o.name, owner: user._id })
-    console.log('args:', routed.v.o)
-    console.log('args:', routed.args)
-    console.log('newDecision:', nd)
     const updated = await routed.bot.Decision.add(nd)
 
     if (updated) {
@@ -32,13 +30,25 @@ export namespace Decision {
     return false
   }
 
-  export async function newDecisionText(routed: RouterRouted) {
+  export async function newDecisionEntry(routed: RouterRouted) {
     var decision = await routed.bot.Decision.get({ _id: new ObjectID(routed.v.o.id) })
 
     if (decision) {
-      decision = new TrackedDecision(this.decisi)
-      decision.options.push(new TrackedDecisionOption({ text: routed.v.o.text }))
-      await routed.bot.Decision.update({ _id: decision._id }, decision)
+      var ud = new TrackedDecision(decision)
+      ud.options.push(new TrackedDecisionOption({ text: routed.v.o.text }))
+      await routed.bot.Decision.update({ _id: decision._id }, ud)
+      await routed.message.reply(`Decision entry added \`${routed.v.o.text}\``)
+      return true
+    }
+    return false
+  }
+
+  export async function runSavedDecision(routed: RouterRouted) {
+    const decision = await routed.bot.Decision.get({ _id: new ObjectID(routed.v.o.id) })
+    if (decision) {
+      const sd = new TrackedDecision(decision)
+      const random = Math.floor((Math.random() * sd.options.length));
+      await routed.message.reply(decisionFromSaved(sd, sd.options[random]))
       return true
     }
     return false

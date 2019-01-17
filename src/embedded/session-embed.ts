@@ -47,28 +47,28 @@ export function sessionInteractive(id: string, session: DeviceSession) {
       color: 34353,
       timestamp: props.timestamp,
       footer: {
-        text: "Last updated"
+        text: `Last updated`
       },
       fields: [
         {
-          name: "Session Paramaters",
-          value: "------------------------"
+          name: `Session Paramaters`,
+          value: `------------------------`
         },
         {
-          name: "Duration",
+          name: `Duration`,
           value: `Min: \`${props.duration.min}\`   Max: \`${props.duration.max}\``
         },
         {
-          name: "React",
+          name: `React`,
           value: `Time added per reaction: \`${props.timePerReact}\` minutes`
         },
         {
-          name: "Time Remaining (__as of Last updated__)",
+          name: `Time Remaining (__as of Last updated__)`,
           value: `🕐  ${props.timeRemaining.hrs}hr ${props.timeRemaining.min}m ${props.timeRemaining.sec}s`,
           inline: true
         },
         {
-          name: "Reacts Registered",
+          name: `Reacts Registered`,
           value: `\`😄  ${props.totals.r1}\` \`😏  ${props.totals.r2}\` \`😬  ${props.totals.r3}\` \`😭  ${props.totals.r4}\` \`🙄  ${props.totals.r5}\``,
           inline: true
         }

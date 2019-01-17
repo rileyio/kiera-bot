@@ -111,12 +111,14 @@ export class MongoDB<T> {
    * @memberof DB
    */
   public async update<Q, T>(query: Q, update: T, opts?: { upsert?: boolean, updateOne?: boolean, atomic?: boolean }) {
+    // this.DEBUG_DB.log(`.update =>`, query, update)
     const uopts = Object.assign({ atomic: false, upsert: false, updateOne: true }, opts)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
     const result = uopts.updateOne
       ? await collection.updateOne(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
       : await collection.updateMany(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
+    this.DEBUG_DB.log(`.update results =>`, result.result.n)
     // connection.client.close()
     return result.result.n
   }

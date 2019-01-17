@@ -17,10 +17,21 @@ export const Routes: Array<RouteConfiguration> = [
   {
     type: 'message',
     commandTarget: 'author',
-    controller: Commands.Decision.newDecisionText,
+    controller: Commands.Decision.newDecisionEntry,
     example: '!decision "id" add "Your decision entry here"',
     name: 'decision-new-option',
     validate: '/decision:string/id=string/add:string/text=string',
+    middleware: [
+      Middleware.isUserRegistered
+    ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'author',
+    controller: Commands.Decision.runSavedDecision,
+    example: '!decision roll "id"',
+    name: 'decision-new-option',
+    validate: '/decision:string/roll:string/id=string',
     middleware: [
       Middleware.isUserRegistered
     ]
