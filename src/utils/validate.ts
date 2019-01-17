@@ -122,10 +122,10 @@ export class Validate {
     var sig = '^\\!'
 
     XRegex.forEach(str, validationRegex, (match: any, i: number) => {
-      // Handling for 'text block' values
-      if (match.optional === '*=') {
-        sig += `'[\\"|\\']?([\\w-\\:\\@\\_\\#\\s+]+)[\\"|\\']?\\s?'`
-      }
+      // // Handling for 'text block' values
+      // if (match.optional === '*=') {
+      //   sig += `'[\\"|\\']?([\\w-\\:\\@\\_\\#\\s+]+)[\\"|\\']?\\s?'`
+      // }
 
       // Handling of static route values
       if (match.optional === ':' || match.optional === '?:') {
@@ -135,7 +135,10 @@ export class Validate {
       // Handling for user's input values
       if (match.optional === '=' || match.optional === '?=') {
         if (match.type === 'user') sig += `(\\@[\\w\\s-]*\\#[0-9]+|\\<\\@[0-9]*\\>)\\s?`
-        else sig += `[\\"|\\']?(\\@[\\w\\s-]*\\#[0-9]+|[\\w-\\:\\@\\_\\#\\?\\!\\s+]+|\\<\\@[0-9]*\\>)[\\"|\\']?\\s?`
+        else sig 
+          += `[\\"|\\']?(\\@[\\w\\s-]*\\#[0-9]+|`
+          + `[\\w-\\:\\@\\_\\#\\?\\!\\~\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\{\\}\\[\\]\\;\\|\\,\\.\\<\\>\\s+]`
+          + `+|\\<\\@[0-9]*\\>)[\\"|\\']?\\s?`
       }
     });
 

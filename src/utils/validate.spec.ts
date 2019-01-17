@@ -61,3 +61,8 @@ test('Utils:Validate => Multi String Quoted', t => {
   const v1 = new Validate('/decision:string/new:string/name=string')
   t.is(v1.test(`!decision new "Question goes here?"`), true)
 })
+
+test('Utils:Validate => Special Characters', t => {
+  const v1 = new Validate('/decision:string/id=string/add:string/text=string')
+  t.is(v1.test(`!decision wqdhwqd2j021DJW92 add "Question~!@#$%^&*(){}[];|,.<> goes here?"`), true)
+})
