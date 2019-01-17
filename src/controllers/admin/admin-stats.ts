@@ -1,5 +1,4 @@
 import { RouterRouted } from '../../utils/router';
-import { TrackedMessage } from '../../objects/message';
 
 export async function getBotStats(routed: RouterRouted) {
   const stats = routed.bot.Stats.Bot
@@ -46,7 +45,7 @@ export async function getBotStats(routed: RouterRouted) {
         },
         {
           name: '#',
-          value: `\`${stats.messages.seen}\`\n\`${stats.messages.seen}\`\n\`${stats.messages.tracked}\``,
+          value: `\`${stats.messages.seen}\`\n\`${stats.messages.sent}\`\n\`${stats.messages.tracked}\``,
           inline: true
         },
         {
