@@ -9,7 +9,7 @@
  */
 export function getArgs(msg: string) {
   return msg
-    .replace(new RegExp(`^${process.env.BOT_MESSAGE_PREFIX}`), '')
+    .replace(new RegExp(`^\\${process.env.BOT_MESSAGE_PREFIX}`), '')
     .replace(/(?!["|']\B[^"|']*)\s+(?![^"|']*["|']\B)/g, ' ')
     .split(/(?!["|']\B[^"|']*)\s+(?![^"|']*["|']\B)/g)
 }

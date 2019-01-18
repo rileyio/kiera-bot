@@ -9,6 +9,6 @@ test('Utils:getArgs => Ensure proper parsing of args', t => {
   t.is(Utils.getArgs(`!decision wqdhwqd2j021DJW92 add "Question~!@#$%^&*(){}[];|,.<> goes here?"`).length, 4)
 })
 
-test('Utils:getArgs => Strip prefix', t=> {
+test('Utils:getArgs => Strip prefix', t => {
   t.is(Utils.getArgs('!decision test')[0], 'decision')
 })
