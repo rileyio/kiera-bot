@@ -12,15 +12,21 @@ export namespace Duration {
     // User min or max
     const isMinOrMax = routed.v.o.key === 'min' || routed.v.o.key === 'max'
     // Ensure its one of these 2 or throw error
-    if (!isMinOrMax) return await routed.message.reply(
-      `must be \`!duration @user#0000 min ${newTime}\` or \`!duration @user#0000 max ${newTime}\``)
+    if (!isMinOrMax) {
+      await routed.message.reply(
+        `must be \`!duration @user#0000 min ${newTime}\` or \`!duration @user#0000 max ${newTime}\``)
+      return false
+    }
 
     // Get user's _id from the db
     const targetUser = await routed.bot.Users.get(userQuery)
 
     // Ensure target user is setup & has a session
-    if (!targetUser) return await routed.message.reply(
-      `User: ${userAt} could not be found, make sure they've used the following: \`!register\``)
+    if (!targetUser) {
+      await routed.message.reply(
+        `User: ${userAt} could not be found, make sure they've used the following: \`!register\``)
+      return false
+    }
 
     const userSession = await routed.bot.Sessions.get({
       uid: targetUser._id,
@@ -30,8 +36,11 @@ export namespace Duration {
     })
 
     // Ensure session exists
-    if (!userSession) return await routed.message.reply(
-      `User: ${userAt} needs to create a session \`!session new lovense\` and must not have activated it!`)
+    if (!userSession) {
+      await routed.message.reply(
+        `User: ${userAt} needs to create a session \`!session new lovense\` and must not have activated it!`)
+      return false
+    }
 
     // Update props
     const nsession = new DeviceSession(userSession)
@@ -44,5 +53,6 @@ export namespace Duration {
     await routed.message.reply(
       `:white_check_mark: Setting duration ${userAt} ${key} to: \`${newTime}\` minutes`)
     routed.bot.DEBUG_MSG_COMMAND.log(`!duration ${userAt} ${key} ${newTime}`)
+    return true
   }
 }

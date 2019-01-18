@@ -98,7 +98,7 @@ export namespace Session {
       // Verify if the session is still active - block if so
       if (session.isActive) {
         await routed.message.reply(`Cannot activate a session (id:\`${session._id}\`) thats already in progress!`)
-        return; // Stop here
+        return false; // Stop here
       }
 
       switch (session.type) {
@@ -133,12 +133,12 @@ export namespace Session {
         const mid = await routed.bot.MsgTracker.trackNewMsg(msgSent, { reactionRoute: 'session-active-react' })
         // Update DB record for associated message id that will be tracking reactions
         await routed.bot.Sessions.update({ _id: session._id }, { mid: mid })
+        return true; // Stop here
       }
-
-      return; // Stop here
     }
 
     await routed.message.reply(`Session id:\`${routed.v.o.id}\` was not found!`)
+    return false;
   }
 
   export async function deactivateSession(routed: RouterRouted) {
@@ -148,7 +148,7 @@ export namespace Session {
       // Verify if the session is still active - block if so
       if (session.isActive) {
         await routed.message.reply(`Cannot deactivate a session (id:\`${session._id}\`) thats still in progress!`)
-        return; // Stop here
+        return false; // Stop here
       }
 
       switch (session.type) {
@@ -169,10 +169,11 @@ export namespace Session {
       // Update db record
       const updateResult = await routed.bot.Sessions.update({ _id: session._id }, session)
       if (updateResult) await routed.message.reply(`Session id:\`${routed.v.o.id}\` deactivated!`)
-      return; // Stop here
+      return true; // Stop here
     }
 
     await routed.message.reply(`Session id:\`${routed.v.o.id}\` was not found!`)
+    return false;
   }
 
   export async function handleReact(routed: RouterRouted) {
@@ -183,7 +184,7 @@ export namespace Session {
       isDeactivated: false,
     })
     // Ensure it exists
-    if (!dsession) return
+    if (!dsession) return false;
     const session = new DeviceSession(dsession)
     // Update stored reactions
     routed.state === 'added'
@@ -195,5 +196,6 @@ export namespace Session {
     const result = await routed.bot.Sessions.update({ mid: routed.trackedMessage._id }, session)
     routed.bot.DEBUG_MSG_COMMAND.log('session react handling, record updated:', result)
     routed.message.edit(sessionInteractive(routed.v.o.id, session))
+    return true;
   }
 }

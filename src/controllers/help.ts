@@ -4,6 +4,7 @@ import { sb, en } from '../string-builder';
 export namespace Help {
   export async function genericFallback(routed: RouterRouted) {
     await routed.message.reply(sb(en.help.main));
+    return true
   }
 
   export async function commandHelp(routed: RouterRouted) {
@@ -14,5 +15,7 @@ export namespace Help {
     else {
       await routed.message.reply(en.error.commandHelpMissing)
     }
+
+    return true
   }
 }

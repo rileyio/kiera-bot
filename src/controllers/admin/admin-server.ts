@@ -1,12 +1,12 @@
-import { performance } from "perf_hooks";
-import { RouterRouted } from "../../utils/router";
-import { TrackedMessage } from "../../objects/message";
+import { performance } from 'perf_hooks';
+import { RouterRouted } from '../../utils/router';
+import { TrackedMessage } from '../../objects/message';
 
 export async function pingPong(routed: RouterRouted) {
   const startTime = performance.now()
 
   // Track all incoming messages
-  routed.bot.MsgTracker.trackMsg(new TrackedMessage({
+  await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
     authorId: routed.message.author.id,
     authorUsername: routed.message.author.username,
     id: routed.message.id,
@@ -23,7 +23,7 @@ export async function pingPong(routed: RouterRouted) {
   const response = await routed.message.reply(`pong \`${ms}ms\``);
 
   if (!Array.isArray(response)) {
-    routed.bot.MsgTracker.trackMsg(new TrackedMessage({
+    await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
       authorId: response.author.id,
       authorUsername: response.author.username,
       id: response.id,
@@ -38,6 +38,7 @@ export async function pingPong(routed: RouterRouted) {
   }
 
   routed.bot.DEBUG_MSG_INCOMING.log(`${routed.message.content} response => pong ${ms}ms`)
+  return true
 }
 
 /**
@@ -47,4 +48,5 @@ export async function pingPong(routed: RouterRouted) {
  */
 export async function versionCheck(routed: RouterRouted) {
   await routed.message.channel.send(`Running on version \`${routed.bot.version}\``)
+  return true
 }

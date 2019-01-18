@@ -35,10 +35,10 @@ export async function setTickerType(routed: RouterRouted) {
   if (updateResult > 0) {
     await routed.message.author
       .send(`:white_check_mark: ChastiKey Ticker type now set to: \`${newTickerTypeAsString}\``)
-    routed.bot.DEBUG_MSG_COMMAND.log(`!ck ticker set type ${newTickerTypeAsString}`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set type ${newTickerTypeAsString}`)
   }
   else {
-    routed.bot.DEBUG_MSG_COMMAND.log(`!ck ticker set type ${newTickerTypeAsString} -> update unsuccessful!`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set type ${newTickerTypeAsString} -> update unsuccessful!`)
   }
 }
 
@@ -46,6 +46,7 @@ export async function getTicker(routed: RouterRouted) {
   const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
   const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
   const user = new TrackedUser(await routed.bot.Users.get(userQuery))
-  const attachment = new Attachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey));
-  await routed.message.channel.send(attachment);
+  const attachment = new Attachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey))
+  await routed.message.channel.send(attachment)
+  return true
 }
