@@ -1,3 +1,4 @@
+require('dotenv').config()
 import test from 'ava';
 import { Validate } from './validate';
 import { getArgs } from '../utils';
