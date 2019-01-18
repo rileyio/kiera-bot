@@ -16,18 +16,18 @@ test('Utils:Validate => Generate Validate', t => {
 
 test('Utils:Validate =>  Only allowed Username/Snowflake types are valid', t => {
   const validateInvalid = new Validate('/react:string/user=user/time:string/newtime=number')
-  const v = validateInvalid.validateArgs(getArgs('!react Emma time 2'))
+  const v = validateInvalid.validateArgs(getArgs(`${process.env.BOT_MESSAGE_PREFIX}react Emma time 2`))
   t.false(v.valid)
 })
 
 test('Utils:Validate => Incoming args', t => {
-  const v = validate.validateArgs(getArgs('!ck ticker set type 2'))
+  const v = validate.validateArgs(getArgs(`${process.env.BOT_MESSAGE_PREFIX}ck ticker set type 2`))
   // Verify that its passed all the args successfully
   t.true(v.valid)
 })
 
 test('Utils:Validate => Object generator', t => {
-  const v = validate.validateArgs(getArgs('!ck ticker set type 2'))
+  const v = validate.validateArgs(getArgs(`${process.env.BOT_MESSAGE_PREFIX}ck ticker set type 2`))
   // Validate object generator & output
   t.deepEqual(v.o, { ck: 'ck', ticker: 'ticker', set: 'set', type: 'type', value: 2 })
 })
@@ -43,27 +43,27 @@ test('Utils:Validate => Multiple similar signatures', t => {
   const v1 = new Validate('/help:string/command=string')
   const v2 = new Validate('/help:string')
 
-  t.is(v1.test('!help ck'), true)
-  t.is(v1.test('!help'), false)
-  t.is(v2.test('!help ck'), false)
-  t.is(v2.test('!help'), true)
+  t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}help ck`), true)
+  t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}help`), false)
+  t.is(v2.test(`${process.env.BOT_MESSAGE_PREFIX}help ck`), false)
+  t.is(v2.test(`${process.env.BOT_MESSAGE_PREFIX}help`), true)
 })
 
 test('Utils:Validate => Quotes', t => {
   t.plan(4)
   const v1 = new Validate('/react:string/user=user/time:string/newtime=number')
-  t.is(v1.test(`!react @emma#1366 time '10'`), true)
-  t.is(v1.test(`!react @emma#1366 time "10"`), true)
-  t.is(v1.test(`!react @emma#1366 time 10`), true)
-  t.is(v1.validateArgs(getArgs(`!react @emma#1366 time '10'`)).o.newtime, 10)
+  t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}react @emma#1366 time '10'`), true)
+  t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}react @emma#1366 time "10"`), true)
+  t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}react @emma#1366 time 10`), true)
+  t.is(v1.validateArgs(getArgs(`${process.env.BOT_MESSAGE_PREFIX}react @emma#1366 time '10'`)).o.newtime, 10)
 })
 
 test('Utils:Validate => Multi String Quoted', t => {
   const v1 = new Validate('/decision:string/new:string/name=string')
-  t.is(v1.test(`!decision new "Question goes here?"`), true)
+  t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}decision new "Question goes here?"`), true)
 })
 
 test('Utils:Validate => Special Characters', t => {
   const v1 = new Validate('/decision:string/id=string/add:string/text=string')
-  t.is(v1.test(`!decision wqdhwqd2j021DJW92 add "Question~!@#$%^&*(){}[];|,.<> goes here?"`), true)
+  t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}decision wqdhwqd2j021DJW92 add "Question~!@#$%^&*(){}[];|,.<> goes here?"`), true)
 })

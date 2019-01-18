@@ -12,7 +12,7 @@ test('Utils:Router', t => {
       type: 'message',
       commandTarget: 'argument',
       controller: Commands.Duration.setDurationTime,
-      example: '!duration @user#0000 time 10',
+      example: '{{prefix}}duration @user#0000 time 10',
       help: 'duration',
       name: 'duration-set-time',
       validate: '/command:string/user=user/action/time=number'
@@ -21,7 +21,7 @@ test('Utils:Router', t => {
       type: 'message',
       commandTarget: 'author',
       controller: Commands.ChastiKey.Ticker.setTickerType,
-      example: '!ck ticker set type 2',
+      example: '{{prefix}}ck ticker set type 2',
       help: 'ck',
       name: 'ticker-set-type',
       validate: '/command:string/subroute:string/action:string/action2:string/type=number'
@@ -36,7 +36,7 @@ test('Utils:Router:Route => Generate Route', t => {
     type: 'message',
     commandTarget: 'author',
     controller: Commands.ChastiKey.Ticker.setTickerType,
-    example: '!ck ticker set type 2',
+    example: '{{prefix}}ck ticker set type 2',
     help: 'ck',
     name: 'ticker-set-type',
     validate: '/command:string/subroute:string/action:string/action2:string/type=number'

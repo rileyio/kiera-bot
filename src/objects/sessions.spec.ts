@@ -1,7 +1,6 @@
 import test from 'ava';
 import { DeviceSession } from './sessions';
 import { ObjectID } from 'bson';
-import { level } from 'winston';
 
 const device = new DeviceSession({
   _id: new ObjectID('5c26e1e8bfec094ba490229c'),

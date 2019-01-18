@@ -1,0 +1,1 @@
+export const HelpCommandMissing = `Unfortunately there's no help text for this command yet.`
