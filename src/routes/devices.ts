@@ -6,7 +6,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'none',
     controller: Commands.Devices.devicesConnectedCount,
-    example: '!devices',
+    example: '{{prefix}}devices',
     name: 'devices-connected',
     validate: '/devices:string/connected:string'
   },

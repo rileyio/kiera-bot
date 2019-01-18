@@ -30,7 +30,7 @@ export type RouteActionUserTarget = 'none'
 //
 // {
 //   controller: () => { /* do something here */ },
-//   example: '!ck ticker set type 2',
+//   example: '{{prefix}}ck ticker set type 2',
 //   help: 'ck',
 //   name: 'ticker-set-type',
 //   validate: '/command:string/subroute:string/action:string/action2:string/type:number'

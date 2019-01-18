@@ -8,7 +8,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'argument',
     controller: Commands.Admin.User.removeUser,
-    example: '!admin user delete @user#0000',
+    example: '{{prefix}}admin user delete @user#0000',
     name: 'admin-user-delete',
     validate: '/admin:string/user:string/delete:string/user=user',
     middleware: [

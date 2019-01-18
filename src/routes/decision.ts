@@ -7,7 +7,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'author',
     controller: Commands.Decision.newDecision,
-    example: '!decision new "name"',
+    example: '{{prefix}}decision new "name"',
     name: 'decision-new',
     validate: '/decision:string/new:string/name=string',
     middleware: [
@@ -18,7 +18,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'author',
     controller: Commands.Decision.newDecisionEntry,
-    example: '!decision "id" add "Your decision entry here"',
+    example: '{{prefix}}decision "id" add "Your decision entry here"',
     name: 'decision-new-option',
     validate: '/decision:string/id=string/add:string/text=string',
     middleware: [
@@ -29,7 +29,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'author',
     controller: Commands.Decision.runSavedDecision,
-    example: '!decision roll "id"',
+    example: '{{prefix}}decision roll "id"',
     name: 'decision-new-option',
     validate: '/decision:string/roll:string/id=string',
     middleware: [

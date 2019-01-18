@@ -7,7 +7,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'argument',
     controller: Commands.React.setReactTime,
-    example: '!react',
+    example: '{{prefix}}react',
     name: 'react-set-time',
     validate: '/react:string/user=user/time:string/newtime=number',
     middleware: [

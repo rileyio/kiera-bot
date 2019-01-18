@@ -8,7 +8,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'none',
     controller: Commands.Admin.Channel.purgeChannelMessages,
-    example: '!admin channel purge',
+    example: '{{prefix}}admin channel purge',
     name: 'admin-channel-purge',
     validate: '/admin:string/channel:string/purge:string',
     middleware: [

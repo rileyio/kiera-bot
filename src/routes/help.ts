@@ -6,7 +6,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'author',
     controller: Commands.Help.commandHelp,
-    example: '!help ck',
+    example: '{{prefix}}help ck',
     name: 'help-command',
     validate: '/help:string/command=string'
   },
@@ -14,7 +14,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'author',
     controller: Commands.Help.genericFallback,
-    example: '!help',
+    example: '{{prefix}}help',
     name: 'help',
     validate: '/help:string'
   },
