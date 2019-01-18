@@ -7,7 +7,7 @@ export function sb(baseString: string, data?: any) {
   // Merge data with global defaults
   Object.assign(globals, data || {})
 
-  var final = baseString || ``
+  var final = String(baseString || ``)
 
   for (const key in globals) {
     final = final.replace(new RegExp(`{{${key}}}`, 'img'), globals[key])
