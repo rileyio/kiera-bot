@@ -119,7 +119,7 @@ export class Validate {
   }
 
   public routeSignatureFromStr(str: string) {
-    var sig = '^\\!'
+    var sig = `^\\${process.env.BOT_MESSAGE_PREFIX}`
 
     XRegex.forEach(str, validationRegex, (match: any, i: number) => {
       // // Handling for 'text block' values
@@ -137,7 +137,7 @@ export class Validate {
         if (match.type === 'user') sig += `(\\@[\\w\\s-]*\\#[0-9]+|\\<\\@[0-9]*\\>)\\s?`
         else sig 
           += `[\\"|\\']?(\\@[\\w\\s-]*\\#[0-9]+|`
-          + `[\\w-\\:\\@\\_\\#\\?\\!\\~\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\{\\}\\[\\]\\;\\|\\,\\.\\<\\>\\s+]`
+          + `[\\w-\\:\\@\\_\\#\\?\\~\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\{\\}\\[\\]\\;\\|\\,\\.\\<\\>\\s+]`
           + `+|\\<\\@[0-9]*\\>)[\\"|\\']?\\s?`
       }
     });
