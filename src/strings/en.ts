@@ -1,9 +1,14 @@
 import * as Error from './en/error';
+import * as ChastiKey from './en/chastikey';
 import * as HelpStrings from './en/help';
 
 export const en = {
+  chastikey: {
+    usernameNotSet: ChastiKey.usernameNotSet
+  },
   error: {
-    commandHelpMissing: Error.HelpCommandMissing
+    commandHelpMissing: Error.helpCommandMissing,
+    userNotRegistered: Error.userNotRegistered
   },
   help: {
     ck: HelpStrings.ck,

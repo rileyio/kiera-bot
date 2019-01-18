@@ -1,10 +1,5 @@
 {
   "rules": {
-    "max-line-length": {
-      "options": [
-        160
-      ]
-    },
     "new-parens": true,
     "no-arg": true,
     "no-console": [
@@ -13,13 +8,10 @@
       "error"
     ],
     "no-let": true,
-    "quotemark": [true, "single", "backtick"]
-  },
-  "jsRules": {
-    "max-line-length": {
-      "options": [
-        120
-      ]
-    }
+    "quotemark": [
+      true,
+      "single",
+      "backtick"
+    ]
   }
 }
