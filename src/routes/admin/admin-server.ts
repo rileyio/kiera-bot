@@ -10,9 +10,6 @@ export const Routes: Array<RouteConfiguration> = [
     example: '{{prefix}}version',
     name: 'admin-version',
     validate: '/version:string',
-    middleware: [
-      Middleware.hasRole(['tester', 'developer'])
-    ]
   },
   /////// Ping Pong Test
   {
@@ -21,9 +18,6 @@ export const Routes: Array<RouteConfiguration> = [
     controller: Commands.Admin.Server.pingPong,
     example: '{{prefix}}ping',
     name: 'admin-ping',
-    validate: '/ping:string',
-    middleware: [
-      Middleware.hasRole(['tester', 'developer'])
-    ]
+    validate: '/ping:string'
   }
 ]
