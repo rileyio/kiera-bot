@@ -22,7 +22,7 @@ export const Routes: Array<RouteConfiguration> = [
     name: 'ck-set-tickerType',
     validate: '/ck:string/ticker:string/set:string/type:string/number=number',
     middleware: [
-      Middleware.middlewareTest
+      Middleware.isUserRegistered
     ]
   },
   {
@@ -33,7 +33,7 @@ export const Routes: Array<RouteConfiguration> = [
     name: 'ck-get-ticker',
     validate: '/ck:string/ticker:string',
     middleware: [
-      Middleware.middlewareTest
+      Middleware.isUserRegistered
     ]
   },
 ]

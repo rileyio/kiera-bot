@@ -1,4 +1,7 @@
-1.1.0
+1.0.1
 - Documentation updates
   - Decision command added
   - Updating general command documentation
+- Updated: CK middleware for 'is registered'
+- Fixed: Validaton/Args splitting on quotes
+- Added CK error strings to help users with setup
