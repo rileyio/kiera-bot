@@ -19,7 +19,7 @@ export namespace User {
       const user = await routed.bot.Users.get({ _id: userID })
       const userAt = Utils.User.buildUserChatAt(user, userArgType)
 
-      await routed.message.reply(`:white_check_mark: ${userAt}, You're now registered! ^_^`)
+      await routed.message.reply(`:white_check_mark: You're now registered! ^_^`)
       routed.bot.DEBUG_MSG_COMMAND.log(`!register ${userAt}`)
     }
     else {

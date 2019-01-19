@@ -30,7 +30,7 @@ export type RouteActionUserTarget = 'none'
 //
 // {
 //   controller: () => { /* do something here */ },
-//   example: '!ck ticker set type 2',
+//   example: '{{prefix}}ck ticker set type 2',
 //   help: 'ck',
 //   name: 'ticker-set-type',
 //   validate: '/command:string/subroute:string/action:string/action2:string/type:number'
@@ -237,7 +237,8 @@ export class Router {
       if (mwareProcessed === mwareCount) {
         this.bot.Stats.increment('commands-routed')
         const status = await route.controller(routed)
-        this.bot.Stats.increment('commands-completed')
+        if (status) this.bot.Stats.increment('commands-completed')
+        else this.bot.Stats.increment('commands-invalid')
         return // End routing here
       }
 

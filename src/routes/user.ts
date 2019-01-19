@@ -7,7 +7,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'author',
     controller: Commands.User.registerUser,
-    example: '!register',
+    example: '{{prefix}}register',
     name: 'register',
     validate: '/register:string',
     middleware: [
@@ -18,7 +18,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'author',
     controller: Commands.User.registerAPIAuthKey,
-    example: '!user key new',
+    example: '{{prefix}}user key new',
     name: 'user-api-authkey-create',
     validate: '/user:string/key:string/new:string',
     middleware: [
@@ -29,7 +29,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'author',
     controller: Commands.User.destroyAPIAuthKey,
-    example: '!user key destroy user:1:123abc',
+    example: '{{prefix}}user key destroy user:1:123abc',
     name: 'user-api-authkey-destroy',
     validate: '/user:string/key:string/destroy:string/authkey=string',
     middleware: [

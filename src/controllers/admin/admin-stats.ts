@@ -17,7 +17,7 @@ export async function getBotStats(routed: RouterRouted) {
 
   const combined = `${timeToShowDays} ${timeToShowHours}:${timeToShowMins}:${timeToShowSecs}`
 
-  const msgSent = await routed.message.channel.send({
+  await routed.message.channel.send({
     content: 'Here are some of my statistics!!',
     embed: {
       title: 'Bot Statistics',
@@ -66,4 +66,6 @@ export async function getBotStats(routed: RouterRouted) {
       ]
     }
   })
+
+  return true
 }

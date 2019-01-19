@@ -3,6 +3,7 @@ import { RouterRouted } from '../../utils/router';
 import { TextChannel, Attachment } from 'discord.js';
 import { ChastiKeyTickerType } from '../../objects/chastikey';
 import { TrackedUser } from '../../objects/user';
+import { sb, en } from '../../string-builder';
 
 /**
  * Sets user's Ticker Type
@@ -35,10 +36,10 @@ export async function setTickerType(routed: RouterRouted) {
   if (updateResult > 0) {
     await routed.message.author
       .send(`:white_check_mark: ChastiKey Ticker type now set to: \`${newTickerTypeAsString}\``)
-    routed.bot.DEBUG_MSG_COMMAND.log(`!ck ticker set type ${newTickerTypeAsString}`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set type ${newTickerTypeAsString}`)
   }
   else {
-    routed.bot.DEBUG_MSG_COMMAND.log(`!ck ticker set type ${newTickerTypeAsString} -> update unsuccessful!`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set type ${newTickerTypeAsString} -> update unsuccessful!`)
   }
 }
 
@@ -46,6 +47,18 @@ export async function getTicker(routed: RouterRouted) {
   const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
   const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
   const user = new TrackedUser(await routed.bot.Users.get(userQuery))
-  const attachment = new Attachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey));
-  await routed.message.channel.send(attachment);
+  // If user is not in the DB, inform them they must register
+  if (!user) {
+    await routed.message.reply(sb(en.error.userNotRegistered))
+    return false; // Stop here
+  }
+
+  // If the user has not configured their ChastiKey username to the bot
+  if (user.ChastiKey.username === '') {
+    await routed.message.reply(sb(en.chastikey.usernameNotSet))
+    return false; // Stop here
+  }
+
+  await routed.message.channel.send(new Attachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey)))
+  return true
 }

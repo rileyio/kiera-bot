@@ -11,8 +11,11 @@ export namespace React {
     const targetUser = await routed.bot.Users.get(userQuery)
 
     // Ensure target user is setup & has a session
-    if (!targetUser) return await routed.message.reply(
-      `User: ${userAt} could not be found, make sure they've used the following: \`!register\``)
+    if (!targetUser) {
+      await routed.message.reply(
+        `User: ${userAt} could not be found, make sure they've used the following: \`!register\``)
+      return false;
+    }
 
     const userSession = await routed.bot.Sessions.get({
       uid: targetUser._id,
@@ -22,8 +25,11 @@ export namespace React {
     })
 
     // Ensure session exists
-    if (!userSession) return await routed.message.reply(
-      `User: ${userAt} needs to create a session \`!session new lovense\` and must not have activated it!`)
+    if (!userSession) {
+      await routed.message.reply(
+        `User: ${userAt} needs to create a session \`!session new lovense\` and must not have activated it!`)
+      return false;
+    }
 
     // Update props
     const nsession = new DeviceSession(userSession)
@@ -35,5 +41,6 @@ export namespace React {
     await routed.message.channel.send(
       `:white_check_mark: Setting react time for ${userAt} to: \`${newTime}\` minutes`)
     routed.bot.DEBUG_MSG_COMMAND.log(`!react ${userAt} time ${newTime}`)
+    return true
   }
 }

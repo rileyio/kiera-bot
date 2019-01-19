@@ -1,5 +1,5 @@
 import { Routes as AdminRoutes } from './routes/admin';
-import { Routes as CKRoutes } from './routes/ck';
+import { Routes as CKRoutes } from './routes/chastikey';
 import { Routes as DecisionRoutes } from './routes/decision';
 import { Routes as DeviceRoutes } from './routes/devices';
 import { Routes as DurationRoutes } from './routes/duration';

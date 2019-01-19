@@ -1,5 +1,6 @@
 import * as _Debug from 'debug';
 import * as _Winston from 'winston';
+import { sb } from './string-builder';
 
 export class Debug {
   public readonly name: string
@@ -29,13 +30,13 @@ export class Debug {
   public log(...args: Array<any>) {
     switch (args.length) {
       case 1:
-        this._debug(args[0])
+        this._debug(sb(args[0]))
         break;
       case 2:
-        this._debug(args[0], args[1])
+        this._debug(sb(args[0]), sb(args[1]))
         break;
       case 3:
-        this._debug(args[0], args[1], args[2])
+        this._debug(sb(args[0]), sb(args[1]), sb(args[2]))
         break;
       default:
         this._debug(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '))

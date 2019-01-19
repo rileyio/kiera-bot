@@ -1,10 +1,16 @@
 export function sb(baseString: string, data?: any) {
-  var final = baseString || ``
+  // Defaults to use if not passed in data
+  var globals = {
+    prefix: process.env.BOT_MESSAGE_PREFIX
+  }
 
-  if (data !== undefined) {
-    for (const key in data) {
-      final = final.replace(new RegExp(`{{${key}}}`, 'img'), data[key])
-    }
+  // Merge data with global defaults
+  Object.assign(globals, data || {})
+
+  var final = String(baseString || ``)
+
+  for (const key in globals) {
+    final = final.replace(new RegExp(`{{${key}}}`, 'img'), globals[key])
   }
 
   return final

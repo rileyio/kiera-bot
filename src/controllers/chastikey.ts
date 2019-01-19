@@ -26,10 +26,10 @@ export namespace ChastiKey {
 
     if (updateResult > 0) {
       await routed.message.author.send(`:white_check_mark: ChastiKey Username now set to: \`${routed.v.o.ckusername}\``)
-      routed.bot.DEBUG_MSG_COMMAND.log(`!ck username ${routed.v.o.ckusername}`)
+      routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck username ${routed.v.o.ckusername}`)
     }
     else {
-      routed.bot.DEBUG_MSG_COMMAND.log(`!ck username ${routed.v.o.ckusername} -> update unsuccessful!`)
+      routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck username ${routed.v.o.ckusername} -> update unsuccessful!`)
     }
   }
 }

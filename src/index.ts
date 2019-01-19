@@ -17,6 +17,7 @@ import { Debug } from './logger';
 import { AuthKey } from './objects/authkey';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
 import { TrackedDecision } from './objects/decision';
+import { Permission } from './objects/permission';
 
 export class Bot {
   private WebAPI: WebAPI
@@ -34,6 +35,7 @@ export class Bot {
   public BotStatistics: MongoDB<BotStatistics>
   public Decision: MongoDB<TrackedDecision>
   public Messages: MongoDB<TrackedMessage>
+  public Permissions: MongoDB<Permission>
   public Servers: MongoDB<TrackedServer>
   public ServerStatistics: MongoDB<BotStatistics>
   public Sessions: MongoDB<Session | DeviceSession>
@@ -58,6 +60,7 @@ export class Bot {
     this.BotStatistics = await MongoDBLoader('stats-bot')
     this.Decision = await MongoDBLoader('decision')
     this.Messages = await MongoDBLoader('messages')
+    this.Permissions = await MongoDBLoader('permissions')
     this.Servers = await MongoDBLoader('server')
     this.ServerStatistics = await MongoDBLoader('stats-servers')
     this.Sessions = await MongoDBLoader('sessions')
@@ -72,16 +75,16 @@ export class Bot {
     this.client.on('raw', async event => {
       if (event.t === null) return
       // Skip event types that are not mapped
-      this.DEBUG_MSG_INCOMING.log('raw:', event.t)
+      // this.DEBUG_MSG_INCOMING.log('raw:', event.t)
       // if (event.t === 'PRESENCE_UPDATE') console.log(event)
       if (!DISCORD_CLIENT_EVENTS.hasOwnProperty(event.t)) return;
-      this.onMessageNonCachedReact(event)
+      await this.onMessageNonCachedReact(event)
     });
 
     //////      Client ready       //////
     this.client.on('ready', () => this.onReady())
     ////// Incoming message router //////
-    this.client.on('message', (msg) => this.onMessage(msg));
+    this.client.on('message', async (msg) => await this.onMessage(msg));
     //////Server connect/disconnect//////
     this.client.on('guildCreate', async guild => this.onGuildCreate(guild))
     this.client.on('guildDelete', async guild => this.onGuildDelete(guild))

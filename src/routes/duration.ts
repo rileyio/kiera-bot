@@ -7,7 +7,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'argument',
     controller: Commands.Duration.setDurationTime,
-    example: '!duration @user#0000 time 10',
+    example: '{{prefix}}duration @user#0000 time 10',
     name: 'duration-set-time',
     validate: '/duration:string/user=user/key=string/value=number',
     middleware: [

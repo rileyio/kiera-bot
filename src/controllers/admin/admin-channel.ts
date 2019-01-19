@@ -1,5 +1,5 @@
 import * as Utils from '../../utils';
-import { RouterRouted } from "../../utils/router";
+import { RouterRouted } from '../../utils/router';
 import { TextChannel } from 'discord.js';
 
 /**
@@ -12,4 +12,5 @@ export async function purgeChannelMessages(routed: RouterRouted) {
     <TextChannel>routed.message.channel,
     routed.bot.DEBUG_MSG_SCHEDULED
   )
+  return true
 }
