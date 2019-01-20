@@ -133,11 +133,11 @@ export class MongoDB<T> {
    * @returns
    * @memberof DB
    */
-  public async get<Q>(query: Q) {
+  public async get<Q>(query: Q, returnFields?: { [key: string]: number }) {
     this.DEBUG_DB.log(`.get =>`, query)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
-    const result = await collection.findOne<T>(query)
+    const result = await collection.findOne<T>(query, returnFields ? { projection: returnFields }: undefined)
     this.DEBUG_DB.log(`.get results =>`, result)
     // connection.client.close()
     return (<T>result)
@@ -153,11 +153,11 @@ export class MongoDB<T> {
    * @returns
    * @memberof DB
    */
-  public async getMultiple<Q>(query: Q) {
-    this.DEBUG_DB.log(`.getMultiple =>`, query)
+  public async getMultiple<Q>(query: Q, returnFields?: { [key: string]: number }) {
+    this.DEBUG_DB.log(`.getMultiple =>`, query, returnFields)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
-    const result = await collection.find<T>(query)
+    const result = await collection.find<T>(query, returnFields ? { projection: returnFields }: undefined)
     this.DEBUG_DB.log(`.getMultiple results =>`, await result.count())
     // connection.client.close()
     return (<Cursor<T>>result).toArray()
