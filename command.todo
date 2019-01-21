@@ -1,0 +1,19 @@
+
+Commands:
+  ☐ @low add route to handle `!ck ticker Username`
+  ☐ @low add route to handle `!ck lticker Username`
+  ☐ @low add route to handle `!ck kticker Username`
+
+Background:
+  ☐ @low poll ChastiKey API, validate locked stats, update locked/unlocked role (probably command triggered @first)
+
+Admin:
+  ☐ @critical | @high  have Kiera DM admins/post to Announcements channel if:
+    ☐ @critical latency breaks a threshold
+    ☐ @critical db connection down
+    ☐ @high bot detects it was restarted
+
+Web:
+  ☐ @high admin / server owner permissions control
+  ☐ @high decision roller owner graphical management tool
+  ☐ @low stats page
