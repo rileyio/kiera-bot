@@ -4,11 +4,27 @@ import { ObjectId } from 'bson';
 
 export class TrackedUser {
   public _id: ObjectId
-  public id: string
-  public username: string
-  public discriminator: string
+  public accessToken: string
+  public avatar: string
   public createdTimestamp: number
+  public discriminator: string
+  public flags: number
+  public id: string
   public isBot: boolean
+  public locale: string
+  public mfa_enabled: boolean
+  public premium_type: number
+  public provider: string
+  public username: string
+
+  public guilds: Array<{
+    owner: boolean
+    permissions: number
+    icon: string
+    id: string
+    name: string
+    fetchedAt: string
+  }>
 
   // ChastiKey Specific //
   public ChastiKey: TrackedChastiKey = new TrackedChastiKey({})
