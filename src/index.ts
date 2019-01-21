@@ -17,7 +17,7 @@ import { Debug } from './logger';
 import { AuthKey } from './objects/authkey';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
 import { TrackedDecision } from './objects/decision';
-import { Permission } from './objects/permission';
+import { CommandPermissions } from './objects/permission';
 
 export class Bot {
   private WebAPI: WebAPI
@@ -35,7 +35,7 @@ export class Bot {
   public BotStatistics: MongoDB<BotStatistics>
   public Decision: MongoDB<TrackedDecision>
   public Messages: MongoDB<TrackedMessage>
-  public Permissions: MongoDB<Permission>
+  public CommandPermissions: MongoDB<CommandPermissions>
   public Servers: MongoDB<TrackedServer>
   public ServerStatistics: MongoDB<BotStatistics>
   public Sessions: MongoDB<Session | DeviceSession>
@@ -60,7 +60,7 @@ export class Bot {
     this.BotStatistics = await MongoDBLoader('stats-bot')
     this.Decision = await MongoDBLoader('decision')
     this.Messages = await MongoDBLoader('messages')
-    this.Permissions = await MongoDBLoader('permissions')
+    this.CommandPermissions = await MongoDBLoader('command-permissions')
     this.Servers = await MongoDBLoader('server')
     this.ServerStatistics = await MongoDBLoader('stats-servers')
     this.Sessions = await MongoDBLoader('sessions')
