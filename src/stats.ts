@@ -1,7 +1,10 @@
 import { Bot } from '.';
 import { BotStatistics, ServerStatistics, Statistic } from './objects/statistics';
+import { EventEmitter } from 'events';
 
-export class Statistics {
+export class Statistics extends EventEmitter {
+  private uptimeInterval: NodeJS.Timer
+  private dbUpdateInterval: NodeJS.Timer
   private _Bot: Bot
   public Bot = new BotStatistics()
   public Server: Array<ServerStatistics> = []
@@ -11,9 +14,23 @@ export class Statistics {
   private dbUpdateTickerRunning = false
 
   constructor(bot: Bot) {
+    super()
     this._Bot = bot
   }
 
+  public async start() {
+    try {
+      await this.loadExisting()
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+
+  public destroy() {
+    clearInterval(this.uptimeInterval)
+    clearInterval(this.dbUpdateInterval)
+  }
 
   public increment(stat: Statistic, valueOverride?: number) {
     switch (stat) {
@@ -90,7 +107,7 @@ export class Statistics {
     // Block from accidently being started twice
     if (!this.uptimeTickerRunning) {
       this.uptimeTickerRunning = true
-      setInterval(() => {
+      this.uptimeInterval = setInterval(() => {
         this.Bot.uptime = Date.now() - this.Bot.startTimestamp
       }, 1000)
     }
@@ -100,11 +117,15 @@ export class Statistics {
     // Block from accidently being started twice
     if (!this.dbUpdateTickerRunning) {
       this.dbUpdateTickerRunning = true
-      setInterval(async () => {
+      this.dbUpdateInterval = setInterval(async () => {
         await this._Bot.BotStatistics.update({
           name: this.Bot.name
         }, this.Bot)
       }, 10000)
     }
+  }
+
+  private emitUpdate(event: 'statsReady' | 'statsNotReady') {
+    this.emit(event)
   }
 }

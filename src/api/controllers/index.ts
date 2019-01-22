@@ -1,14 +1,5 @@
-import { Bot } from '../..';
-
-export class Controller {
-  protected Bot: Bot
-  protected DEBUG_WEBAPI: debug.IDebugger
-
-  constructor(bot: Bot, debug: debug.IDebugger) {
-    this.Bot = bot
-    this.DEBUG_WEBAPI = debug
-  }
-}
-
+export * from './lists'
+export * from './permissions'
 export * from './sessions'
 export * from './stats'
+export * from './user'

@@ -80,16 +80,18 @@ export class Router {
   }
 
   public async routeReaction(message: Message, reaction: string, user: User, direction: 'added' | 'removed') {
+    // Debug value set in .env
+    if (process.env.BOT_BLOCK_REACTS === 'true') return // Should be set if 2 instances of bot are running
     // console.log('user', user)
     this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming reaction <@${user.id}> reaction:${reaction} ${direction}`)
     // console.log('reaction', reaction)
     // Block my own messages
     if (user.id === this.bot.client.user.id) {
       // Track my own messages when they are seen
-      // this.bot.Stats.increment('messages-sent')
+      // this.bot.BotMonitor.Stats.increment('messages-sent')
       // Track if its a dm as well
       if (message.channel.type === 'dm') {
-        // this.bot.Stats.increment('dms-sent')
+        // this.bot.BotMonitor.Stats.increment('dms-sent')
       }
       return; // Hard block
     }
@@ -151,10 +153,10 @@ export class Router {
 
     // Stop execution of route if middleware is halted
     if (mwareProcessed === mwareCount) {
-      // this.bot.Stats.increment('commands-routed')
+      // this.bot.BotMonitor.Stats.increment('commands-routed')
       // Check status returns later for stats tracking
       const status = await route.controller(routed)
-      // this.bot.Stats.increment('commands-completed')
+      // this.bot.BotMonitor.Stats.increment('commands-completed')
       return // End routing here
     }
   }
@@ -163,21 +165,21 @@ export class Router {
     // Block my own messages
     if (message.author.id === this.bot.client.user.id) {
       // Track my own messages when they are seen
-      this.bot.Stats.increment('messages-sent')
+      this.bot.BotMonitor.Stats.increment('messages-sent')
       // Track if its a dm as well
       if (message.channel.type === 'dm') {
-        this.bot.Stats.increment('dms-sent')
+        this.bot.BotMonitor.Stats.increment('dms-sent')
       }
       return; // Hard block
     }
 
     // Messages incoming as DMs
     if (message.channel.type === 'dm') {
-      this.bot.Stats.increment('dms-received')
+      this.bot.BotMonitor.Stats.increment('dms-received')
     }
 
     const containsPrefix = message.content.startsWith(prefix)
-    this.bot.Stats.increment('messages-seen')
+    this.bot.BotMonitor.Stats.increment('messages-seen')
 
     if (containsPrefix) {
       this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming message: '${message.content}'`)
@@ -197,7 +199,7 @@ export class Router {
       // Stop if there's no specific route found
       if (route === undefined) {
         this.bot.DEBUG_MSG_COMMAND.log(`Router -> Failed to match '${message.content}' to a route - ending routing`)
-        this.bot.Stats.increment('commands-invalid')
+        this.bot.BotMonitor.Stats.increment('commands-invalid')
         // End routing
         return;
       }
@@ -235,14 +237,14 @@ export class Router {
 
       // Stop execution of route if middleware is halted
       if (mwareProcessed === mwareCount) {
-        this.bot.Stats.increment('commands-routed')
+        this.bot.BotMonitor.Stats.increment('commands-routed')
         const status = await route.controller(routed)
-        if (status) this.bot.Stats.increment('commands-completed')
-        else this.bot.Stats.increment('commands-invalid')
+        if (status) this.bot.BotMonitor.Stats.increment('commands-completed')
+        else this.bot.BotMonitor.Stats.increment('commands-invalid')
         return // End routing here
       }
 
-      this.bot.Stats.increment('commands-invalid')
+      this.bot.BotMonitor.Stats.increment('commands-invalid')
       return
     }
   }

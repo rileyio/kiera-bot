@@ -1,7 +1,6 @@
 require('dotenv').config()
 const packagejson = require('../package.json')
 import * as Discord from 'discord.js';
-import * as Utils from './utils';
 import { MsgTracker, MongoDB, MongoDBLoader } from './db/database';
 import { Lovense } from './integration/lovense';
 import { TrackedUser } from './objects/user';
@@ -10,17 +9,15 @@ import { TrackedMessage } from './objects/message';
 import { Router } from './utils/router';
 import { Routes } from './routes';
 import { Session, DeviceSession } from './objects/sessions';
-import { WebAPI } from './api/web-api';
 import { BotStatistics } from './objects/statistics';
-import { Statistics } from './stats';
 import { Debug } from './logger';
 import { AuthKey } from './objects/authkey';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
 import { TrackedDecision } from './objects/decision';
 import { CommandPermissions } from './objects/permission';
+import { BotMonitor } from './monitor';
 
 export class Bot {
-  private WebAPI: WebAPI
   public client = new Discord.Client();
   public DEBUG = new Debug('ldi:bot');
   public DEBUG_MIDDLEWARE = new Debug('ldi:midddleware');
@@ -29,6 +26,9 @@ export class Bot {
   public DEBUG_MSG_COMMAND = new Debug('ldi:command');
   public MsgTracker: MsgTracker
   public version: string
+
+  // Service Monitors
+  public BotMonitor: BotMonitor
 
   // Databases
   public AuthKeys: MongoDB<AuthKey>
@@ -40,9 +40,6 @@ export class Bot {
   public ServerStatistics: MongoDB<BotStatistics>
   public Sessions: MongoDB<Session | DeviceSession>
   public Users: MongoDB<TrackedUser>
-
-  // Stats tracking
-  public Stats: Statistics
 
   // Connections/Integrations
   public Lovense: Lovense = new Lovense()
@@ -66,12 +63,11 @@ export class Bot {
     this.Sessions = await MongoDBLoader('sessions')
     this.Users = await MongoDBLoader('users')
 
-    // Initialize Stats
-    this.Stats = new Statistics(this)
-    await this.Stats.loadExisting()
+    // Start bot monitor & all bot dependant services
+    this.BotMonitor = new BotMonitor(this)
+    await this.BotMonitor.start()
 
-
-    //////      Event hndling for non-cached (prior to restart)      //////
+    /// Event hndling for non-cached (messages from prior to restart) ///
     this.client.on('raw', async event => {
       if (event.t === null) return
       // Skip event types that are not mapped
@@ -81,38 +77,28 @@ export class Bot {
       await this.onMessageNonCachedReact(event)
     });
 
-    //////      Client ready       //////
-    this.client.on('ready', () => this.onReady())
-    ////// Incoming message router //////
+    /// Incoming message router ///
     this.client.on('message', async (msg) => await this.onMessage(msg));
-    //////Server connect/disconnect//////
+    ///Server connect/disconnect///
     this.client.on('guildCreate', async guild => this.onGuildCreate(guild))
     this.client.on('guildDelete', async guild => this.onGuildDelete(guild))
-    //////   Reaction in (Cached)  //////
+    ///   Reaction in (Cached)  ///
     // this.client.on('messageReactionAdd', (react, user) => this.onMessageCachedReactionAdd(react, user))
-    // //////  Reaction out (Cached)  //////
+    ///  Reaction out (Cached)  ///
     // this.client.on('messageReactionRemove', (react, user) => this.onMessageCachedReactionRemove(react, user))
-    //////     Connect account     //////
-    this.client.login(process.env.DISCORD_APP_TOKEN);
   }
 
-  private async onReady() {
+  public async onReady() {
     this.DEBUG.log(`Logged in as ${this.client.user.tag}!`);
-    // Get channels
-    // Cleanup channel - if set in .env
-    if (process.env.BOT_MESSAGE_CLEANUP_CLEAR_CHANNEL === 'true') {
-      await Utils.Channel.cleanTextChat(
-        Utils.Channel.getTextChannel(this.client.channels, process.env.DISCORD_TEST_CHANNEL),
-        this.DEBUG_MSG_SCHEDULED
-      )
-    }
-
     var guilds = this.client.guilds.array()
 
-    for (let index = 0; index < guilds.length; index++) {
-      const guild = guilds[index];
-      this.DEBUG.log(`connecting to server => ${guild.name}`)
-      this.Servers.update({ id: guild.id }, new TrackedServer(guild), { upsert: true })
+    // Only try processing these if the DB is active
+    if (this.BotMonitor.status.db) {
+      for (let index = 0; index < guilds.length; index++) {
+        const guild = guilds[index];
+        this.DEBUG.log(`connecting to server => ${guild.name}`)
+        await this.Servers.update({ id: guild.id }, new TrackedServer(guild), { upsert: true })
+      }
     }
   }
 
@@ -158,11 +144,4 @@ export class Bot {
     if (event.t === 'MESSAGE_REACTION_REMOVE')
       return await this.onMessageCachedReactionRemove(message, emojiKey, user)
   }
-
-  public startWebAPI() {
-    // Start WebAPI
-    this.WebAPI = new WebAPI(this)
-    this.WebAPI.listen()
-  }
-
 }

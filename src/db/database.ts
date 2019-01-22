@@ -1,6 +1,7 @@
-import { MongoClient, MongoClientOptions, Cursor } from 'mongodb';
+import { MongoClient, MongoClientOptions, Cursor, Db, MongoError } from 'mongodb';
 import { Debug } from '../logger';
 
+export * from './promise'
 export * from './messages'
 
 export async function MongoDBLoader<T>(collection: string) {
@@ -11,11 +12,11 @@ export async function MongoDBLoader<T>(collection: string) {
   })
 }
 
-export class MongoDB<T> {
+export class MongoDB<T>  {
   public DEBUG_DB: Debug
 
-  public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/ldi`
   public dbName = `${process.env.DB_NAME}`
+  public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${this.dbName}`
   public dbOpts: MongoClientOptions = {
     useNewUrlParser: true,
     auth: {
@@ -24,36 +25,51 @@ export class MongoDB<T> {
     }
   }
   public dbCollection: string
-  public dbConnectionOK: boolean = false
 
   constructor(collection: string) {
     this.dbCollection = collection
     this.DEBUG_DB = new Debug(`ldi:database::${collection}`)
   }
 
+  // private queryWrapper<T>(promise: Promise<T>, fallback: T) {
+
+  // }
+
   public async connect() {
-    const client = await MongoClient.connect(this.dbUrl, this.dbOpts)
-    if (client.isConnected()) {
-      const db = client.db(this.dbName)
-      return { db: db, client: client }
+    var client: MongoClient
+    var db: Db
+    var error: MongoError
+    try {
+      await MongoClient.connect(this.dbUrl, this.dbOpts)
+        .then((_client) => {
+          client = _client
+          db = client.db(this.dbName)
+        })
+        .catch(_error => {
+          // tslint:disable-next-line:no-console
+          console.log('>>>>> Failed to connect to db for query', this.dbCollection)
+        })
+    } catch (error) {
+      error = error
     }
+
+    return { db: db, client: client, error: error }
   }
 
-  // public async connectionTest() {
-  //   try {
-  //     const connection = await this.connect()
-  //     const collection = connection.db.collection(this.dbCollection)
-  //     const results = await collection.estimatedDocumentCount({
-  //       _id: "$_id", count: { $sum: 1 }
-  //     }, { limit: 10 })
-  // connection.client.close()
-  //     this.DEBUG_DB(`connection test results => ${results}`)
-  //     this.dbConnectionOK = (results) ? true : false
-  //     return (results) ? true : false
-  //   } catch (error) {
-  //     return false
-  //   }
-  // }
+  public async ping() {
+    var status: boolean;
+    try {
+      const connection = await this.connect()
+      // tslint:disable-next-line:no-console
+      const pingStatus = await connection.db.command({ ping: 1 })
+      status = pingStatus ? true : false
+    } catch (error) {
+      // tslint:disable-next-line:no-console
+      // console.log('###### Test error failed to connect')
+      status = false
+    }
+    return status
+  }
 
   /**
    * Adds a new record to the DB
@@ -79,6 +95,7 @@ export class MongoDB<T> {
    * @memberof DB
    */
   public async verify<Q, T>(query: string | Q) {
+    this.DEBUG_DB.log(`.verify => in`, this.dbCollection)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
     const results = await collection.find<T>(typeof query === 'string' ? { id: query } : query)
@@ -137,7 +154,7 @@ export class MongoDB<T> {
     this.DEBUG_DB.log(`.get =>`, query)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
-    const result = await collection.findOne<T>(query, returnFields ? { projection: returnFields }: undefined)
+    const result = await collection.findOne<T>(query, returnFields ? { projection: returnFields } : undefined)
     this.DEBUG_DB.log(`.get results =>`, result)
     // connection.client.close()
     return (<T>result)
@@ -157,7 +174,7 @@ export class MongoDB<T> {
     this.DEBUG_DB.log(`.getMultiple =>`, query, returnFields)
     const connection = await this.connect()
     const collection = connection.db.collection(this.dbCollection)
-    const result = await collection.find<T>(query, returnFields ? { projection: returnFields }: undefined)
+    const result = await collection.find<T>(query, returnFields ? { projection: returnFields } : undefined)
     this.DEBUG_DB.log(`.getMultiple results =>`, await result.count())
     // connection.client.close()
     return (<Cursor<T>>result).toArray()

@@ -1,9 +1,7 @@
-import * as Validation from '../validations/index';
-import { Request, Response, Next } from 'restify';
-import { Controller } from '.';
+import { WebRouted } from '../web-router';
 
-export class StatsAPI extends Controller {
-  public async getAll(req: Request, res: Response, next: Next) {
-    return res.send(this.Bot.Stats.Bot);
+export namespace Stats {
+  export async function getAll(routed: WebRouted) {
+    return routed.res.send(routed.Bot.BotMonitor.Stats.Bot);
   }
 }
