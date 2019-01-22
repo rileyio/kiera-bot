@@ -5,7 +5,7 @@
   "repository": "https://github.com/sudoaptgetupgrade/lovensediscordintegration.git",
   "author": "Emma (RileyIO)",
   "contributors": [],
-  "license": "MIT",
+  "license": "closed",
   "private": true,
   "scripts": {
     "build": "tsc",
