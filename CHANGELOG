@@ -1,5 +1,8 @@
 1.1.0
 - Updating start scripts to remove rtail due to memory issue
+- Added: Monitoring system for both the Bot's core functionality + DB Connectivity
+- Preparing command permissions
+- Preparing API endpoints for future kiera webportal
 
 1.0.1
 - Documentation updates

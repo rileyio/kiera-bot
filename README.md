@@ -60,36 +60,8 @@ See [https://www.npmjs.com/package/debug] for the correct ENV commands
 
 
 ## Env template
-```sh
-# API Keys
-#########################
-LOVENSE_API_KEY=
- 
-DISCORD_APP_NAME=lovense-discord-integration
-DISCORD_APP_ID=
-DISCORD_APP_SECRET=
-DISCORD_APP_TOKEN=
 
-
-CALLBACK_URI=http://localhost:8080/
-
-# Bot settings
-#########################
-DISCORD_TEST_CHANNEL=526038295726129162
-BOT_MESSAGE_CLEANUP_CLEAR_CHANNEL=false
-BOT_MESSAGE_CLEANUP_AGE=10000
-BOT_MESSAGE_CLEANUP_MEMORY_AGE=20000
-BOT_MESSAGE_CLEANUP_INTERVAL=5000
-BOT_MESSAGE_PREFIX=!
-
-# Database Config
-#########################
-DB_HOST=
-DB_PORT=
-DB_NAME=ldi
-DB_USER=ldi-bot
-DB_PASS=
-```
+See `.env-template` at the root of the project directory
 
 
 ## Bot Commands
