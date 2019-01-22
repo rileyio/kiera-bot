@@ -6,8 +6,9 @@ import * as path from 'path';
 import * as corsMiddleware from 'restify-cors-middleware';
 import * as SocketIO from 'socket.io';
 import { Bot } from '..';
-import { SessionsAPI, StatsAPI } from './controllers/index';
 import { AuthKey } from '../objects/authkey';
+import { routes } from './routes';
+import { WebRouter } from './web-router';
 
 export class WebAPI {
   protected Bot: Bot
@@ -17,20 +18,27 @@ export class WebAPI {
   }
   protected server: restify.Server
   protected socket: SocketIO.Server
+  protected router: WebRouter
   protected readonly port: number = Number(process.env.API_PORT || 8234)
   protected readonly prefix: string = '/api'
   protected DEBUG_WEBAPI = Debug('ldi:WebAPI');
 
   // Controllers
-  protected Sessions: Controllers.SessionsAPI
-  protected Stats: Controllers.StatsAPI
+  // protected Lists: Controllers.ListsAPI
+  // protected Permissions: Controllers.PermissionsAPI
+  // protected Sessions: Controllers.SessionsAPI
+  // protected Stats: Controllers.StatsAPI
+  // protected User: Controllers.UserAPI
 
   constructor(bot: Bot) {
     this.Bot = bot
 
-    // Setup controllers
-    this.Sessions = new SessionsAPI(this.Bot, this.DEBUG_WEBAPI)
-    this.Stats = new StatsAPI(this.Bot, this.DEBUG_WEBAPI)
+    // Setup controllers //
+    // this.Lists = new Controllers.ListsAPI(this.Bot, this.DEBUG_WEBAPI)
+    // this.Permissions = new Controllers.PermissionsAPI(this.Bot, this.DEBUG_WEBAPI)
+    // this.Sessions = new Controllers.SessionsAPI(this.Bot, this.DEBUG_WEBAPI)
+    // this.Stats = new Controllers.StatsAPI(this.Bot, this.DEBUG_WEBAPI)
+    // this.User = new Controllers.UserAPI(this.Bot, this.DEBUG_WEBAPI)
 
     this.server = restify.createServer(this.https)
 
@@ -51,10 +59,22 @@ export class WebAPI {
     // Auth middleware
     this.server.use((rq, rs, n) => this.auth(rq, rs, n))
 
-    // Configured routes
-    this.server.post(`${this.prefix}/sessions`, (req, res, next) => this.Sessions.getAll(req, res, next))
-    this.server.post(`${this.prefix}/session`, (req, res, next) => this.Sessions.get(req, res, next))
-    this.server.get(`${this.prefix}/stats`, (req, res, next) => this.Stats.getAll(req, res, next))
+    // Setup routes
+    this.router = new WebRouter(this.Bot, this.server, routes)
+
+    // // Configured routes [ Session ]
+    // this.server.post(`${this.prefix}/sessions`, (req, res, next) => this.Sessions.getAll(req, res, next))
+    // this.server.post(`${this.prefix}/session`, (req, res, next) => this.Sessions.get(req, res, next))
+
+    // // Configured routes [ kiera-web ]
+    // this.server.post(`${this.prefix}/lists`, (req, res, next) => this.Lists.get(req, res, next))
+    // this.server.post(`${this.prefix}/permissions`, (req, res, next) => this.Permissions.getAll(req, res, next))
+    // this.server.post(`${this.prefix}/permission`, (req, res, next) => this.Permissions.get(req, res, next))
+    // this.server.post(`${this.prefix}/user`, (req, res, next) => this.User.get(req, res, next))
+    // this.server.post(`${this.prefix}/oauth`, (req, res, next) => this.User.oauth(req, res, next))
+
+    // // Configured routes [ any ]
+    // this.server.get(`${this.prefix}/stats`, (req, res, next) => this.Stats.getAll(req, res, next))
 
     // Setup SocketIO
     this.socket = SocketIO.listen(this.server.server)
@@ -64,14 +84,32 @@ export class WebAPI {
       socket.on('my other event', (data) => {
         this.DEBUG_WEBAPI(data);
       });
-      socket.emit('heartbeat', { stats: this.Bot.Stats.Bot })
+      socket.emit('heartbeat', { stats: this.Bot.BotMonitor.Stats.Bot })
     });
   }
 
-  public listen() {
-    this.server.listen(this.port, () => {
-      this.DEBUG_WEBAPI(`${this.server.name} listening at ${this.server.url}`)
-    });
+  public start() {
+    return new Promise<boolean>(r => {
+      this.server.listen(this.port, () => {
+        this.DEBUG_WEBAPI(`${this.server.name} listening at ${this.server.url}`)
+        r(true)
+      })
+    }).catch(error => {
+      this.DEBUG_WEBAPI(`listening error.. unable to complete startup`)
+      return false
+    })
+  }
+
+  public close() {
+    return new Promise<boolean>(r => {
+      this.server.close(() => {
+        this.DEBUG_WEBAPI(`stopping WebAPI...`)
+        r(true)
+      })
+    }).catch(error => {
+      this.DEBUG_WEBAPI(`error stopping the WebAPI`)
+      return false
+    })
   }
 
   public async auth(req: restify.Request, res: restify.Response, next: restify.Next) {
