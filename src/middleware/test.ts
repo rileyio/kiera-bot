@@ -1,4 +1,4 @@
-import { RouterRouted } from '../utils/router';
+import { RouterRouted } from '../router/router';
 
 export function middlewareTest(routed: RouterRouted) {
   return new Promise<RouterRouted>(r => {

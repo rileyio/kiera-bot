@@ -1,4 +1,4 @@
-import { RouterRouted } from '../utils/router';
+import { RouterRouted } from '../router/router';
 
 export function permittedReaction(permittedReacts: Array<string>) {
   return async (routed: RouterRouted) => {

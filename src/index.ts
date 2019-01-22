@@ -2,15 +2,14 @@ require('dotenv').config()
 const packagejson = require('../package.json')
 import * as Discord from 'discord.js';
 import { MsgTracker, MongoDB, MongoDBLoader } from './db/database';
-import { Lovense } from './integration/lovense';
 import { TrackedUser } from './objects/user';
 import { TrackedServer } from './objects/server';
 import { TrackedMessage } from './objects/message';
-import { Router } from './utils/router';
+import { Router } from './router/router';
 import { Routes } from './routes';
 import { Session, DeviceSession } from './objects/sessions';
 import { BotStatistics } from './objects/statistics';
-import { Debug } from './logger';
+import { Logging } from './utils/';
 import { AuthKey } from './objects/authkey';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
 import { TrackedDecision } from './objects/decision';
@@ -19,11 +18,11 @@ import { BotMonitor } from './monitor';
 
 export class Bot {
   public client = new Discord.Client();
-  public DEBUG = new Debug('ldi:bot');
-  public DEBUG_MIDDLEWARE = new Debug('ldi:midddleware');
-  public DEBUG_MSG_INCOMING = new Debug('ldi:incoming');
-  public DEBUG_MSG_SCHEDULED = new Debug('ldi:scheduled');
-  public DEBUG_MSG_COMMAND = new Debug('ldi:command');
+  public DEBUG = new Logging.Debug('ldi:bot');
+  public DEBUG_MIDDLEWARE = new Logging.Debug('ldi:midddleware');
+  public DEBUG_MSG_INCOMING = new Logging.Debug('ldi:incoming');
+  public DEBUG_MSG_SCHEDULED = new Logging.Debug('ldi:scheduled');
+  public DEBUG_MSG_COMMAND = new Logging.Debug('ldi:command');
   public MsgTracker: MsgTracker
   public version: string
 
@@ -40,9 +39,6 @@ export class Bot {
   public ServerStatistics: MongoDB<BotStatistics>
   public Sessions: MongoDB<Session | DeviceSession>
   public Users: MongoDB<TrackedUser>
-
-  // Connections/Integrations
-  public Lovense: Lovense = new Lovense()
 
   // Bot msg router
   public Router: Router = new Router(Routes(), this)

@@ -1,5 +1,4 @@
 import { ObjectID } from 'mongodb';
-import { Device } from '../integration/lovense/device';
 import * as Utils from '../utils';
 
 export type SessionTypes =
@@ -101,7 +100,7 @@ export class DeviceSession extends Session {
   }
   public reacts: Array<{ user: string, reaction: string, level: number }>
 
-  constructor(init: Partial<DeviceSession | Device>) {
+  constructor(init: Partial<DeviceSession>) {
     super()
     Object.assign(
       this,

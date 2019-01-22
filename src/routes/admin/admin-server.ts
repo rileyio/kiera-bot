@@ -1,4 +1,4 @@
-import { RouteConfiguration } from '../../utils/router';
+import { RouteConfiguration } from '../../router/router';
 import * as Commands from '../../commands';
 import * as Middleware from '../../middleware';
 
