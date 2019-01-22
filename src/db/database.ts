@@ -13,6 +13,11 @@ export async function MongoDBLoader<T>(collection: string) {
 }
 
 export class MongoDB<T>  {
+  private connection: {
+    db: Db;
+    client: MongoClient;
+    error: MongoError;
+  } = { db: undefined, client: undefined, error: undefined }
   public DEBUG_DB: Debug
 
   public dbName = `${process.env.DB_NAME}`
@@ -36,24 +41,37 @@ export class MongoDB<T>  {
   // }
 
   public async connect() {
-    var client: MongoClient
-    var db: Db
-    var error: MongoError
     try {
-      await MongoClient.connect(this.dbUrl, this.dbOpts)
-        .then((_client) => {
-          client = _client
-          db = client.db(this.dbName)
-        })
-        .catch(_error => {
-          // tslint:disable-next-line:no-console
-          console.log('>>>>> Failed to connect to db for query', this.dbCollection)
-        })
+      // Test if connection already exists, no need to open a new one if so
+      if (this.connection.client) {
+        // Check if connection is active
+        if (!this.connection.client.isConnected()) await this.newConnection()
+        // Else reuse current connection
+        // tslint:disable-next-line:no-console
+        console.log('reuse db connection on', this.dbCollection)
+      }
+      else {
+        // tslint:disable-next-line:no-console
+        console.log('new db connection on', this.dbCollection)
+        await this.newConnection()
+      }
     } catch (error) {
-      error = error
+      this.connection.error = error
     }
 
-    return { db: db, client: client, error: error }
+    return this.connection
+  }
+
+  private async newConnection() {
+    await MongoClient.connect(this.dbUrl, this.dbOpts)
+      .then((_client) => {
+        this.connection = { db: _client.db(this.dbName), client: _client, error: undefined }
+      })
+      .catch(_error => {
+        // tslint:disable-next-line:no-console
+        console.log('>>>>> Failed to connect to db for query', this.dbCollection)
+        this.connection.error = _error
+      })
   }
 
   public async ping() {

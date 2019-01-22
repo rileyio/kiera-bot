@@ -1,3 +1,6 @@
+1.1.1
+- Fix: new/reuse DB connection handling
+
 1.1.0
 - Updating start scripts to remove rtail due to memory issue
 - Added: Monitoring system for both the Bot's core functionality + DB Connectivity
