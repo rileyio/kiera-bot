@@ -1,7 +1,7 @@
 import * as deepExtend from 'deep-extend';
 import * as XRegex from 'xregexp';
 import { Validate, ValidationType } from './validate';
-import { Message, MessageReaction, User } from 'discord.js';
+import { Message, User } from 'discord.js';
 import { Bot } from '..';
 import * as Utils from '../utils/';
 import { TrackedMessage } from '../objects/message';
@@ -193,13 +193,28 @@ export class Router {
       if (routes.length === 0) return;
 
       // Try to find a route
-      const route = await routes.find(r => { return r.test(message.content) === true })
+      var examples = []
+      const route = await routes.find(r => {
+        // Add to examples
+        examples.push(r.example)
+        return r.test(message.content) === true
+      })
       this.bot.DEBUG_MSG_COMMAND.log(route)
 
       // Stop if there's no specific route found
       if (route === undefined) {
         this.bot.DEBUG_MSG_COMMAND.log(`Router -> Failed to match '${message.content}' to a route - ending routing`)
         this.bot.BotMonitor.Stats.increment('commands-invalid')
+        // Provide some feedback about the failed command(s)
+        var exampleUseOfCommand = Utils.sb(Utils.en.error.commandExactMatchFailedOptions, { command: args[0] })
+        var examplesToAppend = ``
+        for (let index = 0; index < examples.length; index++) {
+          const example = examples[index];
+          // examplesToAppend += `${Utils.sb(example)}${(index < examples.length - 1) ? '\n' : ''}`
+          examplesToAppend += `\`${Utils.sb(example)}\`${(index < examples.length - 1) ? '   ' : ''}`
+        }
+        // Send back in chat
+        await message.channel.send(`${exampleUseOfCommand}\n${examplesToAppend}`)
         // End routing
         return;
       }
@@ -231,7 +246,7 @@ export class Router {
         mwareProcessed += 1
       }
 
-      this.bot.DEBUG_MSG_COMMAND.log(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
+      this.bot.DEBUG_MSG_COMMAND.log(`Router -> Route middleware processed: ${mwareProcessed} /${mwareCount}`)
 
       // console.log(routed)
 

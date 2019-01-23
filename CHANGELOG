@@ -1,3 +1,6 @@
+1.2.0
+- Added: Command failed fallback reply in chat to help show examples of command usage
+
 1.1.1
 - Fix: new/reuse DB connection handling
 

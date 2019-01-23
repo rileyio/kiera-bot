@@ -7,7 +7,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'author',
     controller: Commands.ChastiKey.setUsername,
-    example: '{{prefix}}ck username MyUsername',
+    example: '{{prefix}}ck username "MyUsername"',
     name: 'ck-set-username',
     validate: '/ck:string/username:string/ckusername=string',
     middleware: [

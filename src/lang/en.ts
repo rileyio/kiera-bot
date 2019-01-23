@@ -7,6 +7,7 @@ export const en = {
     usernameNotSet: ChastiKey.usernameNotSet
   },
   error: {
+    commandExactMatchFailedOptions: Error.commandExactMatchFailedOptions,
     commandHelpMissing: Error.helpCommandMissing,
     userNotRegistered: Error.userNotRegistered
   },
