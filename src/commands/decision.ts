@@ -3,7 +3,7 @@ import { RouterRouted } from '../router/router';
 import { TrackedUser } from '../objects/user';
 import { TrackedDecision, TrackedDecisionOption } from '../objects/decision';
 import { ObjectID } from 'bson';
-import { decisionFromSaved } from '../embedded/decision-embed';
+import { decisionFromSaved, decisionRealtime } from '../embedded/decision-embed';
 
 export namespace Decision {
   /**
@@ -55,13 +55,9 @@ export namespace Decision {
   }
 
   export async function runRealtimeDecision(routed: RouterRouted) {
-    const decision = await routed.bot.Decision.get({ _id: new ObjectID(routed.v.o.id) })
-    if (decision) {
-      const sd = new TrackedDecision(decision)
-      const random = Math.floor((Math.random() * sd.options.length));
-      await routed.message.reply(decisionFromSaved(sd, sd.options[random]))
-      return true
-    }
-    return false
+    const random = Math.floor((Math.random() * routed.v.o.args.length));
+    console.log('test =>', routed.v.o.args[random], routed.v.o.args)
+    await routed.message.reply(decisionRealtime(routed.v.o.question, `index:${random} ${routed.v.o.args[random]}`))
+    return true
   }
 }

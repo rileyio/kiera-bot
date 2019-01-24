@@ -9,3 +9,13 @@ export function decisionFromSaved(decision: TrackedDecision, option: TrackedDeci
     }
   }
 }
+
+export function decisionRealtime(question: string, result: string) {
+  return {
+    embed: {
+      title: `${question}`,
+      description: `\`${result}\``,
+      color: 14553782
+    }
+  }
+}

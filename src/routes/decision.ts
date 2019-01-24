@@ -42,7 +42,7 @@ export const Routes: Array<RouteConfiguration> = [
     controller: Commands.Decision.runRealtimeDecision,
     example: '{{prefix}}decision "Question here" "Option 1" "Option 2" "etc.."',
     name: 'decision-realtime',
-    validate: '/decision:string/name=string/args...string',
+    validate: '/decision:string/question=string/args...string',
     middleware: [
       Middleware.isUserRegistered
     ]
