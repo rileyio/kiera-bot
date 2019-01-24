@@ -56,8 +56,7 @@ export namespace Decision {
 
   export async function runRealtimeDecision(routed: RouterRouted) {
     const random = Math.floor((Math.random() * routed.v.o.args.length));
-    console.log('test =>', routed.v.o.args[random], routed.v.o.args)
-    await routed.message.reply(decisionRealtime(routed.v.o.question, `index:${random} ${routed.v.o.args[random]}`))
+    await routed.message.reply(decisionRealtime(routed.v.o.question, routed.v.o.args[random]))
     return true
   }
 }
