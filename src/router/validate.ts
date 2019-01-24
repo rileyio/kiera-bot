@@ -123,9 +123,9 @@ export class Validate {
       else {
         const sliced = args.slice(i).map(v => {
           // Remove surrounding quotes
-          const processed = multiStrRegexp.exec(v)
+          const processed = singleStrRegexp.exec(v)
           // ensure there is something to add to prevent an error
-          return processed ? processed[1] : ''
+          return processed ? processed[1] : v
         })
 
         v.valid = multiStrRegexp.test(sliced.join(' '))
