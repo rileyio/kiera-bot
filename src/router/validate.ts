@@ -1,9 +1,10 @@
 import * as XRegex from 'xregexp';
 import * as Utils from '../utils/';
 
-export const validationRegex = XRegex('(\\/(?<name>[a-z0-9]*)(?<optional>\\?\\:|\\:|\\=|\\?=)(?<type>[a-z]*))', 'img')
+export const validationRegex = XRegex('(\\/(?<name>[a-z0-9]*)(?<optional>\\?\\:|\\:|\\=|\\?\\=|(?<multi>\\.\\.\\.))(?<type>[a-z]*))', 'img')
 
 export interface ValidationType {
+  multi: string
   name: string
   required?: boolean
   type: string
@@ -12,6 +13,7 @@ export interface ValidationType {
 }
 
 export interface ValidationRegexMatch {
+  multi: boolean
   name: string
   optional?: string
   required: boolean
@@ -89,30 +91,52 @@ export class Validate {
   public validateArgs(args: Array<string>) {
     var allValid = true
     var ret: any = {}
-    var validated = this.validation.map((v: any, i: number) => {
-      const strRegexp = /^[\"|\'](\@[\w\s-]*\#[0-9]+|[\w-\:\@\_\s+]+|\<\@[0-9]*\>)[\"|\']\s?$/im
-      // is wrapped by quotes
-      const isWrappedByQuotes = strRegexp.test(args[i])
-      // Store in a temp variable to determine in the next step if something was found in the regex.exec
-      const _tempValRegex = isWrappedByQuotes ? strRegexp.exec(args[i]) : args[i]
-      const _tempVal = Array.isArray(_tempValRegex) ? _tempValRegex[1] : args[i]
+    var validated = this.validation.map((v: ValidationType, i: number) => {
+      const singleStrRegexp = /^["|']([^"|'].+)["|']\s?$/im
+      const multiStrRegexp = /^["|']([^"|'].+)["|']\s?$/img
+      const isMulti = v.multi
+      // If its a single non-multi arg value expected
+      if (!isMulti) {
+        // is wrapped by quotes
+        const isWrappedByQuotes = singleStrRegexp.test(args[i])
+        // Store in a temp variable to determine in the next step if something was found in the regex.exec
+        const _tempValRegex = isWrappedByQuotes ? singleStrRegexp.exec(args[i]) : args[i]
+        const _tempVal = Array.isArray(_tempValRegex) ? _tempValRegex[1] : args[i]
 
-      // Check if type matches
-      v.valid = this.validateType(v.type, _tempVal)
+        // Check if type matches
+        v.valid = this.validateType(v.type, _tempVal)
 
-      if (v.type === 'user') v.value = Utils.User.extractUserIdFromString(args[i])
-      if (v.type === 'string') v.value = _tempVal
+        if (v.type === 'user') v.value = Utils.User.extractUserIdFromString(args[i])
+        if (v.type === 'string') v.value = _tempVal
 
-      // Fix: If expected type is valid and is a number, convert it to a number
-      if (v.type === 'number' && v.valid) v.value = Number(_tempVal)
-      // Update allValid
-      if (!v.valid && v.required) {
-        // If the value fails a check (or is empty) but IS required
-        allValid = false
+        // Fix: If expected type is valid and is a number, convert it to a number
+        if (v.type === 'number' && v.valid) v.value = Number(_tempVal)
+        // Update allValid
+        if (!v.valid && v.required) {
+          // If the value fails a check (or is empty) but IS required
+          allValid = false
+        }
+        // Add v to ret
+        ret[v.name] = v.value
+        return v
       }
-      // Add v to ret
-      ret[v.name] = v.value
-      return v
+      else {
+        const sliced = args.slice(i).map(v => {
+          // Remove surrounding quotes
+          const processed = multiStrRegexp.exec(v)
+          // ensure there is something to add to prevent an error
+          return processed ? processed[1] : ''
+        })
+
+        v.valid = multiStrRegexp.test(sliced.join(' '))
+        if (!v.valid && v.required) {
+          // If the value fails a check (or is empty) but IS required
+          allValid = false
+        }
+        // Add v to ret
+        ret[v.name] = sliced
+        return v
+      }
     })
 
     return { valid: allValid, validated: validated, o: ret }
@@ -127,6 +151,11 @@ export class Validate {
       //   sig += `'[\\"|\\']?([\\w-\\:\\@\\_\\#\\s+]+)[\\"|\\']?\\s?'`
       // }
 
+      // Handling for multiple args
+      if (match.optional === '...') {
+        sig += `(["|']{1}.+["|']{1})\\s?`
+      }
+
       // Handling of static route values
       if (match.optional === ':' || match.optional === '?:') {
         sig += `(${match.name})\\s?`
@@ -135,10 +164,8 @@ export class Validate {
       // Handling for user's input values
       if (match.optional === '=' || match.optional === '?=') {
         if (match.type === 'user') sig += `(\\@[\\w\\s-]*\\#[0-9]+|\\<\\@[0-9]*\\>)\\s?`
-        else sig 
-          += `[\\"|\\']?(\\@[\\w\\s-]*\\#[0-9]+|`
-          + `[\\w-\\:\\@\\_\\#\\?\\~\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\{\\}\\[\\]\\;\\|\\,\\.\\<\\>\\s+]`
-          + `+|\\<\\@[0-9]*\\>)[\\"|\\']?\\s?`
+        else sig
+          += `[\\"|\\']?(\\@[\\w\\s-]*\\#[0-9]+|[^"+]+|\\<\\@[0-9]*\\>)[\\"|\\']?\\s?`
       }
     });
 
@@ -157,6 +184,7 @@ export class Validate {
    */
   private createValidationType(match: ValidationRegexMatch) {
     return {
+      multi: match.multi !== undefined,
       name: match.name,
       required: match.optional === ':' || match.optional === '=' ? true : false,
       type: match.type,

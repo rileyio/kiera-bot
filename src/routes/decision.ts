@@ -35,5 +35,16 @@ export const Routes: Array<RouteConfiguration> = [
     middleware: [
       Middleware.isUserRegistered
     ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'author',
+    controller: Commands.Decision.runRealtimeDecision,
+    example: '{{prefix}}decision "Question here" "Option 1" "Option 2" "etc.."',
+    name: 'decision-realtime',
+    validate: '/decision:string/name=string/args...string',
+    middleware: [
+      Middleware.isUserRegistered
+    ]
   }
 ]

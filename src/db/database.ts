@@ -48,11 +48,11 @@ export class MongoDB<T>  {
         if (!this.connection.client.isConnected()) await this.newConnection()
         // Else reuse current connection
         // tslint:disable-next-line:no-console
-        console.log('reuse db connection on', this.dbCollection)
+        // console.log('reuse db connection on', this.dbCollection)
       }
       else {
         // tslint:disable-next-line:no-console
-        console.log('new db connection on', this.dbCollection)
+        // console.log('new db connection on', this.dbCollection)
         await this.newConnection()
       }
     } catch (error) {

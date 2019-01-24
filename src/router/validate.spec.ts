@@ -67,3 +67,10 @@ test('Utils:Validate => Special Characters', t => {
   const v1 = new Validate('/decision:string/id=string/add:string/text=string')
   t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}decision wqdhwqd2j021DJW92 add "Question~!@#$%^&*(){}[];|,.<> goes here?"`), true)
 })
+
+test('Utils:Validate => Multi Args', t => {
+  t.plan(2)
+  const v1 = new Validate('/decision:string/name=string/args...string')
+  t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}decision "Should ask a question?" "Yes" "No" "Maybe"`), true)
+  t.deepEqual(v1.validateArgs(getArgs(`${process.env.BOT_MESSAGE_PREFIX}decision "Should ask a question?" "Yes" "No" "Maybe"`)).o.args, [ 'Yes', '', 'Maybe' ] )
+})

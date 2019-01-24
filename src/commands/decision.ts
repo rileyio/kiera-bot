@@ -53,4 +53,15 @@ export namespace Decision {
     }
     return false
   }
+
+  export async function runRealtimeDecision(routed: RouterRouted) {
+    const decision = await routed.bot.Decision.get({ _id: new ObjectID(routed.v.o.id) })
+    if (decision) {
+      const sd = new TrackedDecision(decision)
+      const random = Math.floor((Math.random() * sd.options.length));
+      await routed.message.reply(decisionFromSaved(sd, sd.options[random]))
+      return true
+    }
+    return false
+  }
 }
