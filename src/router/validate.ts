@@ -21,9 +21,9 @@ export interface ValidationRegexMatch {
 }
 
 export class Validate {
-  public validation: Array<ValidationType>
-  public validationString: string
-  public signature: string
+  public readonly validation: Array<ValidationType>
+  public readonly validationString: string
+  public readonly signature: string
 
   constructor(validate: string) {
     this.validationString = validate
@@ -91,7 +91,8 @@ export class Validate {
   public validateArgs(args: Array<string>) {
     var allValid = true
     var ret: any = {}
-    var validated = this.validation.map((v: ValidationType, i: number) => {
+    var validationMap = JSON.parse(JSON.stringify(this.validation))
+    var validated = validationMap.map((v: ValidationType, i: number) => {
       const singleStrRegexp = /^["]([^"].+)["]\s?$/im
       const multiStrRegexp = /^["]([^"].+)["]\s?$/img
       const isMulti = v.multi
@@ -137,6 +138,8 @@ export class Validate {
         return v
       }
     })
+
+    console.log(this.validation)
 
     return { valid: allValid, validated: validated, o: ret }
   }
