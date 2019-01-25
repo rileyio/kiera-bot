@@ -5,5 +5,6 @@ export * from './duration';
 export * from './help';
 export * from './limit';
 export * from './react';
+export * from './roll';
 export * from './session';
 export * from './user';

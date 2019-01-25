@@ -92,8 +92,8 @@ export class Validate {
     var allValid = true
     var ret: any = {}
     var validated = this.validation.map((v: ValidationType, i: number) => {
-      const singleStrRegexp = /^["|']([^"|'].+)["|']\s?$/im
-      const multiStrRegexp = /^["|']([^"|'].+)["|']\s?$/img
+      const singleStrRegexp = /^["]([^"].+)["]\s?$/im
+      const multiStrRegexp = /^["]([^"].+)["]\s?$/img
       const isMulti = v.multi
       // If its a single non-multi arg value expected
       if (!isMulti) {
@@ -122,11 +122,10 @@ export class Validate {
       }
       else {
         const sliced = args.slice(i).map(v => {
-          // Remove surrounding quotes
-          const processed = singleStrRegexp.exec(v)
-          // ensure there is something to add to prevent an error
-          return processed ? processed[1] : v
+          return v.substr(1, v.length - 2)
         })
+
+        console.log('sliced', sliced)
 
         v.valid = multiStrRegexp.test(sliced.join(' '))
         if (!v.valid && v.required) {
@@ -171,6 +170,8 @@ export class Validate {
 
     // Add end of string $
     sig += '$'
+
+    // console.log(sig)
 
     return sig
   }

@@ -5,6 +5,7 @@ import { Routes as DurationRoutes } from './duration';
 import { Routes as HelpRoutes } from './help';
 import { Routes as LimitRoutes } from './limit';
 import { Routes as ReactRoutes } from './react';
+import { Routes as RollsRouted } from './roll';
 import { Routes as SessionRoutes } from './session';
 import { Routes as UserRoutes } from './user';
 
@@ -17,6 +18,7 @@ export function Routes() {
     HelpRoutes,
     LimitRoutes,
     ReactRoutes,
+    RollsRouted,
     SessionRoutes,
     UserRoutes
   )
