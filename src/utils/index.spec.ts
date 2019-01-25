@@ -3,9 +3,8 @@ import test from 'ava';
 import * as Utils from './index';
 
 test('Utils:getArgs => Ensure proper parsing of args', t => {
-  t.plan(3)
+  t.plan(2)
   t.is(Utils.getArgs(`${process.env.BOT_MESSAGE_PREFIX}decision  new  "Question goes here?"`).length, 3)
-  t.is(Utils.getArgs(`${process.env.BOT_MESSAGE_PREFIX}decision  new  'Question goes here?'`).length, 3)
   t.is(Utils.getArgs(`${process.env.BOT_MESSAGE_PREFIX}decision wqdhwqd2j021DJW92 add "Question~!@#$%^&*(){}[];|,.<> goes here?"`).length, 4)
 })
 

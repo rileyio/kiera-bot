@@ -55,7 +55,7 @@ test('Utils:Validate => Quotes', t => {
   t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}react @emma#1366 time '10'`), true)
   t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}react @emma#1366 time "10"`), true)
   t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}react @emma#1366 time 10`), true)
-  t.is(v1.validateArgs(getArgs(`${process.env.BOT_MESSAGE_PREFIX}react @emma#1366 time '10'`)).o.newtime, 10)
+  t.is(v1.validateArgs(getArgs(`${process.env.BOT_MESSAGE_PREFIX}react @emma#1366 time "10"`)).o.newtime, 10)
 })
 
 test('Utils:Validate => Multi String Quoted', t => {
@@ -72,5 +72,5 @@ test('Utils:Validate => Multi Args', t => {
   t.plan(2)
   const v1 = new Validate('/decision:string/name=string/args...string')
   t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}decision "Should ask a question?" "Yes" "No" "Maybe"`), true)
-  t.deepEqual(v1.validateArgs(getArgs(`${process.env.BOT_MESSAGE_PREFIX}decision "Should ask a question?" "Yes" "No" "Maybe"`)).o.args, [ 'Yes', '', 'Maybe' ] )
+  t.deepEqual(v1.validateArgs(getArgs(`${process.env.BOT_MESSAGE_PREFIX}decision "Should ask a question?" "Yes" "No" "Maybe"`)).o.args, [ 'Yes', 'No', 'Maybe' ] )
 })
