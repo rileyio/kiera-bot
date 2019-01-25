@@ -1,6 +1,6 @@
 import test from 'ava';
 import { CommandPermissions, CommandPermissionsAllowed } from './permission';
-import { VerifyCommandPermissions } from '../utils/permission';
+import { Permissions } from '../permissions/';
 /*
  * Priority:  user > channel > role > server
  */
@@ -30,7 +30,7 @@ var permission1 = new CommandPermissions({
 })
 
 test('Permission:VerifyPermissions => Channel Matched, Command Enabled, User should not matter', t => {
-  t.is(VerifyCommandPermissions([permission1]).command('ping').end({
+  t.is(Permissions.VerifyCommandPermissions([permission1]).command('ping').end({
     user: '000000001', // Does not match
     channel: '44444455555', // Matches server #1
     role: 'developer'
@@ -38,7 +38,7 @@ test('Permission:VerifyPermissions => Channel Matched, Command Enabled, User sho
 })
 
 test('Permission:VerifyPermissions => Channel Matched, Command disabled, User exception: allowed', t => {
-  t.is(VerifyCommandPermissions([permission1]).command('ping').end({
+  t.is(Permissions.VerifyCommandPermissions([permission1]).command('ping').end({
     user: '00000000',
     channel: '77777777',
     role: 'developer'
@@ -46,7 +46,7 @@ test('Permission:VerifyPermissions => Channel Matched, Command disabled, User ex
 })
 
 test('Permission:VerifyPermissions => Channel matched, Command disabled, User not Matched', t => {
-  t.is(VerifyCommandPermissions([permission1]).command('ping').end({
+  t.is(Permissions.VerifyCommandPermissions([permission1]).command('ping').end({
     user: '000000001',
     channel: '77777777',
     role: 'developer'
@@ -54,7 +54,7 @@ test('Permission:VerifyPermissions => Channel matched, Command disabled, User no
 })
 
 test('Permission:VerifyPermissions => No permissions defined', t => {
-  t.is(VerifyCommandPermissions([]).command('ping').end({
+  t.is(Permissions.VerifyCommandPermissions([]).command('ping').end({
     user: '000000001',
     channel: '77777777',
     role: 'developer'

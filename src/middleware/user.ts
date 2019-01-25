@@ -1,4 +1,4 @@
-import { RouterRouted } from '../utils/router';
+import { RouterRouted } from '../router/router';
 
 export async function isUserRegistered(routed: RouterRouted) {
   const isRegistered = await routed.bot.Users.verify(routed.user.id)

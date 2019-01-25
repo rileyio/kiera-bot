@@ -1,4 +1,4 @@
-import { RouterRouted } from '../utils/router';
+import { RouterRouted } from '../router/router';
 import { SessionTypes } from '../objects/sessions';
 
 

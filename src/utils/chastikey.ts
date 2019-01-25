@@ -1,9 +1,9 @@
 import { TrackedChastiKey } from '../objects/chastikey';
 
 export namespace ChastiKey {
-  export function generateTickerURL(ck: TrackedChastiKey) {
+  export function generateTickerURL(ck: TrackedChastiKey, overrideType?: number) {
     const date = `${ck.ticker.startDateYY || ''}-${ck.ticker.startDateDD || ''}-${ck.ticker.startDateMM || ''}`
-    const tickerType = ck.ticker.type
+    const tickerType = overrideType || ck.ticker.type
     // Break url into parts for easier building
     const fd = `fd=${date}`
     const un = `un=${ck.username}`

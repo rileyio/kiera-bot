@@ -1,7 +1,8 @@
 export enum ChastiKeyTickerType {
   None,
   Keyholder,
-  Lockee
+  Lockee,
+  Both
 }
 
 export class TrackedChastiKey {

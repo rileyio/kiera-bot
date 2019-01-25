@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js';
-import { Debug } from '../logger';
+import { Logging } from '../utils/';
 
 export namespace Channel {
   /**  
@@ -7,7 +7,7 @@ export namespace Channel {
    * @export
    * @param {Discord.TextChannel} channel
    */
-  export async function cleanTextChat(channel: Discord.TextChannel, DEBUG: Debug) {
+  export async function cleanTextChat(channel: Discord.TextChannel, DEBUG: Logging.Debug) {
     var messages: Discord.Collection<string, Discord.Message>;
     do {
       messages = await channel.fetchMessages({ limit: 100 })

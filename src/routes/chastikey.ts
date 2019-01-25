@@ -1,4 +1,4 @@
-import { RouteConfiguration } from '../utils/router';
+import { RouteConfiguration } from '../router/router';
 import * as Commands from '../commands';
 import * as Middleware from '../middleware';
 
@@ -7,7 +7,7 @@ export const Routes: Array<RouteConfiguration> = [
     type: 'message',
     commandTarget: 'author',
     controller: Commands.ChastiKey.setUsername,
-    example: '{{prefix}}ck username MyUsername',
+    example: '{{prefix}}ck username "MyUsername"',
     name: 'ck-set-username',
     validate: '/ck:string/username:string/ckusername=string',
     middleware: [
@@ -31,7 +31,7 @@ export const Routes: Array<RouteConfiguration> = [
     controller: Commands.ChastiKey.Ticker.getTicker,
     example: '{{prefix}}ck ticker',
     name: 'ck-get-ticker',
-    validate: '/ck:string/ticker:string',
+    validate: '/ck:string/ticker:string/type?=number',
     middleware: [
       Middleware.isUserRegistered
     ]

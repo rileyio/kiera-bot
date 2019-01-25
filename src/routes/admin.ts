@@ -1,4 +1,4 @@
-import { RouteConfiguration } from '../utils/router';
+import { RouteConfiguration } from '../router/router';
 
 // Import routes from ./*/ to keep this file cleaner
 import { Routes as AdminUserRoutes } from './admin/admin-user';

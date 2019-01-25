@@ -1,1 +1,0 @@
-export const usernameNotSet = `You'll need to tell the bot your username in order to use the \`{{prefix}}ticker\`, Set your username (found in the ChastiKey app) using \`{{prefix}}ck username "YourUsernameHere"\``

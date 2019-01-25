@@ -1,5 +1,5 @@
 import { MongoClient, MongoClientOptions, Cursor, Db, MongoError } from 'mongodb';
-import { Debug } from '../logger';
+import { Logging } from '../utils/';
 
 export * from './promise'
 export * from './messages'
@@ -18,7 +18,7 @@ export class MongoDB<T>  {
     client: MongoClient;
     error: MongoError;
   } = { db: undefined, client: undefined, error: undefined }
-  public DEBUG_DB: Debug
+  public DEBUG_DB: Logging.Debug
 
   public dbName = `${process.env.DB_NAME}`
   public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${this.dbName}`
@@ -33,7 +33,7 @@ export class MongoDB<T>  {
 
   constructor(collection: string) {
     this.dbCollection = collection
-    this.DEBUG_DB = new Debug(`ldi:database::${collection}`)
+    this.DEBUG_DB = new Logging.Debug(`ldi:database::${collection}`)
   }
 
   // private queryWrapper<T>(promise: Promise<T>, fallback: T) {
@@ -48,11 +48,11 @@ export class MongoDB<T>  {
         if (!this.connection.client.isConnected()) await this.newConnection()
         // Else reuse current connection
         // tslint:disable-next-line:no-console
-        console.log('reuse db connection on', this.dbCollection)
+        // console.log('reuse db connection on', this.dbCollection)
       }
       else {
         // tslint:disable-next-line:no-console
-        console.log('new db connection on', this.dbCollection)
+        // console.log('new db connection on', this.dbCollection)
         await this.newConnection()
       }
     } catch (error) {

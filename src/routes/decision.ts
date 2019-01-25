@@ -1,4 +1,4 @@
-import { RouteConfiguration } from '../utils/router';
+import { RouteConfiguration } from '../router/router';
 import * as Commands from '../commands';
 import * as Middleware from '../middleware';
 
@@ -32,6 +32,17 @@ export const Routes: Array<RouteConfiguration> = [
     example: '{{prefix}}decision roll "id"',
     name: 'decision-new-option',
     validate: '/decision:string/roll:string/id=string',
+    middleware: [
+      Middleware.isUserRegistered
+    ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'author',
+    controller: Commands.Decision.runRealtimeDecision,
+    example: '{{prefix}}decision "Question here" "Option 1" "Option 2" "etc.."',
+    name: 'decision-realtime',
+    validate: '/decision:string/question=string/args...string',
     middleware: [
       Middleware.isUserRegistered
     ]
