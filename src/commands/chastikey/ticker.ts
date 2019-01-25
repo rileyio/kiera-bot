@@ -15,15 +15,27 @@ import { TrackedUser } from '../../objects/user';
 export async function setTickerType(routed: RouterRouted) {
   const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
   const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
-  const newTickerType = routed.v.o.number === 1 || routed.v.o.number === 2 ?
-    routed.v.o.number === 1
-      ? ChastiKeyTickerType.Keyholder
-      : ChastiKeyTickerType.Lockee
-    : ChastiKeyTickerType.Lockee // Fallback default = lockee
+  var newTickerType: number
+  var newTickerTypeAsString: string
 
-  const newTickerTypeAsString = newTickerType === ChastiKeyTickerType.Keyholder
-    ? 'Keyholder'
-    : 'Lockee'
+  switch (routed.v.o.number) {
+    case 1:
+      newTickerType = 1
+      newTickerTypeAsString = 'Keyholder'
+      break;
+    case 2:
+      newTickerType = 2
+      newTickerTypeAsString = 'Lockee'
+      break;
+    case 3:
+      newTickerType = 3
+      newTickerTypeAsString = 'Both'
+      break;
+
+    default:
+      // Invalid number, stop the routing
+      return false
+  }
 
   // Get the user from the db in their current state
   const user = new TrackedUser(await routed.bot.Users.get(userQuery))
@@ -36,9 +48,11 @@ export async function setTickerType(routed: RouterRouted) {
     await routed.message.author
       .send(`:white_check_mark: ChastiKey Ticker type now set to: \`${newTickerTypeAsString}\``)
     routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set type ${newTickerTypeAsString}`)
+    return true
   }
   else {
     routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set type ${newTickerTypeAsString} -> update unsuccessful!`)
+    return false
   }
 }
 
@@ -61,10 +75,10 @@ export async function getTicker(routed: RouterRouted) {
   // If the user has passed a type as an argument, use that over what was saved as their default
   if (routed.v.o.type !== undefined) {
     // Stop invalid number/inputs
-    if (routed.v.o.type !== 1 || routed.v.o.type !== 2 || routed.v.o.type !== 3) {
-      await routed.message.channel.send(Utils.sb(Utils.en.chastikey.invalidOverrideType))
-      return false
-    }
+    // if (routed.v.o.type !== 1 || routed.v.o.type !== 2 || routed.v.o.type !== 3) {
+    //   await routed.message.channel.send(Utils.sb(Utils.en.chastikey.invalidOverrideType))
+    //   return false
+    // }
     user.ChastiKey.ticker.type = routed.v.o.type
   }
 
