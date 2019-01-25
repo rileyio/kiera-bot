@@ -39,38 +39,6 @@ Usage Example:
 \`\`\`
 `
 
-export const react = `
-**\`{{prefix}}react\` Command Usage**
-
-Constraints: [Keyholder's Only]
-
-Sets how much time to be added/removed per react.
-
-Usage Example:
-\`\`\`md
-{{prefix}}react @user#0000 time 10
-\`\`\`
-`
-
-export const duration = `
-**\`{{prefix}}duration\` Command Usage**
-
-Constraints: [Keyholder's Only]
-
-Sets a duration of the session, time can be added to this via reacts.
-
-Usage Example:
-\`\`\`md
-Set the base time, this is a period of time when initially starting the
-session to wait for incoming reactions, nothing will happen until a reaction
-is added
-{{prefix}}duration @user#0000 min 5
-
-Sets the maximum time that cannot be exceeded by added reactions
-{{prefix}}duration @user#0000 max 10
-\`\`\`
-`
-
 // export const intensity = `
 // **\`{{prefix}}intensity\` Command Usage**
 
@@ -98,20 +66,6 @@ Sets the maximum time that cannot be exceeded by added reactions
 // {{prefix}}intensity @user#0000 set modifier 10
 // \`\`\`
 // `
-
-export const limit = `
-**\`{{prefix}}limit\` Command Usage**
-
-Constraints: [Lockee's Only]
-
-Sets intensity lockee's thresholds/limits.
-
-Usage Example:
-\`\`\`md
-{{prefix}}limit intensity 80
-{{prefix}}limit time 75
-\`\`\`
-`
 
 export const ck = `
 **\`{{prefix}}ck\` Command Usage**
@@ -150,5 +104,70 @@ Add options to an existing saved decision
 
 Roll for a result from a saved decision
 {{prefix}}decision roll 'DecisionID'
+\`\`\`
+`
+
+export const duration = `
+**\`{{prefix}}duration\` Command Usage**
+
+Constraints: [Keyholder's Only]
+
+Sets a duration of the session, time can be added to this via reacts.
+
+Usage Example:
+\`\`\`md
+Set the base time, this is a period of time when initially starting the
+session to wait for incoming reactions, nothing will happen until a reaction
+is added
+{{prefix}}duration @user#0000 min 5
+
+Sets the maximum time that cannot be exceeded by added reactions
+{{prefix}}duration @user#0000 max 10
+\`\`\`
+`
+
+export const limit = `
+**\`{{prefix}}limit\` Command Usage**
+
+Constraints: [Lockee's Only]
+
+Sets intensity lockee's thresholds/limits.
+
+Usage Example:
+\`\`\`md
+{{prefix}}limit intensity 80
+{{prefix}}limit time 75
+\`\`\`
+`
+
+export const react = `
+**\`{{prefix}}react\` Command Usage**
+
+Constraints: [Keyholder's Only]
+
+Sets how much time to be added/removed per react.
+
+Usage Example:
+\`\`\`md
+{{prefix}}react @user#0000 time 10
+\`\`\`
+`
+
+
+export const roll = `
+**\`{{prefix}}roll\` Command Usage**
+
+Roll die/dice
+
+Usage Example
+\`\`\`
+Roll a single die
+{{prefix}}roll
+
+Roll a single die with 20 sides
+{{prefix}}roll 20
+
+Roll multiple (Example: 10) dice with given number of sides (Example: 6)
+{{prefix}}roll 10 6
 \`\`\`
 `

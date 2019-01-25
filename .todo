@@ -11,7 +11,7 @@ Admin:
   ☐ @critical | @high  have Kiera DM admins/post to Announcements channel if:
     ☐ @critical latency breaks a threshold
     ✔ @critical db connection down @done (1/22/2019, 1:13:48 AM)
-    ☐ @high bot detects it was restarted
+    ✔ @high bot detects it was restarted @done (1/22/2019, 1:13:48 AM)
 
 Web:
   ☐ @high admin / server owner permissions control

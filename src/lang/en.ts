@@ -20,6 +20,7 @@ export const en = {
     main: HelpStrings.main,
     react: HelpStrings.react,
     register: HelpStrings.register,
+    roll: HelpStrings.roll,
   },
 
 }

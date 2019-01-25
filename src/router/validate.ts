@@ -139,8 +139,6 @@ export class Validate {
       }
     })
 
-    console.log(this.validation)
-
     return { valid: allValid, validated: validated, o: ret }
   }
 
