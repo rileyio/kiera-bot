@@ -81,10 +81,13 @@ Usage Example
 Returns your ticker
 {{prefix}}ck ticker
 
+Returns a specific ticker type regardless of your saved type (1) Keyholder, (2) Lockee, (3) Both
+{{prefix}}ck ticker #
+
 Configures ChastiKey username
 {{prefix}}ck username YourUsername
 
-Configures if your ticker should return as a (1) Keyholder or (2) Lockee
+Configures if your ticker should return as a (1) Keyholder, Default: (2) Lockee, (3) Both
 {{prefix}}ck ticker set type 2
 \`\`\`
 `

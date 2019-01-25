@@ -4,6 +4,7 @@ import * as HelpStrings from './en/help';
 
 export const en = {
   chastikey: {
+    invalidOverrideType: ChastiKey.invalidOverrideType,
     usernameNotSet: ChastiKey.usernameNotSet
   },
   error: {

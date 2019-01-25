@@ -45,7 +45,7 @@ export async function setTickerType(routed: RouterRouted) {
 export async function getTicker(routed: RouterRouted) {
   const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
   const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
-  const user = new TrackedUser(await routed.bot.Users.get(userQuery))
+  var user = new TrackedUser(await routed.bot.Users.get(userQuery))
   // If user is not in the DB, inform them they must register
   if (!user) {
     await routed.message.reply(Utils.sb(Utils.en.error.userNotRegistered))
@@ -58,6 +58,28 @@ export async function getTicker(routed: RouterRouted) {
     return false; // Stop here
   }
 
-  await routed.message.channel.send(new Attachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey)))
-  return true
+  // If the user has passed a type as an argument, use that over what was saved as their default
+  if (routed.v.o.type !== undefined) {
+    // Stop invalid number/inputs
+    if (routed.v.o.type !== 1 || routed.v.o.type !== 2 || routed.v.o.type !== 3) {
+      await routed.message.channel.send(Utils.sb(Utils.en.chastikey.invalidOverrideType))
+      return false
+    }
+    user.ChastiKey.ticker.type = routed.v.o.type
+  }
+
+  // If the type is only for a single ticker, return just that
+  if (user.ChastiKey.ticker.type === 1 || user.ChastiKey.ticker.type === 2) {
+    await routed.message.channel.send(new Attachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey)))
+    return true
+  }
+  else {
+    await routed.message.channel.send('', {
+      files: [
+        Utils.ChastiKey.generateTickerURL(user.ChastiKey, 1),
+        Utils.ChastiKey.generateTickerURL(user.ChastiKey, 2)
+      ]
+    })
+    return true
+  }
 }

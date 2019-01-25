@@ -31,7 +31,7 @@ export const Routes: Array<RouteConfiguration> = [
     controller: Commands.ChastiKey.Ticker.getTicker,
     example: '{{prefix}}ck ticker',
     name: 'ck-get-ticker',
-    validate: '/ck:string/ticker:string',
+    validate: '/ck:string/ticker:string/type?=number',
     middleware: [
       Middleware.isUserRegistered
     ]
