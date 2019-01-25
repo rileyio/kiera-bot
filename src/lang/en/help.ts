@@ -96,6 +96,9 @@ A random decision maker based on given or saved outcomes.
 
 Usage Example
 \`\`\`
+Run a random decision (without saving)
+{{prefix}}decision "Your question here!" "Answers like" "this"
+
 Create a new saved decision (reusable)
 {{prefix}}decision new "Your decision question here"
 
