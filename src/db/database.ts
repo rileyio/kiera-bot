@@ -13,7 +13,7 @@ export async function MongoDBLoader<T>(collection: string) {
 }
 
 export class MongoDB<T>  {
-  private connection: {
+  public connection: {
     db: Db;
     client: MongoClient;
     error: MongoError;
@@ -104,6 +104,23 @@ export class MongoDB<T>  {
     this.DEBUG_DB.log(`.add results => inserted: ${results.insertedCount}, id: ${results.insertedId}`)
     // connection.client.close()
     return results.result.n === 1 ? results.insertedId : null
+  }
+
+  /**
+   * Adds multiple records to the DB
+   * @param {T} record
+   * @returns
+   * @memberof DB
+   */
+  public async addMany<T>(record: T[], opts?: {}) {
+    const insertOptions = Object.assign({}, opts)
+    this.DEBUG_DB.log(`.add =>`, record)
+    const connection = await this.connect()
+    const collection = connection.db.collection(this.dbCollection)
+    const results = await collection.insertMany(record)
+    this.DEBUG_DB.log(`.add results => inserted: ${results.insertedCount}`)
+    // connection.client.close()
+    return results.result.n === 1 ? results.insertedCount : null
   }
 
   /**
