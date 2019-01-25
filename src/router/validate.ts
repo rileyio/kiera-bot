@@ -125,7 +125,7 @@ export class Validate {
           return v.substr(1, v.length - 2)
         })
 
-        console.log('sliced', sliced)
+        // console.log('sliced', sliced)
 
         v.valid = multiStrRegexp.test(sliced.join(' '))
         if (!v.valid && v.required) {
@@ -157,14 +157,13 @@ export class Validate {
 
       // Handling of static route values
       if (match.optional === ':' || match.optional === '?:') {
-        sig += `(${match.name})\\s?`
+        sig += (match.optional === '?:') ? `(${match.name})\\s?` :`(${match.name})\\s?`
       }
 
       // Handling for user's input values
       if (match.optional === '=' || match.optional === '?=') {
         if (match.type === 'user') sig += `(\\@[\\w\\s-]*\\#[0-9]+|\\<\\@[0-9]*\\>)\\s?`
-        else sig
-          += `[\\"|\\']?(\\@[\\w\\s-]*\\#[0-9]+|[^"+]+|\\<\\@[0-9]*\\>)[\\"|\\']?\\s?`
+        else sig += (match.optional === '?=') ? `(?:["]?([^"+]+)["]?\s?)?` : `["]?([^"+]+)["]?\\s?`
       }
     });
 
