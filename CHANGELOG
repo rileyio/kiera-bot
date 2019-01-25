@@ -1,5 +1,10 @@
 1.2.0
 - Added: Command failed fallback reply in chat to help show examples of command usage
+- Added: Optional args support
+- Added: Command !roll for rolling dice
+- Updated Command: !decision to accept a question and outcomes without needing to save for quick usage
+- Updated Command: !ck ticker to allow for a both type to be set (3) to return both tickers
+- Updated Command: !ck ticker to accept a ticker type when using !ck ticker 2 to return the override type
 
 1.1.1
 - Fix: new/reuse DB connection handling
