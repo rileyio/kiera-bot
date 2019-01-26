@@ -98,7 +98,7 @@ export class MongoDB {
    */
   public async add<T>(targetCollection: Collections, record: T, opts?: {}) {
     const insertOptions = Object.assign({}, opts)
-    this.DEBUG_DB.log(`.add =>`, record)
+    this.DEBUG_DB.log(`.add =>`, targetCollection)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const results = await collection.insertOne(record)
@@ -115,7 +115,7 @@ export class MongoDB {
    */
   public async addMany<T>(targetCollection: Collections, record: T[], opts?: {}) {
     const insertOptions = Object.assign({}, opts)
-    this.DEBUG_DB.log(`.add =>`, record)
+    this.DEBUG_DB.log(`.add =>`, targetCollection)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const results = await collection.insertMany(record)
@@ -150,7 +150,7 @@ export class MongoDB {
     const collection = connection.db.collection(targetCollection)
     const deletionMethod = deleteOptions.deleteOne ? 'deleteOne' : 'deleteMany'
     const result = await collection[deletionMethod](typeof query === 'string' ? { id: query } : query)
-    this.DEBUG_DB.log(`.update results => updated: ${result.result.n}`)
+    this.DEBUG_DB.log(`.update results => removed: ${result.result.n}`)
     // connection.client.close()
     return result.result.n
   }
