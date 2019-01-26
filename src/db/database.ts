@@ -6,6 +6,8 @@ export * from './messages'
 
 export type Collections = 'authkeys'
   | 'ck-running-locks'
+  | 'ck-keyholder-raitings'
+  | 'ck-total-locked-time'
   | 'decision'
   | 'messages'
   | 'servers'

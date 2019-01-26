@@ -45,7 +45,9 @@ export class Bot {
 
     // Register background tasks
     this.Task.register(new Task.ChastiKeyAPIRunningLocks())
-    this.Task.start()
+    this.Task.register(new Task.ChastiKeyAPIKeyholderRatings())
+    this.Task.register(new Task.ChastiKeyAPITotalLockedTime())
+    this.Task.start(this)
 
     /// Event hndling for non-cached (messages from prior to restart) ///
     this.client.on('raw', async event => {

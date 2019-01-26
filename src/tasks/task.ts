@@ -13,12 +13,14 @@ export class Task {
 }
 
 export class TaskManager {
+  protected Bot: Bot
   public registered: { [name: string]: Task } = {}
   public isTaskRunnerRunning: boolean = false
   public isTaskRunnerProcessing: boolean = false
   public _taskRunner: NodeJS.Timer
 
-  public start() {
+  public start(bot: Bot) {
+    this.Bot = bot
     this.taskRunner()
   }
 
