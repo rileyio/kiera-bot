@@ -15,7 +15,7 @@ export namespace User {
         ? { _id: v.o._id }
         : { id: v.o.id }
 
-      var user = await routed.Bot.Users.get(query, { username: 1, discriminator: 1 })
+      var user = await routed.Bot.DB.get('users', query, { username: 1, discriminator: 1 })
 
       return routed.res.send(user);
     }
@@ -30,18 +30,18 @@ export namespace User {
     // this.DEBUG_WEBAPI('req params', v.o)
 
     if (v.valid) {
-      const storedUser = await routed.Bot.Users.get({ id: v.o.id })
+      const storedUser = await routed.Bot.DB.get('users', { id: v.o.id })
       // Is user already stored?
       const uUser = storedUser ? new TrackedUser(storedUser) : new TrackedUser(v.o)
       var updateType: 'added' | 'updated' | 'error'
 
       try {
         if (storedUser) {
-          await routed.Bot.Users.update({ id: v.o.id }, uUser)
+          await routed.Bot.DB.update('users', { id: v.o.id }, uUser)
           updateType = 'updated'
         }
         else {
-          await routed.Bot.Users.add(uUser)
+          await routed.Bot.DB.add('users', uUser)
           updateType = 'added'
         }
       } catch (error) {

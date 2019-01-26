@@ -1,6 +1,8 @@
 import * as Utils from '../utils/';
 import { RouterRouted } from '../router/router';
 import { DeviceSession } from '../objects/sessions';
+import { TrackedChannel } from '../objects/channel';
+import { TrackedUser } from '../objects/user';
 
 export namespace Duration {
   export async function setDurationTime(routed: RouterRouted) {
@@ -19,7 +21,7 @@ export namespace Duration {
     }
 
     // Get user's _id from the db
-    const targetUser = await routed.bot.Users.get(userQuery)
+    const targetUser = await routed.bot.DB.get<TrackedChannel>('users', userQuery)
 
     // Ensure target user is setup & has a session
     if (!targetUser) {
@@ -28,7 +30,7 @@ export namespace Duration {
       return false
     }
 
-    const userSession = await routed.bot.Sessions.get({
+    const userSession = await routed.bot.DB.get<TrackedUser>('sessions', {
       uid: targetUser._id,
       isActive: false,
       isDeactivated: false,
@@ -47,7 +49,7 @@ export namespace Duration {
     nsession.duration[key] = newTime
 
     // Update in db
-    await routed.bot.Sessions.update({ _id: userSession._id }, nsession)
+    await routed.bot.DB.update('sessions', { _id: userSession._id }, nsession)
 
     // Process command
     await routed.message.reply(

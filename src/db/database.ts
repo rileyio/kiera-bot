@@ -4,22 +4,29 @@ import { Logging } from '../utils/';
 export * from './promise'
 export * from './messages'
 
-export async function MongoDBLoader<T>(collection: string) {
-  return new Promise<MongoDB<T>>(async (ret) => {
-    var db = new MongoDB<T>(collection);
-    // await db.connectionTest()
+export type Collections = 'authkeys'
+  | 'ck-running-locks'
+  | 'decision'
+  | 'messages'
+  | 'servers'
+  | 'sessions'
+  | 'stats-bot'
+  | 'users'
+
+export async function MongoDBLoader() {
+  return new Promise<MongoDB>(async (ret) => {
+    var db = new MongoDB();
     return ret(db)
   })
 }
 
-export class MongoDB<T>  {
+export class MongoDB {
   public connection: {
     db: Db;
     client: MongoClient;
     error: MongoError;
   } = { db: undefined, client: undefined, error: undefined }
   public DEBUG_DB: Logging.Debug
-
   public dbName = `${process.env.DB_NAME}`
   public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${this.dbName}`
   public dbOpts: MongoClientOptions = {
@@ -29,16 +36,10 @@ export class MongoDB<T>  {
       password: process.env.DB_PASS,
     }
   }
-  public dbCollection: string
 
-  constructor(collection: string) {
-    this.dbCollection = collection
-    this.DEBUG_DB = new Logging.Debug(`ldi:database::${collection}`)
+  constructor() {
+    this.DEBUG_DB = new Logging.Debug(`ldi:database`)
   }
-
-  // private queryWrapper<T>(promise: Promise<T>, fallback: T) {
-
-  // }
 
   public async connect() {
     try {
@@ -48,11 +49,11 @@ export class MongoDB<T>  {
         if (!this.connection.client.isConnected()) await this.newConnection()
         // Else reuse current connection
         // tslint:disable-next-line:no-console
-        // console.log('reuse db connection on', this.dbCollection)
+        // console.log('reuse db connection on', targetCollection)
       }
       else {
         // tslint:disable-next-line:no-console
-        // console.log('new db connection on', this.dbCollection)
+        // console.log('new db connection on', targetCollection)
         await this.newConnection()
       }
     } catch (error) {
@@ -69,7 +70,7 @@ export class MongoDB<T>  {
       })
       .catch(_error => {
         // tslint:disable-next-line:no-console
-        console.log('>>>>> Failed to connect to db for query', this.dbCollection)
+        console.log('>>>>> Failed to connect to db for query')
         this.connection.error = _error
       })
   }
@@ -95,11 +96,11 @@ export class MongoDB<T>  {
    * @returns
    * @memberof DB
    */
-  public async add<T>(record: T, opts?: {}) {
+  public async add<T>(targetCollection: Collections, record: T, opts?: {}) {
     const insertOptions = Object.assign({}, opts)
     this.DEBUG_DB.log(`.add =>`, record)
     const connection = await this.connect()
-    const collection = connection.db.collection(this.dbCollection)
+    const collection = connection.db.collection(targetCollection)
     const results = await collection.insertOne(record)
     this.DEBUG_DB.log(`.add results => inserted: ${results.insertedCount}, id: ${results.insertedId}`)
     // connection.client.close()
@@ -112,11 +113,11 @@ export class MongoDB<T>  {
    * @returns
    * @memberof DB
    */
-  public async addMany<T>(record: T[], opts?: {}) {
+  public async addMany<T>(targetCollection: Collections, record: T[], opts?: {}) {
     const insertOptions = Object.assign({}, opts)
     this.DEBUG_DB.log(`.add =>`, record)
     const connection = await this.connect()
-    const collection = connection.db.collection(this.dbCollection)
+    const collection = connection.db.collection(targetCollection)
     const results = await collection.insertMany(record)
     this.DEBUG_DB.log(`.add results => inserted: ${results.insertedCount}`)
     // connection.client.close()
@@ -129,10 +130,10 @@ export class MongoDB<T>  {
    * @returns
    * @memberof DB
    */
-  public async verify<Q, T>(query: string | Q) {
-    this.DEBUG_DB.log(`.verify => in`, this.dbCollection)
+  public async verify<T>(targetCollection: Collections, query: string | Partial<T>) {
+    this.DEBUG_DB.log(`.verify => in`, targetCollection)
     const connection = await this.connect()
-    const collection = connection.db.collection(this.dbCollection)
+    const collection = connection.db.collection(targetCollection)
     const results = await collection.find<T>(typeof query === 'string' ? { id: query } : query)
     return await results.count() > 0
   }
@@ -143,10 +144,10 @@ export class MongoDB<T>  {
    * @returns
    * @memberof DB
    */
-  public async remove<Q>(query: string | Q, opts?: { deleteOne?: boolean }) {
+  public async remove<T>(targetCollection: Collections, query: string | T, opts?: { deleteOne?: boolean }) {
     const deleteOptions = Object.assign({ deleteOne: true }, opts)
     const connection = await this.connect()
-    const collection = connection.db.collection(this.dbCollection)
+    const collection = connection.db.collection(targetCollection)
     const deletionMethod = deleteOptions.deleteOne ? 'deleteOne' : 'deleteMany'
     const result = await collection[deletionMethod](typeof query === 'string' ? { id: query } : query)
     this.DEBUG_DB.log(`.update results => updated: ${result.result.n}`)
@@ -162,11 +163,11 @@ export class MongoDB<T>  {
    * @returns
    * @memberof DB
    */
-  public async update<Q, T>(query: Q, update: T, opts?: { upsert?: boolean, updateOne?: boolean, atomic?: boolean }) {
+  public async update<T>(targetCollection: Collections, query: Partial<T>, update: Partial<T>, opts?: { upsert?: boolean, updateOne?: boolean, atomic?: boolean }) {
     // this.DEBUG_DB.log(`.update =>`, query, update)
     const uopts = Object.assign({ atomic: false, upsert: false, updateOne: true }, opts)
     const connection = await this.connect()
-    const collection = connection.db.collection(this.dbCollection)
+    const collection = connection.db.collection(targetCollection)
     const result = uopts.updateOne
       ? await collection.updateOne(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
       : await collection.updateMany(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
@@ -185,10 +186,10 @@ export class MongoDB<T>  {
    * @returns
    * @memberof DB
    */
-  public async get<Q>(query: Q, returnFields?: { [key: string]: number }) {
+  public async get<T>(targetCollection: Collections, query: any, returnFields?: { [key: string]: number }) {
     this.DEBUG_DB.log(`.get =>`, query)
     const connection = await this.connect()
-    const collection = connection.db.collection(this.dbCollection)
+    const collection = connection.db.collection(targetCollection)
     const result = await collection.findOne<T>(query, returnFields ? { projection: returnFields } : undefined)
     this.DEBUG_DB.log(`.get results =>`, result)
     // connection.client.close()
@@ -205,10 +206,10 @@ export class MongoDB<T>  {
    * @returns
    * @memberof DB
    */
-  public async getMultiple<Q>(query: Q, returnFields?: { [key: string]: number }) {
+  public async getMultiple<T>(targetCollection: Collections, query: any, returnFields?: { [key: string]: number }) {
     this.DEBUG_DB.log(`.getMultiple =>`, query, returnFields)
     const connection = await this.connect()
-    const collection = connection.db.collection(this.dbCollection)
+    const collection = connection.db.collection(targetCollection)
     const result = await collection.find<T>(query, returnFields ? { projection: returnFields } : undefined)
     this.DEBUG_DB.log(`.getMultiple results =>`, await result.count())
     // connection.client.close()
@@ -218,7 +219,7 @@ export class MongoDB<T>  {
   // public get<Q, T>(query: Q, discriminator?: string) {
   //   return new Promise<T>(r => {
   //     this.connect(async (db: Db, client: MongoClient, err: MongoError) => {
-  //       const collection = db.collection(this.dbCollection)
+  //       const collection = db.collection(targetCollection)
   //       const result = await collection.findOne<T>(query)
   //       client.close()
   //       r(result)

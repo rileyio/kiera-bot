@@ -71,7 +71,7 @@ export class MsgTracker {
     // Track message in array
     this.msgTrackingArr.push(msg)
     // Store in db
-    await this.Bot.Messages.update({ _id: msg._id }, msg, { upsert: true })
+    await this.Bot.DB.update('messages', { _id: msg._id }, msg, { upsert: true })
     // Return message object id
     return msg._id
   }
@@ -164,7 +164,7 @@ export class MsgTracker {
     const foundMsgIndex = this.msgTrackingArr.findIndex(msg => msg.id === id)
     // Remove msg from tracking
     this.msgTrackingArr.splice(foundMsgIndex, 1)
-    if (!keepInDB) await this.Bot.Messages.remove({ id: id })
+    if (!keepInDB) await this.Bot.DB.remove('messages', { id: id })
     this.Bot.DEBUG_MSG_SCHEDULED.log(`deleted old message in mem id:${id}`)
   }
 }

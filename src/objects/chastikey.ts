@@ -1,3 +1,5 @@
+import { ObjectID } from 'bson';
+
 export enum ChastiKeyTickerType {
   None,
   Keyholder,
@@ -32,4 +34,22 @@ export class TrackedChastiKeyTicker {
   constructor(init: Partial<TrackedChastiKey>) {
     Object.assign(this, init);
   }
+}
+
+export class TrackedChastiKeyLock {
+  // Kiera props
+  public readonly _id: ObjectID
+  // ChastiKey Props
+  public username: string
+  public sharedLockID: string
+  public regularity: number
+  public multipleGreensRequired: number
+  public timestampLocked: number
+  public timestampNow: number
+  public secondsLocked: number
+  public fixed: number
+  public cumulative: number
+  public noOfTurns: number
+  public version: string
+  public build: number
 }

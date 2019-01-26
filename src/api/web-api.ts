@@ -123,7 +123,7 @@ export class WebAPI {
 
     const keysplit = authKey.split(':')
     const newLookupRegex = RegExp(`^${keysplit[0]}\\:${keysplit[1]}`)
-    const authKeyStored = await this.Bot.AuthKeys.get({ hash: newLookupRegex })
+    const authKeyStored = await this.Bot.DB.get<AuthKey>('authkeys', { hash: newLookupRegex })
     // console.log('newLookupRegex', newLookupRegex)
     // console.log('authKeyStored', authKeyStored)
 

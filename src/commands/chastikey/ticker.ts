@@ -1,7 +1,6 @@
 import * as Utils from '../../utils/';
 import { RouterRouted } from '../../router/router';
 import { Attachment } from 'discord.js';
-import { ChastiKeyTickerType } from '../../objects/chastikey';
 import { TrackedUser } from '../../objects/user';
 
 /**
@@ -38,11 +37,11 @@ export async function setTickerType(routed: RouterRouted) {
   }
 
   // Get the user from the db in their current state
-  const user = new TrackedUser(await routed.bot.Users.get(userQuery))
+  const user = new TrackedUser(await routed.bot.DB.get('users', userQuery))
   // Change/Update TrackedChastiKey.Type Prop
   user.ChastiKey.ticker.type = newTickerType
   // Commit change to db
-  const updateResult = await routed.bot.Users.update(userQuery, user)
+  const updateResult = await routed.bot.DB.update('users', userQuery, user)
 
   if (updateResult > 0) {
     await routed.message.author
@@ -59,7 +58,7 @@ export async function setTickerType(routed: RouterRouted) {
 export async function getTicker(routed: RouterRouted) {
   const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
   const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
-  var user = new TrackedUser(await routed.bot.Users.get(userQuery))
+  var user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
   // If user is not in the DB, inform them they must register
   if (!user) {
     await routed.message.reply(Utils.sb(Utils.en.error.userNotRegistered))

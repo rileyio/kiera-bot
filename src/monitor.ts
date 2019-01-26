@@ -29,7 +29,7 @@ export class BotMonitor extends EventEmitter {
     super()
 
     this.Bot = bot
-    this.DBMonitor = new DatabaseMonitor()
+    this.DBMonitor = new DatabaseMonitor(this.Bot)
     this.Stats = new Statistics(this.Bot)
     this.WebAPI = new WebAPI(this.Bot)
 
@@ -93,7 +93,7 @@ export class BotMonitor extends EventEmitter {
     // Some will need to be re-initalized
     this.DBMonitor.destroy() // Destroy interval tickers
     this.Stats.destroy() // Destroy interval tickers
-    this.DBMonitor = new DatabaseMonitor()
+    this.DBMonitor = new DatabaseMonitor(this.Bot)
     this.WebAPI = new WebAPI(this.Bot)
     this.setEventListeners() // Recreate event listeners
 

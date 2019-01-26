@@ -18,11 +18,11 @@ export namespace ChastiKey {
     const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
 
     // Get the user from the db in their current state
-    const user = new TrackedUser(await routed.bot.Users.get(userQuery))
+    const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
     // Change/Update TrackedChastiKey.Username Prop
     user.ChastiKey.username = routed.v.o.ckusername
     // Commit change to db
-    const updateResult = await routed.bot.Users.update(userQuery, user)
+    const updateResult = await routed.bot.DB.update('users', userQuery, user)
 
     if (updateResult > 0) {
       await routed.message.author.send(`:white_check_mark: ChastiKey Username now set to: \`${routed.v.o.ckusername}\``)

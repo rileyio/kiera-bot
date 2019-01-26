@@ -89,12 +89,12 @@ export class Statistics extends EventEmitter {
 
   public async loadExisting() {
     // Ensure db records exist
-    if (!await this._Bot.BotStatistics.verify({ name: this.Bot.name })) {
-      await this._Bot.BotStatistics.add(this.Bot)
+    if (!await this._Bot.DB.verify('stats-bot', { name: this.Bot.name })) {
+      await this._Bot.DB.add('stats-bot', this.Bot)
     }
 
     // Get existing stats from DB
-    const botStats = await this._Bot.BotStatistics.get({})
+    const botStats = await this._Bot.DB.get<BotStatistics>('stats-bot', {})
     // Init stats
     this.Bot.startup(botStats)
 
@@ -118,7 +118,7 @@ export class Statistics extends EventEmitter {
     if (!this.dbUpdateTickerRunning) {
       this.dbUpdateTickerRunning = true
       this.dbUpdateInterval = setInterval(async () => {
-        await this._Bot.BotStatistics.update({
+        await this._Bot.DB.update('stats-bot', {
           name: this.Bot.name
         }, this.Bot)
       }, 10000)

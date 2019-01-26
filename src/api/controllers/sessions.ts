@@ -13,7 +13,7 @@ export namespace Sessions {
     // this.DEBUG_WEBAPI('req params', v.o)
 
     if (v.valid) {
-      const sessions = await routed.Bot.Sessions.getMultiple({
+      const sessions = await routed.Bot.DB.getMultiple('sessions', {
         sid: new ObjectID(v.o.sid),
         uid: new ObjectID(v.o.uid)
       })
@@ -30,7 +30,7 @@ export namespace Sessions {
     // this.DEBUG_WEBAPI('req params', v.o)
 
     if (v.valid) {
-      const session = await routed.Bot.Sessions.get({
+      const session = await routed.Bot.DB.get<DeviceSession>('sessions', {
         _id: new ObjectID(v.o.id),
       })
 
@@ -42,7 +42,7 @@ export namespace Sessions {
       // Update the record
       nsession.update()
       // Update db record
-      await routed.Bot.Sessions.update({ _id: nsession._id }, nsession)
+      await routed.Bot.DB.update('sessions', { _id: nsession._id }, nsession)
 
       return routed.res.send(nsession.apiOutput());
     }
