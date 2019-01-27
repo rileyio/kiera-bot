@@ -44,10 +44,10 @@ export class Bot {
     await this.BotMonitor.start()
 
     // Register background tasks
-    this.Task.register(new Task.ChastiKeyAPIRunningLocks())
-    this.Task.register(new Task.ChastiKeyAPIKeyholders())
-    this.Task.register(new Task.ChastiKeyAPILockees())
-    this.Task.register(new Task.ChastiKeyAPITotalLockedTime())
+    // this.Task.register(new Task.ChastiKeyAPIRunningLocks())
+    // this.Task.register(new Task.ChastiKeyAPIKeyholders())
+    // this.Task.register(new Task.ChastiKeyAPILockees())
+    // this.Task.register(new Task.ChastiKeyAPITotalLockedTime())
     this.Task.start(this)
 
     /// Event hndling for non-cached (messages from prior to restart) ///

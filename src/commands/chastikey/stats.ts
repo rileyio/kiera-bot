@@ -1,16 +1,16 @@
 import got = require('got');
 import * as Utils from '../../utils'
 import { RouterRouted } from '../../utils';
-import { lockeeStats } from '../../embedded/chastikey-stats';
+import { lockeeStats, keyholderStats } from '../../embedded/chastikey-stats';
 import { TrackedUser } from '../../objects/user';
-import { TrackedChastiKeyLock, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime } from '../../objects/chastikey';
+import { TrackedChastiKeyLock, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics } from '../../objects/chastikey';
 
 export async function getLockeeStats(routed: RouterRouted) {
-  // If user fails to pass a type to return, inform them
-  if (routed.v.o.type !== 'lockee' && routed.v.o.type !== 'keyholder') {
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeOrKeyholderRequired))
-    return false // Stop here
-  }
+  // // If user fails to pass a type to return, inform them
+  // if (routed.v.o.type !== 'lockee' && routed.v.o.type !== 'keyholder') {
+  //   await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeOrKeyholderRequired))
+  //   return false // Stop here
+  // }
 
   // Get user's current ChastiKey username from users collection or by the override
   const user = (routed.v.o.user)
@@ -44,7 +44,6 @@ export async function getLockeeStats(routed: RouterRouted) {
   activeLocks.map(lock => {
     // Find matching lock from API user's locks
     const matchingAPILock = userFromAPI.locks.find(apiLock => apiLock.lockID === lock.timestampLocked)
-    // TODO: Handle lock no longer active
     // Map KH name into locks data
     lock.keyholder = matchingAPILock.lockedBy
     // Finished mapping
@@ -61,4 +60,25 @@ export async function getLockeeStats(routed: RouterRouted) {
     noOfRatings: (userInLockeeStats) ? userInLockeeStats.noOfRatings : 0,
     username: user.ChastiKey.username
   }))
+}
+
+
+export async function getKeyholderStats(routed: RouterRouted) {
+  // Get user's current ChastiKey username from users collection or by the override
+  const user = (routed.v.o.user)
+    ? { ChastiKey: { username: routed.v.o.user } }
+    : await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
+  // If user does not have a ChastiKey username set, warn them
+  if (user.ChastiKey.username === '') {
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.usernameNotSet))
+    return false; // Stop here
+  }
+
+  // Generate regex for username to ignore case
+  const usernameRegex = new RegExp(`^${user.ChastiKey.username}$`, 'i')
+
+  // Get current locks by user store in the collection
+  const keyholder = await routed.bot.DB.get<TrackedKeyholderStatistics>('ck-keyholders', { username: usernameRegex })
+
+  await routed.message.channel.send(keyholderStats(keyholder))
 }

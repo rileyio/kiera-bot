@@ -1,4 +1,4 @@
-import { TrackedChastiKeyLock } from '../objects/chastikey';
+import { TrackedChastiKeyLock, TrackedKeyholderStatistics } from '../objects/chastikey';
 
 export interface LockeeStats {
   averageLocked: number
@@ -121,5 +121,28 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock) {
   return {
     name: name,
     value: value
+  }
+}
+
+export function keyholderStats(data: TrackedKeyholderStatistics) {
+  var description = `Avg Rating **\`${data.averageRating}\`** | `
+  description += `# Ratings **\`${data.noOfRatings}\`**\n# of Users Locked **\`${data.noOfLocksManagingNow}\`**\n`
+  description += `# of Locks Flagged As Trusted **\`${data.noOfLocksFlaggedAsTrusted}\`** <:trustkeyholder:474975187310346240>\n`
+  description += `# of Shared Locks **\`${data.noOfSharedLocks}\`**\nTotal Locks Managed **\`${data.totalLocksManaged}\`**`
+
+  return {
+    embed: {
+      title: `\`${data.username}\` - ChastiKey Keyholder Statistics`,
+      description: description,
+      color: 9125611,
+      // timestamp: '',
+      footer: {
+        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+        text: 'Cached by Kiera'
+      },
+      thumbnail: {
+        url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
+      }
+    }
   }
 }

@@ -79,16 +79,28 @@ export class TrackedChastiKeyUserAPIFetch {
 }
 
 export class TrackedChastiKeyUserAPIFetchLock {
-  lockID: number
-  lockedBy: string
-  timestampLocked: number
-  timestampUnlocked: number
-  status: string
-  combination: number
+  public lockID: number
+  public lockedBy: string
+  public timestampLocked: number
+  public timestampUnlocked: number
+  public status: string
+  public combination: number
 }
 
 export class TrackedChastiKeyUserTotalLockedTime {
-  username: string
-  totalSecondsLocked: number
-  totalMonthsLocked: number
+  public username: string
+  public totalSecondsLocked: number
+  public totalMonthsLocked: number
+}
+
+export class TrackedKeyholderStatistics {
+  public username: string
+  public joined: string
+  public noOfSharedLocks: number
+  public noOfLocksManagingNow: number
+  public noOfLocksFlaggedAsTrusted: number
+  public totalLocksManaged: number
+  public averageRating: number
+  public noOfRatings: number
+  public display_in_stats: number
 }

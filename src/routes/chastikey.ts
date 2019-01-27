@@ -42,7 +42,18 @@ export const Routes: Array<RouteConfiguration> = [
     controller: Commands.ChastiKey.Stats.getLockeeStats,
     example: '{{prefix}}ck stats lockee',
     name: 'ck-get-stats-lockee',
-    validate: '/ck:string/stats:string/type?=string/user?=string',
+    validate: '/ck:string/stats:string/lockee:string/user?=string',
+    // middleware: [
+    //   Middleware.isUserRegistered
+    // ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'author',
+    controller: Commands.ChastiKey.Stats.getKeyholderStats,
+    example: '{{prefix}}ck stats keyholder "Username"',
+    name: 'ck-get-stats-keyholder',
+    validate: '/ck:string/stats:string/keyholder:string/user?=string',
     // middleware: [
     //   Middleware.isUserRegistered
     // ]
