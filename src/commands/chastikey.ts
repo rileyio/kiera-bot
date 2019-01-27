@@ -4,9 +4,11 @@ import { RouterRouted } from '../router/router';
 
 // Export sub controllers to keep this file clean
 import * as CKTicker from './chastikey/ticker';
+import * as CKStats from './chastikey/stats';
 
 export namespace ChastiKey {
   export const Ticker = CKTicker
+  export const Stats = CKStats
 
   /**
    *  Sets username for ChastiKey

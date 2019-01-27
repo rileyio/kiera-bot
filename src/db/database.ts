@@ -6,8 +6,9 @@ export * from './messages'
 
 export type Collections = 'authkeys'
   | 'ck-running-locks'
-  | 'ck-keyholder-raitings'
-  | 'ck-total-locked-time'
+  | 'ck-keyholders'
+  | 'ck-lockees'
+  | 'ck-lockee-totals'
   | 'decision'
   | 'messages'
   | 'servers'
@@ -189,11 +190,11 @@ export class MongoDB {
    * @memberof DB
    */
   public async get<T>(targetCollection: Collections, query: any, returnFields?: { [key: string]: number }) {
-    this.DEBUG_DB.log(`.get =>`, query)
+    this.DEBUG_DB.log(`.get => ${targetCollection}`)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const result = await collection.findOne<T>(query, returnFields ? { projection: returnFields } : undefined)
-    this.DEBUG_DB.log(`.get results =>`, result)
+    this.DEBUG_DB.log(`.get results [${targetCollection}] =>`, result)
     // connection.client.close()
     return (<T>result)
   }
@@ -209,11 +210,11 @@ export class MongoDB {
    * @memberof DB
    */
   public async getMultiple<T>(targetCollection: Collections, query: any, returnFields?: { [key: string]: number }) {
-    this.DEBUG_DB.log(`.getMultiple =>`, query, returnFields)
+    this.DEBUG_DB.log(`.getMultiple => ${targetCollection}`)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const result = await collection.find<T>(query, returnFields ? { projection: returnFields } : undefined)
-    this.DEBUG_DB.log(`.getMultiple results =>`, await result.count())
+    this.DEBUG_DB.log(`.getMultiple results [${targetCollection}] =>`, await result.count())
     // connection.client.close()
     return (<Cursor<T>>result).toArray()
   }

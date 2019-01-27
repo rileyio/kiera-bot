@@ -45,7 +45,8 @@ export class Bot {
 
     // Register background tasks
     this.Task.register(new Task.ChastiKeyAPIRunningLocks())
-    this.Task.register(new Task.ChastiKeyAPIKeyholderRatings())
+    this.Task.register(new Task.ChastiKeyAPIKeyholders())
+    this.Task.register(new Task.ChastiKeyAPILockees())
     this.Task.register(new Task.ChastiKeyAPITotalLockedTime())
     this.Task.start(this)
 
