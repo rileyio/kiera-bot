@@ -3,7 +3,7 @@
 - Added: CK ticker start date option
 - Added: CK data caching added
 - Updated: Help texts to only show available commands at this time
-- Updated: Help texts to new embeded message format
+- Updated: Help texts to new embedded message format
 - Updated: Database connectivity improvements
 
 1.2.0
@@ -21,12 +21,12 @@
 - Updating start scripts to remove rtail due to memory issue
 - Added: Monitoring system for both the Bot's core functionality + DB Connectivity
 - Preparing command permissions
-- Preparing API endpoints for future kiera webportal
+- Preparing API endpoints for future kiera web portal
 
 1.0.1
 - Documentation updates
   - Decision command added
   - Updating general command documentation
 - Updated: CK middleware for 'is registered'
-- Fixed: Validaton/Args splitting on quotes
+- Fixed: Validation/Args splitting on quotes
 - Added CK error strings to help users with setup
