@@ -27,9 +27,7 @@ export class TrackedChastiKey {
 export class TrackedChastiKeyTicker {
   public type: ChastiKeyTickerType = ChastiKeyTickerType.Lockee
   public showStarRatingScore: boolean = false
-  public startDateDD: number
-  public startDateMM: number
-  public startDateYY: number
+  public date: string
 
   constructor(init: Partial<TrackedChastiKey>) {
     Object.assign(this, init);

@@ -55,6 +55,27 @@ export async function setTickerType(routed: RouterRouted) {
   }
 }
 
+export async function setTickerDate(routed: RouterRouted) {
+  const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
+  const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
+
+  // Validate ticker date passed
+  if (/([0-9]{4}-[0-9]{2}-[0-9]{2})/.test(routed.v.o.number)) {
+    await routed.bot.DB.update('users', userQuery, { $set: { 'ChastiKey.ticker.date': routed.v.o.number } }, { atomic: true })
+
+    await routed.message.author.send(`:white_check_mark: ChastiKey Start Date now set to: \`${routed.v.o.number}\``)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set date ${routed.v.o.number}`)
+
+    return true
+  }
+  else {
+    await routed.message.author.send(`Failed to set ChastiKey Start Date format must be like: \`2019-01-26\``)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set date ${routed.v.o.number}`)
+
+    return true
+  }
+}
+
 export async function getTicker(routed: RouterRouted) {
   const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
   const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)

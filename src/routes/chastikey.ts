@@ -28,6 +28,17 @@ export const Routes: Array<RouteConfiguration> = [
   {
     type: 'message',
     commandTarget: 'author',
+    controller: Commands.ChastiKey.Ticker.setTickerDate,
+    example: '{{prefix}}ck ticker set date 2019-01-27',
+    name: 'ck-set-tickerType',
+    validate: '/ck:string/ticker:string/set:string/date:string/number=string',
+    middleware: [
+      Middleware.isUserRegistered
+    ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'author',
     controller: Commands.ChastiKey.Ticker.getTicker,
     example: '{{prefix}}ck ticker',
     name: 'ck-get-ticker',
