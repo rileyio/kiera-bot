@@ -8,6 +8,7 @@ export interface LockeeStats {
   longestLock: number
   monthsLocked: number | string
   noOfRatings: number | string
+  totalNoOfCompletedLocks: number
   username: string
 }
 
@@ -45,7 +46,7 @@ export function lockeeStats(data: LockeeStats) {
     })
   }
 
-  var description = `Locked for \`${data.monthsLocked}\` months to date`
+  var description = `Locked for \`${data.monthsLocked}\` months to date | \`${data.totalNoOfCompletedLocks}\` locks completed`
   // Only show the ratings if the user has > 5
   if (data.noOfRatings > 4) description += ` | Avg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\``
   description += `\nLongest \`${calculateHumanTime(data.longestLock)}\` | Average Time Locked \`${calculateHumanTime(data.averageLocked)}\``

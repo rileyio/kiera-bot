@@ -49,7 +49,6 @@ export async function getLockeeStats(routed: RouterRouted) {
     // Finished mapping
     return lock
   })
-
   await routed.message.channel.send(lockeeStats({
     averageLocked: (userInLockeeStats) ? userInLockeeStats.averageTimeLockedInSeconds : 0,
     averageRating: (userInLockeeStats) ? userInLockeeStats.averageRating : '-',
@@ -58,6 +57,7 @@ export async function getLockeeStats(routed: RouterRouted) {
     longestLock: (userInLockeeStats) ? userInLockeeStats.longestCompletedLockInSeconds : 0,
     monthsLocked: (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : '-',
     noOfRatings: (userInLockeeStats) ? userInLockeeStats.noOfRatings : 0,
+    totalNoOfCompletedLocks: (userInLockeeStats) ? userInLockeeStats.totalNoOfCompletedLocks : 0,
     username: user.ChastiKey.username
   }))
 }
