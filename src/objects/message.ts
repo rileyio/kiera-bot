@@ -36,7 +36,7 @@ export class TrackedMessage {
     }
   }
 
-  private parseReactions() {
+  public parseReactions() {
     this.reactions = this.reactions.map(r => { return r = new TrackedMessageReaction(r) })
   }
 }

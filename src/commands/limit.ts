@@ -1,6 +1,7 @@
 import * as Utils from '../utils/';
 import { RouterRouted } from '../router/router';
 import { DeviceSession } from '../objects/sessions';
+import { TrackedUser } from '../objects/user';
 
 export namespace Limit {
   export async function setUserSessionTimeLimit(routed: RouterRouted) {
@@ -18,7 +19,7 @@ export namespace Limit {
     }
 
     // Get user's _id from the db
-    const targetUser = await routed.bot.Users.get(userQuery)
+    const targetUser = await routed.bot.DB.get<TrackedUser>('users', userQuery)
 
     // Ensure user is setup & has a session
     if (!targetUser) {
@@ -27,7 +28,7 @@ export namespace Limit {
       return false
     }
 
-    const userSession = await routed.bot.Sessions.get({
+    const userSession = await routed.bot.DB.get<TrackedUser>('sessions', {
       uid: targetUser._id,
       isActive: false,
       isDeactivated: false,
@@ -46,7 +47,7 @@ export namespace Limit {
     nsession.limit[key] = newValue
 
     // Update the existing user session record in the db
-    await routed.bot.Sessions.update({ _id: userSession._id }, nsession)
+    await routed.bot.DB.update<DeviceSession>('sessions', { _id: userSession._id }, nsession)
 
     // Process command
     const timeOrIntensityStr = key === 'time' ? 'minutes' : '%'

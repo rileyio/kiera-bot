@@ -15,10 +15,10 @@ export namespace Lists {
     // this.DEBUG_WEBAPI('req params', v.o)
 
     if (v.valid) {
-      var users = await routed.Bot.Users.getMultiple({
+      var users = await routed.Bot.DB.getMultiple('users', {
         username: { $regex: new RegExp(`^${v.o.input}`), $options: 'i' }
       }, { username: 1, discriminator: 1 })
-      var servers = await routed.Bot.Servers.getMultiple({
+      var servers = await routed.Bot.DB.getMultiple('servers', {
         name: { $regex: new RegExp(`^${v.o.input}`), $options: 'i' }
       }, { name: 1, region: 1, ownerID: 1 })
 

@@ -1,5 +1,6 @@
 import * as Utils from '../../utils/';
 import { RouterRouted } from '../../router/router';
+import { TrackedUser } from '../../objects/user';
 
 /**
  * Remove user from DB
@@ -11,8 +12,8 @@ export async function removeUser(routed: RouterRouted) {
   const userArgType = Utils.User.verifyUserRefType(routed.v.o.user)
   const userQuery = Utils.User.buildUserQuery(routed.v.o.user, userArgType)
 
-  const user = await routed.bot.Users.get(userQuery)
-  const removed = await routed.bot.Users.remove(userQuery)
+  const user = await routed.bot.DB.get<TrackedUser>('users', userQuery)
+  const removed = await routed.bot.DB.remove('users', userQuery)
 
   if (removed === 0) return; // Stop here if nothing is removed
   // Process command

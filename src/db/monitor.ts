@@ -1,10 +1,11 @@
 import { MongoDB, MongoDBLoader } from './database';
 import { EventEmitter } from 'events';
 import { performance } from 'perf_hooks'
+import { Bot } from '..';
 
 export class DatabaseMonitor extends EventEmitter {
+  private Bot: Bot
   private monitorInterval: NodeJS.Timer
-  public db: MongoDB<any>
   public isWaiting: boolean = false
   public isMonitorRunning: boolean = false
   public pingCount: number = 0
@@ -15,12 +16,13 @@ export class DatabaseMonitor extends EventEmitter {
   public lastPingEnd: number
   public lastPingTime: number
 
-  constructor() {
+  constructor(bot: Bot) {
     super()
+    this.Bot = bot
   }
 
   public async start() {
-    if (!this.db) this.db = await MongoDBLoader('server')
+    if (!this.Bot.DB) this.Bot.DB = await MongoDBLoader()
     return await this.monitor()
   }
 
@@ -46,7 +48,7 @@ export class DatabaseMonitor extends EventEmitter {
     try {
       // track performance
       this.lastPingStart = performance.now()
-      const _ping = await this.db.ping()
+      const _ping = await this.Bot.DB.ping()
 
       if (_ping) {
         this.lastPingEnd = performance.now()

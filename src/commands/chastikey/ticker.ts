@@ -1,7 +1,6 @@
 import * as Utils from '../../utils/';
 import { RouterRouted } from '../../router/router';
 import { Attachment } from 'discord.js';
-import { ChastiKeyTickerType } from '../../objects/chastikey';
 import { TrackedUser } from '../../objects/user';
 
 /**
@@ -38,11 +37,11 @@ export async function setTickerType(routed: RouterRouted) {
   }
 
   // Get the user from the db in their current state
-  const user = new TrackedUser(await routed.bot.Users.get(userQuery))
+  const user = new TrackedUser(await routed.bot.DB.get('users', userQuery))
   // Change/Update TrackedChastiKey.Type Prop
   user.ChastiKey.ticker.type = newTickerType
   // Commit change to db
-  const updateResult = await routed.bot.Users.update(userQuery, user)
+  const updateResult = await routed.bot.DB.update('users', userQuery, user)
 
   if (updateResult > 0) {
     await routed.message.author
@@ -56,10 +55,31 @@ export async function setTickerType(routed: RouterRouted) {
   }
 }
 
+export async function setTickerDate(routed: RouterRouted) {
+  const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
+  const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
+
+  // Validate ticker date passed
+  if (/([0-9]{4}-[0-9]{2}-[0-9]{2})/.test(routed.v.o.number)) {
+    await routed.bot.DB.update('users', userQuery, { $set: { 'ChastiKey.ticker.date': routed.v.o.number } }, { atomic: true })
+
+    await routed.message.author.send(`:white_check_mark: ChastiKey Start Date now set to: \`${routed.v.o.number}\``)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set date ${routed.v.o.number}`)
+
+    return true
+  }
+  else {
+    await routed.message.author.send(`Failed to set ChastiKey Start Date format must be like: \`2019-01-26\``)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set date ${routed.v.o.number}`)
+
+    return true
+  }
+}
+
 export async function getTicker(routed: RouterRouted) {
   const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
   const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
-  var user = new TrackedUser(await routed.bot.Users.get(userQuery))
+  var user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
   // If user is not in the DB, inform them they must register
   if (!user) {
     await routed.message.reply(Utils.sb(Utils.en.error.userNotRegistered))
@@ -84,11 +104,13 @@ export async function getTicker(routed: RouterRouted) {
 
   // If the type is only for a single ticker, return just that
   if (user.ChastiKey.ticker.type === 1 || user.ChastiKey.ticker.type === 2) {
-    await routed.message.channel.send(new Attachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey)))
+    await routed.message.channel.send(Utils.sb(Utils.en.chastikey.incorrectTickerTimer), {
+      files: [new Attachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey))]
+    })
     return true
   }
   else {
-    await routed.message.channel.send('', {
+    await routed.message.channel.send(Utils.sb(Utils.en.chastikey.incorrectTickerTimer), {
       files: [
         Utils.ChastiKey.generateTickerURL(user.ChastiKey, 1),
         Utils.ChastiKey.generateTickerURL(user.ChastiKey, 2)

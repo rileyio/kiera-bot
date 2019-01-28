@@ -7,8 +7,8 @@ export interface SessionExistsParams {
 }
 
 export function sessionExists(params: SessionExistsParams) {
-  return async (routed: RouterRouted) =>  {
+  return async (routed: RouterRouted) => {
     // Check if session already exists
-    routed.bot.Sessions.verify({  })
+    routed.bot.DB.verify('sessions', {})
   }
 }

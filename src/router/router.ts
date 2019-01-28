@@ -98,7 +98,7 @@ export class Router {
 
 
     // Lookup tracked message in db
-    var storedMessage = await this.bot.Messages.get<Partial<TrackedMessage>>({ id: message.id })
+    var storedMessage = await this.bot.DB.get<TrackedMessage>('messages', { id: message.id })
 
     // Stop routing if no message is tracked
     if (!storedMessage) return
@@ -109,7 +109,7 @@ export class Router {
     // Update stored record if it gets this far with any react changes
     // console.log('router sees:', message.reactions.array())
     storedMessage.update('reactions', message.reactions.array())
-    await this.bot.Messages.update({ _id: storedMessage._id }, storedMessage)
+    await this.bot.DB.update('messages', { _id: storedMessage._id }, storedMessage)
 
     // Ensure stored message has a route name to properly route it
     if (!storedMessage.reactionRoute) return

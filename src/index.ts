@@ -1,19 +1,13 @@
 require('dotenv').config()
 const packagejson = require('../package.json')
 import * as Discord from 'discord.js';
+import * as Task from './tasks/task';
 import { MsgTracker, MongoDB, MongoDBLoader } from './db/database';
-import { TrackedUser } from './objects/user';
 import { TrackedServer } from './objects/server';
-import { TrackedMessage } from './objects/message';
 import { Router } from './router/router';
 import { Routes } from './routes';
-import { Session, DeviceSession } from './objects/sessions';
-import { BotStatistics } from './objects/statistics';
 import { Logging } from './utils/';
-import { AuthKey } from './objects/authkey';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
-import { TrackedDecision } from './objects/decision';
-import { CommandPermissions } from './objects/permission';
 import { BotMonitor } from './monitor';
 
 export class Bot {
@@ -30,15 +24,9 @@ export class Bot {
   public BotMonitor: BotMonitor
 
   // Databases
-  public AuthKeys: MongoDB<AuthKey>
-  public BotStatistics: MongoDB<BotStatistics>
-  public Decision: MongoDB<TrackedDecision>
-  public Messages: MongoDB<TrackedMessage>
-  public CommandPermissions: MongoDB<CommandPermissions>
-  public Servers: MongoDB<TrackedServer>
-  public ServerStatistics: MongoDB<BotStatistics>
-  public Sessions: MongoDB<Session | DeviceSession>
-  public Users: MongoDB<TrackedUser>
+  public DB: MongoDB
+  // Background tasks
+  public Task: Task.TaskManager = new Task.TaskManager()
 
   // Bot msg router
   public Router: Router = new Router(Routes(), this)
@@ -49,19 +37,19 @@ export class Bot {
     this.MsgTracker = new MsgTracker(this);
 
     // Load DBs
-    this.AuthKeys = await MongoDBLoader('authkeys')
-    this.BotStatistics = await MongoDBLoader('stats-bot')
-    this.Decision = await MongoDBLoader('decision')
-    this.Messages = await MongoDBLoader('messages')
-    this.CommandPermissions = await MongoDBLoader('command-permissions')
-    this.Servers = await MongoDBLoader('server')
-    this.ServerStatistics = await MongoDBLoader('stats-servers')
-    this.Sessions = await MongoDBLoader('sessions')
-    this.Users = await MongoDBLoader('users')
+    this.DB = await MongoDBLoader()
 
     // Start bot monitor & all bot dependant services
     this.BotMonitor = new BotMonitor(this)
     await this.BotMonitor.start()
+
+    // Register background tasks
+    this.Task.start(this, [
+      new Task.ChastiKeyAPIRunningLocks(this),
+      new Task.ChastiKeyAPIKeyholders(this),
+      new Task.ChastiKeyAPILockees(this),
+      new Task.ChastiKeyAPITotalLockedTime(this)
+    ])
 
     /// Event hndling for non-cached (messages from prior to restart) ///
     this.client.on('raw', async event => {
@@ -93,7 +81,7 @@ export class Bot {
       for (let index = 0; index < guilds.length; index++) {
         const guild = guilds[index];
         this.DEBUG.log(`connecting to server => ${guild.name}`)
-        await this.Servers.update({ id: guild.id }, new TrackedServer(guild), { upsert: true })
+        await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
       }
     }
   }
@@ -113,11 +101,11 @@ export class Bot {
   private async onGuildCreate(guild: Discord.Guild) {
     this.DEBUG.log('Joined a new server: ' + guild.name);
     // Save some info about the server in db
-    await this.Servers.update({ id: guild.id }, new TrackedServer(guild), { upsert: true })
+    await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
   }
 
   private async onGuildDelete(guild: Discord.Guild) {
-    await this.Servers.remove({ id: guild.id })
+    await this.DB.remove('servers', { id: guild.id })
     this.DEBUG.log('Left a guild: ' + guild.name);
   }
 

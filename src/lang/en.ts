@@ -5,7 +5,10 @@ import * as HelpStrings from './en/help';
 export const en = {
   chastikey: {
     invalidOverrideType: ChastiKey.invalidOverrideType,
-    usernameNotSet: ChastiKey.usernameNotSet
+    incorrectTickerTimer: ChastiKey.incorrectTickerTimer,
+    usernameNotSet: ChastiKey.usernameNotSet,
+    lockeeOrKeyholderRequired: ChastiKey.lockeeOrKeyholderRequired,
+    keyholderNoLocks: ChastiKey.keyholderNoLocks
   },
   error: {
     commandExactMatchFailedOptions: Error.commandExactMatchFailedOptions,
@@ -15,11 +18,11 @@ export const en = {
   help: {
     ck: HelpStrings.ck,
     decision: HelpStrings.decision,
-    duration: HelpStrings.duration,
+    // duration: HelpStrings.duration,
     // intensity: HelpStrings.intensity,
-    limit: HelpStrings.limit,
+    // limit: HelpStrings.limit,
     main: HelpStrings.main,
-    react: HelpStrings.react,
+    // react: HelpStrings.react,
     register: HelpStrings.register,
     roll: HelpStrings.roll,
   },
