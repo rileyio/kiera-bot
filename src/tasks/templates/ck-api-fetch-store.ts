@@ -61,10 +61,10 @@ export class ChastiKeyAPIFetchAndStore extends Task {
 
   private async storeInDB(data: any) {
     try {
-      // // Remove all old entires with non matching timestamps
-      // await this.Bot.DB.remove(this.dbCollection, {}, { deleteOne: false })
-      // // Update collection of Running Locks
-      // await this.Bot.DB.addMany(this.dbCollection, data, {})
+      // Remove all old entires with non matching timestamps
+      await this.Bot.DB.remove(this.dbCollection, {}, { deleteOne: false })
+      // Update collection of Running Locks
+      await this.Bot.DB.addMany(this.dbCollection, data, {})
     } catch (error) {
       // tslint:disable-next-line:no-console
       console.log('DB store issue', error)
