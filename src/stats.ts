@@ -118,6 +118,7 @@ export class Statistics extends EventEmitter {
     if (!this.dbUpdateTickerRunning) {
       this.dbUpdateTickerRunning = true
       this.dbUpdateInterval = setInterval(async () => {
+        if (process.env.BOT_BLOCK_STATS === 'true') return // block stats saving 
         await this._Bot.DB.update('stats-bot', {
           name: this.Bot.name
         }, this.Bot)
