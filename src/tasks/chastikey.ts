@@ -31,6 +31,4 @@ export class ChastiKeyAPITotalLockedTime extends ChastiKeyAPIFetchAndStore {
   APIEndpoint = `https://www.chastikey.com/json/v1.0/kiera_total_lock_times.json`
   frequency = (3600000 * 2) // 60 minutes
   dbCollection: Collections = 'ck-lockee-totals'
-  isJSON = false
-  strip = `tabledata = `
 }

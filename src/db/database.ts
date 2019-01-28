@@ -13,6 +13,7 @@ export type Collections = 'authkeys'
   | 'messages'
   | 'servers'
   | 'sessions'
+  | 'settings'
   | 'stats-bot'
   | 'users'
 
@@ -166,7 +167,7 @@ export class MongoDB {
    * @returns
    * @memberof DB
    */
-  public async update<T>(targetCollection: Collections, query: Partial<T>, update: Partial<T>, opts?: { upsert?: boolean, updateOne?: boolean, atomic?: boolean }) {
+  public async update<T>(targetCollection: Collections, query: Partial<T>, update: any, opts?: { upsert?: boolean, updateOne?: boolean, atomic?: boolean }) {
     // this.DEBUG_DB.log(`.update =>`, query, update)
     const uopts = Object.assign({ atomic: false, upsert: false, updateOne: true }, opts)
     const connection = await this.connect()

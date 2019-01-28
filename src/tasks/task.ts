@@ -1,6 +1,7 @@
 import { Bot } from '..';
 
 export class Task {
+  protected Bot: Bot
   /**
    * Set the target method to run when the task is called
    * @type {string}
@@ -10,6 +11,10 @@ export class Task {
   public frequency: number
   public isAsync: boolean = false
   public name: string
+
+  constructor(bot: Bot) {
+    this.Bot = bot
+  }
 }
 
 export class TaskManager {
@@ -19,15 +24,19 @@ export class TaskManager {
   public isTaskRunnerProcessing: boolean = false
   public _taskRunner: NodeJS.Timer
 
-  public start(bot: Bot) {
+  public start(bot: Bot, tasks: Array<Task>) {
     this.Bot = bot
     this.taskRunner()
+    for (let index = 0; index < tasks.length; index++) {
+      const task = tasks[index];
+      this.register(task)
+    }
   }
 
   public register(task: Task) {
     this.registered[task.name] = task
     // tslint:disable-next-line:no-console
-    console.log('Task:Registered:', task)
+    // console.log('Task:Registered:', task)
   }
 
   private taskRunner() {

@@ -1,6 +1,7 @@
 import { Task } from '../task';
 import got = require('got');
 import { MongoDBLoader, Collections } from '../../db/database';
+import { TrackedBotSetting } from '../../objects/setting';
 
 export class ChastiKeyAPIFetchAndStore extends Task {
   public APIEndpoint: string
@@ -16,6 +17,24 @@ export class ChastiKeyAPIFetchAndStore extends Task {
   protected async fetch() {
     if ((Date.now() - this.previousRefresh) < this.frequency) return true // Block as its too soon
     try {
+      // Check in DB when last interval was
+      var lastRunSetting = await this.Bot.DB.get<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.fetch.${this.name}` })
+      // If not set or delta is too large continue as normal, else stop from running again too soon like after a bot reboot
+      if (lastRunSetting) {
+        lastRunSetting = new TrackedBotSetting(lastRunSetting)
+        // Update task's last run timestamp
+        this.previousRefresh = lastRunSetting.value
+        if ((Date.now() - lastRunSetting.value) < this.frequency) return // Stop here
+      }
+      else {
+        lastRunSetting = new TrackedBotSetting({
+          added: Date.now(),
+          author: 'kiera-bot',
+          env: '*',
+          key: `bot.task.chastikey.api.fetch.${this.name}`,
+        })
+      }
+
       // tslint:disable-next-line:no-console
       console.log(`Task:Fetching => ${this.name}`)
       const response = await got(this.APIEndpoint, { json: (<any>this.isJSON) })
@@ -23,6 +42,13 @@ export class ChastiKeyAPIFetchAndStore extends Task {
       await this.storeInDB((this.isJSON)
         ? response.body : JSON.parse(response.body.replace(this.strip, '')))
       this.previousRefresh = Date.now()
+
+      // Update DB stored value to track last run
+      await this.Bot.DB.update<TrackedBotSetting>('settings',
+        { key: `bot.task.chastikey.api.fetch.${this.name}` },
+        lastRunSetting.update({ value: Date.now(), lastUpdatd: Date.now() }),
+        { upsert: true })
+
       return true
     } catch (error) {
       // tslint:disable-next-line:no-console
@@ -35,14 +61,10 @@ export class ChastiKeyAPIFetchAndStore extends Task {
 
   private async storeInDB(data: any) {
     try {
-      // Get timestamp from current 1st position lock as they all share the same
-      const db = await MongoDBLoader()
-      // Remove all old entires with non matching timestamps, these are old locks no longer
-      // returned by the api
-      await db.remove(this.dbCollection, {}, { deleteOne: false })
-      // Update collection of Running Locks
-      await db.addMany(this.dbCollection, data, {})
-      await db.connection.client.close()
+      // // Remove all old entires with non matching timestamps
+      // await this.Bot.DB.remove(this.dbCollection, {}, { deleteOne: false })
+      // // Update collection of Running Locks
+      // await this.Bot.DB.addMany(this.dbCollection, data, {})
     } catch (error) {
       // tslint:disable-next-line:no-console
       console.log('DB store issue', error)
