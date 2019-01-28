@@ -12,7 +12,7 @@ export interface LockeeStats {
 }
 
 const indicatorEmoji = {
-  Frozen: `<:icedick:474947007216222209>`,
+  Frozen: `<:frozenlock:539233483537645568>`,
   Hidden: `<:hiddencircle:474973202607767562>`
 }
 
