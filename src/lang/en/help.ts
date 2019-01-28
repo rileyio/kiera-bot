@@ -1,29 +1,29 @@
 export const main = `
-**Commands Available**
-
 Commands will always begin with the \`{{prefix}}\` prefix.
-
-- Times will always be in minutes & Ranges such as \`1-10\` means \`1\` is the lowest and \`10\` is the highest
-
 To see more about a specific command's usage, type \`{{prefix}}help command\`
+You can also begin entering a command like \`{{prefix}}ck\` and if its incomplete
+examples will be presented.
 
-**[Everyone] Generic/Stats/User**
-\`{{prefix}}register\` - Registers the user with the bot (Required before access to most commands becomes available)
-\`{{prefix}}ck\` - ChastiKey Commands
-\`{{prefix}}decision\` Create, Edit or Roll to make a decision
+(Required before access to most commands becomes available)
+\`{{prefix}}register\` - Registers the user with the bot 
 
-**[Lockee] Commands (*Must be entered by the device owner*)**
-\`{{prefix}}session\` - Creates a new session for playing with a device (required for: \`{{prefix}}limit\` \`{{prefix}}duration\` \`{{prefix}}react\`)
-\`{{prefix}}limit\` - Lockee defined limits (Cannot be surpassed by KH.. at this time..)
-\`{{prefix}}task\` - *Coming Soon*
-\`{{prefix}}punishment\` - *Coming Soon*
-
-**[Keyholder] Commands**
-\`{{prefix}}react\` - Sets how much time to be added per react
-\`{{prefix}}duration\` - Sets base duration (reacts can add to this)
-\`{{prefix}}task\` - *Coming Soon*
-\`{{prefix}}punishment\` - *Coming Soon*
+\`{{prefix}}ck\` - ChastiKey Commands - \`username\` \`ticker\` \`stats\`
+\`{{prefix}}decision\` - Create, Edit or Roll - \`new\` \`roll\`
+\`{{prefix}}roll\` - Dice roller
 `
+
+// **[Lockee] Commands (*Must be entered by the device owner*)**
+// \`{{prefix}}session\` - Creates a new session for playing with a device (required for: \`{{prefix}}limit\` \`{{prefix}}duration\` \`{{prefix}}react\`)
+// \`{{prefix}}limit\` - Lockee defined limits (Cannot be surpassed by KH.. at this time..)
+// \`{{prefix}}task\` - *Coming Soon*
+// \`{{prefix}}punishment\` - *Coming Soon*
+
+// **[Keyholder] Commands**
+// \`{{prefix}}react\` - Sets how much time to be added per react
+// \`{{prefix}}duration\` - Sets base duration (reacts can add to this)
+// \`{{prefix}}task\` - *Coming Soon*
+// \`{{prefix}}punishment\` - *Coming Soon*
+// `
 
 export const register = `
 **\`{{prefix}}register\` Command Usage**
@@ -68,112 +68,74 @@ Usage Example:
 // `
 
 export const ck = `
-**\`{{prefix}}ck\` Command Usage**
-
-Constraints: [Keyholder or Lockees]
-
 Used to configure and return from ChastiKey API.
-Currently returns:
-  - Tickers (Keyholder and Lockees)
+Currently returns: (1) Keyholder, (2) Lockee, (3) Both
 
-Usage Example
-\`\`\`md
-Returns your ticker
-{{prefix}}ck ticker
-
-Returns a specific ticker type regardless of your saved type (1) Keyholder, (2) Lockee, (3) Both
-{{prefix}}ck ticker #
-
-Configures ChastiKey username
-{{prefix}}ck username YourUsername
-
-Configures if your ticker should return as a (1) Keyholder, Default: (2) Lockee, (3) Both
-{{prefix}}ck ticker set type 2
-\`\`\`
+\`{{prefix}}ck ticker\` - Returns your ticker
+\`{{prefix}}ck ticker #\` - Returns a specific ticker type (replace \`#\`)
+\`{{prefix}}ck username YourUsername\` - Configures ChastiKey App username
+\`{{prefix}}ck ticker set type 2\` - Set default ticker
+\`{{prefix}}ck ticker set date 2019-01-27\` - Start date for ticker data
 `
 
 export const decision = `
-**\`{{prefix}}decision\` Command Usage**
-
 A random decision maker based on given or saved outcomes.
 
-Usage Example
-\`\`\`
-Run a random decision (without saving)
-{{prefix}}decision "Your question here!" "Answers like" "this"
-
-Create a new saved decision (reusable)
-{{prefix}}decision new "Your decision question here"
-
-Add options to an existing saved decision
-{{prefix}}decision "DecisionID" add "Your decision result entry here"
-
-Roll for a result from a saved decision
-{{prefix}}decision roll 'DecisionID'
-\`\`\`
+{{prefix}}decision "Question here!" "Answers" "here" - Run a random decision (without saving)
+{{prefix}}decision new "Your decision question here" - Create a new saved decision (reusable)
+{{prefix}}decision "DecisionID" add "New outcome here" - Add options to saved decision
+{{prefix}}decision roll 'DecisionID' - Roll for a result from a saved decision
 `
 
-export const duration = `
-**\`{{prefix}}duration\` Command Usage**
+// export const duration = `
+// Constraints: [Keyholder's Only]
 
-Constraints: [Keyholder's Only]
+// Sets a duration of the session, time can be added to this via reacts.
 
-Sets a duration of the session, time can be added to this via reacts.
+// Usage Example:
+// \`\`\`md
+// Set the base time, this is a period of time when initially starting the
+// session to wait for incoming reactions, nothing will happen until a reaction
+// is added
+// {{prefix}}duration @user#0000 min 5
 
-Usage Example:
-\`\`\`md
-Set the base time, this is a period of time when initially starting the
-session to wait for incoming reactions, nothing will happen until a reaction
-is added
-{{prefix}}duration @user#0000 min 5
+// Sets the maximum time that cannot be exceeded by added reactions
+// {{prefix}}duration @user#0000 max 10
+// \`\`\`
+// `
 
-Sets the maximum time that cannot be exceeded by added reactions
-{{prefix}}duration @user#0000 max 10
-\`\`\`
-`
+// export const limit = `
+// **\`{{prefix}}limit\` Command Usage**
 
-export const limit = `
-**\`{{prefix}}limit\` Command Usage**
+// Constraints: [Lockee's Only]
 
-Constraints: [Lockee's Only]
+// Sets intensity lockee's thresholds/limits.
 
-Sets intensity lockee's thresholds/limits.
+// Usage Example:
+// \`\`\`md
+// {{prefix}}limit intensity 80
+// {{prefix}}limit time 75
+// \`\`\`
+// `
 
-Usage Example:
-\`\`\`md
-{{prefix}}limit intensity 80
-{{prefix}}limit time 75
-\`\`\`
-`
+// export const react = `
+// **\`{{prefix}}react\` Command Usage**
 
-export const react = `
-**\`{{prefix}}react\` Command Usage**
+// Constraints: [Keyholder's Only]
 
-Constraints: [Keyholder's Only]
+// Sets how much time to be added/removed per react.
 
-Sets how much time to be added/removed per react.
-
-Usage Example:
-\`\`\`md
-{{prefix}}react @user#0000 time 10
-\`\`\`
-`
+// Usage Example:
+// \`\`\`md
+// {{prefix}}react @user#0000 time 10
+// \`\`\`
+// `
 
 
 export const roll = `
-**\`{{prefix}}roll\` Command Usage**
-
 Roll die/dice
 
-Usage Example
-\`\`\`
-Roll a single die
-{{prefix}}roll
-
-Roll a single die with 20 sides
-{{prefix}}roll 20
-
-Roll multiple (Example: 10) dice with given number of sides (Example: 6)
-{{prefix}}roll 10 6
-\`\`\`
+{{prefix}}roll - Roll a single die
+{{prefix}}roll 20 - Roll a single die with 20 sides
+{{prefix}}roll 10 6 - Roll multiple (10) dice with given number of sides (6)
 `
