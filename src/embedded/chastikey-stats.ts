@@ -32,7 +32,10 @@ const cardsEmoji = {
 
 export function lockeeStats(data: LockeeStats) {
   var fields: Array<{ name: string; value: string; }> = []
-  data.locks.forEach((l, i) => { fields.push(lockEntry(i, l)) })
+  data.locks.forEach((l, i) => {
+    if (i > 19) return // Skip, there can only be 20 locks in the db, this means theres an issue server side
+    fields.push(lockEntry(i, l, fields.length))
+  })
 
   // When no locks are active, add a different field to indicate this
   if (fields.length === 0) {
@@ -43,7 +46,8 @@ export function lockeeStats(data: LockeeStats) {
   }
 
   var description = `Locked for \`${data.monthsLocked}\` months to date`
-  // description += ` | Avg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\`\nLongest \`${calculateHumanTime(data.longestLock)}\` | `
+  // Only show the ratings if the user has > 5
+  if (data.noOfRatings > 4) description += ` | Avg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\``
   description += `\nLongest \`${calculateHumanTime(data.longestLock)}\` | Average Time Locked \`${calculateHumanTime(data.averageLocked)}\``
 
   return {
@@ -80,7 +84,7 @@ function calculateHumanTime(seconds: number) {
   return `${timeToShowDays} ${timeToShowHours} ${timeToShowMins}`
 }
 
-function lockEntry(index: number, lock: TrackedChastiKeyLock) {
+function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: number) {
   const cumulative = lock.cumulative === 1 ? 'Cumulative' : 'Non-Cumulative'
 
   // Calculate human readible time for lock from seconds
@@ -96,6 +100,8 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock) {
   var discardPile = lock.discard_pile.split(',').filter(c => c !== '')
   // If the cardpile is above 15 cards remove the first 5 (oldest 5)
   if (discardPile.length > 15) discardPile.splice(0, 6)
+  // Splice even more if this is beyond 3 locks to prevent hitting the Discord limit
+  if (totalExpected > 5 && discardPile.length > 5) discardPile.splice(0, 11)
   var discardPileStr = ``
 
   // Map each card from Array , to the correct discord Emoji & ID
@@ -112,7 +118,8 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock) {
   // When its a variable lock
   if (lock.fixed === 0) {
     value += `\nDetails \`${cumulative}\` regularity \`${regularity}\` with \`${lock.noOfTurns}\` turns made.`
-    value += `\nThe last (${discardPile.length}) cards discarded (not greens):\n${discardPileStr}`
+    if (totalExpected < 6) value += `\nThe last (${discardPile.length}) cards discarded (not greens):\n${discardPileStr}`
+    else value += `\n${discardPileStr}`
   }
   else {
     value += `\nDetails \`Fixed\`.`

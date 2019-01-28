@@ -79,6 +79,11 @@ export async function getKeyholderStats(routed: RouterRouted) {
 
   // Get current locks by user store in the collection
   const keyholder = await routed.bot.DB.get<TrackedKeyholderStatistics>('ck-keyholders', { username: usernameRegex })
+  // If there is no data in the kh dataset inform the user
+  if (!keyholder) {
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.keyholderNoLocks))
+    return false // stop here
+  }
 
   await routed.message.channel.send(keyholderStats(keyholder))
 }

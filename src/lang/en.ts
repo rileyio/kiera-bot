@@ -7,7 +7,8 @@ export const en = {
     invalidOverrideType: ChastiKey.invalidOverrideType,
     incorrectTickerTimer: ChastiKey.incorrectTickerTimer,
     usernameNotSet: ChastiKey.usernameNotSet,
-    lockeeOrKeyholderRequired: ChastiKey.lockeeOrKeyholderRequired
+    lockeeOrKeyholderRequired: ChastiKey.lockeeOrKeyholderRequired,
+    keyholderNoLocks: ChastiKey.keyholderNoLocks
   },
   error: {
     commandExactMatchFailedOptions: Error.commandExactMatchFailedOptions,
