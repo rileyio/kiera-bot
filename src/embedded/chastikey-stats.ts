@@ -133,8 +133,9 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
 }
 
 export function keyholderStats(data: TrackedKeyholderStatistics) {
-  var description = `Avg Rating **\`${data.averageRating}\`** | `
-  description += `# Ratings **\`${data.noOfRatings}\`**\n# of Users Locked **\`${data.noOfLocksManagingNow}\`**\n`
+  var description = ``
+  if (data.noOfRatings > 4) description += `Avg Rating **\`${data.averageRating}\`** | # Ratings **\`${data.noOfRatings}\`**\n`
+  description += `# of Users Locked **\`${data.noOfLocksManagingNow}\`**\n`
   description += `# of Locks Flagged As Trusted **\`${data.noOfLocksFlaggedAsTrusted}\`** <:trustkeyholder:474975187310346240>\n`
   description += `# of Shared Locks **\`${data.noOfSharedLocks}\`**\nTotal Locks Managed **\`${data.totalLocksManaged}\`**`
 
