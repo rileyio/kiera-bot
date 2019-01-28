@@ -1,3 +1,4 @@
+import * as Utils from '../../utils';
 import { performance } from 'perf_hooks';
 import { RouterRouted } from '../../router/router';
 import { TrackedMessage } from '../../objects/message';
@@ -49,4 +50,14 @@ export async function pingPong(routed: RouterRouted) {
 export async function versionCheck(routed: RouterRouted) {
   await routed.message.channel.send(`Running on version \`${routed.bot.version}\``)
   return true
+}
+
+export async function forceRestart(routed: RouterRouted) {
+  await routed.message.channel.send(Utils.sb(Utils.en.admin.botManualRestart, {
+    seconds: ((routed.v.o.seconds || 5000) / 1000)
+  }))
+
+  setTimeout(() => {
+    process.exit(0)
+  }, routed.v.o.seconds || 5000)
 }

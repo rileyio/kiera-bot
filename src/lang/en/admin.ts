@@ -1,0 +1,1 @@
+export const botManualRestart = `Bot restarting in \`{{seconds}}\` seconds..`

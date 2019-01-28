@@ -1,4 +1,3 @@
-import * as deepExtend from 'deep-extend';
 import * as XRegex from 'xregexp';
 import { Validate, ValidationType } from './validate';
 import { Message, User } from 'discord.js';
@@ -16,6 +15,7 @@ export interface RouteConfiguration {
   help?: string
   middleware?: Array<(routed: RouterRouted) => Promise<RouterRouted | void>>
   name: string
+  restricted?: boolean
   type: 'message' | 'reaction'
   validate?: string
 }
@@ -44,13 +44,14 @@ export class MessageRoute {
   public middleware: Array<(routed: RouterRouted) => Promise<RouterRouted | void>> = []
   public name: string
   public commandTarget: RouteActionUserTarget = 'none' // Default to none
+  public restricted: boolean = false
   public type: 'message' | 'reaction'
   public validate: string
   public validation: Validate
 
   constructor(route: RouteConfiguration) {
     // Merge props from RouteConfiguration passed
-    deepExtend(this, route)
+    Object.assign(this, route)
     // Set command branch for sorting - only set this if the type is a message
     this.command = (this.type === 'message') ? this.getCommand(route.validate) : undefined
     // Setup validation for route
@@ -196,7 +197,7 @@ export class Router {
       var examples = []
       const route = await routes.find(r => {
         // Add to examples
-        examples.push(r.example)
+        if (r.restricted === false) examples.push(r.example)
         return r.test(message.content) === true
       })
       this.bot.DEBUG_MSG_COMMAND.log(route)
@@ -210,10 +211,12 @@ export class Router {
         var examplesToAppend = ``
         for (let index = 0; index < examples.length; index++) {
           const example = examples[index];
-          // examplesToAppend += `${Utils.sb(example)}${(index < examples.length - 1) ? '\n' : ''}`
           examplesToAppend += `\`${Utils.sb(example)}\`${(index < examples.length - 1) ? '   ' : ''}`
         }
         // Send back in chat
+        // If no commands are available, don't print the fallback (this typically means
+        // the whole route has restrited coammnds)
+        if (examples.length === 0) return // stop here
         await message.channel.send(`${exampleUseOfCommand}\n${examplesToAppend}`)
         // End routing
         return;

@@ -9,6 +9,7 @@ export class Task {
    */
   public run: () => Promise<boolean>
   public frequency: number
+  public lastRun: number
   public isAsync: boolean = false
   public name: string
 
@@ -48,10 +49,18 @@ export class TaskManager {
       // Checking tasks to run
       for (const key in this.registered) {
         if (this.registered.hasOwnProperty(key)) {
-          const task = this.registered[key];
-          // Check if task if past due to run
-          // if ((Date.now))
-          await task.run()
+          try {
+            const task = this.registered[key];
+            // Check if task if past due to run
+            // if ((Date.now))
+            await task.run()
+          }
+          catch (error) {
+            // tslint:disable-next-line:no-console
+            console.log(`Task:Manager => ${key} failed`, error)
+          }
+
+          this.registered[key].lastRun = Date.now()
         }
       }
 

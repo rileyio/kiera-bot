@@ -6,7 +6,7 @@ export class TrackedBotSetting {
   public author: 'kiera-bot' | string
   public description: string
   public env?: string
-  public key: string
+  public key: string | RegExp
   public lastUpdatd: number
   public value: any
 

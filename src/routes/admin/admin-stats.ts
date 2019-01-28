@@ -9,6 +9,7 @@ export const Routes: Array<RouteConfiguration> = [
     controller: Commands.Admin.Statistics.getBotStats,
     example: '{{prefix}}admin stats',
     name: 'admin-stats',
+    restricted: true,
     validate: '/admin:string/stats:string',
     middleware: [
       Middleware.hasRole('developer')

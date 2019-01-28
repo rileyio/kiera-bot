@@ -1,9 +1,14 @@
+import * as Admin from './en/admin';
 import * as Error from './en/error';
 import * as ChastiKey from './en/chastikey';
 import * as HelpStrings from './en/help';
 
 export const en = {
+  admin: {
+    botManualRestart: Admin.botManualRestart,
+  },
   chastikey: {
+    adminRefreshStats: ChastiKey.adminRefreshStats,
     invalidOverrideType: ChastiKey.invalidOverrideType,
     incorrectTickerTimer: ChastiKey.incorrectTickerTimer,
     usernameNotSet: ChastiKey.usernameNotSet,

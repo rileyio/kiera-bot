@@ -3,17 +3,16 @@ import * as Commands from '../../commands';
 import * as Middleware from '../../middleware';
 
 export const Routes: Array<RouteConfiguration> = [
-  // User DB Detele
   {
     type: 'message',
     commandTarget: 'argument',
-    controller: Commands.Admin.User.removeUser,
-    example: '{{prefix}}admin user delete @user#0000',
-    name: 'admin-user-delete',
+    controller: Commands.Admin.CK.forceStatsReload,
+    example: '{{prefix}}admin ck stats refresh',
+    name: 'admin-ck-stats-stats',
     restricted: true,
-    validate: '/admin:string/user:string/delete:string/user=user',
+    validate: '/admin:string/ck:string/stats:string/refresh:string',
     middleware: [
       Middleware.hasRole('developer')
     ]
-  },
+  }
 ]
