@@ -1,3 +1,11 @@
+1.3.0
+- Added: CK custom stats blocks for Lockees and Keyholders
+- Added: CK ticker start date option
+- Added: CK data caching added
+- Updated: Help texts to only show available commands at this time
+- Updated: Help texts to new embeded message format
+- Updated: Database connectivity improvements
+
 1.2.0
 - Added: Command failed fallback reply in chat to help show examples of command usage
 - Added: Optional args support
