@@ -26,17 +26,11 @@ examples will be presented.
 // `
 
 export const register = `
-**\`{{prefix}}register\` Command Usage**
-
-**Constraints:** [None]
-
 Registers (opt-in) the user to use the full suite of bot commands.
 Using this means you agree to having some basic information stored (IDs, etc) for proper bot usage.
 
 Usage Example:
-\`\`\`md
 {{prefix}}register
-\`\`\`
 `
 
 // export const intensity = `
@@ -71,11 +65,16 @@ export const ck = `
 Used to configure and return from ChastiKey API.
 Currently returns: (1) Keyholder, (2) Lockee, (3) Both
 
+\`{{prefix}}ck username YourUsername\` - Configures ChastiKey App username for defaults
+
 \`{{prefix}}ck ticker\` - Returns your ticker
 \`{{prefix}}ck ticker #\` - Returns a specific ticker type (replace \`#\`)
-\`{{prefix}}ck username YourUsername\` - Configures ChastiKey App username
 \`{{prefix}}ck ticker set type 2\` - Set default ticker
 \`{{prefix}}ck ticker set date 2019-01-27\` - Start date for ticker data
+
+\`{{prefix}}ck stats lockee\` - Get your lockee stats (by saved username)
+\`{{prefix}}ck stats keyholder\` - Get your keyholder stats (by saved username)
+\`{{prefix}}ck stats lockee "Username"\` - Get stats for defined username
 `
 
 export const decision = `
