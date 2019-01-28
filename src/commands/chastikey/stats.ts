@@ -55,13 +55,12 @@ export async function getLockeeStats(routed: RouterRouted) {
     averageRating: (userInLockeeStats) ? userInLockeeStats.averageRating : '-',
     cacheTimestamp: (activeLocks.length > 0) ? activeLocks[0].timestampNow : '',
     locks: activeLocks,
-    longestLock: userInLockeeStats.longestCompletedLockInSeconds,
+    longestLock: (userInLockeeStats) ? userInLockeeStats.longestCompletedLockInSeconds : 0,
     monthsLocked: (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : '-',
     noOfRatings: (userInLockeeStats) ? userInLockeeStats.noOfRatings : 0,
     username: user.ChastiKey.username
   }))
 }
-
 
 export async function getKeyholderStats(routed: RouterRouted) {
   // Get user's current ChastiKey username from users collection or by the override

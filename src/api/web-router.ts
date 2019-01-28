@@ -61,7 +61,7 @@ export class WebRouter {
 }
 
 export async function middlewareHandler(routed: WebRouted) {
-  console.log('Web middlewareHandler')
+  // console.log('Web middlewareHandler')
   // Process middleware
   const mwareCount = Array.isArray(routed.route.middleware) ? routed.route.middleware.length : 0
   var mwareProcessed = 0
