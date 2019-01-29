@@ -48,24 +48,21 @@ export class TaskManager {
       this.isTaskRunnerProcessing = true
       // Checking tasks to run
       for (const key in this.registered) {
-        if (this.registered.hasOwnProperty(key)) {
-          try {
-            const task = this.registered[key];
-            // Check if task if past due to run
-            // if ((Date.now))
-            await task.run()
-          }
-          catch (error) {
-            // tslint:disable-next-line:no-console
-            console.log(`Task:Manager => ${key} failed`, error)
-          }
-
-          this.registered[key].lastRun = Date.now()
+        try {
+          const task = this.registered[key];
+          // Check if task if past due to run
+          await task.run()
         }
+        catch (error) {
+          // tslint:disable-next-line:no-console
+          console.log(`Task:Manager => ${key} failed`, error)
+        }
+
+        this.registered[key].lastRun = Date.now()
       }
 
       this.isTaskRunnerProcessing = false
-    }, 5000)
+    }, 60000)
   }
 }
 

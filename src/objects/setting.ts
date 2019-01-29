@@ -7,7 +7,7 @@ export class TrackedBotSetting {
   public description: string
   public env?: string
   public key: string | RegExp
-  public lastUpdatd: number
+  public updated: number
   public value: any
 
   constructor(init: Partial<TrackedBotSetting>) {

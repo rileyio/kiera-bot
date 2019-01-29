@@ -4,6 +4,7 @@ import { MongoDBLoader, Collections } from '../../db/database';
 import { TrackedBotSetting } from '../../objects/setting';
 
 export class ChastiKeyAPIFetchAndStore extends Task {
+  public reload: boolean = true
   public APIEndpoint: string
   public previousRefresh: number = 0
   public dbCollection: Collections
@@ -15,19 +16,40 @@ export class ChastiKeyAPIFetchAndStore extends Task {
 
   // Methods for this task
   protected async fetch() {
+    // If this is the first run, fetch the interval from the db -or- store it if the first time ever
+    if (this.reload) {
+      var dbFrequency = await this.Bot.DB.get<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.frequency.${this.name}` })
+      if (dbFrequency) this.frequency = dbFrequency.value
+      else dbFrequency = new TrackedBotSetting({
+        added: Date.now(),
+        author: 'kiera-bot',
+        env: '*',
+        key: `bot.task.chastikey.api.frequency.${this.name}`,
+        value: this.frequency,
+        updated: Date.now()
+      })
+
+      await this.Bot.DB.update<TrackedBotSetting>('settings',
+        { key: `bot.task.chastikey.api.frequency.${this.name}` },
+        dbFrequency,
+        { upsert: true })
+
+      this.reload = false
+    }
+
     if ((Date.now() - this.previousRefresh) < this.frequency) return true // Block as its too soon
     try {
       // Check in DB when last interval was
-      var lastRunSetting = await this.Bot.DB.get<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.fetch.${this.name}` })
+      var dbLastRunSetting = await this.Bot.DB.get<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.fetch.${this.name}` })
       // If not set or delta is too large continue as normal, else stop from running again too soon like after a bot reboot
-      if (lastRunSetting) {
-        lastRunSetting = new TrackedBotSetting(lastRunSetting)
+      if (dbLastRunSetting) {
+        dbLastRunSetting = new TrackedBotSetting(dbLastRunSetting)
         // Update task's last run timestamp
-        this.previousRefresh = lastRunSetting.value
-        if ((Date.now() - lastRunSetting.value) < this.frequency) return // Stop here
+        this.previousRefresh = dbLastRunSetting.value || 0
+        if ((Date.now() - this.previousRefresh) < this.frequency) return // Stop here
       }
       else {
-        lastRunSetting = new TrackedBotSetting({
+        dbLastRunSetting = new TrackedBotSetting({
           added: Date.now(),
           author: 'kiera-bot',
           env: '*',
@@ -36,18 +58,18 @@ export class ChastiKeyAPIFetchAndStore extends Task {
       }
 
       // tslint:disable-next-line:no-console
-      console.log(`Task:Fetching => ${this.name}`)
+      console.log(`### Task:Fetching => ${this.name}`)
       const response = await got(this.APIEndpoint, { json: (<any>this.isJSON) })
 
       await this.storeInDB((this.isJSON)
         ? response.body : JSON.parse(response.body.replace(this.strip, '')))
-      this.previousRefresh = Date.now()
 
-      // Update DB stored value to track last run
       await this.Bot.DB.update<TrackedBotSetting>('settings',
         { key: `bot.task.chastikey.api.fetch.${this.name}` },
-        lastRunSetting.update({ value: Date.now(), lastUpdatd: Date.now() }),
+        dbLastRunSetting.update({ value: Date.now(), updated: Date.now() }),
         { upsert: true })
+
+      this.previousRefresh = Date.now()
 
       return true
     } catch (error) {
@@ -61,6 +83,8 @@ export class ChastiKeyAPIFetchAndStore extends Task {
 
   private async storeInDB(data: any) {
     try {
+      // tslint:disable-next-line:no-console
+      console.log(`Task:${this.name} => Store in DB`)
       // Remove all old entires with non matching timestamps
       await this.Bot.DB.remove(this.dbCollection, {}, { deleteOne: false })
       // Update collection of Running Locks

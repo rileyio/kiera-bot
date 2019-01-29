@@ -195,7 +195,7 @@ export class MongoDB {
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const result = await collection.findOne<T>(query, returnFields ? { projection: returnFields } : undefined)
-    this.DEBUG_DB.log(`.get results [${targetCollection}] =>`, result)
+    this.DEBUG_DB.log(`.get results [${targetCollection}] =>`, (result) ? true : false)
     // connection.client.close()
     return (<T>result)
   }

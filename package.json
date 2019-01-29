@@ -1,6 +1,6 @@
 {
   "name": "kiera-bot",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "main": "app/index.js",
   "repository": "https://github.com/rileyio/kiera-bot.git",
   "author": "Emma (RileyIO)",
