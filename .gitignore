@@ -68,3 +68,4 @@ db/*.db
 # Dev Certs
 server.key
 server.crt
+ca.crt

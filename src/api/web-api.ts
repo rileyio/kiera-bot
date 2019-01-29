@@ -56,8 +56,9 @@ export class WebAPI {
     this.server.pre(cors.preflight)
     this.server.use(cors.actual)
 
-    // Auth middleware
-    this.server.use((rq, rs, n) => this.auth(rq, rs, n))
+    //// Auth middleware
+    // Moved to middleware
+    //// this.server.use((rq, rs, n) => this.auth(rq, rs, n))
 
     // Setup routes
     this.router = new WebRouter(this.Bot, this.server, routes)
@@ -112,36 +113,36 @@ export class WebAPI {
     })
   }
 
-  public async auth(req: restify.Request, res: restify.Response, next: restify.Next) {
-    const authKey = req.header('AuthKey');
-    // Make sure the AuthKey header is present
-    if (!authKey || authKey.replace(' ', '') === '') {
-      // console.log('AuthKey missing')
-      res.send(401, 'Unauthorized');
-      return next(false);
-    }
+  // public async auth(req: restify.Request, res: restify.Response, next: restify.Next) {
+  //   const authKey = req.header('AuthKey');
+  //   // Make sure the AuthKey header is present
+  //   if (!authKey || authKey.replace(' ', '') === '') {
+  //     // console.log('AuthKey missing')
+  //     res.send(401, 'Unauthorized');
+  //     return next(false);
+  //   }
 
-    const keysplit = authKey.split(':')
-    const newLookupRegex = RegExp(`^${keysplit[0]}\\:${keysplit[1]}`)
-    const authKeyStored = await this.Bot.DB.get<AuthKey>('authkeys', { hash: newLookupRegex })
-    // console.log('newLookupRegex', newLookupRegex)
-    // console.log('authKeyStored', authKeyStored)
+  //   const keysplit = authKey.split(':')
+  //   const newLookupRegex = RegExp(`^${keysplit[0]}\\:${keysplit[1]}`)
+  //   const authKeyStored = await this.Bot.DB.get<AuthKey>('authkeys', { hash: newLookupRegex })
+  //   // console.log('newLookupRegex', newLookupRegex)
+  //   // console.log('authKeyStored', authKeyStored)
 
-    // AuthKey is not in db
-    if (!authKeyStored) {
-      // console.log('AuthKey not in db')
-      res.send(401, 'Unauthorized');
-      return next(false);
-    }
+  //   // AuthKey is not in db
+  //   if (!authKeyStored) {
+  //     // console.log('AuthKey not in db')
+  //     res.send(401, 'Unauthorized');
+  //     return next(false);
+  //   }
 
-    // Does match the user & id - now test if it's valild
-    const nauthKeyStored = new AuthKey(authKeyStored)
-    // console.log('nauthKeyStored', nauthKeyStored.hash, nauthKeyStored.test(authKey))
-    if (nauthKeyStored.test(authKey)) return next()
+  //   // Does match the user & id - now test if it's valild
+  //   const nauthKeyStored = new AuthKey(authKeyStored)
+  //   // console.log('nauthKeyStored', nauthKeyStored.hash, nauthKeyStored.test(authKey))
+  //   if (nauthKeyStored.test(authKey)) return next()
 
-    // Fallback - fail auth
-    // console.log('fallback - auth fail')
-    res.send(401, 'Unauthorized');
-    return next(false);
-  }
+  //   // Fallback - fail auth
+  //   // console.log('fallback - auth fail')
+  //   res.send(401, 'Unauthorized');
+  //   return next(false);
+  // }
 }
