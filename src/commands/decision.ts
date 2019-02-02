@@ -31,7 +31,17 @@ export namespace Decision {
   }
 
   export async function newDecisionEntry(routed: RouterRouted) {
-    var decision = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id) })
+    const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
+    const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
+
+    // Get the user from the db
+    const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
+
+    // Get the saved decision from the db (Only the creator can edit)
+    var decision = await routed.bot.DB.get<TrackedDecision>('decision', {
+      _id: new ObjectID(routed.v.o.id),
+      owner: user._id
+    })
 
     if (decision) {
       var ud = new TrackedDecision(decision)
