@@ -30,7 +30,7 @@ export const Routes: Array<RouteConfiguration> = [
     commandTarget: 'author',
     controller: Commands.Decision.runSavedDecision,
     example: '{{prefix}}decision roll "id"',
-    name: 'decision-new-option',
+    name: 'decision-run-saved',
     validate: '/decision:string/roll:string/id=string',
     middleware: [
       Middleware.isUserRegistered
