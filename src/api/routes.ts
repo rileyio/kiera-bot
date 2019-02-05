@@ -28,14 +28,35 @@ export const routes: Array<WebRoute> = [
     controller: WebController.Permissions.getAll,
     method: 'post',
     name: 'permissions-get-all',
-    path: '/api/permissions'
+    path: '/api/permissions',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
   },
   {
-    controller: WebController.Permissions.get,
+    controller: WebController.Permissions.updateGlobal,
     method: 'post',
-    name: 'permissions-get',
-    path: '/api/permission'
+    name: 'permission-update-global',
+    path: '/api/permission/global/update',
+    middleware: [
+      Middleware.isAuthenticatedOwner
+    ]
   },
+  {
+    controller: WebController.Permissions.updateAllowed,
+    method: 'post',
+    name: 'permission-update-allowed',
+    path: '/api/permission/allowed/update',
+    middleware: [
+      Middleware.isAuthenticatedOwner
+    ]
+  },
+  // {
+  //   controller: WebController.Permissions.get,
+  //   method: 'post',
+  //   name: 'permissions-get',
+  //   path: '/api/permission',
+  // },
   /*
    * Sessions
    */

@@ -8,14 +8,22 @@ export namespace User {
   export async function get(routed: WebRouted) {
     const v = await validate(Validation.User.get(), routed.req.body)
 
-    // this.DEBUG_WEBAPI('req params', v.o)
-
     if (v.valid) {
       const query = v.o._id !== undefined
         ? { _id: v.o._id }
         : { id: v.o.id }
 
-      var user = await routed.Bot.DB.get('users', query, { username: 1, discriminator: 1 })
+      var user = await routed.Bot.DB.get<TrackedUser>('users', query, {
+        avatar: 1,
+        username: 1,
+        discriminator: 1,
+        guilds: 1
+      })
+
+      // Sort guilds
+      user.guilds.sort(g => {
+        return (g.owner) ? -1 : 1
+      })
 
       return routed.res.send(user);
     }
@@ -33,7 +41,6 @@ export namespace User {
     // tslint:disable-next-line:no-console
     console.log('v =>', v)
 
-    // this.DEBUG_WEBAPI('req params', v.o)
     try {
       if (v.valid) {
         const storedUser = await routed.Bot.DB.get('users', { id: v.o.id })
@@ -61,11 +68,11 @@ export namespace User {
 
     if (updateType === 'added' || updateType === 'updated') {
       return routed.res.send({
-        status: updateType, success: updateType, webToken: uUser.webToken
+        status: updateType, success: true, webToken: uUser.webToken
       });
     }
     else {
-      routed.res.send({ status: updateType, success: 'error', token: token })
+      routed.res.send({ status: updateType, success: false, token: token })
     }
 
     // On error

@@ -39,7 +39,7 @@ export class TrackedUser {
     Object.assign(this, initOauth)
 
     // If valid & updated, generate a token for use with Kiera
-    this.webToken = jwt.sign(this.id, process.env.BOT_SECRET, { expiresIn: '1h' });
+    this.webToken = jwt.sign({ id: this.id }, process.env.BOT_SECRET, { expiresIn: '3h' });
   }
 }
 

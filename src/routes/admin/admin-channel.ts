@@ -9,7 +9,9 @@ export const Routes: Array<RouteConfiguration> = [
     controller: Commands.Admin.Channel.purgeChannelMessages,
     example: '{{prefix}}admin channel purge',
     name: 'admin-channel-purge',
-    restricted: true,
+    permissions: {
+      restricted: true
+    },
     validate: '/admin:string/channel:string/purge:string',
     middleware: [
       Middleware.hasRole('developer')

@@ -1,5 +1,9 @@
 import { ObjectID } from 'bson';
-import { exceptions } from 'winston';
+import { GuildChannel } from 'discord.js';
+
+export interface TextChannelExtended extends GuildChannel {
+  permissions: Array<CommandPermissionsAllowed>
+}
 
 export class CommandPermissions {
   public readonly _id: ObjectID
@@ -53,6 +57,7 @@ export class CommandPermissionsAllowed {
    * @memberof CommandPermissionsAllowed
    */
   public allow?: boolean = true
+  public name: string
   /**
    * Nested, but should only be 1 layer deep
    * TODO: Look into possible nesting

@@ -15,7 +15,11 @@ export interface RouteConfiguration {
   help?: string
   middleware?: Array<(routed: RouterRouted) => Promise<RouterRouted | void>>
   name: string
-  restricted?: boolean
+  permissions?: {
+    defaultEnabled?: boolean
+    restricted?: boolean
+    serverAdminOnly?: boolean
+  }
   type: 'message' | 'reaction'
   validate?: string
 }
@@ -38,13 +42,17 @@ export type RouteActionUserTarget = 'none'
 
 export class MessageRoute {
   public command: string
+  public commandTarget: RouteActionUserTarget = 'none' // Default to none
   public controller: (routed: RouterRouted) => Promise<Boolean>
   public example: string
   public help: string
   public middleware: Array<(routed: RouterRouted) => Promise<RouterRouted | void>> = []
   public name: string
-  public commandTarget: RouteActionUserTarget = 'none' // Default to none
-  public restricted: boolean = false
+  public permissions = {
+    defaultEnabled: true,
+    restricted: false,
+    serverAdminOnly: false
+  }
   public type: 'message' | 'reaction'
   public validate: string
   public validation: Validate
@@ -56,6 +64,10 @@ export class MessageRoute {
     this.command = (this.type === 'message') ? this.getCommand(route.validate) : undefined
     // Setup validation for route
     this.validation = new Validate(route.validate)
+    // Restricted should override defaultEnabled
+    this.permissions.defaultEnabled = this.permissions.restricted === true
+      ? false
+      : this.permissions.defaultEnabled
   }
 
   public test(message: string) {
@@ -75,6 +87,13 @@ export class Router {
 
   constructor(routes: Array<RouteConfiguration>, bot?: Bot) {
     this.bot = bot
+    // Alert if duplicate route name is detected
+    var _dupRouteCheck = {}
+    routes.forEach(r => {
+      if (_dupRouteCheck[r.name] !== undefined) this.bot.DEBUG.log(`!! Duplicate route name detected ${r.name}`)
+      else _dupRouteCheck[r.name] = 1
+    })
+
     this.routes = routes.map(r => new MessageRoute(r))
     this.bot.DEBUG.log(`routes configured = ${this.routes.filter(r => r.type === 'message').length}`)
     this.bot.DEBUG.log(`reacts configured = ${this.routes.filter(r => r.type === 'reaction').length}`)
@@ -197,7 +216,7 @@ export class Router {
       var examples = []
       const route = await routes.find(r => {
         // Add to examples
-        if (r.restricted === false) examples.push(r.example)
+        if (r.permissions.restricted === false) examples.push(r.example)
         return r.test(message.content) === true
       })
       this.bot.DEBUG_MSG_COMMAND.log(route)

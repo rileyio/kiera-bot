@@ -1,4 +1,4 @@
-import { MongoClient, MongoClientOptions, Cursor, Db, MongoError } from 'mongodb';
+import { MongoClient, MongoClientOptions, Cursor, Db, MongoError, CollectionInsertManyOptions } from 'mongodb';
 import { Logging } from '../utils/';
 
 export * from './promise'
@@ -11,6 +11,7 @@ export type Collections = 'authkeys'
   | 'ck-lockee-totals'
   | 'decision'
   | 'messages'
+  | 'command-permissions'
   | 'servers'
   | 'sessions'
   | 'settings'
@@ -117,12 +118,11 @@ export class MongoDB {
    * @returns
    * @memberof DB
    */
-  public async addMany<T>(targetCollection: Collections, record: T[], opts?: {}) {
-    const insertOptions = Object.assign({}, opts)
+  public async addMany<T>(targetCollection: Collections, record: T[], opts?: CollectionInsertManyOptions) {
     this.DEBUG_DB.log(`.add =>`, targetCollection)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
-    const results = await collection.insertMany(record)
+    const results = await collection.insertMany(record, opts)
     this.DEBUG_DB.log(`.add results => inserted: ${results.insertedCount}`)
     // connection.client.close()
     return results.result.n === 1 ? results.insertedCount : null

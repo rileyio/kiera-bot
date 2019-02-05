@@ -9,6 +9,8 @@ import { Routes } from './routes';
 import { Logging } from './utils/';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
 import { BotMonitor } from './monitor';
+import { buildBasePermissions, buildSetOnInsert } from './permissions/builder';
+import { CommandPermissions } from './objects/permission';
 
 export class Bot {
   public client = new Discord.Client();
@@ -66,6 +68,7 @@ export class Bot {
     ///Server connect/disconnect///
     this.client.on('guildCreate', async guild => this.onGuildCreate(guild))
     this.client.on('guildDelete', async guild => this.onGuildDelete(guild))
+    this.client.on('guildUpdate', async guild => this.onGuildCreate(guild))
     ///   Reaction in (Cached)  ///
     // this.client.on('messageReactionAdd', (react, user) => this.onMessageCachedReactionAdd(react, user))
     ///  Reaction out (Cached)  ///
@@ -73,15 +76,38 @@ export class Bot {
   }
 
   public async onReady() {
-    this.DEBUG.log(`Logged in as ${this.client.user.tag}!`);
+    this.DEBUG.log(`### Logged in as ${this.client.user.tag}!`);
     var guilds = this.client.guilds.array()
 
     // Only try processing these if the DB is active
     if (this.BotMonitor.status.db) {
       for (let index = 0; index < guilds.length; index++) {
         const guild = guilds[index];
-        this.DEBUG.log(`connecting to server => ${guild.name}`)
+        this.DEBUG.log(`===> connecting to server => ${guild.name}`)
         await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
+        // console.log(buildBasePermissions(guild, this.Router.routes), { upsert: true })
+
+        // Build base permissions
+        const basePermissions = buildBasePermissions(guild, this.Router.routes)
+        // Get base permissions count from the db
+        const basePermissionsStored = await this.DB.getMultiple<CommandPermissions>('command-permissions', { serverID: guild.id })
+        // Check count of base permissions
+        const basePermissionsCount = basePermissions.length
+        const basePermissionsStoredCount = basePermissionsStored.length
+
+        // console.log('basePermissionsCount', basePermissionsCount)
+        // console.log('basePermissionsStoredCount', basePermissionsStoredCount)
+
+        if (basePermissionsCount > basePermissionsStoredCount) {
+          await this.DB.addMany('command-permissions', buildBasePermissions(guild, this.Router.routes))
+        }
+        else {
+          // Only add missing ones
+          const baseDiff = basePermissions.filter(x => basePermissionsStored.findIndex(y => y.command === x.command) === -1)
+          // console.log('diff', baseDiff)
+          if (baseDiff.length > 0) await this.DB.addMany('command-permissions', baseDiff)
+        }
+
       }
     }
   }
@@ -100,6 +126,10 @@ export class Bot {
 
   private async onGuildCreate(guild: Discord.Guild) {
     this.DEBUG.log('Joined a new server: ' + guild.name);
+    // Generate & store base permissions
+    // const permissions = buildBasePermissions(guild, this.Router.routes)
+    await this.DB.addMany('command-permissions',
+      buildBasePermissions(guild, this.Router.routes))
     // Save some info about the server in db
     await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
   }

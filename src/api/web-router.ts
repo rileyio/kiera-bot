@@ -76,7 +76,7 @@ export async function middlewareHandler(routed: WebRouted) {
     mwareProcessed += 1
   }
 
-  routed.Bot.DEBUG_MIDDLEWARE.log(`Router -> WebRoute middleware processed: ${mwareProcessed}/${mwareCount}`)
+  routed.Bot.DEBUG_MIDDLEWARE.log(`Router -> [${routed.route.path}] WebRoute middleware processed: ${mwareProcessed}/${mwareCount}`)
 
   // Stop execution of route if middleware is halted
   if (mwareProcessed === mwareCount) {

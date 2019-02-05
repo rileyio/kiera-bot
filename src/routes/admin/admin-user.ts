@@ -10,7 +10,9 @@ export const Routes: Array<RouteConfiguration> = [
     controller: Commands.Admin.User.removeUser,
     example: '{{prefix}}admin user delete @user#0000',
     name: 'admin-user-delete',
-    restricted: true,
+    permissions: {
+      restricted: true
+    },
     validate: '/admin:string/user:string/delete:string/user=user',
     middleware: [
       Middleware.hasRole('developer')
