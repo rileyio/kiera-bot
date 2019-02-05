@@ -99,10 +99,10 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
 
   // Calculate count and Prep discard pile
   var discardPile = lock.discard_pile.split(',').filter(c => c !== '')
-  // If the cardpile is above 15 cards remove the first 5 (oldest 5)
-  if (discardPile.length > 15) discardPile.splice(0, 6)
+  // If the cardpile is above 15 cards remove the last 5 (oldest 5)
+  if (discardPile.length > 15) discardPile.splice(15, 22)
   // Splice even more if this is beyond 3 locks to prevent hitting the Discord limit
-  if (totalExpected > 5 && discardPile.length > 5) discardPile.splice(0, 11)
+  if (totalExpected > 5 && discardPile.length > 5) discardPile.splice(15, 22)
   var discardPileStr = ``
 
   // Map each card from Array , to the correct discord Emoji & ID
