@@ -4,6 +4,8 @@ import { Message, User } from 'discord.js';
 import { Bot } from '..';
 import * as Utils from '../utils/';
 import { TrackedMessage } from '../objects/message';
+import { CommandPermissionsAllowed, CommandPermissions } from '../objects/permission';
+import { Permissions } from '../permissions/';
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
 
@@ -254,6 +256,12 @@ export class Router {
         user: message.author
       })
 
+      // Process Permissions
+      if (!await this.processPermissions(routed)) {
+        this.bot.BotMonitor.Stats.increment('commands-invalid')
+        return; // Hard Stop
+      }
+
       const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
       var mwareProcessed = 0
 
@@ -284,6 +292,33 @@ export class Router {
       this.bot.BotMonitor.Stats.increment('commands-invalid')
       return
     }
+  }
+
+  private async processPermissions(routed: RouterRouted) {
+    // Get the server level permission for this command stored in the DB
+    var globalPermission = await routed.bot.DB
+      .get<CommandPermissions>('command-permissions',
+        { serverID: routed.message.guild.id, command: routed.route.name })
+
+    // Not in DB? Fail
+    if (!globalPermission) return false
+
+    // Construst Server Level Command permission
+    globalPermission = new CommandPermissions(globalPermission)
+    // tslint:disable-next-line:no-console
+    // console.log('globalPermission', globalPermission)
+    // console.log('routed.route.name', routed.route.name)
+
+    const permissionCheck = Permissions.VerifyCommandPermissions([globalPermission]).command(routed.route.name).end({
+      user: routed.message.author.id,
+      channel: routed.message.channel.id,
+      // role: 'developer'
+    })
+
+    if (permissionCheck) return true
+
+    // Fallback - Fail
+    return false
   }
 }
 
