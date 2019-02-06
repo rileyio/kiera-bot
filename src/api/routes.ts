@@ -1,5 +1,6 @@
 import { WebRoute } from './web-router';
 import * as WebController from './controllers';
+import * as Middleware from './middleware/web-middleware';
 
 export const routes: Array<WebRoute> = [
   /*
@@ -27,14 +28,35 @@ export const routes: Array<WebRoute> = [
     controller: WebController.Permissions.getAll,
     method: 'post',
     name: 'permissions-get-all',
-    path: '/api/permissions'
+    path: '/api/permissions',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
   },
   {
-    controller: WebController.Permissions.get,
+    controller: WebController.Permissions.updateGlobal,
     method: 'post',
-    name: 'permissions-get',
-    path: '/api/permission'
+    name: 'permission-update-global',
+    path: '/api/permission/global/update',
+    middleware: [
+      Middleware.isAuthenticatedOwner
+    ]
   },
+  {
+    controller: WebController.Permissions.updateAllowed,
+    method: 'post',
+    name: 'permission-update-allowed',
+    path: '/api/permission/allowed/update',
+    middleware: [
+      Middleware.isAuthenticatedOwner
+    ]
+  },
+  // {
+  //   controller: WebController.Permissions.get,
+  //   method: 'post',
+  //   name: 'permissions-get',
+  //   path: '/api/permission',
+  // },
   /*
    * Sessions
    */
@@ -42,13 +64,19 @@ export const routes: Array<WebRoute> = [
     controller: WebController.Sessions.getAll,
     method: 'post',
     name: 'sessions-get-all',
-    path: '/api/sessions'
+    path: '/api/sessions',
+    middleware: [
+      Middleware.validAuthKey
+    ]
   },
   {
     controller: WebController.Sessions.get,
     method: 'post',
     name: 'session-get',
-    path: '/api/session'
+    path: '/api/session',
+    middleware: [
+      Middleware.validAuthKey
+    ]
   },
   /*
    * User
@@ -57,12 +85,18 @@ export const routes: Array<WebRoute> = [
     controller: WebController.User.get,
     method: 'post',
     name: 'user-get',
-    path: '/api/user'
+    path: '/api/user',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
   },
   {
     controller: WebController.User.oauth,
     method: 'post',
     name: 'user-oauth',
-    path: '/api/oauth'
+    path: '/api/oauth',
+    middleware: [
+      Middleware.validAuthKey
+    ]
   },
 ]

@@ -68,3 +68,5 @@ db/*.db
 # Dev Certs
 server.key
 server.crt
+ca.crt
+.DS_Store

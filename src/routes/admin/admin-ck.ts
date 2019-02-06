@@ -9,7 +9,9 @@ export const Routes: Array<RouteConfiguration> = [
     controller: Commands.Admin.CK.forceStatsReload,
     example: '{{prefix}}admin ck stats refresh',
     name: 'admin-ck-stats-stats',
-    restricted: true,
+    permissions: {
+      restricted: true,
+    },
     validate: '/admin:string/ck:string/stats:string/refresh:string',
     middleware: [
       Middleware.hasRole('developer')

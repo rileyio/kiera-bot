@@ -1,5 +1,6 @@
 import { TrackedChastiKey } from './chastikey';
 import * as deepExtend from 'deep-extend';
+import * as jwt from 'jsonwebtoken';
 import { ObjectId } from 'bson';
 
 export class TrackedUser {
@@ -16,6 +17,7 @@ export class TrackedUser {
   public premium_type: number
   public provider: string
   public username: string
+  public webToken: string
 
   public guilds: Array<{
     owner: boolean
@@ -31,6 +33,13 @@ export class TrackedUser {
 
   constructor(init: Partial<TrackedUser> | TrackedUser) {
     deepExtend(this, init);
+  }
+
+  public oauth(initOauth: Partial<TrackedUser> | TrackedUser) {
+    Object.assign(this, initOauth)
+
+    // If valid & updated, generate a token for use with Kiera
+    this.webToken = jwt.sign({ id: this.id }, process.env.BOT_SECRET, { expiresIn: '3h' });
   }
 }
 

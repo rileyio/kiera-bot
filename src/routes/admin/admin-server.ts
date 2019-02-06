@@ -25,7 +25,9 @@ export const Routes: Array<RouteConfiguration> = [
     controller: Commands.Admin.Server.forceRestart,
     example: '{{prefix}}restart bot',
     name: 'admin-restart-bot',
-    restricted: true,
+    permissions: {
+      restricted: true
+    },
     validate: '/admin:string/restart:string/bot:string/seconds?=number',
     middleware: [
       Middleware.hasRole('developer')

@@ -30,7 +30,7 @@ export const Routes: Array<RouteConfiguration> = [
     commandTarget: 'author',
     controller: Commands.ChastiKey.Ticker.setTickerDate,
     example: '{{prefix}}ck ticker set date 2019-01-27',
-    name: 'ck-set-tickerType',
+    name: 'ck-set-tickerDate',
     validate: '/ck:string/ticker:string/set:string/date:string/number=string',
     middleware: [
       Middleware.isUserRegistered

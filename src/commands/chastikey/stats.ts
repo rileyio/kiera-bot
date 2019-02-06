@@ -4,6 +4,7 @@ import { RouterRouted } from '../../utils';
 import { lockeeStats, keyholderStats } from '../../embedded/chastikey-stats';
 import { TrackedUser } from '../../objects/user';
 import { TrackedChastiKeyLock, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics } from '../../objects/chastikey';
+import { performance } from 'perf_hooks';
 
 export async function getLockeeStats(routed: RouterRouted) {
   // // If user fails to pass a type to return, inform them
@@ -11,6 +12,10 @@ export async function getLockeeStats(routed: RouterRouted) {
   //   await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeOrKeyholderRequired))
   //   return false // Stop here
   // }
+  var _performance = {
+    start: performance.now(),
+    end: undefined
+  }
 
   // Get user's current ChastiKey username from users collection or by the override
   const user = (routed.v.o.user)
@@ -58,7 +63,9 @@ export async function getLockeeStats(routed: RouterRouted) {
     monthsLocked: (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : '-',
     noOfRatings: (userInLockeeStats) ? userInLockeeStats.noOfRatings : 0,
     totalNoOfCompletedLocks: (userInLockeeStats) ? userInLockeeStats.totalNoOfCompletedLocks : 0,
-    username: user.ChastiKey.username
+    username: user.ChastiKey.username,
+    joined: (userInLockeeStats) ? userInLockeeStats.joined : '-',
+    _performance: _performance
   }))
 }
 

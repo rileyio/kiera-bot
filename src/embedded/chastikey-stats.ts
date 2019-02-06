@@ -1,4 +1,5 @@
 import { TrackedChastiKeyLock, TrackedKeyholderStatistics } from '../objects/chastikey';
+import { performance } from 'perf_hooks';
 
 export interface LockeeStats {
   averageLocked: number
@@ -10,6 +11,9 @@ export interface LockeeStats {
   noOfRatings: number | string
   totalNoOfCompletedLocks: number
   username: string
+  joined: string
+  // Performance tracking
+  _performance: { start: number, end: number }
 }
 
 const indicatorEmoji = {
@@ -46,10 +50,14 @@ export function lockeeStats(data: LockeeStats) {
     })
   }
 
+  var dateJoinedDaysAgo = (data.joined !== '-')
+    ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)`
+    : ''
   var description = `Locked for \`${data.monthsLocked}\` months to date | \`${data.totalNoOfCompletedLocks}\` locks completed`
   // Only show the ratings if the user has > 5
   if (data.noOfRatings > 4) description += ` | Avg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\``
   description += `\nLongest \`${calculateHumanTime(data.longestLock)}\` | Average Time Locked \`${calculateHumanTime(data.averageLocked)}\``
+  description += `\n Joined \`${data.joined}\` ${dateJoinedDaysAgo}`
 
   return {
     embed: {
@@ -59,7 +67,7 @@ export function lockeeStats(data: LockeeStats) {
       timestamp: (data.cacheTimestamp) ? new Date((<number>data.cacheTimestamp) * 1000).toISOString() : '',
       footer: {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: 'Cached by Kiera'
+        text: `(${Math.round(performance.now() - data._performance.start)}ms) Cached by Kiera`
       },
       thumbnail: {
         url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
@@ -99,10 +107,10 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
 
   // Calculate count and Prep discard pile
   var discardPile = lock.discard_pile.split(',').filter(c => c !== '')
-  // If the cardpile is above 15 cards remove the first 5 (oldest 5)
-  if (discardPile.length > 15) discardPile.splice(0, 6)
+  // If the cardpile is above 15 cards remove the last 5 (oldest 5)
+  if (discardPile.length > 15) discardPile.splice(15, 22)
   // Splice even more if this is beyond 3 locks to prevent hitting the Discord limit
-  if (totalExpected > 5 && discardPile.length > 5) discardPile.splice(0, 11)
+  if (totalExpected > 5 && discardPile.length > 5) discardPile.splice(15, 22)
   var discardPileStr = ``
 
   // Map each card from Array , to the correct discord Emoji & ID
@@ -133,11 +141,15 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
 }
 
 export function keyholderStats(data: TrackedKeyholderStatistics) {
+  var dateJoinedDaysAgo = (data.joined !== '-')
+  ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)`
+  : ''
   var description = ``
   if (data.noOfRatings > 4) description += `Avg Rating **\`${data.averageRating}\`** | # Ratings **\`${data.noOfRatings}\`**\n`
   description += `# of Users Locked **\`${data.noOfLocksManagingNow}\`**\n`
   description += `# of Locks Flagged As Trusted **\`${data.noOfLocksFlaggedAsTrusted}\`** <:trustkeyholder:474975187310346240>\n`
-  description += `# of Shared Locks **\`${data.noOfSharedLocks}\`**\nTotal Locks Managed **\`${data.totalLocksManaged}\`**`
+  description += `# of Shared Locks **\`${data.noOfSharedLocks}\`**\nTotal Locks Managed **\`${data.totalLocksManaged}\`**\n`
+  description += `Joined \`${data.joined}\` ${dateJoinedDaysAgo}`
 
   return {
     embed: {

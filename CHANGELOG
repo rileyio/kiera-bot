@@ -1,3 +1,9 @@
+2.0.0
+- API: Updates to support kierabot.xyz
+- Fixed: !ck stats lockee snipping the wrong end of the card pile
+- Fixed: !decision add command to now only allow owner to add items
+- Added: CK Lockee & Keyholder stats Joined date
+
 1.3.3
 - Updated: Debugging
 - Updated: CK API Caching tasks & with a lower interval
