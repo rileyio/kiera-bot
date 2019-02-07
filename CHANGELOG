@@ -1,5 +1,6 @@
 2.0.1
 - Fixed: Issue with non-Nitro Discord accounts not validating for web logins
+- Fixed: Router permissions to once again accept DMs
 - Updated: Removed CK Icon from Stats print to help with smaller screen sizes
 - Updated: Removed excess space before Joined date on wordwrap
 

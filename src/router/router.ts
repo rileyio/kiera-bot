@@ -256,10 +256,13 @@ export class Router {
         user: message.author
       })
 
-      // Process Permissions
-      if (!await this.processPermissions(routed)) {
-        this.bot.BotMonitor.Stats.increment('commands-invalid')
-        return; // Hard Stop
+      // Only check permissions if message type isn't a dm
+      if (message.channel.type !== 'dm') {
+        // Process Permissions
+        if (!await this.processPermissions(routed)) {
+          this.bot.BotMonitor.Stats.increment('commands-invalid')
+          return; // Hard Stop
+        }
       }
 
       const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
