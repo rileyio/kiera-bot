@@ -57,7 +57,7 @@ export function lockeeStats(data: LockeeStats) {
   // Only show the ratings if the user has > 5
   if (data.noOfRatings > 4) description += ` | Avg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\``
   description += `\nLongest \`${calculateHumanTime(data.longestLock)}\` | Average Time Locked \`${calculateHumanTime(data.averageLocked)}\``
-  description += `\n Joined \`${data.joined}\` ${dateJoinedDaysAgo}`
+  description += `\nJoined \`${data.joined.substr(0,9)}\` ${dateJoinedDaysAgo}`
 
   return {
     embed: {
@@ -69,9 +69,9 @@ export function lockeeStats(data: LockeeStats) {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
         text: `(${Math.round(performance.now() - data._performance.start)}ms) Cached by Kiera`
       },
-      thumbnail: {
-        url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
-      },
+      // thumbnail: {
+      //   url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
+      // },
       fields: fields
     }
   }
@@ -149,7 +149,7 @@ export function keyholderStats(data: TrackedKeyholderStatistics) {
   description += `# of Users Locked **\`${data.noOfLocksManagingNow}\`**\n`
   description += `# of Locks Flagged As Trusted **\`${data.noOfLocksFlaggedAsTrusted}\`** <:trustkeyholder:474975187310346240>\n`
   description += `# of Shared Locks **\`${data.noOfSharedLocks}\`**\nTotal Locks Managed **\`${data.totalLocksManaged}\`**\n`
-  description += `Joined \`${data.joined}\` ${dateJoinedDaysAgo}`
+  description += `Joined \`${data.joined.substr(0,9)}\` ${dateJoinedDaysAgo}`
 
   return {
     embed: {
@@ -161,9 +161,9 @@ export function keyholderStats(data: TrackedKeyholderStatistics) {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
         text: 'Cached by Kiera'
       },
-      thumbnail: {
-        url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
-      }
+      // thumbnail: {
+      //   url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
+      // }
     }
   }
 }

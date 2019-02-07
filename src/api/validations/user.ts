@@ -11,7 +11,7 @@ export namespace User {
     return joi.object().keys({
       username: joi.string().min(2).max(32).required(),
       locale: joi.string().min(2).max(8).required(),
-      premium_type: joi.number().required(),
+      premium_type: joi.number().optional(),
       mfa_enabled: joi.boolean().required(),
       flags: joi.number().required(),
       avatar: joi.string().alphanum().min(32).max(32).required(),

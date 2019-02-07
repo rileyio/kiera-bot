@@ -1,3 +1,8 @@
+2.0.1
+- Fixed: Issue with non-Nitro Discord accounts not validating for web logins
+- Updated: Removed CK Icon from Stats print to help with smaller screen sizes
+- Updated: Removed excess space before Joined date on wordwrap
+
 2.0.0
 - API: Updates to support kierabot.xyz
 - Fixed: !ck stats lockee snipping the wrong end of the card pile
