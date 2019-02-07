@@ -57,7 +57,7 @@ export function lockeeStats(data: LockeeStats) {
   // Only show the ratings if the user has > 5
   if (data.noOfRatings > 4) description += ` | Avg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\``
   description += `\nLongest \`${calculateHumanTime(data.longestLock)}\` | Average Time Locked \`${calculateHumanTime(data.averageLocked)}\``
-  description += `\nJoined \`${data.joined.substr(0,9)}\` ${dateJoinedDaysAgo}`
+  description += `\nJoined \`${data.joined.substr(0,10)}\` ${dateJoinedDaysAgo}`
 
   return {
     embed: {
@@ -149,7 +149,7 @@ export function keyholderStats(data: TrackedKeyholderStatistics) {
   description += `# of Users Locked **\`${data.noOfLocksManagingNow}\`**\n`
   description += `# of Locks Flagged As Trusted **\`${data.noOfLocksFlaggedAsTrusted}\`** <:trustkeyholder:474975187310346240>\n`
   description += `# of Shared Locks **\`${data.noOfSharedLocks}\`**\nTotal Locks Managed **\`${data.totalLocksManaged}\`**\n`
-  description += `Joined \`${data.joined.substr(0,9)}\` ${dateJoinedDaysAgo}`
+  description += `Joined \`${data.joined.substr(0,10)}\` ${dateJoinedDaysAgo}`
 
   return {
     embed: {
