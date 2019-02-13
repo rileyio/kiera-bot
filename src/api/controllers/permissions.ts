@@ -46,7 +46,10 @@ export namespace Permissions {
 
     if (v.valid) {
       // Update global permission in db
-      const updateCount = await routed.Bot.DB.update('command-permissions', { _id: new ObjectID(v.o._id) }, { enabled: v.o.state })
+      const updateCount = await routed.Bot.DB.update(
+        'command-permissions',
+        { _id: new ObjectID(v.o._id) },
+        { enabled: v.o.state })
       if (updateCount > 0) return routed.res.send({ status: 'updated', success: true });
       return routed.res.send({ status: 'failed', success: false });
     }
@@ -60,7 +63,8 @@ export namespace Permissions {
 
     if (v.valid) {
       // Update allowed permission in db
-      const updateCount = await routed.Bot.DB.update('command-permissions', {
+      const updateCount = await routed.Bot.DB.update(
+        'command-permissions', {
         _id: new ObjectID(v.o._id),
         command: v.o.command, 'allowed.target': v.o.target
       }, {

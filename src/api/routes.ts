@@ -22,6 +22,27 @@ export const routes: Array<WebRoute> = [
     path: '/api/lists'
   },
   /*
+   * Notifications
+   */
+  {
+    controller: WebController.Notifications.getNotifications,
+    method: 'post',
+    name: 'notifications-get',
+    path: '/api/notifications',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },
+  {
+    controller: WebController.Notifications.updateNotification,
+    method: 'post',
+    name: 'notifications-update',
+    path: '/api/notification/update',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },
+  /*
    * Permissions
    */
   {

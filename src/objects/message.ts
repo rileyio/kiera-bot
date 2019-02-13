@@ -5,7 +5,7 @@ export class TrackedMessage {
   public _id: ObjectID = new ObjectID()
   // Msg data
   public id: string
-  public authorId: string
+  public authorID: string
   public authorUsername: string
   public messageCreatedAt: number
   public channelId: string

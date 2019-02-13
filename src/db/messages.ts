@@ -37,7 +37,7 @@ export class MsgTracker {
         const message = Object.assign((<Array<Message>>msg)[index], opts || {});
 
         return await this.trackMsg(new TrackedMessage({
-          authorId: message.author.id,
+          authorID: message.author.id,
           authorUsername: message.author.username,
           id: message.id,
           messageCreatedAt: message.createdAt.getTime(),
@@ -54,7 +54,7 @@ export class MsgTracker {
     // If msg is just a regular Discord.Message type
     const message = Object.assign((<Message>msg), opts || {});
     return await this.trackMsg(new TrackedMessage({
-      authorId: message.author.id,
+      authorID: message.author.id,
       authorUsername: message.author.username,
       id: message.id,
       messageCreatedAt: message.createdAt.getTime(),
