@@ -1,3 +1,7 @@
+2.1.0
+- Added: Base notifications support for Discord DMs
+- Added: Notifications to Keyholder lookups
+
 2.0.1
 - Fixed: Issue with non-Nitro Discord accounts not validating for web logins
 - Fixed: Router permissions to once again accept DMs
