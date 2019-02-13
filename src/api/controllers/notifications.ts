@@ -9,8 +9,6 @@ export namespace Notifications {
   export async function getNotifications(routed: WebRouted) {
     const v = await validate(Validation.Notifications.get(), routed.req.body)
 
-    console.log(v)
-
     if (v.valid) {
 
       // User & Token from header
@@ -36,8 +34,6 @@ export namespace Notifications {
 
     // Ensure update is for user who's authenticated
     const isCorrectUser = id === v.o.authorID
-
-    console.log(v.o)
 
     if (v.valid && isCorrectUser) {
       // Ensure owner is properly set to an ObjectID

@@ -5,6 +5,9 @@ import { lockeeStats, keyholderStats } from '../../embedded/chastikey-stats';
 import { TrackedUser } from '../../objects/user';
 import { TrackedChastiKeyLock, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics } from '../../objects/chastikey';
 import { performance } from 'perf_hooks';
+import { TrackedNotification } from '../../objects/notification';
+import { ObjectID } from 'bson';
+import { TextChannel } from 'discord.js';
 
 export async function getLockeeStats(routed: RouterRouted) {
   // // If user fails to pass a type to return, inform them
@@ -74,7 +77,19 @@ export async function getKeyholderStats(routed: RouterRouted) {
   const user = (routed.v.o.user)
     ? { ChastiKey: { username: routed.v.o.user } }
     : await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
-  // If user does not have a ChastiKey username set, warn them
+  // If someone else is looking up a user
+  const userToNotifyConfig = (routed.v.o.user)
+    ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
+    : undefined
+  // Check to see if there are any notifications programmed for this user in the db
+  const userNotifyConfig = (userToNotifyConfig)
+    ? await routed.bot.DB.get<TrackedNotification>('notifications', {
+      owner: new ObjectID(userToNotifyConfig._id),
+      serverID: routed.message.guild.id
+    })
+    : null
+
+  // If user does not have a ChastiKey username set, warn them (& none was passed)
   if (user.ChastiKey.username === '') {
     await routed.message.reply(Utils.sb(Utils.en.chastikey.usernameNotSet))
     return false; // Stop here
@@ -90,6 +105,18 @@ export async function getKeyholderStats(routed: RouterRouted) {
     await routed.message.reply(Utils.sb(Utils.en.chastikey.keyholderNoLocks))
     return false // stop here
   }
-
+  
+  // Send stats
   await routed.message.channel.send(keyholderStats(keyholder))
+  // Notify the stats owner if that's applicable
+  if (userNotifyConfig !== null) {
+    if (userNotifyConfig.where !== 'Discord' || userNotifyConfig.state !== true) return // stop here
+    // Send DM to user
+    await routed.bot.client.users.get(userToNotifyConfig.id)
+      .send(Utils.sb(Utils.en.chastikey.keyholderCommandNotification, {
+        user: `${routed.message.author.username}#${routed.message.author.discriminator}`,
+        channel: (<TextChannel>routed.message.channel).name,
+        server: routed.message.guild.name
+      }))
+  }
 }

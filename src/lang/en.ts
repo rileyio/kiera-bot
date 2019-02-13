@@ -13,7 +13,8 @@ export const en = {
     incorrectTickerTimer: ChastiKey.incorrectTickerTimer,
     usernameNotSet: ChastiKey.usernameNotSet,
     lockeeOrKeyholderRequired: ChastiKey.lockeeOrKeyholderRequired,
-    keyholderNoLocks: ChastiKey.keyholderNoLocks
+    keyholderNoLocks: ChastiKey.keyholderNoLocks,
+    keyholderCommandNotification: ChastiKey.keyholderCommandNotification
   },
   error: {
     commandExactMatchFailedOptions: Error.commandExactMatchFailedOptions,
