@@ -1,6 +1,6 @@
 import { Task } from '../task';
 import got = require('got');
-import { MongoDBLoader, Collections } from '../../db/database';
+import { Collections } from '../../db/database';
 import { TrackedBotSetting } from '../../objects/setting';
 
 export class ChastiKeyAPIFetchAndStore extends Task {

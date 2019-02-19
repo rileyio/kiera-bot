@@ -1,3 +1,4 @@
+export * from './decisions'
 export * from './lists'
 export * from './notifications'
 export * from './permissions'

@@ -1,6 +1,7 @@
 2.1.0
 - Added: Base notifications support for Discord DMs
 - Added: Notifications to Keyholder lookups
+- Added: API endpoints for managing Decisions
 
 2.0.1
 - Fixed: Issue with non-Nitro Discord accounts not validating for web logins

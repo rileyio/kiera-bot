@@ -16,7 +16,7 @@ export namespace Notifications {
 
       var notificationSettings = await routed.Bot.DB.getMultiple<TrackedNotification>('notifications', {
         authorID: id,
-        serverID: v.o.serverID
+        serverID: v.o.serverID !== undefined ? v.o.serverID : undefined
       })
 
       return routed.res.send(notificationSettings);

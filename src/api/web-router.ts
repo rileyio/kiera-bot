@@ -4,7 +4,7 @@ import { Request, Response, Next } from 'restify';
 
 export interface WebRoute {
   controller: Function | void
-  method: 'get' | 'post'
+  method: 'get' | 'post' | 'delete'
   middleware?: Array<(routed: WebRouted) => Promise<WebRouted | void>>
   name: string
   path: string
@@ -48,6 +48,16 @@ export class WebRouter {
       }
       if (route.method === 'post') {
         this.server.post(route.path, async (req, res, next) => middlewareHandler(
+          new WebRouted({
+            Bot: this.Bot,
+            route: route,
+            req: req,
+            res: res,
+            next: next
+          })))
+      }
+      if (route.method === 'delete') {
+        this.server.del(route.path, async (req, res, next) => middlewareHandler(
           new WebRouted({
             Bot: this.Bot,
             route: route,

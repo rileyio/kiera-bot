@@ -149,7 +149,7 @@ export class MongoDB {
    * @returns
    * @memberof DB
    */
-  public async remove<T>(targetCollection: Collections, query: string | T, opts?: { deleteOne?: boolean }) {
+  public async remove<T>(targetCollection: Collections, query: string | Partial<T>, opts?: { deleteOne?: boolean }) {
     const deleteOptions = Object.assign({ deleteOne: true }, opts)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)

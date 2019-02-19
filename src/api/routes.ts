@@ -43,6 +43,54 @@ export const routes: Array<WebRoute> = [
     ]
   },
   /*
+   * Decisions
+   */
+  {
+    controller: WebController.Decisions.getDecisions,
+    method: 'post',
+    name: 'decisions-get-all',
+    path: '/api/decisions',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },
+  {
+    controller: WebController.Decisions.deleteOne,
+    method: 'delete',
+    name: 'decision-delete',
+    path: '/api/decision/delete',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },
+  {
+    controller: WebController.Decisions.decisionOutcomeUpdate,
+    method: 'post',
+    name: 'decision-outcome-update',
+    path: '/api/decision/outcome/update',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },
+  {
+    controller: WebController.Decisions.deleteDecisionOutcome,
+    method: 'delete',
+    name: 'decision-outcome-delete',
+    path: '/api/decision/outcome/delete',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },
+  {
+    controller: WebController.Decisions.addDecisionOutcome,
+    method: 'post',
+    name: 'decision-outcome-add',
+    path: '/api/decision/outcome/add',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },
+  /*
    * Permissions
    */
   {

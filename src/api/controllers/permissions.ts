@@ -65,9 +65,10 @@ export namespace Permissions {
       // Update allowed permission in db
       const updateCount = await routed.Bot.DB.update(
         'command-permissions', {
-        _id: new ObjectID(v.o._id),
-        command: v.o.command, 'allowed.target': v.o.target
-      }, {
+          _id: new ObjectID(v.o._id),
+          command: v.o.command,
+          'allowed.target': v.o.target
+        }, {
           $set: {
             'allowed.$.allow': v.o.state
           }
