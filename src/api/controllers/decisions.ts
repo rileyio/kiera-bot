@@ -104,9 +104,9 @@ export namespace Decisions {
       // User & Token from header
       const id = routed.req.header('id')
 
-      var deleteCount = await routed.Bot.DB.update<TrackedDecisionOption>(
+      var deleteCount = await routed.Bot.DB.update<TrackedDecision>(
         'decision',
-        { _id: new ObjectID(v.o._id) },
+        { _id: new ObjectID(v.o._id), authorID: id },
         { $push: { options: new TrackedDecisionOption({ text: v.o.text }) } },
         { atomic: true })
 
