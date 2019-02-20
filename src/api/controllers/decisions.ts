@@ -103,15 +103,18 @@ export namespace Decisions {
     if (v.valid) {
       // User & Token from header
       const id = routed.req.header('id')
+      const newDecisionOutcome = new TrackedDecisionOption({ text: v.o.text })
 
-      var deleteCount = await routed.Bot.DB.update<TrackedDecision>(
+      var addOutcome = await routed.Bot.DB.update<TrackedDecision>(
         'decision',
         { _id: new ObjectID(v.o._id), authorID: id },
-        { $push: { options: new TrackedDecisionOption({ text: v.o.text }) } },
+        { $push: { options: newDecisionOutcome } },
         { atomic: true })
 
 
-      if (deleteCount > 0) return routed.res.send({ status: 'deleted', success: true });
+      if (addOutcome > 0) return routed.res.send({
+        status: 'added', success: true, return: newDecisionOutcome
+      });
       return routed.res.send({ status: 'failed', success: false });
     }
 
