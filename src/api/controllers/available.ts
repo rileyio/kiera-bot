@@ -1,35 +1,22 @@
-// import * as Validation from '../validations/index';
-// import * as errors from 'restify-errors';
-// import { validate } from '../utils/validate';
-// import { WebRouted } from '../web-router';
+import { WebRouted } from '../web-router';
+import { TrackedNotification } from '../../objects/notification';
+import { TrackedAvailableObject } from '../../objects/available-objects';
 
-// export namespace Lists {
-//   export async function get(routed: WebRouted) {
-//     const v = await validate(Validation.Lists.get(), routed.req.body)
-//     const payload = {
-//       users: [],
-//       servers: []
-//     }
+export namespace Available {
+  export async function notifications(routed: WebRouted) {
+    // this.DEBUG_WEBAPI('req params', v.o)
 
-//     // this.DEBUG_WEBAPI('req params', v.o)
+    var templateNotifications = await routed.Bot.DB.getMultiple<TrackedNotification>('available-server-notifications', {
+      serverID: ''
+    }, { _id: 0 })
 
-//     if (v.valid) {
-//       var users = await routed.Bot.DB.getMultiple('users', {
-//         username: { $regex: new RegExp(`^${v.o.input}`), $options: 'i' }
-//       }, { username: 1, discriminator: 1 })
-//       var servers = await routed.Bot.DB.getMultiple('servers', {
-//         name: { $regex: new RegExp(`^${v.o.input}`), $options: 'i' }
-//       }, { name: 1, region: 1, ownerID: 1 })
+    return routed.res.send(templateNotifications);
+  }
 
-//       payload.servers = servers
-//       payload.users = users
+  export async function settings(routed: WebRouted) {
+    // this.DEBUG_WEBAPI('req params', v.o)
 
-//       return routed.res.send(payload);
-//     }
-
-//     // On error
-//     return routed.next(new errors.BadRequestError());
-//   }
-
-
-// }
+    var templateNotifications = await routed.Bot.DB.getMultiple<TrackedAvailableObject>('available-server-settings', {}, { _id: 0 })
+    return routed.res.send(templateNotifications);
+  }
+}

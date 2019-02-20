@@ -4,40 +4,22 @@ import * as Middleware from './middleware/web-middleware';
 
 export const routes: Array<WebRoute> = [
   /*
-   * Stats
+   * Available
    */
   {
-    controller: WebController.Stats.getAll,
-    method: 'get',
-    name: 'stats-get-all',
-    path: '/api/stats'
-  },
-  /*
-   * Lists
-   */
-  {
-    controller: WebController.Lists.get,
+    controller: WebController.Available.notifications,
     method: 'post',
-    name: 'lists-get',
-    path: '/api/lists'
-  },
-  /*
-   * Notifications
-   */
-  {
-    controller: WebController.Notifications.getNotifications,
-    method: 'post',
-    name: 'notifications-get',
-    path: '/api/notifications',
+    name: 'available-notifications',
+    path: '/api/available/notifications',
     middleware: [
       Middleware.isAuthenticated
     ]
   },
   {
-    controller: WebController.Notifications.updateNotification,
+    controller: WebController.Available.settings,
     method: 'post',
-    name: 'notifications-update',
-    path: '/api/notification/update',
+    name: 'available-settings',
+    path: '/api/available/settings',
     middleware: [
       Middleware.isAuthenticated
     ]
@@ -91,6 +73,36 @@ export const routes: Array<WebRoute> = [
     ]
   },
   /*
+   * Lists
+   */
+  {
+    controller: WebController.Lists.get,
+    method: 'post',
+    name: 'lists-get',
+    path: '/api/lists'
+  },
+  /*
+   * Notifications
+   */
+  {
+    controller: WebController.Notifications.getNotifications,
+    method: 'post',
+    name: 'notifications-get',
+    path: '/api/notifications',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },
+  {
+    controller: WebController.Notifications.updateNotification,
+    method: 'post',
+    name: 'notifications-update',
+    path: '/api/notification/update',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },
+  /*
    * Permissions
    */
   {
@@ -99,7 +111,7 @@ export const routes: Array<WebRoute> = [
     name: 'permissions-get-all',
     path: '/api/permissions',
     middleware: [
-      Middleware.isAuthenticated
+      Middleware.isAuthenticatedOwner
     ]
   },
   {
@@ -120,12 +132,6 @@ export const routes: Array<WebRoute> = [
       Middleware.isAuthenticatedOwner
     ]
   },
-  // {
-  //   controller: WebController.Permissions.get,
-  //   method: 'post',
-  //   name: 'permissions-get',
-  //   path: '/api/permission',
-  // },
   /*
    * Sessions
    */
@@ -146,6 +152,27 @@ export const routes: Array<WebRoute> = [
     middleware: [
       Middleware.validAuthKey
     ]
+  },
+  /*
+   * Server Settings
+   */
+  {
+    controller: WebController.Server.settings,
+    method: 'post',
+    name: 'server-get-settings',
+    path: '/api/server/settings',
+    middleware: [
+      Middleware.isAuthenticatedOwner
+    ]
+  },
+  /*
+   * Stats
+   */
+  {
+    controller: WebController.Stats.getAll,
+    method: 'get',
+    name: 'stats-get-all',
+    path: '/api/stats'
   },
   /*
    * User
