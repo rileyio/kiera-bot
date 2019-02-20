@@ -15,12 +15,6 @@ export class TrackedNotification {
    */
   public serverID: string
   /**
-   * TrackedUser object ID
-   * @type {ObjectID}
-   * @memberof TrackedNotification
-   */
-  public owner: ObjectID
-  /**
    * Name of notification
    * @type {''}
    * @memberof TrackedNotification

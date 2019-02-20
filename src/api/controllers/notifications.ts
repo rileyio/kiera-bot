@@ -37,13 +37,12 @@ export namespace Notifications {
 
     if (v.valid && isCorrectUser) {
       // Ensure owner is properly set to an ObjectID
-      v.o.owner = new ObjectID(v.o.owner)
       var updateCount
 
       // Exists in db
       const storedVersion = await routed.Bot.DB.get<TrackedNotification>('notifications', {
         name: v.o.name,
-        owner: v.o.owner,
+        authorID: v.o.authorID,
         serverID: v.o.serverID
       })
 
@@ -56,7 +55,7 @@ export namespace Notifications {
       else {
         updateCount = await routed.Bot.DB.update<TrackedNotification>('notifications', {
           name: v.o.name,
-          owner: v.o.owner,
+          authorID: v.o.authorID,
           serverID: v.o.serverID
         }, v.o)
       }
