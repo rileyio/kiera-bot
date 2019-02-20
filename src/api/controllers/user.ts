@@ -50,6 +50,8 @@ export namespace User {
         uUser.oauth(v.o)
         // tslint:disable-next-line:no-console
         console.log('=> User', uUser)
+        // Reduce servers down to just ones where kiera is present and the user is also
+        uUser.reduceServers(await routed.Bot.DB.getMultiple('servers', {}))
 
         if (storedUser) {
           await routed.Bot.DB.update('users', { id: v.o.id }, uUser)

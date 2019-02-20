@@ -1,3 +1,8 @@
+2.3.0
+- Updated: Decision roll text and implementing new properties (author & server) from command
+- Updated: API OAuth guilds that will be acknowledged to only those where Kiera is present
+
+
 2.2.0
 - Added: API endpoints for managing Decisions
 

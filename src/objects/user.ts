@@ -2,6 +2,7 @@ import { TrackedChastiKey } from './chastikey';
 import * as deepExtend from 'deep-extend';
 import * as jwt from 'jsonwebtoken';
 import { ObjectId } from 'bson';
+import { TrackedServer } from './server';
 
 export class TrackedUser {
   public _id: ObjectId
@@ -19,14 +20,7 @@ export class TrackedUser {
   public username: string
   public webToken: string
 
-  public guilds: Array<{
-    owner: boolean
-    permissions: number
-    icon: string
-    id: string
-    name: string
-    fetchedAt: string
-  }>
+  public guilds: Array<TrackedUserGuild>
 
   // ChastiKey Specific //
   public ChastiKey: TrackedChastiKey = new TrackedChastiKey({})
@@ -41,10 +35,23 @@ export class TrackedUser {
     // If valid & updated, generate a token for use with Kiera
     this.webToken = jwt.sign({ id: this.id }, process.env.BOT_SECRET, { expiresIn: '3h' });
   }
+
+  public reduceServers(connectedGuilds: Array<TrackedServer>) {
+    this.guilds = this.guilds.filter(g => connectedGuilds.findIndex(gg => gg.id === g.id) > -1)
+  }
 }
 
 export interface TrackedUserQuery {
   id?: string
   username?: string
   discriminator?: string
+}
+
+export interface TrackedUserGuild {
+  owner: boolean
+  permissions: number
+  icon: string
+  id: string
+  name: string
+  fetchedAt: string
 }

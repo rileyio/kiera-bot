@@ -4,6 +4,7 @@ import { TrackedUser } from '../objects/user';
 import { TrackedDecision, TrackedDecisionOption } from '../objects/decision';
 import { ObjectID } from 'bson';
 import { decisionFromSaved, decisionRealtime } from '../embedded/decision-embed';
+import { sb, en } from '../utils/';
 
 export namespace Decision {
   /**
@@ -18,12 +19,16 @@ export namespace Decision {
     // Get the user from the db
     const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
     // Create a new question & 
-    const nd = new TrackedDecision({ name: routed.v.o.name, owner: user._id })
+    const nd = new TrackedDecision({
+      name: routed.v.o.name,
+      owner: user._id,
+      authorID: routed.message.author.id,
+      serverID: routed.message.guild.id
+    })
     const updated = await routed.bot.DB.add('decision', nd)
 
     if (updated) {
-      await routed.message.reply(
-        `New question added (id: \`${nd._id}\`), enter your options using \`!decision ${nd._id} add "Decision result here" \``)
+      await routed.message.reply(sb(en.decision.newQuestionAdded, { id: nd._id }))
       return true
 
     }
@@ -36,7 +41,6 @@ export namespace Decision {
 
     // Get the user from the db
     const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
-
     // Get the saved decision from the db (Only the creator can edit)
     var decision = await routed.bot.DB.get<TrackedDecision>('decision', {
       _id: new ObjectID(routed.v.o.id),

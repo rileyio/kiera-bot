@@ -1,6 +1,7 @@
 import * as Admin from './en/admin';
-import * as Error from './en/error';
 import * as ChastiKey from './en/chastikey';
+import * as Decision from './en/decision';
+import * as Error from './en/error';
 import * as HelpStrings from './en/help';
 
 export const en = {
@@ -15,6 +16,9 @@ export const en = {
     lockeeOrKeyholderRequired: ChastiKey.lockeeOrKeyholderRequired,
     keyholderNoLocks: ChastiKey.keyholderNoLocks,
     keyholderCommandNotification: ChastiKey.keyholderCommandNotification
+  },
+  decision: {
+    newQuestionAdded: Decision.newQuestionAdded
   },
   error: {
     commandExactMatchFailedOptions: Error.commandExactMatchFailedOptions,

@@ -9,7 +9,7 @@ import { Routes } from './routes';
 import { Logging } from './utils/';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
 import { BotMonitor } from './monitor';
-import { buildBasePermissions, buildSetOnInsert } from './permissions/builder';
+import { buildBasePermissions } from './permissions/builder';
 import { CommandPermissions } from './objects/permission';
 
 export class Bot {

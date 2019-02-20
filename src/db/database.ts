@@ -5,6 +5,8 @@ export * from './promise'
 export * from './messages'
 
 export type Collections = 'authkeys'
+  | 'available-server-notifications'
+  | 'available-server-settings'
   | 'ck-running-locks'
   | 'ck-keyholders'
   | 'ck-lockees'
