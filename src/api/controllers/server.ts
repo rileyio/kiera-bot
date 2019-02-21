@@ -32,10 +32,12 @@ export namespace Server {
         { serverID: v.o.serverID },
         {
           $set: {
+            key: 'server.channel.notification.block',
+            type: 'string',
             state: v.o.state,
             value: v.o.value
           }
-        }, { atomic: true })
+        }, { atomic: true, upsert: true })
 
       if (updateCount > 0) return routed.res.send({ status: 'updated', success: true });
       return routed.res.send({ status: 'failed', success: false });

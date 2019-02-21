@@ -1,3 +1,6 @@
+2.3.1
+- Fixed: Notification override settings for server admins
+
 2.3.0
 - Updated: Decision roll text and implementing new properties (author & server) from command
 - Updated: API OAuth guilds that will be acknowledged to only those where Kiera is present

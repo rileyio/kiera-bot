@@ -123,7 +123,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
     ? await routed.bot.DB.get<TrackedNotification>('notifications', {
       authorID: userToNotifyConfig.id,
       serverID: routed.message.guild.id,
-      name: 'notify-ck-stats-lockee'
+      name: 'notify-ck-stats-keyholder'
     })
     : null
 
