@@ -1,5 +1,8 @@
+2.4.0
+- Fixed: Server Settings for server owners in API
+
 2.3.1
-- Fixed: Notification override settings for server admins
+- Fixed: Notification override settings for server owners
 
 2.3.0
 - Updated: Decision roll text and implementing new properties (author & server) from command

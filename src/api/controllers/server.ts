@@ -3,6 +3,7 @@ import * as errors from 'restify-errors';
 import { validate } from '../utils/validate';
 import { WebRouted } from '../web-router';
 import { TrackedAvailableObject } from '../../objects/available-objects';
+import { ObjectID } from 'bson';
 
 export namespace Server {
   export async function settings(routed: WebRouted) {
@@ -13,7 +14,7 @@ export namespace Server {
     if (v.valid) {
       var serverSettings = await routed.Bot.DB.getMultiple<TrackedAvailableObject>('server-settings', {
         serverID: v.o.serverID
-      }, { _id: 0 })
+      })
 
       return routed.res.send(serverSettings);
     }
@@ -29,7 +30,7 @@ export namespace Server {
 
     if (v.valid) {
       var updateCount = await routed.Bot.DB.update<TrackedAvailableObject>('server-settings',
-        { serverID: v.o.serverID },
+        v.o._id ? { _id: new ObjectID(v.o._id) } : { serverID: v.o.serverID },
         {
           $set: {
             key: 'server.channel.notification.block',
