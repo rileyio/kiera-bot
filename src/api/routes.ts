@@ -165,6 +165,15 @@ export const routes: Array<WebRoute> = [
       Middleware.isAuthenticatedOwner
     ]
   },
+  {
+    controller: WebController.Server.updateSettings,
+    method: 'post',
+    name: 'server-update-setting',
+    path: '/api/server/setting/update',
+    middleware: [
+      Middleware.isAuthenticatedOwner
+    ]
+  },
   /*
    * Stats
    */

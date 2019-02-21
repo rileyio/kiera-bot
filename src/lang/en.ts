@@ -13,6 +13,7 @@ export const en = {
     invalidOverrideType: ChastiKey.invalidOverrideType,
     incorrectTickerTimer: ChastiKey.incorrectTickerTimer,
     usernameNotSet: ChastiKey.usernameNotSet,
+    lockeeCommandNotification: ChastiKey.lockeeCommandNotification,
     lockeeOrKeyholderRequired: ChastiKey.lockeeOrKeyholderRequired,
     keyholderNoLocks: ChastiKey.keyholderNoLocks,
     keyholderCommandNotification: ChastiKey.keyholderCommandNotification

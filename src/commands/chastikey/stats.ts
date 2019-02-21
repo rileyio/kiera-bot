@@ -24,6 +24,19 @@ export async function getLockeeStats(routed: RouterRouted) {
   const user = (routed.v.o.user)
     ? { ChastiKey: { username: routed.v.o.user } }
     : await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
+
+  // If someone else is looking up a user
+  const userToNotifyConfig = (routed.v.o.user)
+    ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
+    : undefined
+  // Check to see if there are any notifications programmed for this user in the db
+  const userNotifyConfig = (userToNotifyConfig)
+    ? await routed.bot.DB.get<TrackedNotification>('notifications', {
+      authorID: userToNotifyConfig.id,
+      serverID: routed.message.guild.id,
+      name: 'notify-ck-stats-lockee'
+    })
+    : null
   // If user does not have a ChastiKey username set, warn them
   if (user.ChastiKey.username === '') {
     await routed.message.reply(Utils.sb(Utils.en.chastikey.usernameNotSet))
@@ -70,6 +83,30 @@ export async function getLockeeStats(routed: RouterRouted) {
     joined: (userInLockeeStats) ? userInLockeeStats.joined : '-',
     _performance: _performance
   }))
+
+  // Notify the stats owner if that's applicable
+  if (userNotifyConfig !== null) {
+    if (userNotifyConfig.where !== 'Discord' || userNotifyConfig.state !== true) return // stop here
+    // BLOCK: If in blacklisted channel by server settings //
+    const serverBlackListedChannels = await routed.bot.DB.verify('server-settings', {
+      serverID: routed.message.guild.id,
+      value: routed.message.channel.id,
+      key: 'server.channel.notification.block',
+      state: true
+    })
+    // BLOCK: If blacklisted validate === true
+    if (serverBlackListedChannels) return true
+
+    // Send DM to user
+    await routed.bot.client.users.get(userToNotifyConfig.id)
+      .send(Utils.sb(Utils.en.chastikey.lockeeCommandNotification, {
+        user: `${routed.message.author.username}#${routed.message.author.discriminator}`,
+        channel: (<TextChannel>routed.message.channel).name,
+        server: routed.message.guild.name
+      }))
+  }
+
+  return true
 }
 
 export async function getKeyholderStats(routed: RouterRouted) {
@@ -84,8 +121,9 @@ export async function getKeyholderStats(routed: RouterRouted) {
   // Check to see if there are any notifications programmed for this user in the db
   const userNotifyConfig = (userToNotifyConfig)
     ? await routed.bot.DB.get<TrackedNotification>('notifications', {
-      owner: new ObjectID(userToNotifyConfig._id),
-      serverID: routed.message.guild.id
+      authorID: userToNotifyConfig.id,
+      serverID: routed.message.guild.id,
+      name: 'notify-ck-stats-lockee'
     })
     : null
 
@@ -105,12 +143,22 @@ export async function getKeyholderStats(routed: RouterRouted) {
     await routed.message.reply(Utils.sb(Utils.en.chastikey.keyholderNoLocks))
     return false // stop here
   }
-  
+
   // Send stats
   await routed.message.channel.send(keyholderStats(keyholder))
   // Notify the stats owner if that's applicable
   if (userNotifyConfig !== null) {
     if (userNotifyConfig.where !== 'Discord' || userNotifyConfig.state !== true) return // stop here
+    // BLOCK: If in blacklisted channel by server settings //
+    const serverBlackListedChannels = await routed.bot.DB.verify('server-settings', {
+      serverID: routed.message.guild.id,
+      value: routed.message.channel.id,
+      key: 'server.channel.notification.block',
+      state: true
+    })
+    // BLOCK: If blacklisted validate === true
+    if (serverBlackListedChannels) return true
+
     // Send DM to user
     await routed.bot.client.users.get(userToNotifyConfig.id)
       .send(Utils.sb(Utils.en.chastikey.keyholderCommandNotification, {
@@ -119,4 +167,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
         server: routed.message.guild.name
       }))
   }
+
+  // Successful end
+  return true
 }

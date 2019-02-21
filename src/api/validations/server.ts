@@ -6,4 +6,11 @@ export namespace Server {
       serverID: joi.string().required(),
     }).required()
   }
+  export function updateSetting() {
+    return joi.object().keys({
+      serverID: joi.string().required(),
+      state: joi.bool(),
+      value: joi.required()
+    }).required()
+  }
 }
