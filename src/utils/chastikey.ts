@@ -7,8 +7,9 @@ export namespace ChastiKey {
     const fd = `fd=${ck.ticker.date}`
     const un = `un=${ck.username}`
     const ts = `ts=${Date.now()}`
+    const r = `r=${ck.ticker.showStarRatingScore ? '1' : '0'}`
     const ext = `ext=.png`
 
-    return `http://www.chastikey.com/tickers/ticker.php?ty=${tickerType}&${ts}&${un}&${fd}&r=0&${ext}`
+    return `http://www.chastikey.com/tickers/ticker.php?ty=${tickerType}&${ts}&${un}&${fd}&${r}&${ext}`
   }
 }

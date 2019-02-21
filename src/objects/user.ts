@@ -5,19 +5,20 @@ import { ObjectId } from 'bson';
 import { TrackedServer } from './server';
 
 export class TrackedUser {
+  public __notStored: boolean
   public _id: ObjectId
   public accessToken: string
-  public avatar: string
-  public createdTimestamp: number
-  public discriminator: string
+  public avatar: string = ''
+  public createdTimestamp: number = 0
+  public discriminator: string = ''
   public flags: number
-  public id: string
-  public isBot: boolean
-  public locale: string
+  public id: string = ''
+  public isBot: boolean = false
+  public locale: string = 'enUS'
   public mfa_enabled: boolean
   public premium_type: number
   public provider: string
-  public username: string
+  public username: string = ''
   public webToken: string
 
   public guilds: Array<TrackedUserGuild>

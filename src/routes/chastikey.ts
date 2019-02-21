@@ -39,6 +39,17 @@ export const Routes: Array<RouteConfiguration> = [
   {
     type: 'message',
     commandTarget: 'author',
+    controller: Commands.ChastiKey.Ticker.setTickerRatingDisplay,
+    example: '{{prefix}}ck ticker set rating show',
+    name: 'ck-set-ratingDisplay',
+    validate: '/ck:string/ticker:string/set:string/rating:string/state=string',
+    middleware: [
+      Middleware.isUserRegistered
+    ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'author',
     controller: Commands.ChastiKey.Ticker.getTicker,
     example: '{{prefix}}ck ticker',
     name: 'ck-get-ticker',

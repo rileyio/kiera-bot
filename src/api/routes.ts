@@ -24,6 +24,15 @@ export const routes: Array<WebRoute> = [
       Middleware.isAuthenticated
     ]
   },
+  {
+    controller: WebController.Available.userGeneric,
+    method: 'post',
+    name: 'available-user',
+    path: '/api/available/user',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },
   /*
    * Decisions
    */

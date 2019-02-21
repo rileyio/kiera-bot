@@ -76,6 +76,29 @@ export async function setTickerDate(routed: RouterRouted) {
   }
 }
 
+export async function setTickerRatingDisplay(routed: RouterRouted) {
+  const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
+  const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
+
+  // True or False sent
+  if (routed.v.o.state.toLowerCase() === 'show' || routed.v.o.state.toLowerCase() === 'hide') {
+    await routed.bot.DB.update('users', userQuery,
+      { $set: { 'ChastiKey.ticker.showStarRatingScore': `show` ? routed.v.o.state === 'show'  : false } },
+      { atomic: true })
+
+    await routed.message.reply(`:white_check_mark: ChastiKey Rating Display now ${routed.v.o.state === 'show' ? '`shown`' : '`hidden`'}`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set rating ${routed.v.o.state}`)
+
+    return true
+  }
+  else {
+    await routed.message.reply(`Failed to set ChastiKey Rating Display, format must be like: \`show\``)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set rating ${routed.v.o.state}`)
+
+    return true
+  }
+}
+
 export async function getTicker(routed: RouterRouted) {
   const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
   const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)

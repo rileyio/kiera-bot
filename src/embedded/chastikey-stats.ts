@@ -35,7 +35,7 @@ const cardsEmoji = {
   Freeze: `<:freezecard:498994540326158336>`
 }
 
-export function lockeeStats(data: LockeeStats) {
+export function lockeeStats(data: LockeeStats, options: { showRating: boolean }) {
   var fields: Array<{ name: string; value: string; }> = []
   data.locks.forEach((l, i) => {
     if (i > 19) return // Skip, there can only be 20 locks in the db, this means theres an issue server side
@@ -55,7 +55,7 @@ export function lockeeStats(data: LockeeStats) {
     : ''
   var description = `Locked for \`${data.monthsLocked}\` months to date | \`${data.totalNoOfCompletedLocks}\` locks completed`
   // Only show the ratings if the user has > 5
-  if (data.noOfRatings > 4) description += ` | Avg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\``
+  if (data.noOfRatings > 4 && options.showRating) description += ` | Avg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\``
   description += `\nLongest \`${calculateHumanTime(data.longestLock)}\` | Average Time Locked \`${calculateHumanTime(data.averageLocked)}\``
   description += `\nJoined \`${data.joined.substr(0,10)}\` ${dateJoinedDaysAgo}`
 
@@ -140,12 +140,12 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   }
 }
 
-export function keyholderStats(data: TrackedKeyholderStatistics) {
+export function keyholderStats(data: TrackedKeyholderStatistics, options: { showRating: boolean }) {
   var dateJoinedDaysAgo = (data.joined !== '-')
   ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)`
   : ''
   var description = ``
-  if (data.noOfRatings > 4) description += `Avg Rating **\`${data.averageRating}\`** | # Ratings **\`${data.noOfRatings}\`**\n`
+  if (data.noOfRatings > 4 && options.showRating) description += `Avg Rating **\`${data.averageRating}\`** | # Ratings **\`${data.noOfRatings}\`**\n`
   description += `# of Users Locked **\`${data.noOfLocksManagingNow}\`**\n`
   description += `# of Locks Flagged As Trusted **\`${data.noOfLocksFlaggedAsTrusted}\`** <:trustkeyholder:474975187310346240>\n`
   description += `# of Shared Locks **\`${data.noOfSharedLocks}\`**\nTotal Locks Managed **\`${data.totalLocksManaged}\`**\n`

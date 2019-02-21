@@ -71,6 +71,7 @@ Currently returns: (1) Keyholder, (2) Lockee, (3) Both
 \`{{prefix}}ck ticker #\` - Returns a specific ticker type (replace \`#\`)
 \`{{prefix}}ck ticker set type 2\` - Set default ticker
 \`{{prefix}}ck ticker set date 2019-01-27\` - Start date for ticker data
+\`{{prefix}}ck ticker set rating show\` - To display rating or not \`show\` or \`hide\`
 
 \`{{prefix}}ck stats lockee\` - Get your lockee stats (by saved username)
 \`{{prefix}}ck stats keyholder\` - Get your keyholder stats (by saved username)

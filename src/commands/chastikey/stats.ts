@@ -6,15 +6,9 @@ import { TrackedUser } from '../../objects/user';
 import { TrackedChastiKeyLock, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics } from '../../objects/chastikey';
 import { performance } from 'perf_hooks';
 import { TrackedNotification } from '../../objects/notification';
-import { ObjectID } from 'bson';
 import { TextChannel } from 'discord.js';
 
 export async function getLockeeStats(routed: RouterRouted) {
-  // // If user fails to pass a type to return, inform them
-  // if (routed.v.o.type !== 'lockee' && routed.v.o.type !== 'keyholder') {
-  //   await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeOrKeyholderRequired))
-  //   return false // Stop here
-  // }
   var _performance = {
     start: performance.now(),
     end: undefined
@@ -22,17 +16,18 @@ export async function getLockeeStats(routed: RouterRouted) {
 
   // Get user's current ChastiKey username from users collection or by the override
   const user = (routed.v.o.user)
-    ? { ChastiKey: { username: routed.v.o.user } }
+    ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') }) ||
+    (<TrackedUser>{ __notStored: true, ChastiKey: { username: routed.v.o.user, ticker: { showStarRatingScore: true } } })
     : await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
 
   // If someone else is looking up a user
-  const userToNotifyConfig = (routed.v.o.user)
-    ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
-    : undefined
+  // const userToNotifyConfig = (routed.v.o.user)
+  //   ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
+  //   : undefined
   // Check to see if there are any notifications programmed for this user in the db
-  const userNotifyConfig = (userToNotifyConfig)
+  const userNotifyConfig = (routed.v.o.user && user._id && user.__notStored === undefined)
     ? await routed.bot.DB.get<TrackedNotification>('notifications', {
-      authorID: userToNotifyConfig.id,
+      authorID: user.id,
       serverID: routed.message.guild.id,
       name: 'notify-ck-stats-lockee'
     })
@@ -82,7 +77,7 @@ export async function getLockeeStats(routed: RouterRouted) {
     username: user.ChastiKey.username,
     joined: (userInLockeeStats) ? userInLockeeStats.joined : '-',
     _performance: _performance
-  }))
+  }, { showRating: user.ChastiKey.ticker.showStarRatingScore }))
 
   // Notify the stats owner if that's applicable
   if (userNotifyConfig !== null) {
@@ -98,7 +93,7 @@ export async function getLockeeStats(routed: RouterRouted) {
     if (serverBlackListedChannels) return true
 
     // Send DM to user
-    await routed.bot.client.users.get(userToNotifyConfig.id)
+    await routed.bot.client.users.get(user.id)
       .send(Utils.sb(Utils.en.chastikey.lockeeCommandNotification, {
         user: `${routed.message.author.username}#${routed.message.author.discriminator}`,
         channel: (<TextChannel>routed.message.channel).name,
@@ -112,16 +107,19 @@ export async function getLockeeStats(routed: RouterRouted) {
 export async function getKeyholderStats(routed: RouterRouted) {
   // Get user's current ChastiKey username from users collection or by the override
   const user = (routed.v.o.user)
-    ? { ChastiKey: { username: routed.v.o.user } }
+    ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') }) ||
+    (<TrackedUser>{ __notStored: true, ChastiKey: { username: routed.v.o.user, ticker: { showStarRatingScore: true } } })
     : await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
+
   // If someone else is looking up a user
-  const userToNotifyConfig = (routed.v.o.user)
-    ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
-    : undefined
+  // const userToNotifyConfig = (routed.v.o.user)
+  //   ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
+  //   : undefined
   // Check to see if there are any notifications programmed for this user in the db
-  const userNotifyConfig = (userToNotifyConfig)
+  // Check to see if there are any notifications programmed for this user in the db
+  const userNotifyConfig = (routed.v.o.user && user._id && user.__notStored === undefined)
     ? await routed.bot.DB.get<TrackedNotification>('notifications', {
-      authorID: userToNotifyConfig.id,
+      authorID: user.id,
       serverID: routed.message.guild.id,
       name: 'notify-ck-stats-keyholder'
     })
@@ -145,7 +143,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
   }
 
   // Send stats
-  await routed.message.channel.send(keyholderStats(keyholder))
+  await routed.message.channel.send(keyholderStats(keyholder, { showRating: user.ChastiKey.ticker.showStarRatingScore }))
   // Notify the stats owner if that's applicable
   if (userNotifyConfig !== null) {
     if (userNotifyConfig.where !== 'Discord' || userNotifyConfig.state !== true) return // stop here
@@ -160,7 +158,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
     if (serverBlackListedChannels) return true
 
     // Send DM to user
-    await routed.bot.client.users.get(userToNotifyConfig.id)
+    await routed.bot.client.users.get(user.id)
       .send(Utils.sb(Utils.en.chastikey.keyholderCommandNotification, {
         user: `${routed.message.author.username}#${routed.message.author.discriminator}`,
         channel: (<TextChannel>routed.message.channel).name,

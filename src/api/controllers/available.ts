@@ -1,6 +1,7 @@
 import { WebRouted } from '../web-router';
 import { TrackedNotification } from '../../objects/notification';
 import { TrackedAvailableObject } from '../../objects/available-objects';
+import { TrackedUser } from '../../objects/user';
 
 export namespace Available {
   export async function notifications(routed: WebRouted) {
@@ -18,5 +19,9 @@ export namespace Available {
 
     var templateNotifications = await routed.Bot.DB.getMultiple<TrackedAvailableObject>('available-server-settings', {}, { _id: 0 })
     return routed.res.send(templateNotifications);
+  }
+
+  export async function userGeneric(routed: WebRouted) {
+    return routed.res.send(new TrackedUser({}));
   }
 }
