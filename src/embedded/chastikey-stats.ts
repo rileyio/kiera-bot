@@ -57,9 +57,9 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean })
   // Only show the ratings if the user has > 5
   if (data.noOfRatings > 4 && options.showRating) description += ` | Avg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\``
   description += `\nLongest \`${calculateHumanTime(data.longestLock)}\` | Average Time Locked \`${calculateHumanTime(data.averageLocked)}\``
-  description += `\nJoined \`${data.joined.substr(0,10)}\` ${dateJoinedDaysAgo}`
+  description += `\nJoined \`${data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}`
 
-  return {
+  const messageBlock = {
     embed: {
       title: `\`${data.username}\` - ChastiKey Lockee Statistics`,
       description: description,
@@ -75,6 +75,13 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean })
       fields: fields
     }
   }
+
+  const messageBlockStrLength = JSON.stringify(messageBlock).length
+
+  // tslint:disable-next-line:no-console
+  console.log('Lockee block length:', messageBlockStrLength)
+
+  return messageBlock
 }
 
 function calculateHumanTime(seconds: number) {
@@ -93,6 +100,13 @@ function calculateHumanTime(seconds: number) {
   return `${timeToShowDays} ${timeToShowHours} ${timeToShowMins}`
 }
 
+/**
+ * Generate an entry for each lock
+ * @param {number} index
+ * @param {TrackedChastiKeyLock} lock
+ * @param {number} totalExpected
+ * @returns
+ */
 function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: number) {
   const cumulative = lock.cumulative === 1 ? 'Cumulative' : 'Non-Cumulative'
 
@@ -108,12 +122,14 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   // Calculate count and Prep discard pile
   var discardPile = lock.discard_pile.split(',').filter(c => c !== '')
   // If the cardpile is above 15 cards remove the last 5 (oldest 5)
-  if (discardPile.length > 15) discardPile.splice(15, 22)
+  // tslint:disable-next-line:no-console
+  if (totalExpected <= 5 && discardPile.length > 5) { discardPile.splice(3, 22); console.log(totalExpected, 'NOT extra splicy') }
   // Splice even more if this is beyond 3 locks to prevent hitting the Discord limit
-  if (totalExpected > 5 && discardPile.length > 5) discardPile.splice(15, 22)
+  // tslint:disable-next-line:no-console
+  if (totalExpected > 5 && discardPile.length > 5) { discardPile.splice(3, 22); console.log(totalExpected, 'extra splicy') }
   var discardPileStr = ``
 
-  // Map each card from Array , to the correct discord Emoji & ID
+  // Map each card from Array , to the correct discord Emoji & ID»
   discardPile.forEach(card => { if (card !== '') discardPileStr += `${cardsEmoji[card]}` })
 
   var name = `Active Lock ${(index + 1)}`
@@ -142,14 +158,14 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
 
 export function keyholderStats(data: TrackedKeyholderStatistics, options: { showRating: boolean }) {
   var dateJoinedDaysAgo = (data.joined !== '-')
-  ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)`
-  : ''
+    ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)`
+    : ''
   var description = ``
   if (data.noOfRatings > 4 && options.showRating) description += `Avg Rating **\`${data.averageRating}\`** | # Ratings **\`${data.noOfRatings}\`**\n`
   description += `# of Users Locked **\`${data.noOfLocksManagingNow}\`**\n`
   description += `# of Locks Flagged As Trusted **\`${data.noOfLocksFlaggedAsTrusted}\`** <:trustkeyholder:474975187310346240>\n`
   description += `# of Shared Locks **\`${data.noOfSharedLocks}\`**\nTotal Locks Managed **\`${data.totalLocksManaged}\`**\n`
-  description += `Joined \`${data.joined.substr(0,10)}\` ${dateJoinedDaysAgo}`
+  description += `Joined \`${data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}`
 
   return {
     embed: {

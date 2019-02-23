@@ -1,3 +1,6 @@
+2.4.1
+- Fixed: When user has > 5 active locks and how to handle card splicing to not hit char limits
+
 2.4.0
 - Fixed: Server Settings for server owners in API
 - Added: Command to adjust CK Ticker Rating display
