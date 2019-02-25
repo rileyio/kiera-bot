@@ -46,13 +46,14 @@ export class WebAPI {
     this.socket = SocketIO.listen(this.server.server)
     this.socket.sockets.on('connection', (socket) => {
       this.DEBUG_WEBAPI('socket connection')
-      socket.emit('news', { hello: 'world' });
-      socket.on('my other event', (data) => {
-        this.DEBUG_WEBAPI(data);
-      });
+      // socket.emit('news', { hello: 'world' });
+      // socket.on('my other event', (data) => {
+      //   this.DEBUG_WEBAPI(data);
+      // });
+      SocketStats.heartBeat(this.Bot, this.socket)
     });
 
-    // Emit Stats
+    // Emit Stats (Loop)
     SocketStats.stats(this.Bot, this.socket)
   }
 
