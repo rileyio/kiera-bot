@@ -1,6 +1,7 @@
 import { Bot } from '.';
 import { BotStatistics, ServerStatistics, Statistic } from './objects/statistics';
 import { EventEmitter } from 'events';
+import * as Helper from './stats/helpers';
 
 export class Statistics extends EventEmitter {
   private uptimeInterval: NodeJS.Timer
@@ -118,12 +119,19 @@ export class Statistics extends EventEmitter {
     if (!this.dbUpdateTickerRunning) {
       this.dbUpdateTickerRunning = true
       this.dbUpdateInterval = setInterval(async () => {
-        if (process.env.BOT_BLOCK_STATS === 'true') return // block stats saving 
+        if (process.env.BOT_BLOCK_STATS === 'true') return // block stats saving
+        await this.updatePeriodicStats() 
+
         await this._Bot.DB.update('stats-bot', {
           name: this.Bot.name
         }, this.Bot)
       }, 10000)
     }
+  }
+
+  private async updatePeriodicStats() {
+     const userStats = await Helper.fetchUserCounts(this._Bot)
+     this.Bot.users = userStats
   }
 
   private emitUpdate(event: 'statsReady' | 'statsNotReady') {

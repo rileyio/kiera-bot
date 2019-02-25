@@ -15,6 +15,7 @@ export type Statistic = 'discord-api-calls'
   | 'servers-total'
 
 export class BotStatistics {
+  public _id: ObjectID
   public name: string = process.env.DISCORD_APP_NAME
   public uptime: number = 0
   public startTimestamp: number = Date.now()
@@ -27,7 +28,8 @@ export class BotStatistics {
   public commands = {
     routed: 0,
     completed: 0,
-    invalid: 0
+    invalid: 0,
+    byCommand: {}
   }
   public dms = {
     received: 0,
@@ -43,6 +45,7 @@ export class BotStatistics {
   }
   public discordAPICalls: number = 0
 
+
   public startup(init: BotStatistics) {
     // Strip certain values that would reset each bot restart
     delete init.uptime
@@ -57,6 +60,7 @@ export class ServerStatistics {
   public sid: ObjectID
   public users = {
     total: 0,
+    online: 0,
     registered: 0
   }
   public commands = {

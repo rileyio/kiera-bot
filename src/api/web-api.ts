@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as corsMiddleware from 'restify-cors-middleware';
 import * as SocketIO from 'socket.io';
+import * as SocketStats from './socket/stats';
 import { Bot } from '..';
 import { routes } from './routes';
 import { WebRouter } from './web-router';
@@ -49,8 +50,10 @@ export class WebAPI {
       socket.on('my other event', (data) => {
         this.DEBUG_WEBAPI(data);
       });
-      socket.emit('heartbeat', { stats: this.Bot.BotMonitor.Stats.Bot })
     });
+
+    // Emit Stats
+    SocketStats.stats(this.Bot, this.socket)
   }
 
   public start() {

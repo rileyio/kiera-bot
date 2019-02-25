@@ -1,3 +1,6 @@
+2.5.0
+- Improvements to stats tracking and websocket heartbeat
+
 2.4.1
 - Fixed: When user has > 5 active locks and how to handle card splicing to not hit char limits
 

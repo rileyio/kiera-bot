@@ -224,6 +224,16 @@ export class MongoDB {
     return (<Cursor<T>>result).toArray()
   }
 
+  public async count(targetCollection: Collections, query: any, options?: any) {
+    this.DEBUG_DB.log(`.count => ${targetCollection}`)
+    const connection = await this.connect()
+    const collection = (<any>connection.db.collection(targetCollection, options))
+    const result = await collection.countDocuments(query)
+    this.DEBUG_DB.log(`.count results [${targetCollection}] =>`, result)
+    // connection.client.close()
+    return (<number>result)
+  }
+
   // public get<Q, T>(query: Q, discriminator?: string) {
   //   return new Promise<T>(r => {
   //     this.connect(async (db: Db, client: MongoClient, err: MongoError) => {
