@@ -1,5 +1,7 @@
 2.6.0
 - Added: On disabled command the Kiera will now DM the command author and inform
+- Added: Background task to handle new channels missing permissions
+- Changed: Background tasks to run/check every 30 seconds
 
 2.5.0
 - Improvements to stats tracking and websocket heartbeat

@@ -62,8 +62,9 @@ export class TaskManager {
       }
 
       this.isTaskRunnerProcessing = false
-    }, 60000)
+    }, 30000)
   }
 }
 
 export * from './chastikey'
+export * from './templates/permissions'

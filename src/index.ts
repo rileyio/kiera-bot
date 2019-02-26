@@ -50,7 +50,8 @@ export class Bot {
       new Task.ChastiKeyAPIRunningLocks(this),
       new Task.ChastiKeyAPIKeyholders(this),
       new Task.ChastiKeyAPILockees(this),
-      new Task.ChastiKeyAPITotalLockedTime(this)
+      new Task.ChastiKeyAPITotalLockedTime(this),
+      new Task.PermissionsChannelAdditions(this)
     ])
 
     /// Event hndling for non-cached (messages from prior to restart) ///

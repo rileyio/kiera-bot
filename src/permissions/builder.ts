@@ -2,11 +2,6 @@ import { CommandPermissions, CommandPermissionsAllowed } from '../objects/permis
 import { MessageRoute } from '../utils';
 import { Guild } from 'discord.js';
 
-// export class DefaultPermissionsBuilder {
-//   constructor() {
-
-//   }
-// }
 export function buildSetOnInsert(permissionsBuilt: Array<CommandPermissions>) {
   return permissionsBuilt.map(p => { return { $setOnInsert: p } })
 }
