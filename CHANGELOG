@@ -1,3 +1,6 @@
+2.6.0
+- Added: On disabled command the Kiera will now DM the command author and inform
+
 2.5.0
 - Improvements to stats tracking and websocket heartbeat
 

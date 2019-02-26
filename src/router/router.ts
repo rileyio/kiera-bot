@@ -1,11 +1,12 @@
 import * as XRegex from 'xregexp';
+import * as Utils from '../utils/';
 import { Validate, ValidationType } from './validate';
 import { Message, User } from 'discord.js';
 import { Bot } from '..';
-import * as Utils from '../utils/';
 import { TrackedMessage } from '../objects/message';
-import { CommandPermissionsAllowed, CommandPermissions } from '../objects/permission';
+import { CommandPermissions } from '../objects/permission';
 import { Permissions } from '../permissions/';
+import { TrackedAvailableObject } from '../objects/available-objects';
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
 
@@ -261,6 +262,18 @@ export class Router {
         // Process Permissions
         if (!await this.processPermissions(routed)) {
           this.bot.BotMonitor.Stats.increment('commands-invalid')
+          // Notify user via DM
+          const altChannel = await this.bot.DB.get<TrackedAvailableObject>('server-settings', {
+            key: 'server.permissions.channel.suggestedCommandChannel',
+            serverID: message.guild.id,
+            state: true
+          })
+          await message.author
+            .sendMessage(Utils.sb(Utils.en.error.commandDisabledInChannel, {
+              command: message.content,
+              channel: altChannel.value,
+              server: message.guild.name
+            }))
           return; // Hard Stop
         }
       }

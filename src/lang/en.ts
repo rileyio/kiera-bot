@@ -24,6 +24,7 @@ export const en = {
   error: {
     commandExactMatchFailedOptions: Error.commandExactMatchFailedOptions,
     commandHelpMissing: Error.helpCommandMissing,
+    commandDisabledInChannel: Error.commandDisabledInChannel,
     userNotRegistered: Error.userNotRegistered
   },
   help: {
