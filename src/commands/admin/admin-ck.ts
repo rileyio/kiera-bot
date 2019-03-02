@@ -1,8 +1,30 @@
+import * as Middleware from '../../middleware';
 import * as Utils from '../../utils';
 import { RouterRouted } from '../../utils';
 import { TrackedBotSetting } from '../../objects/setting';
 import { ChastiKeyAPIFetchAndStore } from '../../tasks/templates/ck-api-fetch-store';
+import { ExportRoutes } from '../../router/routes-exporter';
 
+export const Routes = ExportRoutes({
+  type: 'message',
+  commandTarget: 'argument',
+  controller: forceStatsReload,
+  example: '{{prefix}}admin ck stats refresh',
+  name: 'admin-ck-stats-stats',
+  permissions: {
+    restricted: true,
+  },
+  validate: '/admin:string/ck:string/stats:string/refresh:string',
+  middleware: [
+    Middleware.hasRole('developer')
+  ]
+})
+
+/**
+ * Trigger a reload when the next task interval runs
+ * @export
+ * @param {RouterRouted} routed
+ */
 export async function forceStatsReload(routed: RouterRouted) {
   await routed.message.channel.send(Utils.sb(Utils.en.chastikey.adminRefreshStats, {
     seconds: ((routed.v.o.seconds || 5000) / 1000)

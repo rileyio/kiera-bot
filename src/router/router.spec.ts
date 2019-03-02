@@ -1,7 +1,8 @@
 import test from 'ava';
 import { MessageRoute, Router } from './router';
 import { Bot } from '..';
-import * as Commands from '../commands';
+import { setDurationTime } from '../commands/duration';
+import { setTickerType } from '../commands/chastikey/ticker';
 
 var router: Router;
 var bot: Bot = new Bot()
@@ -11,7 +12,7 @@ test('Utils:Router', t => {
     {
       type: 'message',
       commandTarget: 'argument',
-      controller: Commands.Duration.setDurationTime,
+      controller: setDurationTime,
       example: '{{prefix}}duration @user#0000 time 10',
       help: 'duration',
       name: 'duration-set-time',
@@ -20,7 +21,7 @@ test('Utils:Router', t => {
     {
       type: 'message',
       commandTarget: 'author',
-      controller: Commands.ChastiKey.Ticker.setTickerType,
+      controller: setTickerType,
       example: '{{prefix}}ck ticker set type 2',
       help: 'ck',
       name: 'ticker-set-type',
@@ -35,7 +36,7 @@ test('Utils:Router:Route => Generate Route', t => {
   const r = new MessageRoute({
     type: 'message',
     commandTarget: 'author',
-    controller: Commands.ChastiKey.Ticker.setTickerType,
+    controller: setTickerType,
     example: '{{prefix}}ck ticker set type 2',
     help: 'ck',
     name: 'ticker-set-type',

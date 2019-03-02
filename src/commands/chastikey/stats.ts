@@ -1,4 +1,5 @@
 import got = require('got');
+import * as Middleware from '../../middleware';
 import * as Utils from '../../utils'
 import { RouterRouted } from '../../utils';
 import { lockeeStats, keyholderStats } from '../../embedded/chastikey-stats';
@@ -7,6 +8,32 @@ import { TrackedChastiKeyLock, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyLoc
 import { performance } from 'perf_hooks';
 import { TrackedNotification } from '../../objects/notification';
 import { TextChannel } from 'discord.js';
+import { ExportRoutes } from '../../router/routes-exporter';
+
+export const Routes = ExportRoutes(
+  {
+    type: 'message',
+    commandTarget: 'author',
+    controller: getLockeeStats,
+    example: '{{prefix}}ck stats lockee',
+    name: 'ck-get-stats-lockee',
+    validate: '/ck:string/stats:string/lockee:string/user?=string',
+    // middleware: [
+    //   Middleware.isUserRegistered
+    // ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'author',
+    controller: getKeyholderStats,
+    example: '{{prefix}}ck stats keyholder "Username"',
+    name: 'ck-get-stats-keyholder',
+    validate: '/ck:string/stats:string/keyholder:string/user?=string',
+    // middleware: [
+    //   Middleware.isUserRegistered
+    // ]
+  }
+)
 
 export async function getLockeeStats(routed: RouterRouted) {
   var _performance = {

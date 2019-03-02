@@ -1,7 +1,41 @@
+import * as Middleware from '../../middleware';
 import * as Utils from '../../utils';
 import { performance } from 'perf_hooks';
 import { RouterRouted } from '../../router/router';
 import { TrackedMessage } from '../../objects/message';
+import { ExportRoutes } from '../../router/routes-exporter';
+
+export const Routes = ExportRoutes(
+  {
+    type: 'message',
+    commandTarget: 'none',
+    controller: versionCheck,
+    example: '{{prefix}}version',
+    name: 'admin-version',
+    validate: '/version:string',
+  },
+  {
+    type: 'message',
+    commandTarget: 'none',
+    controller: pingPong,
+    example: '{{prefix}}ping',
+    name: 'admin-ping',
+    validate: '/ping:string'
+  },
+  {
+    type: 'message',
+    commandTarget: 'none',
+    controller: forceRestart,
+    example: '{{prefix}}restart bot',
+    name: 'admin-restart-bot',
+    permissions: {
+      restricted: true
+    },
+    validate: '/admin:string/restart:string/bot:string/seconds?=number',
+    middleware: [
+      Middleware.hasRole('developer')
+    ]
+  })
 
 export async function pingPong(routed: RouterRouted) {
   const startTime = performance.now()

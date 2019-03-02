@@ -1,6 +1,25 @@
+import * as Middleware from '../../middleware';
 import * as Utils from '../../utils/';
 import { RouterRouted } from '../../router/router';
 import { TrackedUser } from '../../objects/user';
+import { ExportRoutes } from '../../router/routes-exporter';
+
+export const Routes = ExportRoutes(
+  {
+    type: 'message',
+    commandTarget: 'argument',
+    controller: removeUser,
+    example: '{{prefix}}admin user delete @user#0000',
+    name: 'admin-user-delete',
+    permissions: {
+      restricted: true
+    },
+    validate: '/admin:string/user:string/delete:string/user=user',
+    middleware: [
+      Middleware.hasRole('developer')
+    ]
+  }
+)
 
 /**
  * Remove user from DB

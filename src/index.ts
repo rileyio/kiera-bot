@@ -5,12 +5,12 @@ import * as Task from './tasks/task';
 import { MsgTracker, MongoDB, MongoDBLoader } from './db/database';
 import { TrackedServer } from './objects/server';
 import { Router } from './router/router';
-import { Routes } from './routes';
 import { Logging } from './utils/';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
 import { BotMonitor } from './monitor';
 import { buildBasePermissions } from './permissions/builder';
 import { CommandPermissions } from './objects/permission';
+import { routeLoader } from './router/route-loader';
 
 export class Bot {
   public client = new Discord.Client();
@@ -31,7 +31,7 @@ export class Bot {
   public Task: Task.TaskManager = new Task.TaskManager()
 
   // Bot msg router
-  public Router: Router = new Router(Routes(), this)
+  public Router: Router = new Router(routeLoader(), this)
 
   public async start() {
     this.DEBUG.log('getting things setup...');

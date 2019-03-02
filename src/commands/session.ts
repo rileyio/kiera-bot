@@ -1,3 +1,4 @@
+import * as Middleware from '../middleware';
 import { RouterRouted } from '../router/router';
 import { DeviceSession } from '../objects/sessions';
 import { ObjectID } from 'bson';
@@ -6,197 +7,245 @@ import { Message } from 'discord.js';
 import { sessionInteractive } from '../embedded/session-embed';
 import { TrackedUser } from '../objects/user';
 import { TrackedServer } from '../objects/server';
+import { ExportRoutes } from '../router/routes-exporter';
 
-export namespace Session {
-  export async function createNewSession(routed: RouterRouted) {
-    // var userArgType = undefined;
-    // var userAt = undefined;
-    // // if a session is started where a user is passed
-    // if (routed.v.o['user'] !== undefined) {
-    //   userArgType = Utils.User.verifyUserRefType(routed.v.o.user)
-    //   userAt = Utils.User.buildUserChatAt(routed.v.o.user, userArgType)
-    // }
+export const Routes = ExportRoutes(
+  {
+    type: 'message',
+    commandTarget: 'controller-decision',
+    controller: createNewSession,
+    example: '{{prefix}}session new lovense',
+    name: 'session-new',
+    validate: '/session:string/new:string/type=string',
+    middleware: [
+      Middleware.isUserRegistered,
+      Middleware.hasRole(['developer', 'keyholder', 'lockee'])
+    ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'controller-decision',
+    controller: activateSession,
+    example: '{{prefix}}session activate id',
+    name: 'session-activate',
+    validate: '/session:string/activate:string/id=string',
+    middleware: [
+      Middleware.isUserRegistered,
+      Middleware.hasRole(['developer', 'keyholder', 'lockee'])
+    ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'controller-decision',
+    controller: deactivateSession,
+    example: '{{prefix}}session deactivate id',
+    name: 'session-deactivate',
+    validate: '/session:string/deactivate:string/id=string',
+    middleware: [
+      Middleware.isUserRegistered,
+      Middleware.hasRole(['developer', 'keyholder', 'lockee'])
+    ]
+  },
+  {
+    type: 'reaction',
+    commandTarget: 'controller-decision',
+    controller: handleReact,
+    name: 'session-active-react',
+    middleware: [
+      Middleware.isUserRegistered,
+      Middleware.permittedReaction(['😄', '😏', '😬', '😭', '🙄'])
+    ]
+  },
+)
 
-    const type = routed.v.o.type
-    var typeLimit = false
-    var typeMatched = false
+export async function createNewSession(routed: RouterRouted) {
+  // var userArgType = undefined;
+  // var userAt = undefined;
+  // // if a session is started where a user is passed
+  // if (routed.v.o['user'] !== undefined) {
+  //   userArgType = Utils.User.verifyUserRefType(routed.v.o.user)
+  //   userAt = Utils.User.buildUserChatAt(routed.v.o.user, userArgType)
+  // }
 
-    // Determine if session type passed is limited to a single instance active
-    // at a time
-    switch (type) {
-      case 'lovense':
-        typeLimit = true
-        typeMatched = true
-        break;
-      default:
-        typeMatched = false
-        break;
-    }
+  const type = routed.v.o.type
+  var typeLimit = false
+  var typeMatched = false
 
-    // Block going any further if the type is not valid
-    if (typeMatched === false) return;
+  // Determine if session type passed is limited to a single instance active
+  // at a time
+  switch (type) {
+    case 'lovense':
+      typeLimit = true
+      typeMatched = true
+      break;
+    default:
+      typeMatched = false
+      break;
+  }
 
-    // Check if session is in the db
-    const user = await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
-    const server = await routed.bot.DB.get<TrackedServer>('servers', { id: routed.message.guild.id })
-    // Get all current sessions
-    const sessions = await routed.bot.DB.getMultiple<DeviceSession>('sessions', {
-      uid: user._id,
-      sid: server._id,
-      type: type,
-      isDeactivated: false,
-      $or: [{ isActive: true }, { activateTimestamp: 0 }]
-    })
+  // Block going any further if the type is not valid
+  if (typeMatched === false) return;
 
-    // Filter sessions where they are not yet ended or have been created and not yet activated
-    const activeSessions = sessions.filter(s => { return s.isActive === true && s.deactivateTimestamp === 0 })
-    // Block going further if any sessions are currently active
-    if (activeSessions.length > 0 && typeLimit) {
-      await routed.message.reply('You have an active session, it must be completed before you can start a new one!')
-      return; // Stop here
-    }
+  // Check if session is in the db
+  const user = await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
+  const server = await routed.bot.DB.get<TrackedServer>('servers', { id: routed.message.guild.id })
+  // Get all current sessions
+  const sessions = await routed.bot.DB.getMultiple<DeviceSession>('sessions', {
+    uid: user._id,
+    sid: server._id,
+    type: type,
+    isDeactivated: false,
+    $or: [{ isActive: true }, { activateTimestamp: 0 }]
+  })
 
-    // Filter down pending but not yet active session(s)
-    const pendingSessions = sessions.filter(s => { return s.isActive === false || s.activateTimestamp === 0 });
-    // If user is not allowed multiple sessions of this type, warn them
-    if (pendingSessions.length >= 1 && typeLimit) {
-      var messageBlock = 'Unable to create a new session of this type while one is active or pending activation!\n\
+  // Filter sessions where they are not yet ended or have been created and not yet activated
+  const activeSessions = sessions.filter(s => { return s.isActive === true && s.deactivateTimestamp === 0 })
+  // Block going further if any sessions are currently active
+  if (activeSessions.length > 0 && typeLimit) {
+    await routed.message.reply('You have an active session, it must be completed before you can start a new one!')
+    return; // Stop here
+  }
+
+  // Filter down pending but not yet active session(s)
+  const pendingSessions = sessions.filter(s => { return s.isActive === false || s.activateTimestamp === 0 });
+  // If user is not allowed multiple sessions of this type, warn them
+  if (pendingSessions.length >= 1 && typeLimit) {
+    var messageBlock = 'Unable to create a new session of this type while one is active or pending activation!\n\
     You can delete a pending-activation session by typing `!session deactivate <sessionID>`\n\n\
     The following session(s) are pending activation:'
-      // Add session id(s) to message block
-      pendingSessions.forEach((s, i) => messageBlock += `\n   ${i + 1}: \`${s._id}\``)
+    // Add session id(s) to message block
+    pendingSessions.forEach((s, i) => messageBlock += `\n   ${i + 1}: \`${s._id}\``)
 
-      await routed.message.reply(messageBlock)
-      return; // Stop here
+    await routed.message.reply(messageBlock)
+    return; // Stop here
+  }
+
+  ///////////////////////////////////
+  // Create new session
+  var newSession
+
+  switch (type) {
+    case 'lovense':
+      newSession = new DeviceSession({
+        sid: server._id,
+        uid: user._id,
+        type: type,
+      })
+      break;
+  }
+
+  // Commit record to db
+  const insertedRecordID = await routed.bot.DB.add('sessions', newSession)
+
+  await routed.message.channel.send(`New Device session (id:\`${insertedRecordID}\`) created!`)
+  routed.bot.DEBUG_MSG_COMMAND.log(`!session new ${type}`)
+}
+
+export async function activateSession(routed: RouterRouted) {
+  // Check if session is in the db
+  var session = await routed.bot.DB.get<DeviceSession>('sessions', { _id: new ObjectID(routed.v.o.id) })
+  var ns: DeviceSession
+  if (session) {
+    // Verify if the session is still active - block if so
+    if (session.isActive) {
+      await routed.message.reply(`Cannot activate a session (id:\`${session._id}\`) thats already in progress!`)
+      return false; // Stop here
     }
 
-    ///////////////////////////////////
-    // Create new session
-    var newSession
-
-    switch (type) {
+    switch (session.type) {
       case 'lovense':
-        newSession = new DeviceSession({
-          sid: server._id,
-          uid: user._id,
-          type: type,
-        })
+        ns = new DeviceSession(session)
         break;
     }
 
-    // Commit record to db
-    const insertedRecordID = await routed.bot.DB.add('sessions', newSession)
+    // Get the user who is calling the activate command to record their uid
+    const user = await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
 
-    await routed.message.channel.send(`New Device session (id:\`${insertedRecordID}\`) created!`)
-    routed.bot.DEBUG_MSG_COMMAND.log(`!session new ${type}`)
-  }
+    // Update session details
+    ns.activateTimestamp = Date.now()
+    // Update the record
+    ns.update()
+    ns.isActive = true
+    ns.activatedBy = user._id
 
-  export async function activateSession(routed: RouterRouted) {
-    // Check if session is in the db
-    var session = await routed.bot.DB.get<DeviceSession>('sessions', { _id: new ObjectID(routed.v.o.id) })
-    var ns: DeviceSession
-    if (session) {
-      // Verify if the session is still active - block if so
-      if (session.isActive) {
-        await routed.message.reply(`Cannot activate a session (id:\`${session._id}\`) thats already in progress!`)
-        return false; // Stop here
-      }
+    // Update session db record
+    const updateResult = await routed.bot.DB.update('sessions', { _id: session._id }, ns)
+    if (updateResult) {
 
-      switch (session.type) {
-        case 'lovense':
-          ns = new DeviceSession(session)
-          break;
-      }
-
-      // Get the user who is calling the activate command to record their uid
-      const user = await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
-
-      // Update session details
-      ns.activateTimestamp = Date.now()
-      // Update the record
-      ns.update()
-      ns.isActive = true
-      ns.activatedBy = user._id
-
-      // Update session db record
-      const updateResult = await routed.bot.DB.update('sessions', { _id: session._id }, ns)
-      if (updateResult) {
-
-        const msgSent = await routed.message.reply(sessionInteractive(routed.v.o.id, ns))
-        // Add some default reactions to save user's time
-        await (<Message>msgSent).react('😄')
-        await (<Message>msgSent).react('😏')
-        await (<Message>msgSent).react('😬')
-        await (<Message>msgSent).react('😭')
-        await (<Message>msgSent).react('🙄')
-        // Track message for reactions later
-        // const newMessage = new Message(routed.message.channel.type, `wq`, routed.bot.client)
-        const mid = await routed.bot.MsgTracker.trackNewMsg(msgSent, { reactionRoute: 'session-active-react' })
-        // Update DB record for associated message id that will be tracking reactions
-        await routed.bot.DB.update<DeviceSession>('sessions', { _id: session._id }, { mid: mid })
-        return true; // Stop here
-      }
-    }
-
-    await routed.message.reply(`Session id:\`${routed.v.o.id}\` was not found!`)
-    return false;
-  }
-
-  export async function deactivateSession(routed: RouterRouted) {
-    // Check if session is in the db
-    var session = await routed.bot.DB.get<DeviceSession>('sessions', { _id: new ObjectID(routed.v.o.id) })
-    if (session) {
-      // Verify if the session is still active - block if so
-      if (session.isActive) {
-        await routed.message.reply(`Cannot deactivate a session (id:\`${session._id}\`) thats still in progress!`)
-        return false; // Stop here
-      }
-
-      switch (session.type) {
-        case 'lovense':
-          session = new DeviceSession(session)
-          break;
-      }
-
-      // Get the user who is calling the deactivate command to record their uid
-      const user = await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
-
-      // Update session details
-      session.deactivateTimestamp = Date.now()
-      session.isActive = false
-      session.isDeactivated = true
-      session.deactivatedBy = user._id
-
-      // Update db record
-      const updateResult = await routed.bot.DB.update('sessions', { _id: session._id }, session)
-      if (updateResult) await routed.message.reply(`Session id:\`${routed.v.o.id}\` deactivated!`)
+      const msgSent = await routed.message.reply(sessionInteractive(routed.v.o.id, ns))
+      // Add some default reactions to save user's time
+      await (<Message>msgSent).react('😄')
+      await (<Message>msgSent).react('😏')
+      await (<Message>msgSent).react('😬')
+      await (<Message>msgSent).react('😭')
+      await (<Message>msgSent).react('🙄')
+      // Track message for reactions later
+      // const newMessage = new Message(routed.message.channel.type, `wq`, routed.bot.client)
+      const mid = await routed.bot.MsgTracker.trackNewMsg(msgSent, { reactionRoute: 'session-active-react' })
+      // Update DB record for associated message id that will be tracking reactions
+      await routed.bot.DB.update<DeviceSession>('sessions', { _id: session._id }, { mid: mid })
       return true; // Stop here
     }
-
-    await routed.message.reply(`Session id:\`${routed.v.o.id}\` was not found!`)
-    return false;
   }
 
-  export async function handleReact(routed: RouterRouted) {
-    // Get session from db
-    const dsession = await routed.bot.DB.get('sessions', {
-      mid: routed.trackedMessage._id,
-      isActive: true,
-      isDeactivated: false,
-    })
-    // Ensure it exists
-    if (!dsession) return false;
-    const session = new DeviceSession(dsession)
-    // Update stored reactions
-    routed.state === 'added'
-      ? session.addReaction(routed.reaction.snowflake, routed.reaction.reaction)
-      : session.removeReaction(routed.reaction.snowflake, routed.reaction.reaction)
-    // Update session
-    session.update()
-    // Commit session
-    const result = await routed.bot.DB.update('sessions', { mid: routed.trackedMessage._id }, session)
-    routed.bot.DEBUG_MSG_COMMAND.log('session react handling, record updated:', result)
-    routed.message.edit(sessionInteractive(routed.v.o.id, session))
-    return true;
+  await routed.message.reply(`Session id:\`${routed.v.o.id}\` was not found!`)
+  return false;
+}
+
+export async function deactivateSession(routed: RouterRouted) {
+  // Check if session is in the db
+  var session = await routed.bot.DB.get<DeviceSession>('sessions', { _id: new ObjectID(routed.v.o.id) })
+  if (session) {
+    // Verify if the session is still active - block if so
+    if (session.isActive) {
+      await routed.message.reply(`Cannot deactivate a session (id:\`${session._id}\`) thats still in progress!`)
+      return false; // Stop here
+    }
+
+    switch (session.type) {
+      case 'lovense':
+        session = new DeviceSession(session)
+        break;
+    }
+
+    // Get the user who is calling the deactivate command to record their uid
+    const user = await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
+
+    // Update session details
+    session.deactivateTimestamp = Date.now()
+    session.isActive = false
+    session.isDeactivated = true
+    session.deactivatedBy = user._id
+
+    // Update db record
+    const updateResult = await routed.bot.DB.update('sessions', { _id: session._id }, session)
+    if (updateResult) await routed.message.reply(`Session id:\`${routed.v.o.id}\` deactivated!`)
+    return true; // Stop here
   }
+
+  await routed.message.reply(`Session id:\`${routed.v.o.id}\` was not found!`)
+  return false;
+}
+
+export async function handleReact(routed: RouterRouted) {
+  // Get session from db
+  const dsession = await routed.bot.DB.get('sessions', {
+    mid: routed.trackedMessage._id,
+    isActive: true,
+    isDeactivated: false,
+  })
+  // Ensure it exists
+  if (!dsession) return false;
+  const session = new DeviceSession(dsession)
+  // Update stored reactions
+  routed.state === 'added'
+    ? session.addReaction(routed.reaction.snowflake, routed.reaction.reaction)
+    : session.removeReaction(routed.reaction.snowflake, routed.reaction.reaction)
+  // Update session
+  session.update()
+  // Commit session
+  const result = await routed.bot.DB.update('sessions', { mid: routed.trackedMessage._id }, session)
+  routed.bot.DEBUG_MSG_COMMAND.log('session react handling, record updated:', result)
+  routed.message.edit(sessionInteractive(routed.v.o.id, session))
+  return true;
 }

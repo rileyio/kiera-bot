@@ -1,8 +1,56 @@
+import * as Middleware from '../../middleware';
 import * as Utils from '../../utils/';
 import { RouterRouted } from '../../router/router';
 import { Attachment } from 'discord.js';
 import { TrackedUser } from '../../objects/user';
+import { ExportRoutes } from '../../router/routes-exporter';
 
+export const Routes = ExportRoutes(
+  {
+    type: 'message',
+    commandTarget: 'author',
+    controller: setTickerType,
+    example: '{{prefix}}ck ticker set type 2',
+    name: 'ck-set-tickerType',
+    validate: '/ck:string/ticker:string/set:string/type:string/number=number',
+    middleware: [
+      Middleware.isUserRegistered
+    ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'author',
+    controller: setTickerDate,
+    example: '{{prefix}}ck ticker set date 2019-01-27',
+    name: 'ck-set-tickerDate',
+    validate: '/ck:string/ticker:string/set:string/date:string/number=string',
+    middleware: [
+      Middleware.isUserRegistered
+    ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'author',
+    controller: setTickerRatingDisplay,
+    example: '{{prefix}}ck ticker set rating show',
+    name: 'ck-set-ratingDisplay',
+    validate: '/ck:string/ticker:string/set:string/rating:string/state=string',
+    middleware: [
+      Middleware.isUserRegistered
+    ]
+  },
+  {
+    type: 'message',
+    commandTarget: 'author',
+    controller: getTicker,
+    example: '{{prefix}}ck ticker',
+    name: 'ck-get-ticker',
+    validate: '/ck:string/ticker:string/type?=number',
+    middleware: [
+      Middleware.isUserRegistered
+    ]
+  }
+)
 /**
  * Sets user's Ticker Type
  * 
@@ -83,7 +131,7 @@ export async function setTickerRatingDisplay(routed: RouterRouted) {
   // True or False sent
   if (routed.v.o.state.toLowerCase() === 'show' || routed.v.o.state.toLowerCase() === 'hide') {
     await routed.bot.DB.update('users', userQuery,
-      { $set: { 'ChastiKey.ticker.showStarRatingScore': `show` ? routed.v.o.state === 'show'  : false } },
+      { $set: { 'ChastiKey.ticker.showStarRatingScore': `show` ? routed.v.o.state === 'show' : false } },
       { atomic: true })
 
     await routed.message.reply(`:white_check_mark: ChastiKey Rating Display now ${routed.v.o.state === 'show' ? '`shown`' : '`hidden`'}`)

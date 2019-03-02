@@ -1,4 +1,23 @@
+import * as Middleware from '../../middleware';
 import { RouterRouted } from '../../router/router';
+import { ExportRoutes } from '../../router/routes-exporter';
+
+export const Routes = ExportRoutes(
+  {
+    type: 'message',
+    commandTarget: 'argument',
+    controller: getBotStats,
+    example: '{{prefix}}admin stats',
+    name: 'admin-stats',
+    permissions: {
+      restricted: true,
+    },
+    validate: '/admin:string/stats:string',
+    middleware: [
+      Middleware.hasRole('developer')
+    ]
+  }
+)
 
 export async function getBotStats(routed: RouterRouted) {
   const stats = routed.bot.BotMonitor.Stats.Bot

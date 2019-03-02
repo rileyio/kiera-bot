@@ -1,7 +1,7 @@
 import { Bot } from '.';
 import { BotStatistics, ServerStatistics, Statistic } from './objects/statistics';
 import { EventEmitter } from 'events';
-import * as Helper from './stats/helpers';
+import * as Helper from './utils/stats';
 
 export class Statistics extends EventEmitter {
   private uptimeInterval: NodeJS.Timer

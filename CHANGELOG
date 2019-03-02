@@ -1,3 +1,6 @@
+2.7.0
+- Cleaning up project commands code side
+
 2.6.0
 - Added: On disabled command the Kiera will now DM the command author and inform
 - Added: Background task to handle new channels missing permissions
