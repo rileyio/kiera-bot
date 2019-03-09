@@ -1,5 +1,11 @@
 2.7.0
 - Cleaning up project commands code side
+- Added: API Endpoint for deleting command permissions
+- Added: Task to rebuild command permissions when any are missing
+- Fixed: Command permissions duplication issue on boot causing duplication sometimes
+- Fixed: CK Stats lockee bug introduced in 2.4.1 where it was always reducing cards drawn to 3 max
+- Updated: API Permissions now sorted alphabetically by command name
+- Updated: Runtimes on some background tasks
 
 2.6.0
 - Added: On disabled command the Kiera will now DM the command author and inform
