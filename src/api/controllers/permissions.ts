@@ -14,7 +14,17 @@ export namespace Permissions {
     // this.DEBUG_WEBAPI('req params', v.o)
 
     if (v.valid) {
-      const permissions = await routed.Bot.DB.getMultiple<Array<CommandPermissions>>('command-permissions', { serverID: v.o.serverID })
+      const permissions = await routed.Bot.DB.getMultiple<CommandPermissions>('command-permissions', { serverID: v.o.serverID })
+      // Sort by permission name
+      permissions.sort((a, b) => {
+        var x = a.command.toLowerCase();
+        var y = b.command.toLowerCase();
+        if (x < y) { return -1; }
+        if (x > y) { return 1; }
+        return 0;
+      })
+
+
       return routed.res.send(permissions);
     }
 

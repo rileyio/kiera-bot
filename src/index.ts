@@ -96,19 +96,19 @@ export class Bot {
         const basePermissionsCount = basePermissions.length
         const basePermissionsStoredCount = basePermissionsStored.length
 
-        // console.log('basePermissionsCount', basePermissionsCount)
-        // console.log('basePermissionsStoredCount', basePermissionsStoredCount)
+        console.log('basePermissionsCount', guild.name, basePermissionsCount)
+        console.log('basePermissionsStoredCount', guild.name, basePermissionsStoredCount)
 
-        if (basePermissionsCount > basePermissionsStoredCount) {
+        if (basePermissionsStoredCount === 0) {
           await this.DB.addMany('command-permissions', buildBasePermissions(guild, this.Router.routes))
+          console.log('diff', this.Router.routes.length)
         }
         else {
           // Only add missing ones
           const baseDiff = basePermissions.filter(x => basePermissionsStored.findIndex(y => y.command === x.command) === -1)
-          // console.log('diff', baseDiff)
+          console.log('diff', baseDiff.length)
           if (baseDiff.length > 0) await this.DB.addMany('command-permissions', baseDiff)
         }
-
       }
     }
   }
