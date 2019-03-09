@@ -78,7 +78,6 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean })
 
   const messageBlockStrLength = JSON.stringify(messageBlock).length
 
-  // tslint:disable-next-line:no-console
   console.log('Lockee block length:', messageBlockStrLength)
 
   return messageBlock
@@ -122,11 +121,9 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   // Calculate count and Prep discard pile
   var discardPile = lock.discard_pile.split(',').filter(c => c !== '')
   // If the cardpile is above 15 cards remove the last 5 (oldest 5)
-  // tslint:disable-next-line:no-console
-  if (totalExpected <= 5 && discardPile.length > 5) { discardPile.splice(3, 22); console.log(totalExpected, 'NOT extra splicy') }
+  if (totalExpected <= 5 && discardPile.length > 5) { discardPile.splice(15, 22); console.log(totalExpected, 'NOT extra splicy') }
   // Splice even more if this is beyond 3 locks to prevent hitting the Discord limit
-  // tslint:disable-next-line:no-console
-  if (totalExpected > 5 && discardPile.length > 5) { discardPile.splice(3, 22); console.log(totalExpected, 'extra splicy') }
+  if (totalExpected > 5 && discardPile.length > 3) { discardPile.splice(3, 22); console.log(totalExpected, 'extra splicy') }
   var discardPileStr = ``
 
   // Map each card from Array , to the correct discord Emoji & ID»
