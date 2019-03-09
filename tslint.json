@@ -3,7 +3,7 @@
     "new-parens": true,
     "no-arg": true,
     "no-console": [
-      true,
+      false,
       "log",
       "error"
     ],
