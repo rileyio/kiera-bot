@@ -6,6 +6,7 @@ export class ChastiKeyAPIRunningLocks extends ChastiKeyAPIFetchAndStore {
   name = 'ChastiKeyAPIRunningLocks'
   APIEndpoint = `https://chastikey.com/json/v1.0/kiera_running_locks.json`
   frequency = (1800000 / 2) // 15 minutes (this is the refresh rate of this data)
+               3600000
   dbCollection: Collections = 'ck-running-locks'
 }
 
@@ -29,6 +30,6 @@ export class ChastiKeyAPITotalLockedTime extends ChastiKeyAPIFetchAndStore {
   // Setting the props for this Task
   name = 'ChastiKeyAPITotalLockedTime'
   APIEndpoint = `https://www.chastikey.com/json/v1.0/kiera_total_lock_times.json`
-  frequency = ((1800000 / 2) * 2) // 30 minutes
+  frequency = 1800000 // 30 minutes
   dbCollection: Collections = 'ck-lockee-totals'
 }
