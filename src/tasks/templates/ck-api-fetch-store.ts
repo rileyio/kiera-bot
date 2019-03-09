@@ -57,6 +57,7 @@ export class ChastiKeyAPIFetchAndStore extends Task {
         })
       }
 
+      // tslint:disable-next-line:no-console
       console.log(`### Task:Fetching => ${this.name}`)
       const response = await got(this.APIEndpoint, { json: (<any>this.isJSON) })
 
@@ -72,7 +73,8 @@ export class ChastiKeyAPIFetchAndStore extends Task {
 
       return true
     } catch (error) {
-      console.log(`### Task:Error refreshing ${this.name}`, error)
+      // tslint:disable-next-line:no-console
+      console.log(`Error refreshing ${this.name}`, error)
       // Set the last refresh for now to prevent repeated requests to the server
       this.previousRefresh = Date.now()
       return false
@@ -81,13 +83,15 @@ export class ChastiKeyAPIFetchAndStore extends Task {
 
   private async storeInDB(data: any) {
     try {
+      // tslint:disable-next-line:no-console
       console.log(`Task:${this.name} => Store in DB`)
       // Remove all old entires with non matching timestamps
       await this.Bot.DB.remove(this.dbCollection, {}, { deleteOne: false })
       // Update collection of Running Locks
       await this.Bot.DB.addMany(this.dbCollection, data, {})
     } catch (error) {
-      console.log('### Task:DB store issue', error)
+      // tslint:disable-next-line:no-console
+      console.log('DB store issue', error)
     }
   }
 }

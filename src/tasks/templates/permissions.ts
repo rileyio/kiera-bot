@@ -1,19 +1,15 @@
 import { Task } from '../task';
 import { CommandPermissions, CommandPermissionsAllowed } from '../../objects/permission';
 import { ObjectID } from 'bson';
-import { buildMissingPermissions } from '../../permissions/builder';
 
 export class PermissionsChannelAdditions extends Task {
-  public previousRefresh: number = 0
-  
   name = 'PermissionsChannelAdditions'
   run = this.fetch
   isAsync = true
-  frequency = 3600000 // every 1 hr
+  frequency = 86400000 // Once a day
 
   // Methods for this task
   protected async fetch() {
-    if ((Date.now() - this.previousRefresh) < this.frequency) return true // Block as its too soon
     // Get all permissions in DB (root level is by command's global status)
     var storedPermissions = await this.Bot.DB.getMultiple<CommandPermissions>('command-permissions', {})
     // Get currently servers currently using the bot & only look at those
@@ -23,7 +19,7 @@ export class PermissionsChannelAdditions extends Task {
     // console.log('PermissionsChannelAdditions servers', botServers.map(bs => bs.name))
     for (let serverIndex = 0; serverIndex < botServers.length; serverIndex++) {
       const focusedGuild = botServers[serverIndex];
-      console.log('### Task:PermissionsChannelAdditions guild', focusedGuild.name)
+      // console.log('PermissionsChannelAdditions guild', focusedGuild.name)
 
       // Reduce collection of storedPermissions to only connected servers currently
       var focusedGuildStoredPermissions = storedPermissions.filter(s => s.serverID === focusedGuild.id)
@@ -35,10 +31,11 @@ export class PermissionsChannelAdditions extends Task {
         // Only add missing ones
         var channelsNeedingCommands = currentServerChannels.filter(x =>
           x.type === 'text' && commandPermission.allowed.findIndex(y => y.target === x.id) === -1)
+        // tslint:disable-next-line:no-console
         // console.log('PermissionsChannelAdditions channelsNeedingCommands',
-        // commandPermission.command,
-        // channelsNeedingCommands.map(bd => bd.name),
-        // channelsNeedingCommands.length)
+          // commandPermission.command,
+          // channelsNeedingCommands.map(bd => bd.name),
+          // channelsNeedingCommands.length)
 
         if (channelsNeedingCommands.length > 0) {
           // Build base permissions
@@ -64,37 +61,7 @@ export class PermissionsChannelAdditions extends Task {
       }
     }
 
-    this.previousRefresh = Date.now()
-
-    // Done
     return true
 
-  }
-}
-
-export class PermissionsGlobalAdditions extends Task {
-  public previousRefresh: number = 0
-
-  name = 'PermissionsGlobalAdditions'
-  run = this.fetch
-  isAsync = true
-  frequency = 3600000 // every 1 hr
-
-  // Methods for this task
-  protected async fetch() {
-    if ((Date.now() - this.previousRefresh) < this.frequency) return true // Block as its too soon
-
-    // Run utility to add build and add any missing permissions on each server the bot is
-    // apart of
-    const guilds = this.Bot.client.guilds.array()
-    for (let index = 0; index < guilds.length; index++) {
-      const guild = guilds[index];
-      await buildMissingPermissions(this.Bot, guild)
-    }
-
-    this.previousRefresh = Date.now()
-
-    // Done
-    return true
   }
 }

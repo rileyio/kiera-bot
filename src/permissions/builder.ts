@@ -1,7 +1,6 @@
 import { CommandPermissions, CommandPermissionsAllowed } from '../objects/permission';
 import { MessageRoute } from '../utils';
 import { Guild } from 'discord.js';
-import { Bot } from '..';
 
 export function buildSetOnInsert(permissionsBuilt: Array<CommandPermissions>) {
   return permissionsBuilt.map(p => { return { $setOnInsert: p } })
@@ -43,29 +42,4 @@ export function buildBasePermissions(server: Guild, routes: Array<MessageRoute>)
 
   // Return build array
   return permissions
-}
-
-export async function buildMissingPermissions(bot: Bot, guild: Guild) {
-  // Build base permissions
-  const basePermissions = buildBasePermissions(guild, bot.Router.routes)
-  // Get base permissions count from the db
-  const basePermissionsStored = await bot.DB.getMultiple<CommandPermissions>('command-permissions', { serverID: guild.id })
-  // Check count of base permissions
-  const basePermissionsCount = basePermissions.length
-  const basePermissionsStoredCount = basePermissionsStored.length
-
-  console.log('basePermissionsCount', guild.name, basePermissionsCount)
-  console.log('basePermissionsStoredCount', guild.name, basePermissionsStoredCount)
-
-  if (basePermissionsStoredCount === 0) {
-    await bot.DB.addMany('command-permissions', buildBasePermissions(guild, bot.Router.routes))
-    console.log('diff', bot.Router.routes.length)
-  }
-  else {
-    // Only add missing ones
-    const baseDiff = basePermissions.filter(x => basePermissionsStored.findIndex(y => y.command === x.command) === -1)
-    console.log('diff', baseDiff.length)
-    if (baseDiff.length > 0) await bot.DB.addMany('command-permissions', baseDiff)
-  }
-
 }

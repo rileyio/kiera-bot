@@ -8,7 +8,7 @@ import { Router } from './router/router';
 import { Logging } from './utils/';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
 import { BotMonitor } from './monitor';
-import { buildBasePermissions, buildMissingPermissions } from './permissions/builder';
+import { buildBasePermissions } from './permissions/builder';
 import { CommandPermissions } from './objects/permission';
 import { routeLoader } from './router/route-loader';
 
@@ -51,7 +51,6 @@ export class Bot {
       new Task.ChastiKeyAPIKeyholders(this),
       new Task.ChastiKeyAPILockees(this),
       new Task.ChastiKeyAPITotalLockedTime(this),
-      new Task.PermissionsGlobalAdditions(this),
       new Task.PermissionsChannelAdditions(this)
     ])
 
@@ -89,9 +88,27 @@ export class Bot {
         await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
         // console.log(buildBasePermissions(guild, this.Router.routes), { upsert: true })
 
-        // Run utility to add build and add any missing permissions on each server the bot is
-        // apart of
-        await buildMissingPermissions(this, guild)
+        // Build base permissions
+        const basePermissions = buildBasePermissions(guild, this.Router.routes)
+        // Get base permissions count from the db
+        const basePermissionsStored = await this.DB.getMultiple<CommandPermissions>('command-permissions', { serverID: guild.id })
+        // Check count of base permissions
+        const basePermissionsCount = basePermissions.length
+        const basePermissionsStoredCount = basePermissionsStored.length
+
+        console.log('basePermissionsCount', guild.name, basePermissionsCount)
+        console.log('basePermissionsStoredCount', guild.name, basePermissionsStoredCount)
+
+        if (basePermissionsStoredCount === 0) {
+          await this.DB.addMany('command-permissions', buildBasePermissions(guild, this.Router.routes))
+          console.log('diff', this.Router.routes.length)
+        }
+        else {
+          // Only add missing ones
+          const baseDiff = basePermissions.filter(x => basePermissionsStored.findIndex(y => y.command === x.command) === -1)
+          console.log('diff', baseDiff.length)
+          if (baseDiff.length > 0) await this.DB.addMany('command-permissions', baseDiff)
+        }
       }
     }
   }
