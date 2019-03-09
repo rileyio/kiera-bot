@@ -58,6 +58,23 @@ export namespace Permissions {
     return routed.next(new errors.BadRequestError());
   }
 
+  export async function deleteGlobal(routed: WebRouted) {
+    const v = await validate(Validation.Permissions.deleteGlobal(), routed.req.body)
+
+    if (v.valid) {
+      // Update allowed permission in db
+      const deleteCount = await routed.Bot.DB.remove(
+        'command-permissions', {
+          _id: new ObjectID(v.o._id),
+        })
+      if (deleteCount > 0) return routed.res.send({ status: 'deleted', success: true });
+      return routed.res.send({ status: 'failed', success: false });
+    }
+
+    // On error
+    return routed.next(new errors.BadRequestError());
+  }
+
   export async function updateAllowed(routed: WebRouted) {
     const v = await validate(Validation.Permissions.updateAllowed(), routed.req.body)
 

@@ -40,6 +40,8 @@ export class WebAPI {
     this.server.use(cors.actual)
 
     // Setup routes
+    // tslint:disable-next-line:no-console
+    routes.forEach(r => console.log(`api route:: [${r.method}] ${r.path}`))
     this.router = new WebRouter(this.Bot, this.server, routes)
 
     // Setup SocketIO

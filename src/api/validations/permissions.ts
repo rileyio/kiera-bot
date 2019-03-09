@@ -18,6 +18,12 @@ export namespace Permissions {
       state: joi.boolean().required()
     }).required()
   }
+  export function deleteGlobal() {
+    return joi.object().keys({
+      _id: joi.string().alphanum().min(24).max(24).required(),
+      serverID: joi.string().required()
+    }).required()
+  }
   export function updateAllowed() {
     return joi.object().keys({
       _id: joi.string().alphanum().min(24).max(24).required(),

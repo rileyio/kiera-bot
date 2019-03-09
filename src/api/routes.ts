@@ -133,6 +133,15 @@ export const routes: Array<WebRoute> = [
     ]
   },
   {
+    controller: WebController.Permissions.deleteGlobal,
+    method: 'delete',
+    name: 'permission-delete-global',
+    path: '/api/permission/global/delete',
+    middleware: [
+      Middleware.isAuthenticatedOwner
+    ]
+  },
+  {
     controller: WebController.Permissions.updateAllowed,
     method: 'post',
     name: 'permission-update-allowed',
