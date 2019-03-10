@@ -1,6 +1,6 @@
 2.7.0
 - Cleaning up project commands code side
-- Added: API Endpoint for deleting command permissions
+- Added: API Endpoint for deleting command permissions & updating user properties
 - Added: Task to rebuild command permissions when any are missing
 - Fixed: Command permissions duplication issue on boot causing duplication sometimes
 - Fixed: CK Stats lockee bug introduced in 2.4.1 where it was always reducing cards drawn to 3 max
