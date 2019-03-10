@@ -222,4 +222,13 @@ export const routes: Array<WebRoute> = [
       Middleware.validAuthKey
     ]
   },
+  {
+    controller: WebController.User.update,
+    method: 'post',
+    name: 'user-update',
+    path: '/api/user/update',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },
 ]

@@ -7,6 +7,13 @@ export namespace User {
     }).required();
   }
 
+  export function update() {
+    return joi.object().keys({
+      key: joi.string().required(),
+      value: joi.required()
+    }).required();
+  }
+
   export function oauth() {
     return joi.object().keys({
       username: joi.string().min(2).max(32).required(),
