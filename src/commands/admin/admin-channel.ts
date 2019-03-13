@@ -15,7 +15,7 @@ export const Routes = ExportRoutes({
   },
   validate: '/admin:string/channel:string/purge:string',
   middleware: [
-    Middleware.hasRole('developer')
+    Middleware.hasRole('Developer')
   ]
 })
 

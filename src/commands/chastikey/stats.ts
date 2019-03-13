@@ -1,5 +1,5 @@
-import got = require('got');
-import * as Middleware from '../../middleware';
+// import got = require('got');
+// import * as Middleware from '../../middleware';
 import * as Utils from '../../utils'
 import { RouterRouted } from '../../utils';
 import { lockeeStats, keyholderStats } from '../../embedded/chastikey-stats';
@@ -75,23 +75,23 @@ export async function getLockeeStats(routed: RouterRouted) {
   // Get user from lockee data (Total locks, raitings, averages)
   const userInLockeeTotals = await routed.bot.DB.get<TrackedChastiKeyUserTotalLockedTime>('ck-lockee-totals', { username: usernameRegex })
   // Get user data from API for Keyholder name
-  const userFromAPIresp = await got(`https://api.chastikey.com/v0.2/listlocks.php?username=${user.ChastiKey.username}&bot=Kiera`, { json: true })
-  const userFromAPI: TrackedChastiKeyUserAPIFetch = userFromAPIresp.body
+  // const userFromAPIresp = await got(`https://api.chastikey.com/v0.2/listlocks.php?username=${user.ChastiKey.username}&bot=Kiera`, { json: true })
+  // const userFromAPI: TrackedChastiKeyUserAPIFetch = userFromAPIresp.body
 
-  // console.log(activeLocks)
+  // console.log('activeLocks', activeLocks)
   // console.log(userInLockeeStats)
   // console.log(userInLockeeTotals)
-  // console.log(userFromAPIresp.body)
+  // console.log('userFromAPIresp.body', userFromAPIresp.body)
 
   // Map keyholders from User API -> Active locks
-  activeLocks.map(lock => {
-    // Find matching lock from API user's locks
-    const matchingAPILock = userFromAPI.locks.find(apiLock => apiLock.lockID === lock.timestampLocked)
-    // Map KH name into locks data
-    lock.keyholder = matchingAPILock.lockedBy
-    // Finished mapping
-    return lock
-  })
+  // activeLocks.map(lock => {
+  //   // Find matching lock from API user's locks
+  //   const matchingAPILock = userFromAPI.locks.find(apiLock => apiLock.lockID === lock.timestampLocked)
+  //   // Map KH name into locks data
+  //   lock.keyholder = matchingAPILock.lockedBy
+  //   // Finished mapping
+  //   return lock
+  // })
   await routed.message.channel.send(lockeeStats({
     averageLocked: (userInLockeeStats) ? userInLockeeStats.averageTimeLockedInSeconds : 0,
     averageRating: (userInLockeeStats) ? userInLockeeStats.averageRating : '-',

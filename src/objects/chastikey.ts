@@ -69,6 +69,7 @@ export class TrackedChastiKeyLock {
   public discard_pile: string
   public version: string
   public build: number
+  public lockedBy: string
 }
 
 export class TrackedChastiKeyUserAPIFetch {

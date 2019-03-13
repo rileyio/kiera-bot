@@ -1,3 +1,7 @@
+2.7.1
+- Fixing: CK Stats lockee lockedBy field presnting issues in newer dataset released
+- Updated: Legacy permissions middleware
+
 2.7.0
 - Cleaning up project commands code side
 - Added: API Endpoint for deleting command permissions & updating user properties

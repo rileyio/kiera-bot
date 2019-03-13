@@ -135,7 +135,7 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
     ? (lock.lock_frozen_by_keyholder) ? indicatorEmoji.Frozen : cardsEmoji.Freeze : ''}`
 
   var value = ``
-  value += `Keyholder **\`${lock.keyholder}\`** Status **\`Locked\`** **\`${combined}\`**`
+  value += `Keyholder **\`${lock.lockedBy}\`** Status **\`Locked\`** **\`${combined}\`**`
 
   // When its a variable lock
   if (lock.fixed === 0) {
