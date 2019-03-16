@@ -1,3 +1,8 @@
+2.8.0
+- Added: Coin flip command
+- Added: category to router interface & api call for permissions
+- Added: example command into permissions api call
+
 2.7.1
 - Fixing: CK Stats lockee lockedBy field presnting issues in newer dataset released
 - Updated: Legacy permissions middleware
