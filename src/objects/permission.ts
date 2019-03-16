@@ -28,6 +28,12 @@ export class CommandPermissions {
    */
   public enabled: boolean = true
   public allowed: Array<CommandPermissionsAllowed> = []
+  /**
+   * Example command (Note: Really should only should be mapped for display purposes)
+   * @type {string}
+   * @memberof CommandPermissions
+   */
+  public example?: string
 
   constructor(init: Partial<CommandPermissions>) {
     Object.assign(this, init)

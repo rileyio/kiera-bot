@@ -9,7 +9,6 @@ import { Logging } from './utils/';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
 import { BotMonitor } from './monitor';
 import { buildBasePermissions, buildMissingPermissions } from './permissions/builder';
-import { CommandPermissions } from './objects/permission';
 import { routeLoader } from './router/route-loader';
 
 export class Bot {

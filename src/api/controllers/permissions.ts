@@ -4,6 +4,8 @@ import { validate } from '../utils/validate';
 import { WebRouted } from '../web-router';
 import { CommandPermissions } from '../../objects/permission';
 import { ObjectID } from 'bson';
+import { routeLoader } from '../../router/route-loader';
+import { sb } from '../../utils';
 
 export namespace Permissions {
   export async function getAll(routed: WebRouted) {
@@ -14,6 +16,9 @@ export namespace Permissions {
     // this.DEBUG_WEBAPI('req params', v.o)
 
     if (v.valid) {
+      // Get the same routes the router loader uses
+      const routes = routeLoader()
+      // Get permissions stored in the db
       const permissions = await routed.Bot.DB.getMultiple<CommandPermissions>('command-permissions', { serverID: v.o.serverID })
       // Sort by permission name
       permissions.sort((a, b) => {
@@ -24,6 +29,11 @@ export namespace Permissions {
         return 0;
       })
 
+      // Map in the route examples
+      permissions.map(p => {
+        const matchingRoute = routes.find(r => r.name === p.command)
+        p.example = sb(matchingRoute.example)
+      })
 
       return routed.res.send(permissions);
     }
