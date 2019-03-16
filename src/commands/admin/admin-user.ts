@@ -7,6 +7,7 @@ import { ExportRoutes } from '../../router/routes-exporter';
 export const Routes = ExportRoutes(
   {
     type: 'message',
+    category: 'Admin',
     commandTarget: 'argument',
     controller: removeUser,
     example: '{{prefix}}admin user delete @user#0000',

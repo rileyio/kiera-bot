@@ -10,7 +10,17 @@ import { TrackedAvailableObject } from '../objects/available-objects';
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
 
+export type RouteConfigurationCategory = ''
+  | 'Admin'
+  | 'ChastiKey'
+  | 'Fun'
+  | 'Info'
+  | 'Integration'
+  | 'Session'
+  | 'User'
+
 export interface RouteConfiguration {
+  category?: RouteConfigurationCategory
   command?: string
   commandTarget: RouteActionUserTarget
   controller: Function | void

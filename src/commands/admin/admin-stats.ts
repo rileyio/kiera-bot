@@ -5,6 +5,7 @@ import { ExportRoutes } from '../../router/routes-exporter';
 export const Routes = ExportRoutes(
   {
     type: 'message',
+    category: 'Info',
     commandTarget: 'argument',
     controller: getBotStats,
     example: '{{prefix}}admin stats',
@@ -12,10 +13,7 @@ export const Routes = ExportRoutes(
     permissions: {
       restricted: true,
     },
-    validate: '/admin:string/stats:string',
-    middleware: [
-      Middleware.hasRole('developer')
-    ]
+    validate: '/admin:string/stats:string'
   }
 )
 

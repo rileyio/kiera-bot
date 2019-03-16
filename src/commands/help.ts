@@ -6,6 +6,7 @@ import { ExportRoutes } from '../router/routes-exporter';
 export const Routes = ExportRoutes(
   {
     type: 'message',
+    category: 'Info',
     commandTarget: 'author',
     controller: commandHelp,
     example: '{{prefix}}help ck',
@@ -14,6 +15,7 @@ export const Routes = ExportRoutes(
   },
   {
     type: 'message',
+    category: 'Info',
     commandTarget: 'author',
     controller: genericFallback,
     example: '{{prefix}}help',

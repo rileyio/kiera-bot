@@ -7,6 +7,7 @@ import { ExportRoutes } from '../../router/routes-exporter';
 
 export const Routes = ExportRoutes({
   type: 'message',
+  category: 'ChastiKey',
   commandTarget: 'argument',
   controller: forceStatsReload,
   example: '{{prefix}}admin ck stats refresh',

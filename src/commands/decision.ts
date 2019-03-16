@@ -11,6 +11,7 @@ import { ExportRoutes } from '../router/routes-exporter';
 export const Routes = ExportRoutes(
   {
     type: 'message',
+    category: 'Fun',
     commandTarget: 'author',
     controller: newDecision,
     example: '{{prefix}}decision new "name"',
@@ -22,6 +23,7 @@ export const Routes = ExportRoutes(
   },
   {
     type: 'message',
+    category: 'Fun',
     commandTarget: 'author',
     controller: newDecisionEntry,
     example: '{{prefix}}decision "id" add "Your decision entry here"',
@@ -33,6 +35,7 @@ export const Routes = ExportRoutes(
   },
   {
     type: 'message',
+    category: 'Fun',
     commandTarget: 'author',
     controller: runSavedDecision,
     example: '{{prefix}}decision roll "id"',
@@ -44,6 +47,7 @@ export const Routes = ExportRoutes(
   },
   {
     type: 'message',
+    category: 'Fun',
     commandTarget: 'author',
     controller: runRealtimeDecision,
     example: '{{prefix}}decision "Question here" "Option 1" "Option 2" "etc.."',

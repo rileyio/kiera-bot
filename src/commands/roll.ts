@@ -6,6 +6,7 @@ import { ExportRoutes } from '../router/routes-exporter';
 export const Routes = ExportRoutes(
   {
     type: 'message',
+    category: 'Fun',
     commandTarget: 'argument',
     controller: roll,
     example: '{{prefix}}roll',

@@ -8,6 +8,7 @@ import { ExportRoutes } from '../../router/routes-exporter';
 export const Routes = ExportRoutes(
   {
     type: 'message',
+    category: 'Info',
     commandTarget: 'none',
     controller: versionCheck,
     example: '{{prefix}}version',
@@ -16,6 +17,7 @@ export const Routes = ExportRoutes(
   },
   {
     type: 'message',
+    category: 'Info',
     commandTarget: 'none',
     controller: pingPong,
     example: '{{prefix}}ping',
@@ -24,6 +26,7 @@ export const Routes = ExportRoutes(
   },
   {
     type: 'message',
+    category: 'Admin',
     commandTarget: 'none',
     controller: forceRestart,
     example: '{{prefix}}restart bot',

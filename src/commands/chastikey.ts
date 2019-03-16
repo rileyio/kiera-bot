@@ -7,6 +7,7 @@ import { ExportRoutes } from '../router/routes-exporter';
 export const Routes = ExportRoutes(
   {
     type: 'message',
+    category: 'ChastiKey',
     commandTarget: 'author',
     controller: setUsername,
     example: '{{prefix}}ck username "MyUsername"',

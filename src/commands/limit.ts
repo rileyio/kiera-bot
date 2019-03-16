@@ -8,6 +8,7 @@ import { ExportRoutes } from '../router/routes-exporter';
 export const Routes = ExportRoutes(
   {
     type: 'message',
+    category: 'Integration',
     commandTarget: 'argument',
     controller: setUserSessionTimeLimit,
     example: '{{prefix}}limit session time 10',

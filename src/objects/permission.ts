@@ -34,6 +34,7 @@ export class CommandPermissions {
    * @memberof CommandPermissions
    */
   public example?: string
+  public category?: string
 
   constructor(init: Partial<CommandPermissions>) {
     Object.assign(this, init)

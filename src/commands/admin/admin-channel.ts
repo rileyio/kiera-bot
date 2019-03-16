@@ -6,6 +6,7 @@ import { ExportRoutes } from '../../router/routes-exporter';
 
 export const Routes = ExportRoutes({
   type: 'message',
+  category: 'Admin',
   commandTarget: 'none',
   controller: purgeChannelMessages,
   example: '{{prefix}}admin channel purge',

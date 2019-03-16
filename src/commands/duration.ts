@@ -9,6 +9,7 @@ import { ExportRoutes } from '../router/routes-exporter';
 export const Routes = ExportRoutes(
   {
     type: 'message',
+    category: 'Integration',
     commandTarget: 'argument',
     controller: setDurationTime,
     example: '{{prefix}}duration @user#0000 time 10',

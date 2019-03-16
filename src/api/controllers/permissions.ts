@@ -29,10 +29,11 @@ export namespace Permissions {
         return 0;
       })
 
-      // Map in the route examples
+      // Map in the route examples & categories
       permissions.map(p => {
         const matchingRoute = routes.find(r => r.name === p.command)
         p.example = sb(matchingRoute.example)
+        p.category = matchingRoute.category
       })
 
       return routed.res.send(permissions);

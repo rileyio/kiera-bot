@@ -13,6 +13,7 @@ import { ExportRoutes } from '../../router/routes-exporter';
 export const Routes = ExportRoutes(
   {
     type: 'message',
+    category: 'ChastiKey',
     commandTarget: 'author',
     controller: getLockeeStats,
     example: '{{prefix}}ck stats lockee',
@@ -24,6 +25,7 @@ export const Routes = ExportRoutes(
   },
   {
     type: 'message',
+    category: 'ChastiKey',
     commandTarget: 'author',
     controller: getKeyholderStats,
     example: '{{prefix}}ck stats keyholder "Username"',

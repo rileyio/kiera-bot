@@ -2,7 +2,6 @@ import * as Middleware from '../middleware';
 import { RouterRouted } from '../router/router';
 import { DeviceSession } from '../objects/sessions';
 import { ObjectID } from 'bson';
-import { TrackedMessageReaction } from '../objects/message';
 import { Message } from 'discord.js';
 import { sessionInteractive } from '../embedded/session-embed';
 import { TrackedUser } from '../objects/user';
@@ -12,6 +11,7 @@ import { ExportRoutes } from '../router/routes-exporter';
 export const Routes = ExportRoutes(
   {
     type: 'message',
+    category: 'Integration',
     commandTarget: 'controller-decision',
     controller: createNewSession,
     example: '{{prefix}}session new lovense',
@@ -24,6 +24,7 @@ export const Routes = ExportRoutes(
   },
   {
     type: 'message',
+    category: 'Integration',
     commandTarget: 'controller-decision',
     controller: activateSession,
     example: '{{prefix}}session activate id',
@@ -36,6 +37,7 @@ export const Routes = ExportRoutes(
   },
   {
     type: 'message',
+    category: 'Integration',
     commandTarget: 'controller-decision',
     controller: deactivateSession,
     example: '{{prefix}}session deactivate id',
@@ -48,6 +50,7 @@ export const Routes = ExportRoutes(
   },
   {
     type: 'reaction',
+    category: 'Integration',
     commandTarget: 'controller-decision',
     controller: handleReact,
     name: 'session-active-react',
