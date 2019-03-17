@@ -193,7 +193,6 @@ export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatisti
     ? `This query looks for lockees who share 1 or more keyholders with the given keyholder's name \`${keyholderName}\`. This will exclude anyone who has multiple fakes and this can be seen by the count showing differing numbers between Keyholder count and Active Locks.`
     : `This query looks for lockees who share 1 or more keyholders with the given keyholder's name \`${keyholderName}\`. This will exclude anyone who has multiple fakes and this can be seen by the count showing differing numbers between Keyholder count and Active Locks.\n\nAt present there are no lockees with other Keyholders under \`${keyholderName}\`.`
 
-
   return {
     embed: {
       title: `Lockees with Multiple Keyholders`,
@@ -207,7 +206,7 @@ export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatisti
       fields: data.map(lockee => {
         return {
           name: lockee._id,
-          value: `Active Locks: \`${lockee.count}\`\nUnique Keyholders: \`${lockee.uniqueKHCount}\`\n\`\`\`${lockee.keyholders.join(', ')}\`\`\``
+          value: `Active Locks: \`${lockee.count}\`\nUnique Keyholders: \`${lockee.uniqueKHCount}\`\n\`\`\`${lockee.keyholders.sort().join(', ')}\`\`\``
         }
       })
     }
