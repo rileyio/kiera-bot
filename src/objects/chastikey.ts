@@ -70,6 +70,7 @@ export class TrackedChastiKeyLock {
   public version: string
   public build: number
   public lockedBy: string
+  public display_in_stats: number
 }
 
 export class TrackedChastiKeyUserAPIFetch {

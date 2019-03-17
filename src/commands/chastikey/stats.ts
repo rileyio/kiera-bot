@@ -35,9 +35,6 @@ export const Routes = ExportRoutes(
     commandTarget: 'author',
     controller: getCheckLockeeMultiLocked,
     example: '{{prefix}}ck check multilocked KeyHolderName',
-    permissions: {
-      restricted: true
-    },
     name: 'ck-check-multilocked',
     validate: '/ck:string/check:string/multilocked:string/user=string',
   },
@@ -94,6 +91,9 @@ export async function getLockeeStats(routed: RouterRouted) {
   // Get user data from API for Keyholder name
   // const userFromAPIresp = await got(`https://api.chastikey.com/v0.2/listlocks.php?username=${user.ChastiKey.username}&bot=Kiera`, { json: true })
   // const userFromAPI: TrackedChastiKeyUserAPIFetch = userFromAPIresp.body
+
+  // If the user has display_in_stats === 2 then stop here
+  if (activeLocks.length > 0 ? activeLocks[0].display_in_stats === 2 : false) return true
 
   // console.log('activeLocks', activeLocks)
   // console.log(userInLockeeStats)

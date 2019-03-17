@@ -4,6 +4,7 @@
 - Added: example command into permissions api call
 - Added: CK command to lookup lockees who have multiple KHs
 - Added: CK command to display a keyholder's lockees
+- Updated: CK Lockee stats lookup to block users with stats disabled
 
 2.7.1
 - Fixing: CK Stats lockee lockedBy field presnting issues in newer dataset released
