@@ -193,6 +193,15 @@ export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatisti
     ? `This query looks for lockees who share 1 or more keyholders with the given keyholder's name \`${keyholderName}\`. This will exclude anyone who has multiple fakes and this can be seen by the count showing differing numbers between Keyholder count and Active Locks.`
     : `This query looks for lockees who share 1 or more keyholders with the given keyholder's name \`${keyholderName}\`. This will exclude anyone who has multiple fakes and this can be seen by the count showing differing numbers between Keyholder count and Active Locks.\n\nAt present there are no lockees with other Keyholders under \`${keyholderName}\`.`
 
+  // Sort lockees list
+  data.sort((a, b) => {
+    var x = String(a._id).toLowerCase();
+    var y = String(b._id).toLowerCase();
+    if (x < y) { return -1; }
+    if (x > y) { return 1; }
+    return 0;
+  })
+
   return {
     embed: {
       title: `Lockees with Multiple Keyholders`,
