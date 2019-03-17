@@ -16,6 +16,13 @@ export interface LockeeStats {
   _performance: { start: number, end: number }
 }
 
+export interface TrackedSharedKeyholderStatistics {
+  _id: string
+  keyholders: Array<string>
+  count: number
+  uniqueKHCount: number
+}
+
 const indicatorEmoji = {
   Frozen: `<:frozenlock:539233483537645568>`,
   Hidden: `<:hiddencircle:474973202607767562>`
@@ -177,6 +184,32 @@ export function keyholderStats(data: TrackedKeyholderStatistics, options: { show
       // thumbnail: {
       //   url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
       // }
+    }
+  }
+}
+
+export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatistics>, keyholderName: string) {
+  const desc = data.length > 0
+    ? `This query looks for lockees who share 1 or more keyholders with the given keyholder's name \`${keyholderName}\`. This will exclude anyone who has multiple fakes and this can be seen by the count showing differing numbers between Keyholder count and Active Locks.`
+    : `This query looks for lockees who share 1 or more keyholders with the given keyholder's name \`${keyholderName}\`. This will exclude anyone who has multiple fakes and this can be seen by the count showing differing numbers between Keyholder count and Active Locks.\n\nAt present there are no lockees with other Keyholders under \`${keyholderName}\`.`
+
+
+  return {
+    embed: {
+      title: `Lockees with Multiple Keyholders`,
+      description: desc,
+      color: 9125611,
+      // timestamp: (data.cacheTimestamp) ? new Date((<number>data.cacheTimestamp) * 1000).toISOString() : '',
+      footer: {
+        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+        text: 'Cached by Kiera'
+      },
+      fields: data.map(lockee => {
+        return {
+          name: lockee._id,
+          value: `Active Locks: \`${lockee.count}\`\nUnique Keyholders: \`${lockee.uniqueKHCount}\`\n\`\`\`${lockee.keyholders.join(', ')}\`\`\``
+        }
+      })
     }
   }
 }

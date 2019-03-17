@@ -2,7 +2,7 @@
 // import * as Middleware from '../../middleware';
 import * as Utils from '../../utils'
 import { RouterRouted } from '../../utils';
-import { lockeeStats, keyholderStats } from '../../embedded/chastikey-stats';
+import { lockeeStats, keyholderStats, sharedKeyholdersStats, TrackedSharedKeyholderStatistics } from '../../embedded/chastikey-stats';
 import { TrackedUser } from '../../objects/user';
 import { TrackedChastiKeyLock, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics } from '../../objects/chastikey';
 import { performance } from 'perf_hooks';
@@ -19,9 +19,6 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats lockee',
     name: 'ck-get-stats-lockee',
     validate: '/ck:string/stats:string/lockee:string/user?=string',
-    // middleware: [
-    //   Middleware.isUserRegistered
-    // ]
   },
   {
     type: 'message',
@@ -31,9 +28,18 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats keyholder "Username"',
     name: 'ck-get-stats-keyholder',
     validate: '/ck:string/stats:string/keyholder:string/user?=string',
-    // middleware: [
-    //   Middleware.isUserRegistered
-    // ]
+  },
+  {
+    type: 'message',
+    category: 'ChastiKey',
+    commandTarget: 'author',
+    controller: getCheckLockeeMultiLocked,
+    example: '{{prefix}}ck check multilocked',
+    permissions: {
+      restricted: true
+    },
+    name: 'ck-check-multilocked',
+    validate: '/ck:string/check:string/multilocked:string/user=string',
   }
 )
 
@@ -85,15 +91,6 @@ export async function getLockeeStats(routed: RouterRouted) {
   // console.log(userInLockeeTotals)
   // console.log('userFromAPIresp.body', userFromAPIresp.body)
 
-  // Map keyholders from User API -> Active locks
-  // activeLocks.map(lock => {
-  //   // Find matching lock from API user's locks
-  //   const matchingAPILock = userFromAPI.locks.find(apiLock => apiLock.lockID === lock.timestampLocked)
-  //   // Map KH name into locks data
-  //   lock.keyholder = matchingAPILock.lockedBy
-  //   // Finished mapping
-  //   return lock
-  // })
   await routed.message.channel.send(lockeeStats({
     averageLocked: (userInLockeeStats) ? userInLockeeStats.averageTimeLockedInSeconds : 0,
     averageRating: (userInLockeeStats) ? userInLockeeStats.averageRating : '-',
@@ -197,4 +194,35 @@ export async function getKeyholderStats(routed: RouterRouted) {
 
   // Successful end
   return true
+}
+
+export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
+  // Generate regex for username to ignore case
+  const usernameRegex = new RegExp(`^${routed.v.o.user}$`, 'i')
+  // Get multiple KH locks from db
+  const activeLocks = await routed.bot.DB.aggregate('ck-running-locks', [
+    {
+      $match: { lockedBy: { $ne: null } }
+    },
+    {
+      $group: {
+        _id: '$username',
+        keyholders: {
+          $addToSet: '$lockedBy'
+        },
+        count: { $sum: 1 }
+      }
+    },
+    {
+      $project: {
+        uniqueKHCount: { $cond: { if: { $isArray: '$keyholders' }, then: { $size: '$keyholders' }, else: 0 } },
+        keyholders: 1,
+        count: 1
+      }
+    },
+    { $match: { count: { $gt: 1 }, uniqueKHCount: { $gt: 1 }, keyholders: { $in: [usernameRegex] } } },
+    { $sort: { count: -1 } }
+  ])
+
+  await routed.message.reply(sharedKeyholdersStats(activeLocks, routed.v.o.user))
 }

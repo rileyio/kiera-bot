@@ -234,6 +234,17 @@ export class MongoDB {
     return (<number>result)
   }
 
+
+  public async aggregate<T>(targetCollection: Collections, query: any) {
+    this.DEBUG_DB.log(`.aggregate => ${targetCollection}`)
+    const connection = await this.connect()
+    const collection = (connection.db.collection(targetCollection))
+    const result = await collection.aggregate(query)
+    // this.DEBUG_DB.log(`.aggregate results [${targetCollection}] =>`, result)
+    // connection.client.close()
+    return (await result.toArray())
+  }
+
   // public get<Q, T>(query: Q, discriminator?: string) {
   //   return new Promise<T>(r => {
   //     this.connect(async (db: Db, client: MongoClient, err: MongoError) => {
