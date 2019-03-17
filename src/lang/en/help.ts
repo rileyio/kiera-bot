@@ -9,6 +9,7 @@ examples will be presented.
 
 \`{{prefix}}ck\` - ChastiKey Commands - \`username\` \`ticker\` \`stats\`
 \`{{prefix}}decision\` - Create, Edit or Roll - \`new\` \`roll\`
+\`{{prefix}}flip\` - Flip a coin
 \`{{prefix}}roll\` - Dice roller
 `
 
@@ -134,6 +135,12 @@ A random decision maker based on given or saved outcomes.
 // \`\`\`
 // `
 
+
+export const flip = `
+Flip a coin
+
+{{prefix}}flip - Heads or Tails
+`
 
 export const roll = `
 Roll die/dice

@@ -30,6 +30,7 @@ export const en = {
   help: {
     ck: HelpStrings.ck,
     decision: HelpStrings.decision,
+    flip: HelpStrings.flip,
     // duration: HelpStrings.duration,
     // intensity: HelpStrings.intensity,
     // limit: HelpStrings.limit,
