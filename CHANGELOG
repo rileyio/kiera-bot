@@ -3,6 +3,7 @@
 - Added: category to router interface & api call for permissions
 - Added: example command into permissions api call
 - Added: CK command to lookup lockees who have multiple KHs
+- Added: CK command to display a keyholder's lockees
 
 2.7.1
 - Fixing: CK Stats lockee lockedBy field presnting issues in newer dataset released

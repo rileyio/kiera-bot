@@ -2,7 +2,7 @@
 // import * as Middleware from '../../middleware';
 import * as Utils from '../../utils'
 import { RouterRouted } from '../../utils';
-import { lockeeStats, keyholderStats, sharedKeyholdersStats, TrackedSharedKeyholderStatistics } from '../../embedded/chastikey-stats';
+import { lockeeStats, keyholderStats, sharedKeyholdersStats, TrackedSharedKeyholderStatistics, keyholderLockees } from '../../embedded/chastikey-stats';
 import { TrackedUser } from '../../objects/user';
 import { TrackedChastiKeyLock, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics } from '../../objects/chastikey';
 import { performance } from 'perf_hooks';
@@ -34,12 +34,21 @@ export const Routes = ExportRoutes(
     category: 'ChastiKey',
     commandTarget: 'author',
     controller: getCheckLockeeMultiLocked,
-    example: '{{prefix}}ck check multilocked',
+    example: '{{prefix}}ck check multilocked KeyHolderName',
     permissions: {
       restricted: true
     },
     name: 'ck-check-multilocked',
     validate: '/ck:string/check:string/multilocked:string/user=string',
+  },
+  {
+    type: 'message',
+    category: 'ChastiKey',
+    commandTarget: 'author',
+    controller: getKeyholderLockees,
+    example: '{{prefix}}ck keyholder lockees KeyHolderName',
+    name: 'ck-keyholder-lockees',
+    validate: '/ck:string/keyholder:string/lockees:string/user=string',
   }
 )
 
@@ -225,4 +234,36 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
   ])
 
   await routed.message.reply(sharedKeyholdersStats(activeLocks, routed.v.o.user))
+}
+
+export async function getKeyholderLockees(routed: RouterRouted) {
+  // Generate regex for username to ignore case
+  const usernameRegex = new RegExp(`^${routed.v.o.user}$`, 'i')
+  // Get lockees under a KH
+  const activeLocks = await routed.bot.DB.aggregate('ck-running-locks', [
+    {
+      $match: { lockedBy: usernameRegex }
+    },
+    {
+      $group: {
+        _id: '$username',
+        keyholders: {
+          $addToSet: '$lockedBy'
+        },
+        locks: {
+          $push: {
+            fixed: { $toBool: '$fixed' },
+            timer_hidden: { $toBool: '$timer_hidden' },
+            lock_frozen_by_keyholder: { $toBool: '$lock_frozen_by_keyholder' },
+            lock_frozen_by_card: { $toBool: '$lock_frozen_by_card' },
+            keyholder: '$lockedBy',
+          }
+        },
+        count: { $sum: 1 }
+      }
+    },
+    { $sort: { count: -1 } }
+  ])
+
+  await routed.message.reply(keyholderLockees(activeLocks, routed.v.o.user))
 }

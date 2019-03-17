@@ -23,6 +23,17 @@ export interface TrackedSharedKeyholderStatistics {
   uniqueKHCount: number
 }
 
+export interface TrackedKeyholderLockeesStatistics {
+  _id: string
+  locks: {
+    fixed: boolean,
+    timer_hidden: boolean,
+    lock_frozen_by_keyholder: boolean,
+    lock_frozen_by_card: boolean,
+    keyholder: string
+  }
+}
+
 const indicatorEmoji = {
   Frozen: `<:frozenlock:539233483537645568>`,
   Hidden: `<:hiddencircle:474973202607767562>`
@@ -218,6 +229,32 @@ export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatisti
           value: `Active Locks: \`${lockee.count}\`\nUnique Keyholders: \`${lockee.uniqueKHCount}\`\n\`\`\`${lockee.keyholders.sort().join(', ')}\`\`\``
         }
       })
+    }
+  }
+}
+
+export function keyholderLockees(data: Array<TrackedKeyholderLockeesStatistics>, keyholderName: string) {
+  // Sort lockees list
+  data.sort((a, b) => {
+    var x = String(a._id).toLowerCase();
+    var y = String(b._id).toLowerCase();
+    if (x < y) { return -1; }
+    if (x > y) { return 1; }
+    return 0;
+  })
+
+  const lockeeNames = data.map(l => l._id)
+
+  return {
+    embed: {
+      title: `Keyholder Lockees`,
+      description: `These are all lockees \`(${lockeeNames.length})\` under keyholder \`${keyholderName}\` who are currently locked\n\`\`\`${lockeeNames.join(`, `)}\`\`\``,
+      color: 9125611,
+      // timestamp: (data.cacheTimestamp) ? new Date((<number>data.cacheTimestamp) * 1000).toISOString() : '',
+      footer: {
+        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+        text: 'Cached by Kiera'
+      }
     }
   }
 }
