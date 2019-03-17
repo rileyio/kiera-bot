@@ -76,6 +76,9 @@ Currently returns: (1) Keyholder, (2) Lockee, (3) Both
 \`{{prefix}}ck stats lockee\` - Get your lockee stats (by saved username)
 \`{{prefix}}ck stats keyholder\` - Get your keyholder stats (by saved username)
 \`{{prefix}}ck stats lockee "Username"\` - Get stats for defined username
+
+\`{{prefix}}ck keyholder lockees "Username"\` - Get list of lockee names under a KH
+\`{{prefix}}ck check multilocked "Username"\` - Get list of KH's lockees who have 2 or more KHs
 `
 
 export const decision = `
