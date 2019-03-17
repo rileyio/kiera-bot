@@ -6,7 +6,6 @@ export class ChastiKeyAPIRunningLocks extends ChastiKeyAPIFetchAndStore {
   name = 'ChastiKeyAPIRunningLocks'
   APIEndpoint = `https://chastikey.com/json/v1.0/kiera_running_locks.json`
   frequency = (1800000 / 2) // 15 minutes (this is the refresh rate of this data)
-               3600000
   dbCollection: Collections = 'ck-running-locks'
 }
 

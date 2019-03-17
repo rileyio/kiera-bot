@@ -1,3 +1,6 @@
+2.8.1
+- Fixed: Refresh interval incorrect value
+
 2.8.0
 - Added: Coin flip command
 - Added: category to router interface & api call for permissions
