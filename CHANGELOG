@@ -1,3 +1,6 @@
+2.8.3
+- Fixed: OAuth issue where users who have no avatar set were getting blocked by validation
+
 2.8.2
 - Fixed: Some commands not returning the correct final status for stats
 
