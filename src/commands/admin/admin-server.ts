@@ -97,4 +97,7 @@ export async function forceRestart(routed: RouterRouted) {
   setTimeout(() => {
     process.exit(0)
   }, routed.v.o.seconds || 5000)
+
+  // Successful end
+  return true
 }

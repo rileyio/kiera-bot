@@ -42,4 +42,7 @@ export async function forceStatsReload(routed: RouterRouted) {
     if (!/^ChastiKeyAPI/.test(taskName)) return // skip this task
     (<ChastiKeyAPIFetchAndStore>routed.bot.Task.registered[taskName]).previousRefresh = 0
   })
+
+  // Successful end
+  return true
 }

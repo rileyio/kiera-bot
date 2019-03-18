@@ -35,7 +35,7 @@ export async function removeUser(routed: RouterRouted) {
   const user = await routed.bot.DB.get<TrackedUser>('users', userQuery)
   const removed = await routed.bot.DB.remove('users', userQuery)
 
-  if (removed === 0) return; // Stop here if nothing is removed
+  if (removed === 0) return true; // Stop here if nothing is removed
   // Process command
   await routed.message
     .reply(`:white_check_mark: Removing user ${Utils.User.buildUserChatAt(user, userArgType)} from db`)

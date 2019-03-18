@@ -38,8 +38,12 @@ export async function setUsername(routed: RouterRouted) {
   if (updateResult > 0) {
     await routed.message.author.send(`:white_check_mark: ChastiKey Username now set to: \`${routed.v.o.ckusername}\``)
     routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck username ${routed.v.o.ckusername}`)
+    // Successful end
+    return true
   }
   else {
     routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck username ${routed.v.o.ckusername} -> update unsuccessful!`)
+    // Unsuccessful end
+    return false
   }
 }

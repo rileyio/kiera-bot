@@ -234,6 +234,9 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
   ])
 
   await routed.message.reply(sharedKeyholdersStats(activeLocks, routed.v.o.user))
+  
+  // Successful end
+  return true
 }
 
 export async function getKeyholderLockees(routed: RouterRouted) {
@@ -266,4 +269,7 @@ export async function getKeyholderLockees(routed: RouterRouted) {
   ])
 
   await routed.message.reply(keyholderLockees(activeLocks, routed.v.o.user))
+
+  // Successful end
+  return true
 }
