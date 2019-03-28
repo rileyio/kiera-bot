@@ -1,12 +1,13 @@
 import * as XRegex from 'xregexp';
 import * as Utils from '../utils/';
 import { Validate, ValidationType } from './validate';
-import { Message, User } from 'discord.js';
+import { Message, User, TextChannel } from 'discord.js';
 import { Bot } from '..';
 import { TrackedMessage } from '../objects/message';
 import { CommandPermissions } from '../objects/permission';
 import { Permissions } from '../permissions/';
 import { TrackedAvailableObject } from '../objects/available-objects';
+import { performance } from 'perf_hooks';
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
 
@@ -195,6 +196,7 @@ export class Router {
   }
 
   public async routeMessage(message: Message) {
+    const runtimeStart = performance.now()
     // Block my own messages
     if (message.author.id === this.bot.client.user.id) {
       // Track my own messages when they are seen
@@ -209,6 +211,10 @@ export class Router {
     // Messages incoming as DMs
     if (message.channel.type === 'dm') {
       this.bot.BotMonitor.Stats.increment('dms-received')
+
+      // (as of 2.9.0) Hard Stop
+      message.reply('As of `2.9.0` commands are restricted to servers where Kiera is present!')
+      return;
     }
 
     const containsPrefix = message.content.startsWith(prefix)
@@ -251,7 +257,19 @@ export class Router {
         if (examples.length === 0) return // stop here
         await message.channel.send(`${exampleUseOfCommand}\n${examplesToAppend}`)
         // End routing
-        return;
+        // Track in an audit event
+        this.bot.Audit.NewEntry({
+          name: 'command pre-routing',
+          details: message.content,
+          guild: { id: message.guild.id, name: message.guild.name, channel: (<TextChannel>message.channel).name },
+          error: 'Failed to process command',
+          runtime: Math.round(performance.now() - runtimeStart),
+          owner: message.author.id,
+          successful: false,
+          type: 'bot.command',
+          where: 'Discord'
+        })
+        return; // Hard Stop
       }
 
       // Process route
@@ -264,29 +282,43 @@ export class Router {
         message: message,
         route: route,
         type: 'message',
-        user: message.author
+        user: message.author,
+        runtimeStart: runtimeStart
       })
 
       // Only check permissions if message type isn't a dm
-      if (message.channel.type !== 'dm') {
-        // Process Permissions
-        if (!await this.processPermissions(routed)) {
-          this.bot.BotMonitor.Stats.increment('commands-invalid')
-          // Notify user via DM
-          const altChannel = await this.bot.DB.get<TrackedAvailableObject>('server-settings', {
-            key: 'server.permissions.channel.suggestedCommandChannel',
-            serverID: message.guild.id,
-            state: true
-          })
-          await message.author
-            .sendMessage(Utils.sb(Utils.en.error.commandDisabledInChannel, {
-              command: message.content,
-              channel: altChannel.value,
-              server: message.guild.name
-            }))
-          return; // Hard Stop
-        }
+      // if (message.channel.type !== 'dm') {
+      // Process Permissions
+      if (!await this.processPermissions(routed)) {
+        this.bot.BotMonitor.Stats.increment('commands-invalid')
+        // Notify user via DM
+        const altChannel = await this.bot.DB.get<TrackedAvailableObject>('server-settings', {
+          key: 'server.permissions.channel.suggestedCommandChannel',
+          serverID: message.guild.id,
+          state: true
+        })
+        await message.author
+          .sendMessage(Utils.sb(Utils.en.error.commandDisabledInChannel, {
+            command: message.content,
+            channel: altChannel.value,
+            server: message.guild.name
+          }))
+
+        // Track in an audit event
+        this.bot.Audit.NewEntry({
+          name: routed.route.name,
+          details: routed.message.content,
+          guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
+          error: 'Command disabled by permission in this channel',
+          runtime: Math.round(performance.now() - runtimeStart),
+          owner: routed.message.author.id,
+          successful: false,
+          type: 'bot.command',
+          where: 'Discord'
+        })
+        return; // Hard Stop
       }
+      // }
 
       const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
       var mwareProcessed = 0
@@ -306,12 +338,41 @@ export class Router {
 
       // console.log(routed)
 
-      // Stop execution of route if middleware is halted
+      // Stop execution of route if middleware is completed
       if (mwareProcessed === mwareCount) {
         this.bot.BotMonitor.Stats.increment('commands-routed')
         const status = await route.controller(routed)
-        if (status) this.bot.BotMonitor.Stats.increment('commands-completed')
-        else this.bot.BotMonitor.Stats.increment('commands-invalid')
+        // Successful completion of command
+        if (status) {
+          this.bot.BotMonitor.Stats.increment('commands-completed')
+          // Track in an audit event
+          this.bot.Audit.NewEntry({
+            name: routed.route.name,
+            details: routed.message.content,
+            guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
+            owner: routed.message.author.id,
+            runtime: Math.round(performance.now() - runtimeStart),
+            successful: true,
+            type: 'bot.command',
+            where: 'Discord'
+          })
+        }
+        // Command failed or returned false inside controller
+        else {
+          this.bot.BotMonitor.Stats.increment('commands-invalid')
+          // Track in an audit event
+          this.bot.Audit.NewEntry({
+            name: routed.route.name,
+            details: routed.message.content,
+            guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
+            error: 'Command failed or returned false inside controller',
+            runtime: Math.round(performance.now() - runtimeStart),
+            owner: routed.message.author.id,
+            successful: false,
+            type: 'bot.command',
+            where: 'Discord'
+          })
+        }
         return // End routing here
       }
 
@@ -357,6 +418,7 @@ export class RouterRouted {
     reaction: string
   }
   public route: MessageRoute
+  public runtimeStart: number
   public state: 'added' | 'removed'
   public trackedMessage: TrackedMessage
   public type: 'message' | 'reaction'

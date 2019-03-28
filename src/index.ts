@@ -10,6 +10,7 @@ import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
 import { BotMonitor } from './monitor';
 import { buildBasePermissions, buildMissingPermissions } from './permissions/builder';
 import { routeLoader } from './router/route-loader';
+import { Audit } from './audit';
 
 export class Bot {
   public client = new Discord.Client();
@@ -21,11 +22,15 @@ export class Bot {
   public MsgTracker: MsgTracker
   public version: string
 
+  // Audit Manager
+  public Audit: Audit = new Audit(this)
+
   // Service Monitors
   public BotMonitor: BotMonitor
 
   // Databases
   public DB: MongoDB
+  
   // Background tasks
   public Task: Task.TaskManager = new Task.TaskManager()
 

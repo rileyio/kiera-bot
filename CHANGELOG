@@ -1,3 +1,6 @@
+2.9.0
+- Command and Web Auth audit logging added
+
 2.8.3
 - Fixed: OAuth issue where users who have no avatar set were getting blocked by validation
 

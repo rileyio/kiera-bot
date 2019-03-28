@@ -4,6 +4,18 @@ import * as Middleware from './middleware/web-middleware';
 
 export const routes: Array<WebRoute> = [
   /*
+   * Audit
+   */
+  {
+    controller: WebController.Audit.getEntries,
+    method: 'post',
+    name: 'audit-log',
+    path: '/api/audit',
+    middleware: [
+      Middleware.isAuthenticated
+    ]
+  },  
+  /*
    * Available
    */
   {

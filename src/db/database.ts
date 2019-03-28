@@ -4,7 +4,8 @@ import { Logging } from '../utils/';
 export * from './promise'
 export * from './messages'
 
-export type Collections = 'authkeys'
+export type Collections = 'audit-log'
+  | 'authkeys'
   | 'available-server-notifications'
   | 'available-server-settings'
   | 'ck-running-locks'

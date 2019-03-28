@@ -4,6 +4,7 @@ import { validate } from '../utils/validate';
 import { TrackedUser } from '../../objects/user';
 import { WebRouted } from '../web-router';
 import { ObjectID } from 'bson';
+import { performance } from 'perf_hooks';
 
 export namespace User {
   export async function get(routed: WebRouted) {
@@ -69,6 +70,7 @@ export namespace User {
   }
 
   export async function oauth(routed: WebRouted) {
+    const runtimeStart = performance.now()
     var updateType: 'added' | 'updated' | 'error'
     var uUser: TrackedUser
     var token: string
@@ -105,11 +107,48 @@ export namespace User {
     }
 
     if (updateType === 'added' || updateType === 'updated') {
+      var auditDetails = ''
+
+      switch (updateType) {
+        case 'added':
+          auditDetails = 'Logging in to kiera-web'
+          break;
+        case 'updated':
+          auditDetails = 'Logging in to kiera-web (Refreshed login)'
+          break;
+
+        default:
+          auditDetails = 'THIS SHOULD NEVER HAPPEN!'
+          break;
+      }
+
+      // Track in an audit event
+      routed.Bot.Audit.NewEntry({
+        name: 'API Authentication',
+        details: auditDetails,
+        runtime: Math.round(performance.now() - runtimeStart),
+        owner: v.o.id,
+        successful: true,
+        type: 'api.oauth',
+        where: 'API'
+      })
+
       return routed.res.send({
         status: updateType, success: true, webToken: uUser.webToken
       });
     }
     else {
+      // Track in an audit event
+      routed.Bot.Audit.NewEntry({
+        name: 'API Authentication Failed',
+        details: '',
+        runtime: Math.round(performance.now() - runtimeStart),
+        owner: v.o.id,
+        successful: false,
+        type: 'api.oauth',
+        where: 'API'
+      })
+
       routed.res.send({ status: updateType, success: false, token: token })
     }
 
