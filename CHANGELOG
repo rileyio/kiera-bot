@@ -1,5 +1,6 @@
-2.9.1
+2.10.0
 - Fixed: Audit log lookup output order
+- Added: 8ball command
 
 2.9.0
 - Command and Web Auth audit logging added

@@ -7,6 +7,7 @@ examples will be presented.
 (Required before access to most commands becomes available)
 \`{{prefix}}register\` - Registers the user with the bot 
 
+\`{{prefix}}8ball\` - Ask a question, receive an answer
 \`{{prefix}}ck\` - ChastiKey Commands - \`username\` \`ticker\` \`stats\`
 \`{{prefix}}decision\` - Create, Edit or Roll - \`new\` \`roll\`
 \`{{prefix}}flip\` - Flip a coin
