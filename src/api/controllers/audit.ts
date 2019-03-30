@@ -16,13 +16,7 @@ export namespace Audit {
     })
 
     // Sort Desc on date
-    auditEntries.sort((a, b) => {
-      var x = a.timestamp;
-      var y = b.timestamp;
-      if (x > y) { return -1; }
-      if (x < y) { return 1; }
-      return 0;
-    })
+    auditEntries.reverse()
 
     return routed.res.send(auditEntries);
   }
