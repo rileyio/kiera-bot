@@ -376,39 +376,38 @@ console.log('=========================')
 //////////////////////
 ///  Actual Code
 ///////////////////
-var cumlative = [];
+var cumulative = [];
 var cIndex = 0;
 var cTime = 0
 
 // Use the first pair in the index as the starting point
-cumlative.push(dates[0]);
+cumulative.push(dates[0]);
 
 for (var i = 1; i < dates.length; i++) {
-  //console.log('Checking:', dates[i], ', against', cumlative[cIndex]);
   // Complete overlap, remove from consideration
   if (
-    dates[i].start > cumlative[cIndex].start &&
-    dates[i].end < cumlative[cIndex].end
+    dates[i].start > cumulative[cIndex].start &&
+    dates[i].end < cumulative[cIndex].end
   ) {
     console.log(`index: ${i}, Condition 1 Met (Skip)`);
     continue; // Stop here
   }
 
   // New range beyond current range - set new range
-  if (dates[i].start >= cumlative[cIndex].end) {
+  if (dates[i].start >= cumulative[cIndex].end) {
     console.log(`index: ${i}, Condition 3 Met (New)`);
     cIndex++;
-    cumlative.push(dates[i]);
+    cumulative.push(dates[i]);
     continue; // Stop here
   }
 
   // Extend the current range
   if (
-    dates[i].start >= cumlative[cIndex].start &&
-    dates[i].end > cumlative[cIndex].end
+    dates[i].start >= cumulative[cIndex].start &&
+    dates[i].end > cumulative[cIndex].end
   ) {
     console.log(`index: ${i}, Condition 2 Met (Extend)`);
-    cumlative[cIndex].end = dates[i].end;
+    cumulative[cIndex].end = dates[i].end;
     continue; // Stop here
   }
 
@@ -417,7 +416,7 @@ for (var i = 1; i < dates.length; i++) {
 }
 
 // Calculate sums
-cTime = cumlative.reduce((s, c) => s += c.end - c.start, 0)
+cTime = cumulative.reduce((s, c) => s += c.end - c.start, 0)
 
 //////////////////////
 ///  Actual Code END
@@ -425,6 +424,6 @@ cTime = cumlative.reduce((s, c) => s += c.end - c.start, 0)
 
 // Print results
 console.log('=========================')
-console.log(`Started with ${dates.length} ranges (${dates.reduce((s, c) => s += c.end - c.start, 0)}), reduced to ${cumlative.length}`)
-console.log('results:', cumlative);
-console.log(`cumlative time: ${cTime} seconds, (${cTime / 2592000})`)
+console.log(`Started with ${dates.length} ranges (${dates.reduce((s, c) => s += c.end - c.start, 0)}), reduced to ${cumulative.length}`)
+console.log('results:', cumulative);
+console.log(`cumulative time: ${cTime} seconds, (${cTime / 2592000})`)
