@@ -57,14 +57,26 @@ export class BotStatistics {
 }
 
 export class ServerStatistics {
-  public sid: ObjectID
-  public users = {
-    total: 0,
-    online: 0,
-    registered: 0
-  }
-  public commands = {
-    received: 0,
-    sent: 0
-  }
+  public _id: ObjectID
+  public serverID: string
+  public timestamp: number
+
+}
+
+export class UserStatistics {
+  public _id: ObjectID
+  /**
+   * Discord Guild ID
+   * @type {string}
+   * @memberof UserStatistics
+   */
+  public serverID: string
+  /**
+   * Discord Snowflake ID
+   * @type {string}
+   * @memberof UserStatistics
+   */
+  public owner: string
+  public tr: number
+  public 
 }
