@@ -1,3 +1,6 @@
+2.11.1
+- Fixed: !ck stats lockee cumulative accuracy algorithm to exclude locks that were: Locked, Deleted and Completed
+
 2.11.0
 - Fixed: !ck stats lockee command will now try calculating the cumulative range instead for accuracy
 
