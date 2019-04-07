@@ -1,4 +1,4 @@
-// import got = require('got');
+import got = require('got');
 // import * as Middleware from '../../middleware';
 import * as Utils from '../../utils'
 import { RouterRouted } from '../../utils';
@@ -89,8 +89,30 @@ export async function getLockeeStats(routed: RouterRouted) {
   // Get user from lockee data (Total locks, raitings, averages)
   const userInLockeeTotals = await routed.bot.DB.get<TrackedChastiKeyUserTotalLockedTime>('ck-lockee-totals', { username: usernameRegex })
   // Get user data from API for Keyholder name
-  // const userFromAPIresp = await got(`https://api.chastikey.com/v0.2/listlocks.php?username=${user.ChastiKey.username}&bot=Kiera`, { json: true })
-  // const userFromAPI: TrackedChastiKeyUserAPIFetch = userFromAPIresp.body
+  var calculatedCumulative = (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : 0
+  try {
+    const userPastLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
+    const userCurrentLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
+    var dates = [].concat(userPastLocksFromAPIresp.body.locks, userCurrentLocksFromAPIresp.body.locks)
+    // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
+    dates = dates.map(d => {
+      // Insert current date on existing locked locks that are not deleted
+      console.log(d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0, d.timestampLocked)
+
+      if (d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0) {
+        console.log('set to:', Math.round(Date.now() / 1000))
+        d.timestampUnlocked = Math.round(Date.now() / 1000)
+      }
+      return d
+    })
+    // Transform data a little
+    dates = dates.map(d => { return { start: d.timestampLocked, end: d.timestampUnlocked } })
+    // const userFromAPI: TrackedChastiKeyUserAPIFetch = userFromAPIresp.body
+    // Calculate cumulative using algorithm
+    calculatedCumulative = Math.round((Utils.Date.calculateCumulativeRange(dates) / 2592000) * 100) / 100
+  } catch (error) {
+    // Do nothing for now
+  }
 
   // If the user has display_in_stats === 2 then stop here
   if (activeLocks.length > 0 ? activeLocks[0].display_in_stats === 2 : false) return true
@@ -106,7 +128,7 @@ export async function getLockeeStats(routed: RouterRouted) {
     cacheTimestamp: (activeLocks.length > 0) ? activeLocks[0].timestampNow : '',
     locks: activeLocks,
     longestLock: (userInLockeeStats) ? userInLockeeStats.longestCompletedLockInSeconds : 0,
-    monthsLocked: (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : '-',
+    monthsLocked: (calculatedCumulative),
     noOfRatings: (userInLockeeStats) ? userInLockeeStats.noOfRatings : 0,
     totalNoOfCompletedLocks: (userInLockeeStats) ? userInLockeeStats.totalNoOfCompletedLocks : 0,
     username: user.ChastiKey.username,
@@ -234,7 +256,7 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
   ])
 
   await routed.message.reply(sharedKeyholdersStats(activeLocks, routed.v.o.user))
-  
+
   // Successful end
   return true
 }

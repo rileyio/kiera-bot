@@ -16,6 +16,7 @@ export function getArgs(msg: string) {
 
 export * from './chastikey';
 export * from './channel';
+export * from './date';
 export * from './logger';
 export * from './react';
 export * from '../router/router';
