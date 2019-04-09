@@ -96,16 +96,16 @@ export async function getLockeeStats(routed: RouterRouted) {
     var dates = [].concat(userPastLocksFromAPIresp.body.locks, userCurrentLocksFromAPIresp.body.locks)
     // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
     dates = dates.map(d => {
-      console.log(d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0, d.timestampLocked)
+      // console.log(d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0, d.timestampLocked)
       // Remove unlocked time if the lock status is: Locked, Deleted and has a Completion timestamp
       if (d.timestampUnlocked > 0 && d.status === 'Locked' && d.lockDeleted === 1) {
-        console.log('set to:', 0)
+        // console.log('set to:', 0)
         d.timestampUnlocked = 0
       }
 
       // Insert current date on existing locked locks that are not deleted
       if (d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0) {
-        console.log('set to:', Math.round(Date.now() / 1000))
+        // console.log('set to:', Math.round(Date.now() / 1000))
         d.timestampUnlocked = Math.round(Date.now() / 1000)
       }
 

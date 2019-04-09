@@ -1,5 +1,6 @@
 2.11.2
 - Fixed: Decision rollers to recognize image URLs and show those as the embed block instead of just text
+- Updated: Removed extra logging for 2.11.0-1 for debugging those changes, removing to improve performance
 
 2.11.1
 - Fixed: !ck stats lockee cumulative accuracy algorithm to exclude locks that were: Locked, Deleted and Completed

@@ -9,20 +9,20 @@ export namespace Date {
       return 0;
     })
     // Sanity check on dates array (negatives)
-    console.log('=========================')
+    // console.log('=========================')
     var negatives = dates.filter(d => (d.end - d.start) < 0)
-    console.log(`Found (${negatives.length}) that are negatives (excluding active dates)`)
-    console.log(negatives)
+    // console.log(`Found (${negatives.length}) that are negatives (excluding active dates)`)
+    // console.log(negatives)
     // Remove it/them
     for (let index = 0; index < negatives.length; index++) {
       const negativeRange = negatives[index];
       const negativeIndex = dates.findIndex(dd => dd.start === negativeRange.start && dd.end === negativeRange.end)
-      console.log('negative index being removed:', negativeRange)
+      // console.log('negative index being removed:', negativeRange)
       // Remove
       dates.splice(negativeIndex, 1)
     }
-    console.log('=========================')
-    console.log(dates)
+    // console.log('=========================')
+    // console.log(dates)
 
     //////////////////////
     ///  Actual Code
@@ -40,13 +40,13 @@ export namespace Date {
         dates[i].start >= cumulative[cIndex].start &&
         dates[i].end <= cumulative[cIndex].end
       ) {
-        console.log(`index: ${i}, Condition 1 Met (Skip)`, dates[i]);
+        // console.log(`index: ${i}, Condition 1 Met (Skip)`, dates[i]);
         continue; // Stop here
       }
 
       // New range beyond current range - set new range
       if (dates[i].start >= cumulative[cIndex].end) {
-        console.log(`index: ${i}, Condition 3 Met (New)`, dates[i]);
+        // console.log(`index: ${i}, Condition 3 Met (New)`, dates[i]);
         cIndex++;
         cumulative.push(dates[i]);
         continue; // Stop here
@@ -57,13 +57,13 @@ export namespace Date {
         dates[i].start >= cumulative[cIndex].start &&
         dates[i].end > cumulative[cIndex].end
       ) {
-        console.log(`index: ${i}, Condition 2 Met (Extend)`, dates[i]);
+        // console.log(`index: ${i}, Condition 2 Met (Extend)`, dates[i]);
         cumulative[cIndex].end = dates[i].end;
         continue; // Stop here
       }
 
       // All unmatched
-      console.log('Unmatched range:', dates[i], 'current cumulative:', cumulative[cIndex]);
+      // console.log('Unmatched range:', dates[i], 'current cumulative:', cumulative[cIndex]);
     }
 
     // Calculate sums
@@ -74,10 +74,10 @@ export namespace Date {
     ///////////////////
 
     // Print results
-    console.log('=========================')
-    console.log(`Started with ${dates.length} ranges (${dates.reduce((s, c) => s += c.end - c.start, 0)}), reduced to ${cumulative.length}`)
-    console.log('results:', cumulative);
-    console.log(`cumulative time: ${cTime} seconds, (${cTime / 2592000})`)
+    // console.log('=========================')
+    // console.log(`Started with ${dates.length} ranges (${dates.reduce((s, c) => s += c.end - c.start, 0)}), reduced to ${cumulative.length}`)
+    // console.log('results:', cumulative);
+    // console.log(`cumulative time: ${cTime} seconds, (${cTime / 2592000})`)
 
     return cTime
   }
