@@ -1,571 +1,144 @@
-// var dates = [
-//   {
-//     start: 5,
-//     end: 10
-//   },
-//   {
-//     start: 8,
-//     end: 12
-//   },
-//   {
-//     start: 9,
-//     end: 10
-//   },
-//   {
-//     start: 10,
-//     end: 15
-//   },
-//   {
-//     start: 20,
-//     end: 25
-//   }
-// ];
-
-// var dates = [
-//   // Non-deleted
-//   {
-//     "timestampLocked": 1546364205,
-//     "timestampUnlocked": 0,
-//     "status": "Locked",
-//   },
-//   // Deleted
-//   {
-//     "timestampLocked": 1528138123,
-//     "timestampUnlocked": 1528252987,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1528164233,
-//     "timestampUnlocked": 1528165143,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1528164653,
-//     "timestampUnlocked": 1528184032,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1528264846,
-//     "timestampUnlocked": 1528381018,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1528138123,
-//     "timestampUnlocked": 1528252987,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1528384975,
-//     "timestampUnlocked": 1530151794,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1528656507,
-//     "timestampUnlocked": 1530151796,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1529103377,
-//     "timestampUnlocked": 1529492586,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1529103377,
-//     "timestampUnlocked": 1529492586,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1530286161,
-//     "timestampUnlocked": 1538919566,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1530549104,
-//     "timestampUnlocked": 0,
-//     "status": "Locked",
-//   },
-//   {
-//     "timestampLocked": 1531486992,
-//     "timestampUnlocked": 1531534004,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1534796746,
-//     "timestampUnlocked": 0,
-//     "status": "Locked",
-//   },
-//   {
-//     "timestampLocked": 1537107885,
-//     "timestampUnlocked": 0,
-//     "status": "Locked",
-//   },
-//   {
-//     "timestampLocked": 1528384975,
-//     "timestampUnlocked": 0,
-//     "status": "Locked",
-//   },
-//   {
-//     "timestampLocked": 1528656507,
-//     "timestampUnlocked": 0,
-//     "status": "Locked",
-//   },
-//   {
-//     "timestampLocked": 1537307962,
-//     "timestampUnlocked": 1537456671,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1538101718,
-//     "timestampUnlocked": 1538105823,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1539637106,
-//     "timestampUnlocked": 1541384301,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1542222959,
-//     "timestampUnlocked": 1542942358,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1545608673,
-//     "timestampUnlocked": 1546363598,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1552608793,
-//     "timestampUnlocked": 1552616024,
-//     "status": "UnlockedReal",
-//   }
-// ]
-
-// var dates = [
-//   {
-//     "timestampLocked": 1546017167,
-//     "timestampUnlocked": 1547472506,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1547508624,
-//     "timestampUnlocked": 1549942950,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551397412,
-//     "timestampUnlocked": 1551908791,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1554512654,
-//     "timestampUnlocked": 1554578372,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1554595441,
-//     "timestampUnlocked": 0,
-//     "status": "Locked",
-//   },
-//   {
-//     "timestampLocked": 1544224742,
-//     "timestampUnlocked": 1544227504,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1544388095,
-//     "timestampUnlocked": 1544612436,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1544653598,
-//     "timestampUnlocked": 1544793093,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1545087809,
-//     "timestampUnlocked": 1545604181,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1547601350,
-//     "timestampUnlocked": 1547602197,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1547614094,
-//     "timestampUnlocked": 1547632066,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1547772729,
-//     "timestampUnlocked": 1547778894,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1548135908,
-//     "timestampUnlocked": 1548151682,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1548214169,
-//     "timestampUnlocked": 1548243030,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1548798749,
-//     "timestampUnlocked": 1548811636,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1549602204,
-//     "timestampUnlocked": 1549617577,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1549772446,
-//     "timestampUnlocked": 1549792049,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1549857118,
-//     "timestampUnlocked": 1549882357,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1550549575,
-//     "timestampUnlocked": 1550699239,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1550707651,
-//     "timestampUnlocked": 1550890443,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1550806428,
-//     "timestampUnlocked": 1550831731,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1550895470,
-//     "timestampUnlocked": 1550923205,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1550977110,
-//     "timestampUnlocked": 1551003897,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551069564,
-//     "timestampUnlocked": 1551095454,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551152200,
-//     "timestampUnlocked": 1551177409,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551191472,
-//     "timestampUnlocked": 1551390006,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551235851,
-//     "timestampUnlocked": 1551263894,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551411204,
-//     "timestampUnlocked": 1551438037,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551502674,
-//     "timestampUnlocked": 1551527897,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551587873,
-//     "timestampUnlocked": 1551613491,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551670807,
-//     "timestampUnlocked": 1551697221,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551846725,
-//     "timestampUnlocked": 1551873910,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551919580,
-//     "timestampUnlocked": 1552396954,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1551933253,
-//     "timestampUnlocked": 1551958460,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1552019924,
-//     "timestampUnlocked": 1552046442,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1552105087,
-//     "timestampUnlocked": 1552130319,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1552189739,
-//     "timestampUnlocked": 1552214944,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1552272407,
-//     "timestampUnlocked": 1552297636,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1552358613,
-//     "timestampUnlocked": 1552383813,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1552417911,
-//     "timestampUnlocked": 1552678902,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1552789970,
-//     "timestampUnlocked": 1552915177,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1553050177,
-//     "timestampUnlocked": 1553102846,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1553121507,
-//     "timestampUnlocked": 1553187827,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1553202774,
-//     "timestampUnlocked": 1553370855,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1553375845,
-//     "timestampUnlocked": 1553439388,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1553472988,
-//     "timestampUnlocked": 1553479636,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1553520246,
-//     "timestampUnlocked": 1553596156,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1553613233,
-//     "timestampUnlocked": 1553714034,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1553729465,
-//     "timestampUnlocked": 1553782514,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1553791876,
-//     "timestampUnlocked": 1553961537,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1553984958,
-//     "timestampUnlocked": 1554047709,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1554065882,
-//     "timestampUnlocked": 1554117843,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1554121077,
-//     "timestampUnlocked": 1554216155,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1554246211,
-//     "timestampUnlocked": 1554393085,
-//     "status": "UnlockedReal",
-//   },
-//   {
-//     "timestampLocked": 1554410166,
-//     "timestampUnlocked": 1554491930,
-//     "status": "UnlockedReal",
-//   }
-// ]
-
 var dates = [
   {
-    "lockID": 1552077872,
+    "lockID": 0,
     "lockDeleted": 0,
-    "lockedBy": "MissEmma",
-    "lockFrozen": 1,
-    "timestampLocked": 1552077872,
+    "lockedBy": "hans",
+    "lockFrozen": 0,
+    "timestampLocked": 1537040497,
+    "timestampUnlocked": 1537960926,
+    "status": "UnlockedReal",
+    "combination": "60680723"
+  },
+  {
+    "lockID": 1546339774,
+    "lockDeleted": 0,
+    "lockedBy": "",
+    "lockFrozen": 0,
+    "timestampLocked": 1546339774,
+    "timestampUnlocked": 1546585606,
+    "status": "UnlockedReal",
+    "combination": "628"
+  },
+  {
+    "lockID": 1547339140,
+    "lockDeleted": 0,
+    "lockedBy": "Blaine",
+    "lockFrozen": 0,
+    "timestampLocked": 1547339140,
+    "timestampUnlocked": 1549957172,
+    "status": "UnlockedReal",
+    "combination": "716"
+  },
+  {
+    "lockID": 1549957337,
+    "lockDeleted": 0,
+    "lockedBy": "hans",
+    "lockFrozen": 0,
+    "timestampLocked": 1549957337,
+    "timestampUnlocked": 0,
+    "status": "ReadyToUnlock",
+    "combination": ""
+  },
+  {
+    "lockID": 1549957337,
+    "lockDeleted": 0,
+    "lockedBy": "hans",
+    "lockFrozen": 0,
+    "timestampLocked": 1549957337,
+    "timestampUnlocked": 0,
+    "status": "ReadyToUnlock",
+    "combination": ""
+  },
+  {
+    "lockID": 1549957337,
+    "lockDeleted": 0,
+    "lockedBy": "hans",
+    "lockFrozen": 0,
+    "timestampLocked": 1549957337,
+    "timestampUnlocked": 0,
+    "status": "ReadyToUnlock",
+    "combination": ""
+  },
+  {
+    "lockID": 1549957337,
+    "lockDeleted": 0,
+    "lockedBy": "hans",
+    "lockFrozen": 0,
+    "timestampLocked": 1549957337,
+    "timestampUnlocked": 0,
+    "status": "ReadyToUnlock",
+    "combination": ""
+  },
+  {
+    "lockID": 1549957337,
+    "lockDeleted": 0,
+    "lockedBy": "hans",
+    "lockFrozen": 0,
+    "timestampLocked": 1549957337,
+    "timestampUnlocked": 0,
+    "status": "ReadyToUnlock",
+    "combination": ""
+  },
+  {
+    "lockID": 1549957337,
+    "lockDeleted": 0,
+    "lockedBy": "hans",
+    "lockFrozen": 0,
+    "timestampLocked": 1549957337,
+    "timestampUnlocked": 0,
+    "status": "ReadyToUnlock",
+    "combination": ""
+  },
+  // Deleted
+  {
+    "lockID": 0,
+    "lockDeleted": 1,
+    "lockedBy": "Chase",
+    "lockFrozen": 0,
+    "timestampLocked": 1520456604,
+    "timestampUnlocked": 1520515944,
+    "status": "UnlockedReal",
+    "combination": "444"
+  },
+  {
+    "lockID": 0,
+    "lockDeleted": 1,
+    "lockedBy": "Chase",
+    "lockFrozen": 0,
+    "timestampLocked": 1520457819,
+    "timestampUnlocked": 1520578501,
+    "status": "UnlockedReal",
+    "combination": "5001"
+  },
+  {
+    "lockID": 0,
+    "lockDeleted": 1,
+    "lockedBy": "",
+    "lockFrozen": 0,
+    "timestampLocked": 1528857619,
     "timestampUnlocked": 0,
     "status": "Locked",
     "combination": ""
   },
   {
-    "lockID": 1552531619,
-    "lockDeleted": 0,
-    "lockedBy": "MissEmma",
+    "lockID": 0,
+    "lockDeleted": 1,
+    "lockedBy": "hans",
     "lockFrozen": 0,
-    "timestampLocked": 1552531619,
-    "timestampUnlocked": 1552541459,
+    "timestampLocked": 1536868919,
+    "timestampUnlocked": 1537039723,
     "status": "UnlockedReal",
-    "combination": "944357"
-  },
-  // Deleted locks
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1544744803,
-    "timestampUnlocked": 0,
-    "status": "Locked",
+    "combination": "686"
   },
   {
+    "lockID": 0,
     "lockDeleted": 1,
-    "timestampLocked": 1544745031,
-    "timestampUnlocked": 0,
-    "status": "Locked",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1544753746,
-    "timestampUnlocked": 0,
-    "status": "Locked",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1544813430,
-    "timestampUnlocked": 1544820233,
+    "lockedBy": "hans",
+    "lockFrozen": 0,
+    "timestampLocked": 1537040208,
+    "timestampUnlocked": 1537040416,
     "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1544886209,
-    "timestampUnlocked": 0,
-    "status": "Locked",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1544889362,
-    "timestampUnlocked": 1544922163,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1544924240,
-    "timestampUnlocked": 1545164470,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1545169509,
-    "timestampUnlocked": 1546904944,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1546973944,
-    "timestampUnlocked": 1547626753,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1547595497,
-    "timestampUnlocked": 1547604129,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1548003412,
-    "timestampUnlocked": 1548868079,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1548869683,
-    "timestampUnlocked": 1549996099,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1549997877,
-    "timestampUnlocked": 1550059173,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1550062839,
-    "timestampUnlocked": 1550490431,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1550539316,
-    "timestampUnlocked": 1550547713,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1550618277,
-    "timestampUnlocked": 1550623356,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1550723263,
-    "timestampUnlocked": 1550724162,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1551151496,
-    "timestampUnlocked": 1551179580,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1551404742,
-    "timestampUnlocked": 1551961507,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1551961601,
-    "timestampUnlocked": 1552015875,
-    "status": "UnlockedReal",
-  },
-  {
-    "lockDeleted": 1,
-    "timestampLocked": 1552260035,
-    "timestampUnlocked": 1552263253,
-    "status": "UnlockedReal",
+    "combination": "53427406"
   }
 ]
 
@@ -574,15 +147,20 @@ dates = dates.map(d => {
   // Insert current date on existing locked locks that are not deleted
   console.log(d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0, d.timestampLocked)
 
-  if (d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0) {
+  // Remove unlocked time if the lock status is: Locked, Deleted and has a Completion timestamp
+  if (d.timestampUnlocked > 0 && d.status === 'Locked' && d.lockDeleted === 1) {
+    // console.log('set to:', 0)
+    d.timestampUnlocked = 0
+  }
+
+  if (d.timestampUnlocked === 0 && (d.status === 'Locked' || d.status === 'ReadyToUnlock') && d.lockDeleted === 0) {
     console.log('set to:', Math.round(Date.now() / 1000))
     d.timestampUnlocked = Math.round(Date.now() / 1000)
   }
-  return d
-})
 
-// Transform data a little
-dates = dates.map(d => { return { start: d.timestampLocked, end: d.timestampUnlocked } })
+  // Transform data a little
+  return { start: d.timestampLocked, end: d.timestampUnlocked }
+})
 
 // Ensure they are sorted by start times
 dates.sort((a, b) => {

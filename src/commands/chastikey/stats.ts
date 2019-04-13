@@ -94,31 +94,31 @@ export async function getLockeeStats(routed: RouterRouted) {
     const userPastLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
     const userCurrentLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
     var dates = [].concat(userPastLocksFromAPIresp.body.locks, userCurrentLocksFromAPIresp.body.locks)
+
     // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
     dates = dates.map(d => {
-      // console.log(d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0, d.timestampLocked)
+      // Insert current date on existing locked locks that are not deleted
+      console.log(d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0, d.timestampLocked)
+
       // Remove unlocked time if the lock status is: Locked, Deleted and has a Completion timestamp
       if (d.timestampUnlocked > 0 && d.status === 'Locked' && d.lockDeleted === 1) {
         // console.log('set to:', 0)
         d.timestampUnlocked = 0
       }
 
-      // Insert current date on existing locked locks that are not deleted
-      if (d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0) {
-        // console.log('set to:', Math.round(Date.now() / 1000))
+      if (d.timestampUnlocked === 0 && (d.status === 'Locked' || d.status === 'ReadyToUnlock') && d.lockDeleted === 0) {
+        console.log('set to:', Math.round(Date.now() / 1000))
         d.timestampUnlocked = Math.round(Date.now() / 1000)
       }
 
-      return d
+      // Transform data a little
+      return { start: d.timestampLocked, end: d.timestampUnlocked }
     })
-    dates.splice
-    // Transform data a little
-    dates = dates.map(d => { return { start: d.timestampLocked, end: d.timestampUnlocked } })
-    // const userFromAPI: TrackedChastiKeyUserAPIFetch = userFromAPIresp.body
+
     // Calculate cumulative using algorithm
     calculatedCumulative = Math.round((Utils.Date.calculateCumulativeRange(dates) / 2592000) * 100) / 100
   } catch (error) {
-    // Do nothing for now
+    calculatedCumulative = (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : NaN
   }
 
   // If the user has display_in_stats === 2 then stop here

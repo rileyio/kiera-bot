@@ -55,6 +55,7 @@ const cardsEmoji = {
 
 export function lockeeStats(data: LockeeStats, options: { showRating: boolean }) {
   var fields: Array<{ name: string; value: string; }> = []
+  
   data.locks.forEach((l, i) => {
     if (i > 19) return // Skip, there can only be 20 locks in the db, this means theres an issue server side
     fields.push(lockEntry(i, l, fields.length))
