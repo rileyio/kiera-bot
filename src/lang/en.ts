@@ -39,6 +39,7 @@ export const en = {
     // react: HelpStrings.react,
     register: HelpStrings.register,
     roll: HelpStrings.roll,
+    stats: HelpStrings.stats
   },
 
 }

@@ -12,6 +12,7 @@ examples will be presented.
 \`{{prefix}}decision\` - Create, Edit or Roll - \`new\` \`roll\`
 \`{{prefix}}flip\` - Flip a coin
 \`{{prefix}}roll\` - Dice roller
+\`{{prefix}}stats\` - Bot tracked statistics
 `
 
 // **[Lockee] Commands (*Must be entered by the device owner*)**
@@ -32,7 +33,7 @@ Registers (opt-in) the user to use the full suite of bot commands.
 Using this means you agree to having some basic information stored (IDs, etc) for proper bot usage.
 
 Usage Example:
-{{prefix}}register
+\`{{prefix}}register\`
 `
 
 // export const intensity = `
@@ -86,10 +87,10 @@ Currently returns: (1) Keyholder, (2) Lockee, (3) Both
 export const decision = `
 A random decision maker based on given or saved outcomes.
 
-{{prefix}}decision "Question here!" "Answers" "here" - Run a random decision (without saving)
-{{prefix}}decision new "Your decision question here" - Create a new saved decision (reusable)
-{{prefix}}decision "DecisionID" add "New outcome here" - Add options to saved decision
-{{prefix}}decision roll 'DecisionID' - Roll for a result from a saved decision
+\`{{prefix}}decision "Question here!" "Answers" "here"\` - Run a random decision (without saving)
+\`{{prefix}}decision new "Your decision question here"\` - Create a new saved decision (reusable)
+\`{{prefix}}decision "DecisionID" add "New outcome here"\` - Add options to saved decision
+\`{{prefix}}decision roll 'DecisionID'\` - Roll for a result from a saved decision
 `
 
 // export const duration = `
@@ -140,13 +141,19 @@ A random decision maker based on given or saved outcomes.
 export const flip = `
 Flip a coin
 
-{{prefix}}flip - Heads or Tails
+\`{{prefix}}flip\` - Heads or Tails
 `
 
 export const roll = `
 Roll die/dice
 
-{{prefix}}roll - Roll a single die
-{{prefix}}roll 20 - Roll a single die with 20 sides
-{{prefix}}roll 10 6 - Roll multiple (10) dice with given number of sides (6)
+\`{{prefix}}roll\` - Roll a single die
+\`{{prefix}}roll 20\` - Roll a single die with 20 sides
+\`{{prefix}}roll 10 6\` - Roll multiple (10) dice with given number of sides (6)
+`
+
+export const stats = `
+Bot tracked statistics
+
+\`{{prefix}}stats commands\` - Print the top 10 commands and their usage stats
 `
