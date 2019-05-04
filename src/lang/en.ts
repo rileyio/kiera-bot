@@ -12,11 +12,12 @@ export const en = {
     adminRefreshStats: ChastiKey.adminRefreshStats,
     invalidOverrideType: ChastiKey.invalidOverrideType,
     incorrectTickerTimer: ChastiKey.incorrectTickerTimer,
-    usernameNotSet: ChastiKey.usernameNotSet,
     lockeeCommandNotification: ChastiKey.lockeeCommandNotification,
     lockeeOrKeyholderRequired: ChastiKey.lockeeOrKeyholderRequired,
     keyholderNoLocks: ChastiKey.keyholderNoLocks,
-    keyholderCommandNotification: ChastiKey.keyholderCommandNotification
+    keyholderCommandNotification: ChastiKey.keyholderCommandNotification,
+    usernameNotSet: ChastiKey.usernameNotSet,
+    userRequestedNoStats: ChastiKey.userRequestedNoStats
   },
   decision: {
     newQuestionAdded: Decision.newQuestionAdded

@@ -46,7 +46,6 @@ export async function pingPong(routed: RouterRouted) {
   // Track all incoming messages
   await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
     authorID: routed.message.author.id,
-    authorUsername: routed.message.author.username,
     id: routed.message.id,
     messageCreatedAt: routed.message.createdAt.getTime(),
     channelId: routed.message.channel.id,
@@ -63,7 +62,6 @@ export async function pingPong(routed: RouterRouted) {
   if (!Array.isArray(response)) {
     await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
       authorID: response.author.id,
-      authorUsername: response.author.username,
       id: response.id,
       messageCreatedAt: response.createdAt.getTime(),
       channelId: response.channel.id,

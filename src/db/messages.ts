@@ -38,7 +38,6 @@ export class MsgTracker {
 
         return await this.trackMsg(new TrackedMessage({
           authorID: message.author.id,
-          authorUsername: message.author.username,
           id: message.id,
           messageCreatedAt: message.createdAt.getTime(),
           channelId: message.channel.id,
@@ -55,7 +54,6 @@ export class MsgTracker {
     const message = Object.assign((<Message>msg), opts || {});
     return await this.trackMsg(new TrackedMessage({
       authorID: message.author.id,
-      authorUsername: message.author.username,
       id: message.id,
       messageCreatedAt: message.createdAt.getTime(),
       channelId: message.channel.id,

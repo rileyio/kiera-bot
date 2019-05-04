@@ -6,7 +6,6 @@ export class TrackedMessage {
   // Msg data
   public id: string
   public authorID: string
-  public authorUsername: string
   public messageCreatedAt: number
   public channelId: string
   // React tracking

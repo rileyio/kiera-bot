@@ -7,8 +7,9 @@ import { TrackedUser } from '../../objects/user';
 import { TrackedChastiKeyLock, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics } from '../../objects/chastikey';
 import { performance } from 'perf_hooks';
 import { TrackedNotification } from '../../objects/notification';
-import { TextChannel } from 'discord.js';
+import { TextChannel, Message } from 'discord.js';
 import { ExportRoutes } from '../../router/routes-exporter';
+import { TrackedMessage } from '../../objects/message';
 
 export const Routes = ExportRoutes(
   {
@@ -122,7 +123,36 @@ export async function getLockeeStats(routed: RouterRouted) {
   }
 
   // If the user has display_in_stats === 2 then stop here
-  if (activeLocks.length > 0 ? activeLocks[0].display_in_stats === 2 : false) return true
+  if (activeLocks.length > 0 ? activeLocks[0].display_in_stats === 2 : false) {
+    // Track incoming message and delete for the target user's privacy
+    await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
+      authorID: routed.message.author.id,
+      id: routed.message.id,
+      messageCreatedAt: routed.message.createdAt.getTime(),
+      channelId: routed.message.channel.id,
+      // Flags
+      flagAutoDelete: true,
+      flagTrack: true,
+      // Deletion settings
+      storageKeepInChatFor: 5000
+    }))
+    // Notify in chat that the user has requested their stats not be public
+    const response = await routed.message.reply(Utils.sb(Utils.en.chastikey.userRequestedNoStats)) as Message
+    // Track incoming message and delete for the target user's privacy
+    await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
+      authorID: response.author.id,
+      id: response.id,
+      messageCreatedAt: response.createdAt.getTime(),
+      channelId: response.channel.id,
+      // Flags
+      flagAutoDelete: true,
+      flagTrack: true,
+      // Deletion settings
+      storageKeepInChatFor: 15000
+    }))
+    // Stop here
+    return true
+  }
 
   // console.log('activeLocks', activeLocks)
   // console.log(userInLockeeStats)
