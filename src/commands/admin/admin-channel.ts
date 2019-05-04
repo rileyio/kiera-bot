@@ -1,24 +1,26 @@
 import * as Middleware from '../../middleware';
 import * as Utils from '../../utils/';
 import { RouterRouted } from '../../router/router';
-import { TextChannel } from 'discord.js';
+import { TextChannel, Message } from 'discord.js';
 import { ExportRoutes } from '../../router/routes-exporter';
 
-export const Routes = ExportRoutes({
-  type: 'message',
-  category: 'Admin',
-  commandTarget: 'none',
-  controller: purgeChannelMessages,
-  example: '{{prefix}}admin channel purge',
-  name: 'admin-channel-purge',
-  permissions: {
-    restricted: true
-  },
-  validate: '/admin:string/channel:string/purge:string',
-  middleware: [
-    Middleware.hasRole('Developer')
-  ]
-})
+export const Routes = ExportRoutes(
+  {
+    type: 'message',
+    category: 'Admin',
+    commandTarget: 'none',
+    controller: purgeChannelMessages,
+    example: '{{prefix}}admin channel purge',
+    name: 'admin-channel-purge',
+    permissions: {
+      restricted: true
+    },
+    validate: '/admin:string/channel:string/purge:string',
+    middleware: [
+      Middleware.hasRole('Developer')
+    ]
+  }
+)
 
 /**
  * Purge Current Channel's Messages

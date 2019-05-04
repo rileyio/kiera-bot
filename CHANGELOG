@@ -1,3 +1,7 @@
+2.12.0
+- Implemented #8 - Removing tracking of username from TrackedMessage
+- Added: Command to check user and bot permissions (!check permissions)
+
 2.11.3
 - Fixed: Extra condition where some CK locks showed status 'ReadyToUnlock' being skipped in calculation
 
