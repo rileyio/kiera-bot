@@ -17,6 +17,7 @@ export type RouteConfigurationCategory = ''
   | 'Fun'
   | 'Info'
   | 'Integration'
+  | 'Reddit'
   | 'Session'
   | 'User'
 
