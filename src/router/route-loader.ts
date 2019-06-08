@@ -19,7 +19,7 @@ export function routeLoader() {
     try {
       const _requiredFile: { Routes: Array<RouteConfiguration> } = require(Path.join('../../', routeFile.toString()))
       // Test if file returns undefined
-      if (!_requiredFile) {
+      if (_requiredFile !== undefined) {
 
         console.log(`routeLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map(r => Array.isArray(r)).length}`)
 
