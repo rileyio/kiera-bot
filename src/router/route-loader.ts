@@ -15,17 +15,25 @@ export function routeLoader() {
 
   // Load each route configured into the routes array
   _routeFiles.forEach(routeFile => {
-    const _requiredFile: { Routes: Array<RouteConfiguration> } = require(Path.join('../../', routeFile.toString()))
-    // tslint:disable-next-line:no-console
-    console.log(`routeLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map(r => Array.isArray(r)).length}`)
+    // Wrapped in a try to make more safe when loading and errors are present
+    try {
+      const _requiredFile: { Routes: Array<RouteConfiguration> } = require(Path.join('../../', routeFile.toString()))
+      // Test if file returns undefined
+      if (!_requiredFile) {
 
-    for (let index = 0; index < _requiredFile.Routes.length; index++) {
-      const route = _requiredFile.Routes[index];
-      routes.push(route)
+        console.log(`routeLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map(r => Array.isArray(r)).length}`)
+
+        for (let index = 0; index < _requiredFile.Routes.length; index++) {
+          const route = _requiredFile.Routes[index];
+          routes.push(route)
+        }
+      }
+    }
+    catch (e) {
+      console.log(`routeLoader() [ERROR] => ${routeFile.toString()}, ${e.message}`)
     }
   })
 
-  // tslint:disable-next-line:no-console
   console.log(`routeLoader() => routes loaded: ${routes.length}`)
 
   return routes
