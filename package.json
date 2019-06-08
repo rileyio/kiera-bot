@@ -60,7 +60,6 @@
     "@types/restify": "^7.2.6",
     "@types/restify-cors-middleware": "^1.0.1",
     "@types/restify-errors": "^4.3.3",
-    "@types/snoowrap": "^1.15.3",
     "@types/socket.io": "^2.1.2",
     "@types/xregexp": "^3.0.29",
     "ava": "^1.0.1",
