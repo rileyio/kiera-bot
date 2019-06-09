@@ -1,4 +1,4 @@
-import * as joi from 'joi';
+import * as joi from '@hapi/joi';
 
 export namespace Lists {
   export function get() {

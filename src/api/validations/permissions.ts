@@ -1,4 +1,4 @@
-import * as joi from 'joi';
+import * as joi from '@hapi/joi';
 
 export namespace Permissions {
   export function getAll() {
