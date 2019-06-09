@@ -19,11 +19,14 @@ export class TrackedServer {
   public emojis: Array<TrackedEmoji>
   public channels: Array<TrackedChannel>
   public roles: Array<TrackedRole>
+  public enabled: {
+    ChastiKey: boolean
+  } = { ChastiKey: false }
 
   constructor(init: TrackedServer | Guild) {
     // Args being fussy, using 'arguments[]' to find
     var isTracked = isTrackedServer(init)
-  
+
     Object.assign(this, {
       id: init.id,
       name: init.name,

@@ -15,7 +15,10 @@ export const Routes = ExportRoutes(
     validate: '/ck:string/ticker:string/set:string/type:string/number=number',
     middleware: [
       Middleware.isUserRegistered
-    ]
+    ],
+    permissions: {
+      defaultEnabled: false
+    }
   },
   {
     type: 'message',
@@ -26,7 +29,10 @@ export const Routes = ExportRoutes(
     validate: '/ck:string/ticker:string/set:string/date:string/number=string',
     middleware: [
       Middleware.isUserRegistered
-    ]
+    ],
+    permissions: {
+      defaultEnabled: false
+    }
   },
   {
     type: 'message',
@@ -37,7 +43,10 @@ export const Routes = ExportRoutes(
     validate: '/ck:string/ticker:string/set:string/rating:string/state=string',
     middleware: [
       Middleware.isUserRegistered
-    ]
+    ],
+    permissions: {
+      defaultEnabled: false
+    }
   },
   {
     type: 'message',
@@ -48,7 +57,10 @@ export const Routes = ExportRoutes(
     validate: '/ck:string/ticker:string/type?=number',
     middleware: [
       Middleware.isUserRegistered
-    ]
+    ],
+    permissions: {
+      defaultEnabled: false
+    }
   }
 )
 /**

@@ -6,6 +6,7 @@ import { CommandPermissions } from '../../objects/permission';
 import { ObjectID } from 'bson';
 import { routeLoader } from '../../router/route-loader';
 import { sb } from '../../utils';
+import { TrackedAvailableObject } from '../../objects/available-objects';
 
 export namespace Permissions {
   export async function getAll(routed: WebRouted) {
@@ -18,8 +19,25 @@ export namespace Permissions {
     if (v.valid) {
       // Get the same routes the router loader uses
       const routes = routeLoader()
+      var query: any = {
+        serverID: v.o.serverID
+      }
+
+      // Check ChastiKey enabled state in db
+      var ckEnabledState = await routed.Bot.DB.get<TrackedAvailableObject>('server-settings', {
+        serverID: v.o.serverID, 
+        key: 'server.chastikey.enabled',
+        state: true
+      }) || { value: false, state: true }
+
+      if (!ckEnabledState.value && ckEnabledState.state) {
+        query['command'] = { $not: /^ck-/ }
+      }
+
+      console.log(ckEnabledState, query)
+
       // Get permissions stored in the db
-      const permissions = await routed.Bot.DB.getMultiple<CommandPermissions>('command-permissions', { serverID: v.o.serverID })
+      const permissions = await routed.Bot.DB.getMultiple<CommandPermissions>('command-permissions', query)
       // Sort by permission name
       permissions.sort((a, b) => {
         var x = a.command.toLowerCase();

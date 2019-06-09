@@ -15,7 +15,10 @@ export const Routes = ExportRoutes(
     validate: '/ck:string/username:string/ckusername=string',
     middleware: [
       Middleware.isUserRegistered
-    ]
+    ],
+    permissions: {
+      defaultEnabled: false
+    }
   }
 )
 

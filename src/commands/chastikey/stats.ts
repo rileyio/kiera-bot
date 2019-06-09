@@ -20,6 +20,9 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats lockee',
     name: 'ck-get-stats-lockee',
     validate: '/ck:string/stats:string/lockee:string/user?=string',
+    permissions: {
+      defaultEnabled: false
+    }
   },
   {
     type: 'message',
@@ -29,6 +32,9 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats keyholder "Username"',
     name: 'ck-get-stats-keyholder',
     validate: '/ck:string/stats:string/keyholder:string/user?=string',
+    permissions: {
+      defaultEnabled: false
+    }
   },
   {
     type: 'message',
@@ -38,6 +44,9 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck check multilocked KeyHolderName',
     name: 'ck-check-multilocked',
     validate: '/ck:string/check:string/multilocked:string/user=string',
+    permissions: {
+      defaultEnabled: false
+    }
   },
   {
     type: 'message',
@@ -47,6 +56,9 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck keyholder lockees KeyHolderName',
     name: 'ck-keyholder-lockees',
     validate: '/ck:string/keyholder:string/lockees:string/user=string',
+    permissions: {
+      defaultEnabled: false
+    }
   }
 )
 

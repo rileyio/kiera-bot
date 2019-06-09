@@ -3,7 +3,6 @@ import * as errors from 'restify-errors';
 import { validate } from '../utils/validate';
 import { TrackedUser } from '../../objects/user';
 import { WebRouted } from '../web-router';
-import { ObjectID } from 'bson';
 import { performance } from 'perf_hooks';
 
 export namespace User {
