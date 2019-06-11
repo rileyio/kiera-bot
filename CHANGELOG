@@ -1,7 +1,8 @@
-2.13.0
+3.0.0
 - Updated: API to only return available notifications if server Id is present in lookup template
 - Updated: API will now no longer return CK command permissions if server setting 'server.chastikey.enabled' is false (is by default)
 - Updated: All CK commands are now set to default on new servers to disabled
+- Added: First set of Poll commands (Web view coming soon!)
 
 2.12.0
 - Implemented #8 - Removing tracking of username from TrackedMessage

@@ -153,7 +153,16 @@ Roll die/dice
 `
 
 export const stats = `
-Bot tracked statistics
-
 \`{{prefix}}stats commands\` - Print the top 10 commands and their usage stats
+`
+
+export const poll = `
+Poll
+
+\`{{prefix}}poll new "Is Kiera the cat cute?"\` - Create a new poll
+\`{{prefix}}poll edit 5cfcf44614e8a64034ca89f3 public false\` - Used to edit a paramater of the poll
+\`{{prefix}}poll start 5cfcf44614e8a64034ca89f3\` - Used to display the block which users may vote upon
+\`{{prefix}}poll pick random 5cfcf44614e8a64034ca89f3 :thumbsup:\` - Pick a random react from the specified emoji
+
+Poll Paramaters: \`open\`, \`public\`, \`title\`, \`question\`, \`footer\`
 `

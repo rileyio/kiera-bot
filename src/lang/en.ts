@@ -3,6 +3,7 @@ import * as ChastiKey from './en/chastikey';
 import * as Decision from './en/decision';
 import * as Error from './en/error';
 import * as HelpStrings from './en/help';
+import * as Poll from './en/poll';
 
 export const en = {
   admin: {
@@ -37,9 +38,20 @@ export const en = {
     // limit: HelpStrings.limit,
     main: HelpStrings.main,
     // react: HelpStrings.react,
+    poll: HelpStrings.poll,
     register: HelpStrings.register,
     roll: HelpStrings.roll,
     stats: HelpStrings.stats
   },
-
+  poll: {
+    newPollCreated: Poll.newPollCreated,
+    pollNotFoundInDB: Poll.pollNotFoundInDB,
+    pollPropertyNotFound: Poll.pollPropertyNotFound,
+    pollPropertyUpdated: Poll.pollPropertyUpdated,
+    pollVoteCast: Poll.pollVoteCast,
+    pollVoteRemoved: Poll.pollVoteRemoved,
+    pollExpired: Poll.pollExpired,
+    pollDifferentAuthorID: Poll.pollDifferentAuthorID,
+    pollRandomVoteSelected: Poll.pollRandomVoteSelected
+  }
 }

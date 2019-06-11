@@ -66,6 +66,7 @@ export class Bot {
       // this.DEBUG_MSG_INCOMING.log('raw:', event.t)
       // if (event.t === 'PRESENCE_UPDATE') console.log(event)
       if (!DISCORD_CLIENT_EVENTS.hasOwnProperty(event.t)) return;
+      console.log('reaction')
       await this.onMessageNonCachedReact(event)
     });
 

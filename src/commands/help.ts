@@ -1,4 +1,3 @@
-import * as Middleware from '../middleware';
 import * as Utils from '../utils/'
 import { RouterRouted } from '../router/router';
 import { ExportRoutes } from '../router/routes-exporter';
