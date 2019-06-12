@@ -70,7 +70,6 @@ export class TrackedPoll {
 
   public removeVoteOption(id: string) {
     const voteOptionIndex = this.emojiOptions.findIndex(v => v._id.toHexString() === id)
-    console.log('voteOptionIndex', voteOptionIndex)
     this.votes.splice(voteOptionIndex, 1)
 
     return voteOptionIndex > -1 ? true : false

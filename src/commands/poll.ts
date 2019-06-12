@@ -178,8 +178,6 @@ export async function handleReact(routed: RouterRouted) {
     messageID: new ObjectID(routed.trackedMessage._id)
   })
 
-  console.log('handleReact', storedPoll)
-
   if (storedPoll) {
     storedPoll = new TrackedPoll(storedPoll)
     // Stop if poll is expired/closed
@@ -417,8 +415,6 @@ export async function removeOption(routed: RouterRouted) {
       }))
       return false // Stop here
     }
-
-    console.log(storedPoll)
 
     await routed.message.reply(Utils.sb(Utils.en.poll.pollOptionRemoved, {
       optionID: routed.v.o.optionID,
