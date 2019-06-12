@@ -15,6 +15,10 @@ Use the following commands to edit the above values:
 
 To begin the poll use (this will print the message people actually vote on):
   \`{{prefix}}poll start {{id}}\`
+
+To stop the poll use:
+\`{{prefix}}poll stop {{id}}\`
+
 `
 
 export const pollNotFoundInDB = `Could not find that poll in the Database!`
@@ -29,3 +33,11 @@ export const pollVoteRemoved = `Vote Retracted!`
 export const pollExpired = `Vote **not** cast! Poll has expired.`
 export const pollDifferentAuthorID = `Only the Poll's author may call {{prefix}} this command!`
 export const pollRandomVoteSelected = `Randomly selected: {{emoji}} by: {{by}}`
+export const pollEnded = `The current poll has ended!`
+export const pollOptionAdded = `Poll option has been added!
+  Emoji: {{emoji}} 
+  Description: {{description}}
+
+To remove this option use: \`{{prefix}}poll remove option {{id}} {{optionID}}\``
+export const pollOptionRemoved = `Poll option {{optionID}} removed!`
+export const pollOptionNotFound = `Poll option {{optionID}} could not be found!`

@@ -52,6 +52,10 @@ export const en = {
     pollVoteRemoved: Poll.pollVoteRemoved,
     pollExpired: Poll.pollExpired,
     pollDifferentAuthorID: Poll.pollDifferentAuthorID,
-    pollRandomVoteSelected: Poll.pollRandomVoteSelected
+    pollRandomVoteSelected: Poll.pollRandomVoteSelected,
+    pollEnded: Poll.pollEnded,
+    pollOptionAdded: Poll.pollOptionAdded,
+    pollOptionRemoved: Poll.pollOptionRemoved,
+    pollOptionNotFound: Poll.pollOptionNotFound
   }
 }

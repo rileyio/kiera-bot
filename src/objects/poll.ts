@@ -3,7 +3,7 @@ import { ObjectID } from 'bson';
 export class TrackedPoll {
   public _id: ObjectID
   public authorID: string
-  public emojiOptions: Array<TrackedVoteOption>
+  public emojiOptions: Array<TrackedVoteOption> = []
   public footer: string
   public isOpen: boolean = true
   /**
@@ -56,16 +56,37 @@ export class TrackedPoll {
     const votesFiltered = this.votes.filter(emoji => emoji.vote === vote)
     return votesFiltered[Math.floor(Math.random() * Number(votesFiltered.length))]
   }
+
+  public addVoteOption(option: string, description: string) {
+    const newOption = new TrackedVoteOption({
+      emoji: option,
+      description: description
+    })
+
+    this.emojiOptions.push(newOption)
+
+    return newOption._id
+  }
+
+  public removeVoteOption(id: string) {
+    const voteOptionIndex = this.emojiOptions.findIndex(v => v._id.toHexString() === id)
+    console.log('voteOptionIndex', voteOptionIndex)
+    this.votes.splice(voteOptionIndex, 1)
+
+    return voteOptionIndex > -1 ? true : false
+  }
 }
 
 export class TrackedVoteOption {
   public _id: ObjectID
   public emoji: string
+  public description: string
 
   constructor(init: Partial<TrackedVoteOption>) {
     Object.assign(this, {
       _id: init._id || new ObjectID(),
-      emoji: init.emoji
+      emoji: init.emoji,
+      description: init.description || this.description
     });
   }
 }

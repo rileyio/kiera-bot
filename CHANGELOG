@@ -1,3 +1,9 @@
+3.1.0
+- Improved: Removal of votes from Polls from DB
+- Added: Poll commands to: Stop, Add Option, Remove Option,
+- Added: More poll string responses
+- Updated: Some poll responses will now use DM instead of printing in channels to eliminate clutter
+
 3.0.0
 - Updated: API to only return available notifications if server Id is present in lookup template
 - Updated: API will now no longer return CK command permissions if server setting 'server.chastikey.enabled' is false (is by default)
