@@ -25,7 +25,7 @@ export namespace Permissions {
 
       // Check ChastiKey enabled state in db
       var ckEnabledState = await routed.Bot.DB.get<TrackedAvailableObject>('server-settings', {
-        serverID: v.o.serverID, 
+        serverID: v.o.serverID,
         key: 'server.chastikey.enabled',
         state: true
       }) || { value: false, state: true }
@@ -49,9 +49,13 @@ export namespace Permissions {
 
       // Map in the route examples & categories
       permissions.map(p => {
+        // console.log(p)
         const matchingRoute = routes.find(r => r.name === p.command)
-        p.example = sb(matchingRoute.example)
-        p.category = matchingRoute.category
+        if (matchingRoute) {
+          // console.log(matchingRoute)
+          p.example = sb(matchingRoute.example)
+          p.category = matchingRoute.category
+        }
       })
 
       return routed.res.send(permissions);
