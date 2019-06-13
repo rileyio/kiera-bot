@@ -33,15 +33,26 @@ export const en = {
     ck: HelpStrings.ck,
     decision: HelpStrings.decision,
     flip: HelpStrings.flip,
-    // duration: HelpStrings.duration,
-    // intensity: HelpStrings.intensity,
-    // limit: HelpStrings.limit,
     main: HelpStrings.main,
-    // react: HelpStrings.react,
     poll: HelpStrings.poll,
     register: HelpStrings.register,
     roll: HelpStrings.roll,
-    stats: HelpStrings.stats
+    stats: HelpStrings.stats,
+    /// Used by Main
+    main8Ball: HelpStrings.main8Ball,
+    mainCK: HelpStrings.mainCK,
+    mainDecision: HelpStrings.mainDecision,
+    mainFlip: HelpStrings.mainFlip,
+    mainPoll: HelpStrings.mainPoll,
+    mainRegister: HelpStrings.mainRegister,
+    mainRoll: HelpStrings.mainRoll,
+    mainStats: HelpStrings.mainStats
+    /// Old
+    // duration: HelpStrings.duration,
+    // intensity: HelpStrings.intensity,
+    // limit: HelpStrings.limit,
+    // react: HelpStrings.react,
+
   },
   poll: {
     newPollCreated: Poll.newPollCreated,

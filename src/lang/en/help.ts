@@ -1,19 +1,21 @@
 export const main = `
 Commands will always begin with the \`{{prefix}}\` prefix.
 To see more about a specific command's usage, type \`{{prefix}}help command\`
-You can also begin entering a command like \`{{prefix}}ck\` and if its incomplete
+You can also begin entering a command like \`{{prefix}}poll\` and if its incomplete
 examples will be presented.
-
-(Required before access to most commands becomes available)
-\`{{prefix}}register\` - Registers the user with the bot 
-
-\`{{prefix}}8ball\` - Ask a question, receive an answer
-\`{{prefix}}ck\` - ChastiKey Commands - \`username\` \`ticker\` \`stats\`
-\`{{prefix}}decision\` - Create, Edit or Roll - \`new\` \`roll\`
-\`{{prefix}}flip\` - Flip a coin
-\`{{prefix}}roll\` - Dice roller
-\`{{prefix}}stats\` - Bot tracked statistics
 `
+
+export const mainRegister = `(Required for access to some commands)
+\`{{prefix}}register\` - Registers the user with the bot
+`
+
+export const main8Ball = `\`{{prefix}}8ball\` - Ask a question, receive an answer`
+export const mainCK = `\`{{prefix}}ck\` - ChastiKey Commands - \`username\` \`ticker\` \`stats\``
+export const mainDecision = `\`{{prefix}}decision\` - Create, Edit or Roll - \`new\` \`roll\``
+export const mainFlip = `\`{{prefix}}flip\` - Flip a coin`
+export const mainPoll = `\`{{prefix}}poll\` - Create a poll to vote on`
+export const mainRoll = `\`{{prefix}}roll\` - Dice roller`
+export const mainStats =`\`{{prefix}}stats\` - Bot tracked statistics`
 
 // **[Lockee] Commands (*Must be entered by the device owner*)**
 // \`{{prefix}}session\` - Creates a new session for playing with a device (required for: \`{{prefix}}limit\` \`{{prefix}}duration\` \`{{prefix}}react\`)
