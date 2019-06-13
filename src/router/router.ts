@@ -270,7 +270,6 @@ export class Router {
       // Try to find a route
       var examples = []
       const route = await routes.find(r => {
-        console.log(r)
         // Add to examples
         if (r.permissions.restricted === false) examples.push(r.example)
         else { this.bot.DEBUG_MSG_COMMAND.log(`Router -> Examples for command like '${args[0]}' Restricted!`) }
