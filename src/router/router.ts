@@ -8,6 +8,7 @@ import { CommandPermissions } from '../objects/permission';
 import { Permissions } from '../permissions/';
 import { TrackedAvailableObject } from '../objects/available-objects';
 import { performance } from 'perf_hooks';
+import { fallbackHelp } from '../embedded/fallback-help';
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
 
@@ -293,7 +294,7 @@ export class Router {
         // If no commands are available, don't print the fallback (this typically means
         // the whole route has restrited coammnds)
         if (examples.length === 0) return // stop here
-        await message.channel.sendMessage(`${exampleUseOfCommand}\n${examplesToAppend}`)
+        await message.channel.sendMessage(fallbackHelp(exampleUseOfCommand, examplesToAppend))
 
         // End routing
         // Track in an audit event
