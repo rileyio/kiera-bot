@@ -1,7 +1,7 @@
 module.exports = {
-  apps : [{
+  apps: [{
     name: 'kiera-bot',
-    script: "./start.js",
+    script: './start.js',
 
     // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
     // args: 'one two',
@@ -15,13 +15,13 @@ module.exports = {
     },
     env_production: {
       NODE_ENV: 'production',
-      DEBUG: "ldi:*"
+      DEBUG: 'ldi:*'
     }
   }],
 
-  deploy : {
-    production : {
-      'post-deploy' : 'yarn install && pm2 reload ecosystem.config.js --env production'
+  deploy: {
+    production: {
+      'post-deploy': 'yarn install && pm2 reload ecosystem.config.js --env production'
     }
   }
 };
