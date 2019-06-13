@@ -13,6 +13,7 @@ const prefix = process.env.BOT_MESSAGE_PREFIX
 
 export type RouteConfigurationCategory = ''
   | 'Admin'
+  | 'BNet'
   | 'ChastiKey'
   | 'Fun'
   | 'Info'

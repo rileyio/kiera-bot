@@ -1,10 +1,10 @@
 import { ObjectID } from 'bson';
 
 export class TrackedBotSetting {
-  public readonly _id: ObjectID
+  public readonly _id?: ObjectID
   public added: number
   public author: 'kiera-bot' | string
-  public description: string
+  public description?: string
   public env?: string
   public key: string | RegExp
   public updated: number

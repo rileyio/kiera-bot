@@ -11,6 +11,7 @@ import { BotMonitor } from './monitor';
 import { buildBasePermissions, buildMissingPermissions } from './permissions/builder';
 import { routeLoader } from './router/route-loader';
 import { Audit } from './audit';
+import { BattleNet } from './BNet';
 
 export class Bot {
   public client = new Discord.Client();
@@ -21,6 +22,7 @@ export class Bot {
   public DEBUG_MSG_COMMAND = new Logging.Debug('ldi:command');
   public MsgTracker: MsgTracker
   public version: string
+  public tokens: { bnet: string }
 
   // Audit Manager
   public Audit: Audit = new Audit(this)
@@ -30,25 +32,38 @@ export class Bot {
 
   // Databases
   public DB: MongoDB
-  
+
   // Background tasks
   public Task: Task.TaskManager = new Task.TaskManager()
 
   // Bot msg router
   public Router: Router = new Router(routeLoader(), this)
 
+  // API Services
+  public Service = {
+    BattleNet: new BattleNet()
+  }
+
   public async start() {
     this.DEBUG.log('getting things setup...');
     this.version = packagejson.version
     this.MsgTracker = new MsgTracker(this);
 
-    // Load DBs
+    ////////////////////////////////////////
+    ///// Database Loader //////////////////
+    ////////////////////////////////////////
     this.DB = await MongoDBLoader()
 
+    ////////////////////////////////////////
+    ///// Bot Monitor //////////////////////
+    ////////////////////////////////////////
     // Start bot monitor & all bot dependant services
     this.BotMonitor = new BotMonitor(this)
     await this.BotMonitor.start()
 
+    ////////////////////////////////////////
+    ///// Background Tasks /////////////////
+    ////////////////////////////////////////
     // Register background tasks
     this.Task.start(this, [
       new Task.ChastiKeyAPIRunningLocks(this),
@@ -59,6 +74,9 @@ export class Bot {
       new Task.PermissionsChannelAdditions(this)
     ])
 
+    ////////////////////////////////////////
+    ///// Discord Event Monitor / Routing //
+    ////////////////////////////////////////
     /// Event hndling for non-cached (messages from prior to restart) ///
     this.client.on('raw', async event => {
       if (event.t === null) return
@@ -79,6 +97,18 @@ export class Bot {
     // this.client.on('messageReactionAdd', (react, user) => this.onMessageCachedReactionAdd(react, user))
     ///  Reaction out (Cached)  ///
     // this.client.on('messageReactionRemove', (react, user) => this.onMessageCachedReactionRemove(react, user))
+
+    ////////////////////////////////////////
+    ///// Setup API Services ///////////////
+    ////////////////////////////////////////
+    try {
+      /// BattleNet
+      await this.Service.BattleNet.setup(this)
+      /// Reserved...
+      /// ...
+    } catch (error) {
+      console.log(`Error setting up a service!`, error);
+    }
   }
 
   public async onReady() {
