@@ -22,6 +22,12 @@ export type RouteConfigurationCategory = ''
   | 'Session'
   | 'User'
 
+/**
+ * Discord Command Route
+ *
+ * @export
+ * @interface RouteConfiguration
+ */
 export interface RouteConfiguration {
   category?: RouteConfigurationCategory
   command?: string
@@ -45,18 +51,19 @@ export type RouteActionUserTarget = 'none'
   | 'argument'
   | 'controller-decision'
 
-///
-// Route example
-//
-// {
-//   controller: () => { /* do something here */ },
-//   example: '{{prefix}}ck ticker set type 2',
-//   help: 'ck',
-//   name: 'ticker-set-type',
-//   validate: '/command:string/subroute:string/action:string/action2:string/type:number'
-// }
-
+/**
+ * Message routing configured to Object for use by the router
+ *
+ * @export
+ * @class MessageRoute
+ */
 export class MessageRoute {
+  public readonly _defaultPermissions = {
+    defaultEnabled: true,
+    restricted: false,
+    serverAdminOnly: false
+  }
+
   public command: string
   public commandTarget: RouteActionUserTarget = 'none' // Default to none
   public controller: (routed: RouterRouted) => Promise<Boolean>
@@ -64,10 +71,10 @@ export class MessageRoute {
   public help: string
   public middleware: Array<(routed: RouterRouted) => Promise<RouterRouted | void>> = []
   public name: string
-  public permissions = {
-    defaultEnabled: true,
-    restricted: false,
-    serverAdminOnly: false
+  public permissions: {
+    defaultEnabled: boolean,
+    restricted: boolean,
+    serverAdminOnly: boolean
   }
   public type: 'message' | 'reaction'
   public validate: string
@@ -80,11 +87,15 @@ export class MessageRoute {
     this.command = (this.type === 'message') ? this.getCommand(route.validate) : undefined
     // Setup validation for route
     this.validation = new Validate(route.validate)
+    // Ensure permissions is setup properly
+    this.permissions = this._defaultPermissions
+    Object.assign(this.permissions, route.permissions)
     // Restricted should override defaultEnabled
     this.permissions.defaultEnabled = this.permissions.restricted === true
       ? false
       : this.permissions.defaultEnabled
   }
+
 
   public test(message: string) {
     return this.validation.test(message)
@@ -97,6 +108,12 @@ export class MessageRoute {
   }
 }
 
+/**
+ * The almighty incoming commands router! 
+ *
+ * @export
+ * @class Router
+ */
 export class Router {
   public bot: Bot
   public routes: Array<MessageRoute>
@@ -115,6 +132,16 @@ export class Router {
     this.bot.DEBUG.log(`reacts configured = ${this.routes.filter(r => r.type === 'reaction').length}`)
   }
 
+  /**
+   * Route incoming Reaction Event
+   *
+   * @param {Message} message
+   * @param {string} reaction
+   * @param {User} user
+   * @param {('added' | 'removed')} direction
+   * @returns
+   * @memberof Router
+   */
   public async routeReaction(message: Message, reaction: string, user: User, direction: 'added' | 'removed') {
     // Debug value set in .env
     if (process.env.BOT_BLOCK_REACTS === 'true') return // Should be set if 2 instances of bot are running
@@ -197,6 +224,13 @@ export class Router {
     }
   }
 
+  /**
+   * Route a Message to a Command Controller
+   *
+   * @param {Message} message
+   * @returns
+   * @memberof Router
+   */
   public async routeMessage(message: Message) {
     const runtimeStart = performance.now()
     // Block my own messages
@@ -236,8 +270,10 @@ export class Router {
       // Try to find a route
       var examples = []
       const route = await routes.find(r => {
+        console.log(r)
         // Add to examples
         if (r.permissions.restricted === false) examples.push(r.example)
+        else { this.bot.DEBUG_MSG_COMMAND.log(`Router -> Examples for command like '${args[0]}' Restricted!`) }
         return r.test(message.content) === true
       })
       this.bot.DEBUG_MSG_COMMAND.log(route)
@@ -251,13 +287,15 @@ export class Router {
         var examplesToAppend = ``
         for (let index = 0; index < examples.length; index++) {
           const example = examples[index];
-          examplesToAppend += `\`${Utils.sb(example)}\`${(index < examples.length - 1) ? '   ' : ''}`
+          examplesToAppend += `\`${Utils.sb(example)}\`${(index < examples.length - 1) ? '\n' : ''}`
         }
+
         // Send back in chat
         // If no commands are available, don't print the fallback (this typically means
         // the whole route has restrited coammnds)
         if (examples.length === 0) return // stop here
-        await message.channel.send(`${exampleUseOfCommand}\n${examplesToAppend}`)
+        await message.channel.sendMessage(`${exampleUseOfCommand}\n${examplesToAppend}`)
+
         // End routing
         // Track in an audit event
         this.bot.Audit.NewEntry({
@@ -271,8 +309,9 @@ export class Router {
           type: 'bot.command',
           where: 'Discord'
         })
+
         return; // Hard Stop
-      }
+      } // End of no routes
 
       // Process route
       this.bot.DEBUG_MSG_COMMAND.log('Router -> Route:', route)
@@ -383,6 +422,14 @@ export class Router {
     }
   }
 
+  /**
+   * Perform permissions check
+   *
+   * @private
+   * @param {RouterRouted} routed
+   * @returns
+   * @memberof Router
+   */
   private async processPermissions(routed: RouterRouted) {
     // Get the server level permission for this command stored in the DB
     var globalPermission = await routed.bot.DB
@@ -411,6 +458,12 @@ export class Router {
   }
 }
 
+/**
+ * Payload sent to each Controller
+ *
+ * @export
+ * @class RouterRouted
+ */
 export class RouterRouted {
   public args: Array<string>
   public bot: Bot
