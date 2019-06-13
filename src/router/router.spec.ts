@@ -1,7 +1,7 @@
 import test from 'ava';
 import { MessageRoute, Router } from './router';
 import { Bot } from '..';
-import { setDurationTime } from '../commands/duration';
+import { setDurationTime } from '../commands/lovense/duration';
 import { setTickerType } from '../commands/chastikey/ticker';
 
 var router: Router;

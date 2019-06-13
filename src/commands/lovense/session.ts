@@ -1,12 +1,12 @@
-import * as Middleware from '../middleware';
-import { RouterRouted } from '../router/router';
-import { DeviceSession } from '../objects/sessions';
+import * as Middleware from '../../middleware';
+import { RouterRouted } from '../../router/router';
+import { DeviceSession } from '../../objects/sessions';
 import { ObjectID } from 'bson';
 import { Message } from 'discord.js';
-import { sessionInteractive } from '../embedded/session-embed';
-import { TrackedUser } from '../objects/user';
-import { TrackedServer } from '../objects/server';
-import { ExportRoutes } from '../router/routes-exporter';
+import { sessionInteractive } from '../../embedded/session-embed';
+import { TrackedUser } from '../../objects/user';
+import { TrackedServer } from '../../objects/server';
+import { ExportRoutes } from '../../router/routes-exporter';
 
 export const Routes = ExportRoutes(
   {
@@ -20,7 +20,10 @@ export const Routes = ExportRoutes(
     middleware: [
       Middleware.isUserRegistered,
       Middleware.hasRole(['developer', 'keyholder', 'lockee'])
-    ]
+    ],
+    permissions: {
+      restricted: true
+    }
   },
   {
     type: 'message',
@@ -33,7 +36,10 @@ export const Routes = ExportRoutes(
     middleware: [
       Middleware.isUserRegistered,
       Middleware.hasRole(['developer', 'keyholder', 'lockee'])
-    ]
+    ],
+    permissions: {
+      restricted: true
+    }
   },
   {
     type: 'message',
@@ -46,7 +52,10 @@ export const Routes = ExportRoutes(
     middleware: [
       Middleware.isUserRegistered,
       Middleware.hasRole(['developer', 'keyholder', 'lockee'])
-    ]
+    ],
+    permissions: {
+      restricted: true
+    }
   },
   {
     type: 'reaction',
@@ -57,7 +66,10 @@ export const Routes = ExportRoutes(
     middleware: [
       Middleware.isUserRegistered,
       Middleware.permittedReaction(['😄', '😏', '😬', '😭', '🙄'])
-    ]
+    ],
+    permissions: {
+      restricted: true
+    }
   },
 )
 

@@ -1,9 +1,9 @@
-import * as Middleware from '../middleware';
-import * as Utils from '../utils/';
-import { RouterRouted } from '../router/router';
-import { DeviceSession } from '../objects/sessions';
-import { TrackedUser } from '../objects/user';
-import { ExportRoutes } from '../router/routes-exporter';
+import * as Middleware from '../../middleware';
+import * as Utils from '../../utils';
+import { RouterRouted } from '../../router/router';
+import { DeviceSession } from '../../objects/sessions';
+import { TrackedUser } from '../../objects/user';
+import { ExportRoutes } from '../../router/routes-exporter';
 
 export const Routes = ExportRoutes(
   {
@@ -16,7 +16,10 @@ export const Routes = ExportRoutes(
     validate: '/limit:string/session:string/key=string/value=number',
     middleware: [
       Middleware.hasRole(['lockee', 'developer'])
-    ]
+    ],
+    permissions: {
+      restricted: true
+    }
   }
 )
 
