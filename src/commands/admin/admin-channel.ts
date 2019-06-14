@@ -13,12 +13,10 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}admin channel purge',
     name: 'admin-channel-purge',
     permissions: {
-      restricted: true
+      defaultEnabled: false,
+      serverAdminOnly: true
     },
-    validate: '/admin:string/channel:string/purge:string',
-    middleware: [
-      Middleware.hasRole('Developer')
-    ]
+    validate: '/admin:string/channel:string/purge:string'
   }
 )
 

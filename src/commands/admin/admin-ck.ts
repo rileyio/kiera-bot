@@ -13,12 +13,14 @@ export const Routes = ExportRoutes({
   example: '{{prefix}}admin ck stats refresh',
   name: 'admin-ck-stats-stats',
   permissions: {
-    restricted: true,
+    defaultEnabled: false,
+    serverAdminOnly: true,
+    restrictedTo: [
+      '473856245166506014', // Kevin
+      '146439529824256000' // Emma
+    ]
   },
   validate: '/admin:string/ck:string/stats:string/refresh:string',
-  middleware: [
-    Middleware.hasRole('developer')
-  ]
 })
 
 /**

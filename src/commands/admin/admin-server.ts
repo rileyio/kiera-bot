@@ -24,21 +24,22 @@ export const Routes = ExportRoutes(
     name: 'admin-ping',
     validate: '/ping:string'
   },
-  {
-    type: 'message',
-    category: 'Admin',
-    commandTarget: 'none',
-    controller: forceRestart,
-    example: '{{prefix}}restart bot',
-    name: 'admin-restart-bot',
-    permissions: {
-      restricted: true
-    },
-    validate: '/admin:string/restart:string/bot:string/seconds?=number',
-    middleware: [
-      Middleware.hasRole('developer')
-    ]
-  })
+  // {
+  //   type: 'message',
+  //   category: 'Admin',
+  //   commandTarget: 'none',
+  //   controller: forceRestart,
+  //   example: '{{prefix}}restart bot',
+  //   name: 'root-restart-bot',
+  //   permissions: {
+  //     restricted: true
+  //   },
+  //   validate: '/admin:string/restart:string/bot:string/seconds?=number',
+  //   middleware: [
+  //     Middleware.hasRole('developer')
+  //   ]
+  // }
+)
 
 export async function pingPong(routed: RouterRouted) {
   const startTime = performance.now()
@@ -87,15 +88,15 @@ export async function versionCheck(routed: RouterRouted) {
   return true
 }
 
-export async function forceRestart(routed: RouterRouted) {
-  await routed.message.channel.send(Utils.sb(Utils.en.admin.botManualRestart, {
-    seconds: ((routed.v.o.seconds || 5000) / 1000)
-  }))
+// export async function forceRestart(routed: RouterRouted) {
+//   await routed.message.channel.send(Utils.sb(Utils.en.admin.botManualRestart, {
+//     seconds: ((routed.v.o.seconds || 5000) / 1000)
+//   }))
 
-  setTimeout(() => {
-    process.exit(0)
-  }, routed.v.o.seconds || 5000)
+//   setTimeout(() => {
+//     process.exit(0)
+//   }, routed.v.o.seconds || 5000)
 
-  // Successful end
-  return true
-}
+//   // Successful end
+//   return true
+// }

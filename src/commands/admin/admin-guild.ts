@@ -9,7 +9,11 @@ export const Routes = ExportRoutes(
     controller: checkPermissions,
     example: '{{prefix}}check permissions',
     name: 'admin-check-permissions',
-    validate: '/check:string/permissions:string/user?=string'
+    validate: '/check:string/permissions:string/user?=string',
+    permissions: {
+      defaultEnabled: false,
+      serverAdminOnly: true
+    }
   }
 )
 

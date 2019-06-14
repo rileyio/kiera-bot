@@ -3,6 +3,8 @@
 - Added: Poll commands to: Stop, Add Option, Remove Option,
 - Added: More poll string responses
 - Updated: Some poll responses will now use DM instead of printing in channels to eliminate clutter
+- Permissions check on command routing changed for Server Admins and future commands
+- Adjusted & retired some admin commands
 
 3.0.0
 - Updated: API to only return available notifications if server Id is present in lookup template

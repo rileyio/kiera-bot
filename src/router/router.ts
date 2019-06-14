@@ -20,6 +20,7 @@ export type RouteConfigurationCategory = ''
   | 'Info'
   | 'Integration'
   | 'Reddit'
+  | 'Root'
   | 'Session'
   | 'User'
 
@@ -42,10 +43,26 @@ export interface RouteConfiguration {
     defaultEnabled?: boolean
     restricted?: boolean
     serverAdminOnly?: boolean
+    restrictedTo?: Array<string>
   }
   type: 'message' | 'reaction'
   validate?: string
 }
+
+export interface ProcessedPermissions {
+  // Permissions of user
+  hasAdministrator: boolean
+  hasManageGuild: boolean
+  // Checks
+  outcome?: ProcessedPermissionOutcome
+  // Bool state outcome
+  pass?: boolean
+}
+
+export type ProcessedPermissionOutcome = 'Pass'
+  | 'FailedAdmin'
+  | 'FailedManageGuild'
+  | 'FailedPermissionsCheck'
 
 export type RouteActionUserTarget = 'none'
   | 'author'
@@ -62,7 +79,8 @@ export class MessageRoute {
   public readonly _defaultPermissions = {
     defaultEnabled: true,
     restricted: false,
-    serverAdminOnly: false
+    serverAdminOnly: false,
+    restrictedTo: undefined
   }
 
   public command: string
@@ -75,7 +93,8 @@ export class MessageRoute {
   public permissions: {
     defaultEnabled: boolean,
     restricted: boolean,
-    serverAdminOnly: boolean
+    serverAdminOnly: boolean,
+    restrictedTo: Array<string>
   }
   public type: 'message' | 'reaction'
   public validate: string
@@ -260,7 +279,9 @@ export class Router {
     if (containsPrefix) {
       this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming message: '${message.content}'`)
 
+      // Split message by args (spaces/quoted values)
       const args = Utils.getArgs(message.content)
+
       // Find appropriate routes based on prefix command
       const routes = this.routes.filter(r => r.command === args[0])
       this.bot.DEBUG_MSG_COMMAND.log(`Router -> Routes by '${args[0]}' command: ${routes.length}`)
@@ -330,20 +351,30 @@ export class Router {
       // Only check permissions if message type isn't a dm
       // if (message.channel.type !== 'dm') {
       // Process Permissions
-      if (!await this.processPermissions(routed)) {
+      const permissionCheckResults = await this.processPermissions(routed)
+
+      if (!permissionCheckResults.pass) {
         this.bot.BotMonitor.Stats.increment('commands-invalid')
-        // Notify user via DM
+
+        // If it admin failed, don't go any further at this time
+        if (permissionCheckResults.outcome === 'FailedAdmin') return // Hard Stop
+
+        // Notify user via DM - If this server has the key configured
         const altChannel = await this.bot.DB.get<TrackedAvailableObject>('server-settings', {
           key: 'server.permissions.channel.suggestedCommandChannel',
           serverID: message.guild.id,
           state: true
         })
-        await message.author
-          .sendMessage(Utils.sb(Utils.en.error.commandDisabledInChannel, {
-            command: message.content,
-            channel: altChannel.value,
-            server: message.guild.name
-          }))
+
+        // If an alt channel recommendation is set
+        if (altChannel) {
+          await message.author
+            .sendMessage(Utils.sb(Utils.en.error.commandDisabledInChannel, {
+              command: message.content,
+              channel: altChannel.value,
+              server: message.guild.name
+            }))
+        }
 
         // Track in an audit event
         this.bot.Audit.NewEntry({
@@ -422,6 +453,7 @@ export class Router {
     }
   }
 
+
   /**
    * Perform permissions check
    *
@@ -430,18 +462,37 @@ export class Router {
    * @returns
    * @memberof Router
    */
-  private async processPermissions(routed: RouterRouted) {
+  private async processPermissions(routed: RouterRouted): Promise<ProcessedPermissions> {
+    var checks: ProcessedPermissions = {
+      // Permissions of user
+      hasAdministrator: routed.message.member.hasPermission('ADMINISTRATOR'),
+      hasManageGuild: routed.message.member.hasPermission('MANAGE_GUILD')
+    }
+
+    // [IF: Required Admin] Verify is the user a server admin if command requires it
+    if (routed.route.permissions.serverAdminOnly) {
+      // [FAIL: Admin]
+      if (!checks.hasAdministrator) {
+        checks.outcome = 'FailedAdmin'
+        checks.pass = false
+        return checks // Hard stop here
+      }
+    }
+
     // Get the server level permission for this command stored in the DB
     var globalPermission = await routed.bot.DB
       .get<CommandPermissions>('command-permissions',
         { serverID: routed.message.guild.id, command: routed.route.name })
 
     // Not in DB? Fail
-    if (!globalPermission) return false
+    if (!globalPermission) {
+      checks.outcome = 'FailedPermissionsCheck'
+      checks.pass = false
+      return checks // Stop here
+    }
 
-    // Construst Server Level Command permission
+    // Construct Server Level Command permission
     globalPermission = new CommandPermissions(globalPermission)
-    // tslint:disable-next-line:no-console
     // console.log('globalPermission', globalPermission)
     // console.log('routed.route.name', routed.route.name)
 
@@ -451,10 +502,16 @@ export class Router {
       // role: 'developer'
     })
 
-    if (permissionCheck) return true
+    if (permissionCheck) {
+      checks.outcome = 'Pass'
+      checks.pass = true
+      return checks
+    }
 
     // Fallback - Fail
-    return false
+    checks.outcome = 'FailedPermissionsCheck'
+    checks.pass = false
+    return checks
   }
 }
 

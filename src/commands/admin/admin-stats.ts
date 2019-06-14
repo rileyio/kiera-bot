@@ -11,7 +11,8 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}admin stats',
     name: 'admin-stats',
     permissions: {
-      restricted: true,
+      defaultEnabled: false,
+      serverAdminOnly: true
     },
     validate: '/admin:string/stats:string'
   }
