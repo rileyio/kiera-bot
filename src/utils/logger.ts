@@ -1,11 +1,19 @@
 import * as _Debug from 'debug';
 import * as _Winston from 'winston';
+import { Types } from '.';
 
 export namespace Logging {
   export class Debug {
     public readonly name: string
     private _debug: _Debug.IDebugger
     private _winston: _Winston.Logger
+    /**
+     * Override set at startup
+     * @private
+     * @type {boolean}
+     * @memberof Debug
+     */
+    private _toConsole: boolean = Types.toBoolean(process.env.BOT_LOGGING_CONSOLE)
     private options = {
       console: true
     }
@@ -26,7 +34,7 @@ export namespace Logging {
       }
 
       // If console.opts is set to false, don't add it
-      if (!this.options.console) loggerProps.transports = [
+      if (!this.options.console || !this._toConsole) loggerProps.transports = [
         new _Winston.transports.File({ filename: `./logs/${this.name}.log` })
       ]
 

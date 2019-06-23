@@ -21,6 +21,7 @@ export * from './logger';
 export * from './react';
 export * from '../router/router';
 export * from './string-builder';
+export * from './types';
 export * from '../router/validate';
 export * from './user';
 export * from './url';
