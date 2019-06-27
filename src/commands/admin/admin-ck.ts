@@ -16,8 +16,8 @@ export const Routes = ExportRoutes({
     defaultEnabled: false,
     serverAdminOnly: true,
     restrictedTo: [
-      '473856245166506014', // Kevin
-      '146439529824256000' // Emma
+      '473856245166506014', // KevinCross#0001
+      '146439529824256000'  // Emma#1366
     ]
   },
   validate: '/admin:string/ck:string/stats:string/refresh:string',

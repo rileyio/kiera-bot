@@ -61,6 +61,7 @@ export interface ProcessedPermissions {
 
 export type ProcessedPermissionOutcome = 'Pass'
   | 'FailedAdmin'
+  | 'FailedIDCheck'
   | 'FailedManageGuild'
   | 'FailedPermissionsCheck'
 
@@ -80,7 +81,7 @@ export class MessageRoute {
     defaultEnabled: true,
     restricted: false,
     serverAdminOnly: false,
-    restrictedTo: undefined
+    restrictedTo: []
   }
 
   public command: string
@@ -297,7 +298,6 @@ export class Router {
         else { this.bot.DEBUG_MSG_COMMAND.log(`Router -> Examples for command like '${args[0]}' Restricted!`) }
         return r.test(message.content) === true
       })
-      this.bot.DEBUG_MSG_COMMAND.log(route)
 
       // Stop if there's no specific route found
       if (route === undefined) {
@@ -353,11 +353,13 @@ export class Router {
       // Process Permissions
       const permissionCheckResults = await this.processPermissions(routed)
 
+      this.bot.DEBUG_MSG_COMMAND.log('Router -> Permissions Check Results:', permissionCheckResults)
+
       if (!permissionCheckResults.pass) {
         this.bot.BotMonitor.Stats.increment('commands-invalid')
 
-        // If it admin failed, don't go any further at this time
-        if (permissionCheckResults.outcome === 'FailedAdmin') return // Hard Stop
+        // If it admin failed -or- command is an admin command, don't go any further at this time
+        if (permissionCheckResults.outcome === 'FailedAdmin' || routed.route.permissions.serverAdminOnly) return // Hard Stop
 
         // Notify user via DM - If this server has the key configured
         const altChannel = await this.bot.DB.get<TrackedAvailableObject>('server-settings', {
@@ -467,6 +469,20 @@ export class Router {
       // Permissions of user
       hasAdministrator: routed.message.member.hasPermission('ADMINISTRATOR'),
       hasManageGuild: routed.message.member.hasPermission('MANAGE_GUILD')
+    }
+
+    // [IF: Required user ID] Verify that the user calling is allowd to access (mostly legacy commands)
+    if (routed.route.permissions.restrictedTo.length > 0) {
+      if (routed.route.permissions.restrictedTo.findIndex(snowflake => snowflake === routed.message.author.id) > -1) {
+        checks.outcome = 'Pass'
+        checks.pass = true
+        return checks // stop here
+      }
+      else {
+        checks.outcome = 'FailedIDCheck'
+        checks.pass = false
+        return checks // Hard stop here
+      }
     }
 
     // [IF: Required Admin] Verify is the user a server admin if command requires it
