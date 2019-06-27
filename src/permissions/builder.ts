@@ -54,18 +54,20 @@ export async function buildMissingPermissions(bot: Bot, guild: Guild) {
   const basePermissionsCount = basePermissions.length
   const basePermissionsStoredCount = basePermissionsStored.length
 
-  console.log('basePermissionsCount', guild.name, basePermissionsCount)
-  console.log('basePermissionsStoredCount', guild.name, basePermissionsStoredCount)
+  bot.DEBUG.log('Permissions -> basePermissionsCount', guild.name, basePermissionsCount)
+  bot.DEBUG.log('Permissions -> basePermissionsStoredCount', guild.name, basePermissionsStoredCount)
 
   if (basePermissionsStoredCount === 0) {
     await bot.DB.addMany('command-permissions', buildBasePermissions(guild, bot.Router.routes))
-    console.log('diff', bot.Router.routes.length)
+    bot.DEBUG.log('Permissions -> diff', guild.name, bot.Router.routes.length)
   }
   else {
     // Only add missing ones
     const baseDiff = basePermissions.filter(x => basePermissionsStored.findIndex(y => y.command === x.command) === -1)
-    console.log('diff', baseDiff.length)
+    bot.DEBUG.log('Permissions -> diff', guild.name, baseDiff.length)
     if (baseDiff.length > 0) await bot.DB.addMany('command-permissions', baseDiff)
   }
 
+  // Duplicate cleaner
+  
 }
