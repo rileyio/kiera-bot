@@ -244,7 +244,7 @@ export class MongoDB {
     const result = await collection.aggregate(query)
     // this.DEBUG_DB.log(`.aggregate results [${targetCollection}] =>`, result)
     // connection.client.close()
-    return (await result.toArray())
+    return (await result.toArray() as Array<T>)
   }
 
   // public get<Q, T>(query: Q, discriminator?: string) {

@@ -71,7 +71,8 @@ export class Bot {
       new Task.ChastiKeyAPILockees(this),
       new Task.ChastiKeyAPITotalLockedTime(this),
       new Task.PermissionsGlobalAdditions(this),
-      new Task.PermissionsChannelAdditions(this)
+      new Task.PermissionsChannelAdditions(this),
+      new Task.PermissionsGlobalCleanup(this)
     ])
 
     ////////////////////////////////////////

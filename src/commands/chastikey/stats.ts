@@ -280,7 +280,7 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
   // Generate regex for username to ignore case
   const usernameRegex = new RegExp(`^${routed.v.o.user}$`, 'i')
   // Get multiple KH locks from db
-  const activeLocks = await routed.bot.DB.aggregate('ck-running-locks', [
+  const activeLocks = await routed.bot.DB.aggregate<any>('ck-running-locks', [
     {
       $match: { lockedBy: { $ne: null } }
     },
@@ -314,7 +314,7 @@ export async function getKeyholderLockees(routed: RouterRouted) {
   // Generate regex for username to ignore case
   const usernameRegex = new RegExp(`^${routed.v.o.user}$`, 'i')
   // Get lockees under a KH
-  const activeLocks = await routed.bot.DB.aggregate('ck-running-locks', [
+  const activeLocks = await routed.bot.DB.aggregate<any>('ck-running-locks', [
     {
       $match: { lockedBy: usernameRegex }
     },

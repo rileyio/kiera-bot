@@ -1,7 +1,7 @@
 import { Task } from '../task';
 import { CommandPermissions, CommandPermissionsAllowed } from '../../objects/permission';
 import { ObjectID } from 'bson';
-import { buildMissingPermissions } from '../../permissions/builder';
+import { buildMissingPermissions, cleanupDuplicates } from '../../permissions/builder';
 
 export class PermissionsChannelAdditions extends Task {
   public previousRefresh: number = 0
@@ -91,6 +91,26 @@ export class PermissionsGlobalAdditions extends Task {
       const guild = guilds[index];
       await buildMissingPermissions(this.Bot, guild)
     }
+
+    this.previousRefresh = Date.now()
+
+    // Done
+    return true
+  }
+}
+
+export class PermissionsGlobalCleanup extends Task {
+  public previousRefresh: number = 0
+
+  name = 'PermissionsGlobalCleanup'
+  run = this.cleanup
+  isAsync = true
+  frequency = 6000 // every 1 hr
+
+  protected async cleanup() {
+    if ((Date.now() - this.previousRefresh) < this.frequency) return true // Block as its too soon
+
+    await cleanupDuplicates(this.Bot)
 
     this.previousRefresh = Date.now()
 

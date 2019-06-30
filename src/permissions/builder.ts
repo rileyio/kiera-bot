@@ -2,6 +2,14 @@ import { CommandPermissions, CommandPermissionsAllowed } from '../objects/permis
 import { MessageRoute } from '../utils';
 import { Guild } from 'discord.js';
 import { Bot } from '..';
+import { ObjectID } from 'bson';
+
+interface PermissionsDuplicates {
+  _id: { _id: ObjectID, serverID: string }
+  matches: Array<{ _id: ObjectID, serverID: string }>
+  original: ObjectID
+  count: number
+}
 
 export function buildSetOnInsert(permissionsBuilt: Array<CommandPermissions>) {
   return permissionsBuilt.map(p => { return { $setOnInsert: p } })
@@ -67,7 +75,44 @@ export async function buildMissingPermissions(bot: Bot, guild: Guild) {
     bot.DEBUG.log('Permissions -> diff', guild.name, baseDiff.length)
     if (baseDiff.length > 0) await bot.DB.addMany('command-permissions', baseDiff)
   }
+}
 
-  // Duplicate cleaner
-  
+// Duplicate cleaner
+export async function cleanupDuplicates(bot: Bot) {
+  const serverDuplicatePermissions = await bot.DB.aggregate<PermissionsDuplicates>('command-permissions', [
+    // Only look at the current server// 
+    //  { $match: { serverID: '473856867768991744' } },
+    // { $match: { command: 'poll-edit' } },
+    // Group together all matching entries by command name
+    {
+      $group: {
+        _id: { _id: '$command', serverID: '$serverID' },
+        // _id: '$command',
+        matches: {
+          $push: { _id: '$_id' }
+        },
+        original: { $first: '$_id' },
+        count: { $sum: 1 },
+      }
+    },
+    // Filter out only ones that contain dups
+    { $match: { count: { '$gt': 1 } } },
+  ])
+
+  var toRemove = [] as Array<ObjectID>
+
+  for (let index = 0; index < serverDuplicatePermissions.length; index++) {
+    const permissionDup = serverDuplicatePermissions[index];
+
+    for (let index = 0; index < permissionDup.matches.length; index++) {
+      const permissionsMatch_id = permissionDup.matches[index];
+      // Only add if its not the original to the Array of ObjectIDs to remove
+      if (!permissionDup.original.equals(permissionsMatch_id._id)) {
+        toRemove.push(permissionsMatch_id._id)
+        bot.DEBUG_MSG_SCHEDULED.log(`Permissions -> Duplicate cleaner, ServerID: ${permissionsMatch_id.serverID}, _id: ${permissionsMatch_id._id.toHexString()}`)
+      }
+    }
+  }
+
+  await bot.DB.remove<any>('command-permissions', { _id: { $in: toRemove } }, { deleteOne: false })
 }
