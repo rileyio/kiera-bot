@@ -46,7 +46,7 @@ export class BattleNet {
     if (this.isTokenStored) {
       console.log('BattleNet -> Updated Token(s): ', await this.bot.DB.update<TrackedBotSetting>('settings',
         { key: 'bot.bnet.api.accessToken' },
-        { $set: { value: resp.data.access_token } },
+        { $set: { value: resp.data.access_token, updated: Date.now() } },
         { atomic: true }))
     }
     else {
