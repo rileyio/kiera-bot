@@ -105,7 +105,7 @@ export class PermissionsGlobalCleanup extends Task {
   name = 'PermissionsGlobalCleanup'
   run = this.cleanup
   isAsync = true
-  frequency = 6000 // every 1 hr
+  frequency = 3600000 // every 1 hr
 
   protected async cleanup() {
     if ((Date.now() - this.previousRefresh) < this.frequency) return true // Block as its too soon
