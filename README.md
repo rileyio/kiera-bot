@@ -88,6 +88,9 @@ API Endpoint:
 
 ## Commands
 
+- BNet
+  - `wow character us Stormreaver Jaydox` - Lookup WoW Character
+
 - ChastiKey Specific
   - `ck username YourUsername` - Configures ChastiKey App username for defaults
   - `ck ticker` - Returns your ticker
@@ -113,6 +116,11 @@ API Endpoint:
   - `roll 20` - Roll a single die with 20 sides
   - `roll 10 6` - Roll multiple (10) dice with given number of sides (6)
 
-- Session
-  - `session` - Creates a new session for playing with a device (required for: `limit` | `duration` | `react`)
-  - `limit` - Lockee defined limits (Cannot be surpassed by KH.. at this time..)
+- Poll
+  - `poll new "Is Kiera the cat cute?"`
+  - `poll edit 5cfcf44614e8a64034ca89f3 public false`
+  - `poll start 5cfcf44614e8a64034ca89f3`
+  - `poll stop 5cfcf44614e8a64034ca89f3`
+  - `poll pick random 5cfcf44614e8a64034ca89f3 :thumbsup:`
+  - `poll add option 5cfcf44614e8a64034ca89f3 :thumbsup: "Optional description here"`
+  - `poll add option 5cfcf44614e8a64034ca89f3 :thumbsup:`
