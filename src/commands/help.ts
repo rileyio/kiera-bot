@@ -36,6 +36,7 @@ export async function genericFallback(routed: RouterRouted) {
   var helpBlock = Utils.en.help.main + '\n'
   helpBlock += Utils.en.help.mainRegister + '\n'
   helpBlock += Utils.en.help.main8Ball + '\n'
+  helpBlock += Utils.en.help.mainBNet + '\n'
   if (ckEnabledState.value === true && ckEnabledState.state === true) helpBlock += Utils.en.help.mainCK + '\n'
   helpBlock += Utils.en.help.mainDecision + '\n'
   helpBlock += Utils.en.help.mainFlip + '\n'

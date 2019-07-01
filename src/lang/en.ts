@@ -1,4 +1,5 @@
 import * as Admin from './en/admin';
+import * as BNet from './en/bnet';
 import * as ChastiKey from './en/chastikey';
 import * as Decision from './en/decision';
 import * as Error from './en/error';
@@ -8,6 +9,9 @@ import * as Poll from './en/poll';
 export const en = {
   admin: {
     botManualRestart: Admin.botManualRestart,
+  },
+  bnet: {
+    bnetCharacterNotFound: BNet.bnetCharacterNotFound
   },
   chastikey: {
     adminRefreshStats: ChastiKey.adminRefreshStats,
@@ -30,6 +34,7 @@ export const en = {
     userNotRegistered: Error.userNotRegistered
   },
   help: {
+    bnet: HelpStrings.bnet,
     ck: HelpStrings.ck,
     decision: HelpStrings.decision,
     flip: HelpStrings.flip,
@@ -40,6 +45,7 @@ export const en = {
     stats: HelpStrings.stats,
     /// Used by Main
     main8Ball: HelpStrings.main8Ball,
+    mainBNet: HelpStrings.mainBNet,
     mainCK: HelpStrings.mainCK,
     mainDecision: HelpStrings.mainDecision,
     mainFlip: HelpStrings.mainFlip,
