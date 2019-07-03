@@ -94,6 +94,8 @@ export async function wowCharacterProfile(routed: RouterRouted) {
       name: routed.v.o.name
     })
 
+    routed.bot.Service.BattleNet.DEBUG_BNET.log('BattleNet -> Request successful!,', `/${routed.v.o.region}/${routed.v.o.server}/${routed.v.o.name}/`)
+
     // await routed.message.reply(
     //   '```json\n' +
     //   JSON.stringify(
@@ -102,59 +104,61 @@ export async function wowCharacterProfile(routed: RouterRouted) {
     //   + '```'
     // )
 
-    await routed.message.channel.sendEmbed({
-      'title': resp.data.name,
-      'description': `${BlizzardWoWClassRace[resp.data.race]} ${BlizzardWoWClassID[resp.data.class]}\n${BlizzardWoWClassFaction[resp.data.faction]}`,
-      'url': `https://worldofwarcraft.com/en-us/character/${routed.v.o.region}/${resp.data.realm}/${resp.data.name}`,
-      'color': 12457659,
-      'timestamp': new Date(resp.data.lastModified),
-      'footer': {
-        'text': 'Last Updated'
-      },
-      'thumbnail': {
-        'url': `http://render-${routed.v.o.region}.worldofwarcraft.com/character/${resp.data.thumbnail}`
-      },
-      'image': {
-        'url': `http://render-${routed.v.o.region}.worldofwarcraft.com/character/${resp.data.thumbnail.replace('avatar', 'main')}`
-      },
-
-      'fields': [
-        {
-          'name': 'Region-Realm',
-          'value': `${routed.v.o.region.toString().toUpperCase()}-${resp.data.realm}`,
-          'inline': true
+    await routed.message.channel.send({
+      embed: {
+        'title': resp.data.name,
+        'description': `${BlizzardWoWClassRace[resp.data.race]} ${BlizzardWoWClassID[resp.data.class]}\n${BlizzardWoWClassFaction[resp.data.faction]}`,
+        'url': `https://worldofwarcraft.com/en-us/character/${routed.v.o.region}/${resp.data.realm}/${resp.data.name}`,
+        'color': 12457659,
+        'timestamp': new Date(resp.data.lastModified),
+        'footer': {
+          'text': 'Last Updated'
         },
-        {
-          'name': 'Level',
-          'value': resp.data.level.toString(),
-          'inline': true
+        'thumbnail': {
+          'url': `http://render-${routed.v.o.region}.worldofwarcraft.com/character/${resp.data.thumbnail}`
         },
-        {
-          'name': 'Achievement Points',
-          'value': resp.data.achievementPoints.toString(),
-          'inline': false
-        },
-        {
-          'name': 'Total Honorable Kills',
-          'value': resp.data.totalHonorableKills.toString(),
-          'inline': false
+        'image': {
+          'url': `http://render-${routed.v.o.region}.worldofwarcraft.com/character/${resp.data.thumbnail.replace('avatar', 'main')}`
         },
 
-        {
-          'name': 'Average Item Level',
-          'value': resp.data.items.averageItemLevel.toString(),
-          'inline': true
-        },
-        {
-          'name': '(Equipped)',
-          'value': resp.data.items.averageItemLevelEquipped.toString(),
-          'inline': true
-        }
-      ]
+        'fields': [
+          {
+            'name': 'Region-Realm',
+            'value': `${routed.v.o.region.toString().toUpperCase()}-${resp.data.realm}`,
+            'inline': true
+          },
+          {
+            'name': 'Level',
+            'value': resp.data.level.toString(),
+            'inline': true
+          },
+          {
+            'name': 'Achievement Points',
+            'value': resp.data.achievementPoints.toString(),
+            'inline': false
+          },
+          {
+            'name': 'Total Honorable Kills',
+            'value': resp.data.totalHonorableKills.toString(),
+            'inline': false
+          },
+
+          {
+            'name': 'Average Item Level',
+            'value': resp.data.items.averageItemLevel.toString(),
+            'inline': true
+          },
+          {
+            'name': '(Equipped)',
+            'value': resp.data.items.averageItemLevelEquipped.toString(),
+            'inline': true
+          }
+        ]
+      }
     })
 
   } catch (error) {
-    console.log(error.response.data)
+    routed.bot.Service.BattleNet.DEBUG_BNET.log('BattleNet -> Error:', error.message)
     if (error.response.data.status === 'nok') await routed.message.reply(sb(en.bnet.bnetCharacterNotFound))
   }
 

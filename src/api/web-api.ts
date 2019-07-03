@@ -20,7 +20,7 @@ export class WebAPI {
   protected router: WebRouter
   protected readonly port: number = Number(process.env.API_PORT || 8234)
   protected readonly prefix: string = '/api'
-  protected DEBUG_WEBAPI = Debug('ldi:WebAPI');
+  protected DEBUG_WEBAPI = Debug('WebAPI');
 
   constructor(bot: Bot) {
     this.Bot = bot

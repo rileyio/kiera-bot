@@ -49,7 +49,7 @@ export class MongoDB {
   }
 
   constructor() {
-    this.DEBUG_DB = new Logging.Debug(`ldi:database`, { console: false })
+    this.DEBUG_DB = new Logging.Debug(`database`, { console: false })
   }
 
   public async connect() {

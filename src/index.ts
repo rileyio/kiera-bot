@@ -15,11 +15,11 @@ import { BattleNet } from './BNet';
 
 export class Bot {
   public client = new Discord.Client();
-  public DEBUG = new Logging.Debug('ldi:bot');
-  public DEBUG_MIDDLEWARE = new Logging.Debug('ldi:midddleware');
-  public DEBUG_MSG_INCOMING = new Logging.Debug('ldi:incoming');
-  public DEBUG_MSG_SCHEDULED = new Logging.Debug('ldi:scheduled');
-  public DEBUG_MSG_COMMAND = new Logging.Debug('ldi:command');
+  public DEBUG = new Logging.Debug('bot');
+  public DEBUG_MIDDLEWARE = new Logging.Debug('midddleware');
+  public DEBUG_MSG_INCOMING = new Logging.Debug('incoming');
+  public DEBUG_MSG_SCHEDULED = new Logging.Debug('scheduled');
+  public DEBUG_MSG_COMMAND = new Logging.Debug('command');
   public MsgTracker: MsgTracker
   public version: string
   public tokens: { bnet: string }
