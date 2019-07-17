@@ -71,6 +71,14 @@ export class TrackedChastiKeyLock {
   public build: number
   public lockedBy: string
   public display_in_stats: number
+  public sharedLockName: string
+  /// Cards ///
+  public double_up_cards: number
+  public freeze_cards: number
+  public green_cards: number
+  public red_cards: number
+  public reset_cards: number
+  public yellow_cards: number
 }
 
 export class TrackedChastiKeyUserAPIFetch {

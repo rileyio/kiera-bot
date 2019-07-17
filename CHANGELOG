@@ -2,6 +2,8 @@
 - Logging changes for output
 - Updated: CK logging
 - Updated: CK Average is now calculated off of the calculated cumulative
+- Added: CK Lock name
+- Added: CK Lock cards required counts (if info is not hidden)
 
 3.1.0
 - Improved: Removal of votes from Polls from DB

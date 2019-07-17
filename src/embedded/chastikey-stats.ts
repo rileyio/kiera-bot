@@ -49,7 +49,7 @@ const cardsEmoji = {
   Reset: `<:resetcard:498994540418695168>`,
   Red: `<:redcard:498994540338872351>`,
   GoAgain: '<:goagain:539107316423720975>',
-  // greencard: `<:greencard:498994537507717140>`,
+  Green: `<:greencard:498994537507717140>`,
   DoubleUp: `<:doubleup:498994541362282506>`,
   Freeze: `<:freezecard:498994540326158336>`
 }
@@ -133,7 +133,14 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   // Map each card from Array , to the correct discord Emoji & ID»
   discardPile.forEach(card => { if (card !== '') discardPileStr += `${cardsEmoji[card]}` })
 
-  var name = `Active Lock ${(index + 1)}`
+  // When the lock has a name
+  if (lock.sharedLockName !== '') {
+    var name = `Active Lock ${(index + 1)} (\`${lock.sharedLockName}\`)`
+  }
+  else {
+    var name = `Active Lock ${(index + 1)}`
+  }
+
   name += ` ${(lock.card_info_hidden || lock.timer_hidden) ? indicatorEmoji.Hidden : ''}`
   name += ` ${(lock.lock_frozen_by_keyholder || lock.lock_frozen_by_card)
     ? (lock.lock_frozen_by_keyholder) ? indicatorEmoji.Frozen : cardsEmoji.Freeze : ''}`
@@ -146,6 +153,25 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
     value += `\nDetails \`${cumulative}\` regularity \`${regularity}\` with \`${lock.noOfTurns}\` turns made.`
     if (totalExpected < 6) value += `\nThe last (${discardPile.length}) cards discarded (not greens):\n${discardPileStr}`
     else value += `\n${discardPileStr}`
+
+    if (lock.card_info_hidden === 0) {
+      // Extra space
+      value += `\n\nCards Required:`
+
+      // Green cards
+      value += `\n${cardsEmoji.Green} \`${lock.green_cards}\``
+      // Yellow cards
+      value += `\n${cardsEmoji.YellowAdd1} \`${lock.yellow_cards}*\``
+      // Red cards
+      value += `\n${cardsEmoji.Red} \`${lock.red_cards}\``
+      // Double Up cards
+      value += `\n${cardsEmoji.DoubleUp} \`${lock.double_up_cards}\``
+      // Reset Up cards
+      value += `\n${cardsEmoji.Reset} \`${lock.reset_cards}\``
+
+      // Disclaimer for now about yellow emoji
+      value += `\n\n \`*The yellow card +1 emoji is temporary\``
+    }
   }
   else {
     value += `\nDetails \`Fixed\`.`
