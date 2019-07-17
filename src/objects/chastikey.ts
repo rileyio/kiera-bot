@@ -111,6 +111,7 @@ export class TrackedKeyholderStatistics {
   public averageRating: number
   public noOfRatings: number
   public display_in_stats: number
+  public dateFirstKeyheld: string
 
   constructor(init: Partial<TrackedKeyholderStatistics>) {
     Object.assign(this, init);

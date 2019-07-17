@@ -194,11 +194,23 @@ export function keyholderStats(data: TrackedKeyholderStatistics, options: { show
     ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)`
     : ''
   var description = ``
+
+  const dateRearrangedYYYY = data.dateFirstKeyheld.substr(6, 4)
+  const dateRearrangedMM = data.dateFirstKeyheld.substr(3, 2)
+  const dateRearrangedDD = data.dateFirstKeyheld.substr(0, 2)
+  const dateFormatted = new Date(`${dateRearrangedYYYY}-${dateRearrangedMM}-${dateRearrangedDD}`)
+  const dateFirstKHAgo = (data.joined !== '-')
+    ? `(${Math.round((Date.now() - dateFormatted.getTime()) / 1000 / 60 / 60 / 24)} days ago)`
+    : ''
+
+  var dateRearranged = `${dateRearrangedYYYY}-${dateRearrangedMM}-${dateRearrangedDD}`
+
   if (data.noOfRatings > 4 && options.showRating) description += `Avg Rating **\`${data.averageRating}\`** | # Ratings **\`${data.noOfRatings}\`**\n`
   description += `# of Users Locked **\`${data.noOfLocksManagingNow}\`**\n`
   description += `# of Locks Flagged As Trusted **\`${data.noOfLocksFlaggedAsTrusted}\`** <:trustkeyholder:474975187310346240>\n`
   description += `# of Shared Locks **\`${data.noOfSharedLocks}\`**\nTotal Locks Managed **\`${data.totalLocksManaged}\`**\n`
-  description += `Joined \`${data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}`
+  description += `Joined \`${data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}\n`
+  description += `Date first keyheld \`${dateRearranged}\` ${dateFirstKHAgo}`
 
   return {
     embed: {
