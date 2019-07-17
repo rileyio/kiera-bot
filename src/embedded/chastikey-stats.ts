@@ -1,5 +1,6 @@
 import { TrackedChastiKeyLock, TrackedKeyholderStatistics } from '../objects/chastikey';
 import { performance } from 'perf_hooks';
+import * as Utils from '../utils/';
 
 export interface LockeeStats {
   averageLocked: number
@@ -55,7 +56,7 @@ const cardsEmoji = {
 
 export function lockeeStats(data: LockeeStats, options: { showRating: boolean }) {
   var fields: Array<{ name: string; value: string; }> = []
-  
+
   data.locks.forEach((l, i) => {
     if (i > 19) return // Skip, there can only be 20 locks in the db, this means theres an issue server side
     fields.push(lockEntry(i, l, fields.length))
@@ -75,7 +76,7 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean })
   var description = `Locked for \`${data.monthsLocked}\` months to date | \`${data.totalNoOfCompletedLocks}\` locks completed`
   // Only show the ratings if the user has > 5
   if (data.noOfRatings > 4 && options.showRating) description += ` | Avg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\``
-  description += `\nLongest \`${calculateHumanTime(data.longestLock)}\` | Average Time Locked \`${calculateHumanTime(data.averageLocked)}\``
+  description += `\nLongest \`${Utils.Date.calculateHumanTimeDDHHMM(data.longestLock)}\` | Average Time Locked \`${Utils.Date.calculateHumanTimeDDHHMM(data.averageLocked)}\``
   description += `\nJoined \`${data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}`
 
   const messageBlock = {
@@ -102,22 +103,6 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean })
   return messageBlock
 }
 
-function calculateHumanTime(seconds: number) {
-  // Calculate human readible time for lock from seconds
-  const timelocked = seconds
-  var min = Math.floor(timelocked / 60)
-  var hrs = Math.floor(min / 60)
-  min = min % 60
-  var days = Math.floor(hrs / 24)
-  hrs = hrs % 24
-
-  const timeToShowDays = `${days > 9 ? + days : '0' + days}d`
-  const timeToShowHours = `${hrs > 9 ? + hrs : '0' + hrs}h`
-  const timeToShowMins = `${min > 9 ? + min : '0' + min}m`
-
-  return `${timeToShowDays} ${timeToShowHours} ${timeToShowMins}`
-}
-
 /**
  * Generate an entry for each lock
  * @param {number} index
@@ -129,7 +114,7 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   const cumulative = lock.cumulative === 1 ? 'Cumulative' : 'Non-Cumulative'
 
   // Calculate human readible time for lock from seconds
-  const combined = calculateHumanTime(lock.secondsLocked)
+  const combined = Utils.Date.calculateHumanTimeDDHHMM(lock.secondsLocked)
 
   // Calculate regularity
   var regularity = ``
@@ -140,9 +125,9 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   // Calculate count and Prep discard pile
   var discardPile = lock.discard_pile.split(',').filter(c => c !== '')
   // If the cardpile is above 15 cards remove the last 5 (oldest 5)
-  if (totalExpected <= 5 && discardPile.length > 5) { discardPile.splice(15, 22); console.log(totalExpected, 'NOT extra splicy') }
+  if (totalExpected <= 5 && discardPile.length > 5) { discardPile.splice(15, 22); /* console.log(totalExpected, 'NOT extra splicy') */ }
   // Splice even more if this is beyond 3 locks to prevent hitting the Discord limit
-  if (totalExpected > 5 && discardPile.length > 3) { discardPile.splice(3, 22); console.log(totalExpected, 'extra splicy') }
+  if (totalExpected > 5 && discardPile.length > 3) { discardPile.splice(3, 22); /* console.log(totalExpected, 'extra splicy') */ }
   var discardPileStr = ``
 
   // Map each card from Array , to the correct discord Emoji & ID»

@@ -30,6 +30,7 @@ export namespace Date {
     var cumulative = [];
     var cIndex = 0;
     var cTime = 0
+    var aTime = 0
 
     // Use the first pair in the index as the starting point
     cumulative.push(dates[0]);
@@ -69,6 +70,9 @@ export namespace Date {
     // Calculate sums
     cTime = cumulative.reduce((s, c) => s += c.end - c.start, 0)
 
+    // Calculate averge
+    aTime = cTime / cIndex
+
     //////////////////////
     ///  Actual Code END
     ///////////////////
@@ -79,6 +83,22 @@ export namespace Date {
     // console.log('results:', cumulative);
     // console.log(`cumulative time: ${cTime} seconds, (${cTime / 2592000})`)
 
-    return cTime
+    return { cumulative: cTime, average: aTime }
+  }
+
+  export function calculateHumanTimeDDHHMM(seconds: number) {
+    // Calculate human readible time for lock from seconds
+    const timelocked = seconds
+    var min = Math.floor(timelocked / 60)
+    var hrs = Math.floor(min / 60)
+    min = min % 60
+    var days = Math.floor(hrs / 24)
+    hrs = hrs % 24
+
+    const timeToShowDays = `${days > 9 ? + days : '0' + days}d`
+    const timeToShowHours = `${hrs > 9 ? + hrs : '0' + hrs}h`
+    const timeToShowMins = `${min > 9 ? + min : '0' + min}m`
+
+    return `${timeToShowDays} ${timeToShowHours} ${timeToShowMins}`
   }
 }

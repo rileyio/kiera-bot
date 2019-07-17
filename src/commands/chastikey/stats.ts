@@ -111,7 +111,7 @@ export async function getLockeeStats(routed: RouterRouted) {
     // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
     dates = dates.map(d => {
       // Insert current date on existing locked locks that are not deleted
-      console.log(d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0, d.timestampLocked)
+      // console.log(d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0, d.timestampLocked)
 
       // Remove unlocked time if the lock status is: Locked, Deleted and has a Completion timestamp
       if (d.timestampUnlocked > 0 && d.status === 'Locked' && d.lockDeleted === 1) {
@@ -120,7 +120,7 @@ export async function getLockeeStats(routed: RouterRouted) {
       }
 
       if (d.timestampUnlocked === 0 && (d.status === 'Locked' || d.status === 'ReadyToUnlock') && d.lockDeleted === 0) {
-        console.log('set to:', Math.round(Date.now() / 1000))
+        // console.log('set to:', Math.round(Date.now() / 1000))
         d.timestampUnlocked = Math.round(Date.now() / 1000)
       }
 
@@ -129,7 +129,12 @@ export async function getLockeeStats(routed: RouterRouted) {
     })
 
     // Calculate cumulative using algorithm
-    calculatedCumulative = Math.round((Utils.Date.calculateCumulativeRange(dates) / 2592000) * 100) / 100
+    var cumulativeCalc = Utils.Date.calculateCumulativeRange(dates)
+    calculatedCumulative = Math.round((cumulativeCalc.cumulative / 2592000) * 100) / 100
+    // Calculate average
+    // console.log('!!! Average:', cumulativeCalc.average)
+    // console.log('!!! Average:', Utils.Date.calculateHumanTimeDDHHMM(cumulativeCalc.average))
+
   } catch (error) {
     calculatedCumulative = (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : NaN
   }
@@ -172,7 +177,7 @@ export async function getLockeeStats(routed: RouterRouted) {
   // console.log('userFromAPIresp.body', userFromAPIresp.body)
 
   await routed.message.channel.send(lockeeStats({
-    averageLocked: (userInLockeeStats) ? userInLockeeStats.averageTimeLockedInSeconds : 0,
+    averageLocked: (userInLockeeStats) ? cumulativeCalc.average : userInLockeeStats.averageTimeLockedInSeconds,
     averageRating: (userInLockeeStats) ? userInLockeeStats.averageRating : '-',
     cacheTimestamp: (activeLocks.length > 0) ? activeLocks[0].timestampNow : '',
     locks: activeLocks,

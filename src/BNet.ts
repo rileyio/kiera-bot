@@ -36,12 +36,6 @@ export class BattleNet {
       }
     }
 
-    console.log({
-      secret: this.ClientSecret,
-      clientID: this.ClientID,
-      accessToken: this.ClientAccessToken
-    })
-
     this.DEBUG_BNET.log('BattleNet -> Ready')
   }
 
