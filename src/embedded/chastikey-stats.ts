@@ -41,17 +41,18 @@ const indicatorEmoji = {
 }
 
 const cardsEmoji = {
-  YellowMinus2: `<:yellowremove2:539085546136535110>`,
-  YellowMinus1: `<:yellowremove1:539085541724127242>`,
-  YellowAdd3: `<:yellowadd3:539085545368846353>`,
-  YellowAdd2: `<:yellowadd2:539085543699513368>`,
-  YellowAdd1: `<:yellowadd1:539085541526994964>`,
-  Reset: `<:resetcard:498994540418695168>`,
-  Red: `<:redcard:498994540338872351>`,
-  GoAgain: '<:goagain:539107316423720975>',
-  Green: `<:greencard:498994537507717140>`,
-  DoubleUp: `<:doubleup:498994541362282506>`,
-  Freeze: `<:freezecard:498994540326158336>`
+  Yellow: `<:10:601169212370583553>`,
+  YellowMinus2: `<:12:601169259107713045>`,
+  YellowMinus1: `<:11:601169242859110436>`,
+  YellowAdd3: `<:9_:601169195744362516>`,
+  YellowAdd2: `<:8_:601169176651890700>`,
+  YellowAdd1: `<:7_:601169162370416640>`,
+  Reset: `<:6_:601169148843917322>`,
+  Red: `<:5_:601169109954330635>`,
+  GoAgain: '<:2_:601169068837568542>',
+  Green: `<:3_:601169082066141238>`,
+  DoubleUp: `<:4_:601169095982841856>`,
+  Freeze: `<:1_:601169050294419476>`
 }
 
 export function lockeeStats(data: LockeeStats, options: { showRating: boolean }) {
@@ -165,18 +166,17 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
       value += `\n\nCards Remaining:`
 
       // Green cards
-      value += `\n${cardsEmoji.Green} \`${lock.green_cards}\``
+      value += `${cardsEmoji.Green} \`${lock.green_cards}\` `
       // Yellow cards
-      value += `\n${cardsEmoji.YellowAdd1} \`${lock.yellow_cards}*\``
+      value += `${cardsEmoji.Yellow} \`${lock.yellow_cards}*\` `
       // Red cards
-      value += `\n${cardsEmoji.Red} \`${lock.red_cards}\``
+      value += `${cardsEmoji.Red} \`${lock.red_cards}\` `
       // Double Up cards
-      value += `\n${cardsEmoji.DoubleUp} \`${lock.double_up_cards}\``
+      value += `${cardsEmoji.DoubleUp} \`${lock.double_up_cards}\` `
       // Reset Up cards
-      value += `\n${cardsEmoji.Reset} \`${lock.reset_cards}\``
-
-      // Disclaimer for now about yellow emoji
-      value += `\n\n \`*The yellow card +1 emoji is temporary\``
+      value += `${cardsEmoji.Freeze} \`${lock.freeze_cards}\``
+      // Reset Up cards
+      value += `${cardsEmoji.Reset} \`${lock.reset_cards}\``
     }
   }
   else {

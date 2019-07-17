@@ -104,11 +104,15 @@ export class TrackedChastiKeyUserTotalLockedTime {
 export class TrackedKeyholderStatistics {
   public username: string
   public joined: string
-  public noOfSharedLocks: number
-  public noOfLocksManagingNow: number
-  public noOfLocksFlaggedAsTrusted: number
-  public totalLocksManaged: number
+  public noOfSharedLocks: number = 0
+  public noOfLocksManagingNow: number = 0
+  public noOfLocksFlaggedAsTrusted: number = 0
+  public totalLocksManaged: number = 0
   public averageRating: number
   public noOfRatings: number
   public display_in_stats: number
+
+  constructor(init: Partial<TrackedKeyholderStatistics>) {
+    Object.assign(this, init);
+  }
 }

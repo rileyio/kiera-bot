@@ -1,3 +1,8 @@
+3.2.2
+- Added: Proper yellow card with a ? for remaining cards in CK stats lockee command
+- Updated: Keyholder for CK stats keyholder to have defaults for missing counts
+- Updated: CK cards re-uploaded to save character space
+
 3.2.1
 - Fixed: Average bug in CK stats lockee command
 
