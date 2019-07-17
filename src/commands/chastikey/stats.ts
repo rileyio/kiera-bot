@@ -134,6 +134,7 @@ export async function getLockeeStats(routed: RouterRouted) {
     // Calculate average
     // console.log('!!! Average:', cumulativeCalc.average)
     // console.log('!!! Average:', Utils.Date.calculateHumanTimeDDHHMM(cumulativeCalc.average))
+    userInLockeeStats.averageTimeLockedInSeconds = cumulativeCalc.average
 
   } catch (error) {
     calculatedCumulative = (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : NaN
@@ -177,7 +178,7 @@ export async function getLockeeStats(routed: RouterRouted) {
   // console.log('userFromAPIresp.body', userFromAPIresp.body)
 
   await routed.message.channel.send(lockeeStats({
-    averageLocked: (userInLockeeStats) ? cumulativeCalc.average : userInLockeeStats.averageTimeLockedInSeconds,
+    averageLocked: (userInLockeeStats) ? userInLockeeStats.averageTimeLockedInSeconds : 0,
     averageRating: (userInLockeeStats) ? userInLockeeStats.averageRating : '-',
     cacheTimestamp: (activeLocks.length > 0) ? activeLocks[0].timestampNow : '',
     locks: activeLocks,

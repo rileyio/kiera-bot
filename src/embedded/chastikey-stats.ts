@@ -124,10 +124,16 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
 
   // Calculate count and Prep discard pile
   var discardPile = lock.discard_pile.split(',').filter(c => c !== '')
+
   // If the cardpile is above 15 cards remove the last 5 (oldest 5)
-  if (totalExpected <= 5 && discardPile.length > 5) { discardPile.splice(15, 22); /* console.log(totalExpected, 'NOT extra splicy') */ }
+  // if (totalExpected <= 5 && discardPile.length > 5) { discardPile.splice(15, 22); /* console.log(totalExpected, 'NOT extra splicy') */ }
+  // // Splice even more if this is beyond 3 locks to prevent hitting the Discord limit
+  // if (totalExpected > 5 && discardPile.length > 3) { discardPile.splice(3, 22); /* console.log(totalExpected, 'extra splicy') */ }
+
+  // If the cardpile is above 15 cards remove the last 5 (oldest 5)
+  if (totalExpected <= 1 && discardPile.length > 5) { discardPile.splice(15, 22); /* console.log(totalExpected, 'NOT extra splicy') */ }
   // Splice even more if this is beyond 3 locks to prevent hitting the Discord limit
-  if (totalExpected > 5 && discardPile.length > 3) { discardPile.splice(3, 22); /* console.log(totalExpected, 'extra splicy') */ }
+  if (totalExpected > 1 && discardPile.length > 3) { discardPile.splice(3, 22); /* console.log(totalExpected, 'extra splicy') */ }
   var discardPileStr = ``
 
   // Map each card from Array , to the correct discord Emoji & ID»
@@ -156,7 +162,7 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
 
     if (lock.card_info_hidden === 0) {
       // Extra space
-      value += `\n\nCards Required:`
+      value += `\n\nCards Remaining:`
 
       // Green cards
       value += `\n${cardsEmoji.Green} \`${lock.green_cards}\``

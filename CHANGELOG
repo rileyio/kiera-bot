@@ -1,3 +1,6 @@
+3.2.1
+- Fixed: Average bug in CK stats lockee command
+
 3.2.0
 - Logging changes for output
 - Updated: CK logging
