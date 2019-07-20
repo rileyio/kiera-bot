@@ -1,3 +1,6 @@
+3.2.5
+- Updated: CK Stats lockee text to read Longest -> Longest (completed), Average Time Locked -> Average Time Locked (overall)
+
 3.2.4
 - Fixed: CK stats lockee average calculation (factors current + past locks)
 

@@ -77,7 +77,7 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean })
   var description = `Locked for \`${data.monthsLocked}\` months to date | \`${data.totalNoOfCompletedLocks}\` locks completed`
   // Only show the ratings if the user has > 5
   if (data.noOfRatings > 4 && options.showRating) description += ` | Avg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\``
-  description += `\nLongest \`${Utils.Date.calculateHumanTimeDDHHMM(data.longestLock)}\` | Average Time Locked \`${Utils.Date.calculateHumanTimeDDHHMM(data.averageLocked)}\``
+  description += `\nLongest (completed) \`${Utils.Date.calculateHumanTimeDDHHMM(data.longestLock)}\` | Average Time Locked (overall) \`${Utils.Date.calculateHumanTimeDDHHMM(data.averageLocked)}\``
   description += `\nJoined \`${data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}`
 
   const messageBlock = {
