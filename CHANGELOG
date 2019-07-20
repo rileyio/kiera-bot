@@ -1,4 +1,7 @@
 3.2.3
+- Fixed: CK stats lockee average calculation (factors current + past locks)
+
+3.2.3
 - Added: Date first Keyheld to ck stats keyholder
 
 3.2.2

@@ -71,7 +71,7 @@ export namespace Date {
     cTime = cumulative.reduce((s, c) => s += c.end - c.start, 0)
 
     // Calculate averge
-    aTime = cTime / cIndex
+    aTime = cTime / (cIndex + 1)
 
     //////////////////////
     ///  Actual Code END
@@ -80,7 +80,8 @@ export namespace Date {
     // Print results
     // console.log('=========================')
     // console.log(`Started with ${dates.length} ranges (${dates.reduce((s, c) => s += c.end - c.start, 0)}), reduced to ${cumulative.length}`)
-    // console.log('results:', cumulative);
+    // console.log('cumulative results:', cumulative);
+    // console.log('average results:', aTime);
     // console.log(`cumulative time: ${cTime} seconds, (${cTime / 2592000})`)
 
     return { cumulative: cTime, average: aTime }

@@ -168,7 +168,7 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
       // Green cards
       value += `${cardsEmoji.Green} \`${lock.green_cards}\` `
       // Yellow cards
-      value += `${cardsEmoji.Yellow} \`${lock.yellow_cards}*\` `
+      value += `${cardsEmoji.Yellow} \`${lock.yellow_cards}\` `
       // Red cards
       value += `${cardsEmoji.Red} \`${lock.red_cards}\` `
       // Double Up cards
