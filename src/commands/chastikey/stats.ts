@@ -66,7 +66,7 @@ export const Routes = ExportRoutes(
     commandTarget: 'author',
     controller: setKHAverageDisplay,
     example: '{{prefix}}ck keyholder set average show',
-    name: 'ck-set-ratingDisplay',
+    name: 'ck-set-kh-average-display',
     validate: '/ck:string/keyholder:string/set:string/average:string/state=string',
     middleware: [
       Middleware.isUserRegistered
