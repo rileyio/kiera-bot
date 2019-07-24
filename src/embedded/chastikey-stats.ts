@@ -259,7 +259,7 @@ export function keyholderStats(data: TrackedKeyholderStatistics, activeLocks: Ar
   description += `Date first keyheld \`${dateRearranged}\` ${dateFirstKHAgo}\n\n`
 
   description += `**Stats**\n`
-  if (options.showAverage) description += `Average Time Locked \`${(lockCount > 1) ? Utils.Date.calculateHumanTimeDDHHMM(cumulativeTimelocked / lockCount) : '00d 00h 00m'}\`\n`
+  if (options.showAverage) description += `Average Time of Locks \`${(lockCount > 1) ? Utils.Date.calculateHumanTimeDDHHMM(cumulativeTimelocked / lockCount) : '00d 00h 00m'}\`\n`
   description += `Cumulative Time Locked \`${Utils.Date.calculateHumanTimeDDHHMM(cumulativeTimelocked)}\`\n`
   description += `Number of Fixed Locks \`${numberOfFixed}\`\n`
   description += `Number of Variable Locks \`${numberOfVar}\`\n`
