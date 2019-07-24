@@ -1,3 +1,7 @@
+3.3.0
+- Added: More stats + individual lock statistics to the !ck stats keyholder command
+- Added: Command to toggle KH average locked time
+
 3.2.5
 - Updated: CK Stats lockee text to read Longest -> Longest (completed), Average Time Locked -> Average Time Locked (overall)
 

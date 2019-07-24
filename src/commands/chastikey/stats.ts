@@ -1,5 +1,6 @@
 import got = require('got');
 // import * as Middleware from '../../middleware';
+import * as Middleware from '../../middleware';
 import * as Utils from '../../utils'
 import { RouterRouted } from '../../utils';
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, TrackedSharedKeyholderStatistics, keyholderLockees } from '../../embedded/chastikey-stats';
@@ -59,7 +60,21 @@ export const Routes = ExportRoutes(
     permissions: {
       defaultEnabled: false
     }
-  }
+  },
+  {
+    type: 'message',
+    commandTarget: 'author',
+    controller: setKHAverageDisplay,
+    example: '{{prefix}}ck keyholder set average show',
+    name: 'ck-set-ratingDisplay',
+    validate: '/ck:string/keyholder:string/set:string/average:string/state=string',
+    middleware: [
+      Middleware.isUserRegistered
+    ],
+    permissions: {
+      defaultEnabled: false
+    }
+  },
 )
 
 export async function getLockeeStats(routed: RouterRouted) {
@@ -218,10 +233,21 @@ export async function getLockeeStats(routed: RouterRouted) {
 
 export async function getKeyholderStats(routed: RouterRouted) {
   // Get user's current ChastiKey username from users collection or by the override
-  const user = (routed.v.o.user)
+  var  user = (routed.v.o.user)
     ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') }) ||
-    (<TrackedUser>{ __notStored: true, ChastiKey: { username: routed.v.o.user, ticker: { showStarRatingScore: true } } })
+    (<TrackedUser>{
+      __notStored: true, ChastiKey: {
+        username: routed.v.o.user,
+        preferences: {
+          keyholder: { showAverage: false }
+        },
+        ticker: { showStarRatingScore: true }
+      }
+    })
     : await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
+
+  // Construct user
+  user = new TrackedUser(user)
 
   // If someone else is looking up a user
   // const userToNotifyConfig = (routed.v.o.user)
@@ -248,17 +274,47 @@ export async function getKeyholderStats(routed: RouterRouted) {
 
   // Get current locks by user store in the collection
   var keyholder = await routed.bot.DB.get<TrackedKeyholderStatistics>('ck-keyholders', { username: usernameRegex })
+
   // If there is no data in the kh dataset inform the user
   if (!keyholder) {
     await routed.message.reply(Utils.sb(Utils.en.chastikey.keyholderNoLocks))
     return false // stop here
   }
 
+  // Get lockees under a KH
+  const activeLocks = await routed.bot.DB.aggregate<any>('ck-running-locks', [
+    {
+      $match: { lockedBy: usernameRegex }
+    },
+    {
+      $group: {
+        _id: '$username',
+        keyholders: {
+          $addToSet: '$lockedBy'
+        },
+        locks: {
+          $push: {
+            fixed: { $toBool: '$fixed' },
+            timer_hidden: { $toBool: '$timer_hidden' },
+            lock_frozen_by_keyholder: { $toBool: '$lock_frozen_by_keyholder' },
+            lock_frozen_by_card: { $toBool: '$lock_frozen_by_card' },
+            keyholder: '$lockedBy',
+            noOfTurns: '$noOfTurns',
+            secondsLocked: '$secondsLocked',
+            sharedLockName: '$sharedLockName'
+          }
+        },
+        count: { $sum: 1 }
+      }
+    },
+    { $sort: { count: -1 } }
+  ])
+
   // Init TrackedKeyholder
   keyholder = new TrackedKeyholderStatistics(keyholder)
 
   // Send stats
-  await routed.message.channel.send(keyholderStats(keyholder, { showRating: user.ChastiKey.ticker.showStarRatingScore }))
+  await routed.message.channel.send(keyholderStats(keyholder, activeLocks, { showRating: user.ChastiKey.ticker.showStarRatingScore, showAverage: user.ChastiKey.preferences.keyholder.showAverage }))
   // Notify the stats owner if that's applicable
   if (userNotifyConfig !== null) {
     if (userNotifyConfig.where !== 'Discord' || userNotifyConfig.state !== true) return // stop here
@@ -352,4 +408,27 @@ export async function getKeyholderLockees(routed: RouterRouted) {
 
   // Successful end
   return true
+}
+
+export async function setKHAverageDisplay(routed: RouterRouted) {
+  const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
+  const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
+
+  // True or False sent
+  if (routed.v.o.state.toLowerCase() === 'show' || routed.v.o.state.toLowerCase() === 'hide') {
+    await routed.bot.DB.update('users', userQuery,
+      { $set: { 'ChastiKey.preferences.keyholder.showAverage': `show` ? routed.v.o.state === 'show' : false } },
+      { atomic: true })
+
+    await routed.message.reply(`:white_check_mark: ChastiKey Preference: \`Display keyholder time average\` is now ${routed.v.o.state === 'show' ? '`shown`' : '`hidden`'}`)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck keyholder set average show ${routed.v.o.state}`)
+
+    return true
+  }
+  else {
+    await routed.message.reply(`Failed to set ChastiKey Rating Display, format must be like: \`show\``)
+    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck keyholder set average show ${routed.v.o.state}`)
+
+    return true
+  }
 }

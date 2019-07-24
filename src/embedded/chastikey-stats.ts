@@ -26,13 +26,16 @@ export interface TrackedSharedKeyholderStatistics {
 
 export interface TrackedKeyholderLockeesStatistics {
   _id: string
-  locks: {
+  locks: Array<{
     fixed: boolean,
     timer_hidden: boolean,
     lock_frozen_by_keyholder: boolean,
     lock_frozen_by_card: boolean,
-    keyholder: string
-  }
+    keyholder: string,
+    secondsLocked: number
+    noOfTurns: number,
+    sharedLockName: string
+  }>
 }
 
 const indicatorEmoji = {
@@ -189,7 +192,7 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   }
 }
 
-export function keyholderStats(data: TrackedKeyholderStatistics, options: { showRating: boolean }) {
+export function keyholderStats(data: TrackedKeyholderStatistics, activeLocks: Array<TrackedKeyholderLockeesStatistics>, options: { showRating: boolean, showAverage: boolean }) {
   var dateJoinedDaysAgo = (data.joined !== '-')
     ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)`
     : ''
@@ -205,12 +208,67 @@ export function keyholderStats(data: TrackedKeyholderStatistics, options: { show
 
   var dateRearranged = `${dateRearrangedYYYY}-${dateRearrangedMM}-${dateRearrangedDD}`
 
+  var lockCount = 0
+  var cumulativeTimelocked = 0
+  var numberOfFixed = 0
+  var numberOfVar = 0
+  var numberOfTurns = 0
+  var individualLockStats: Array<{ name: string, count: number, fixed: boolean }> = []
+
+  activeLocks.forEach(l => {
+    // Add to avg and count for calculation
+    var locksTotal = l.locks.reduce((currentVal, lock) => {
+      // Count lock types & other cumulatives
+      numberOfVar += (!lock.fixed) ? 1 : 0
+      numberOfFixed += (lock.fixed) ? 1 : 0
+      numberOfTurns += (!lock.fixed) ? lock.noOfTurns : 0
+
+      // Track individual lock stats
+      if (individualLockStats.findIndex(_l => _l.name === lock.sharedLockName) === -1) {
+        individualLockStats.push({ name: lock.sharedLockName, count: 1, fixed: lock.fixed })
+      }
+      else {
+        individualLockStats.find(_l => _l.name === lock.sharedLockName).count += 1
+      }
+
+      // Only look at if the value is a positive value (to skip over problem causing values)
+      if (lock.secondsLocked >= 0) {
+        return currentVal + lock.secondsLocked
+      }
+      return currentVal
+    }, 0)
+
+    lockCount += 1
+    cumulativeTimelocked += locksTotal
+  })
+
+  // Sort locks by most to least lockees
+  individualLockStats.sort((a, b) => {
+    var x = a.count;
+    var y = b.count;
+    if (x > y) { return -1; }
+    if (x < y) { return 1; }
+    return 0;
+  })
+
   if (data.noOfRatings > 4 && options.showRating) description += `Avg Rating **\`${data.averageRating}\`** | # Ratings **\`${data.noOfRatings}\`**\n`
   description += `# of Users Locked **\`${data.noOfLocksManagingNow}\`**\n`
   description += `# of Locks Flagged As Trusted **\`${data.noOfLocksFlaggedAsTrusted}\`** <:trustkeyholder:474975187310346240>\n`
   description += `# of Shared Locks **\`${data.noOfSharedLocks}\`**\nTotal Locks Managed **\`${data.totalLocksManaged}\`**\n`
   description += `Joined \`${data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}\n`
-  description += `Date first keyheld \`${dateRearranged}\` ${dateFirstKHAgo}`
+  description += `Date first keyheld \`${dateRearranged}\` ${dateFirstKHAgo}\n\n`
+
+  description += `**Stats**\n`
+  if (options.showAverage) description += `Average Time Locked \`${(lockCount > 1) ? Utils.Date.calculateHumanTimeDDHHMM(cumulativeTimelocked / lockCount) : '00d 00h 00m'}\`\n`
+  description += `Cumulative Time Locked \`${Utils.Date.calculateHumanTimeDDHHMM(cumulativeTimelocked)}\`\n`
+  description += `Number of Fixed Locks \`${numberOfFixed}\`\n`
+  description += `Number of Variable Locks \`${numberOfVar}\`\n`
+  description += `Number of Turns (variable) \`${numberOfTurns}\`\n\n`
+
+  // For each lock
+  description += `**Locks**\n`
+  if (lockCount > 0) individualLockStats.forEach(lock => description += `\`${lock.count}\` ${lock.name} \`[${lock.fixed ? 'F' : 'V'}]\`\n`)
+  else description += `No active locks to display!`
 
   return {
     embed: {

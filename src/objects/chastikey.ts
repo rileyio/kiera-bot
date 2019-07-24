@@ -10,6 +10,7 @@ export enum ChastiKeyTickerType {
 export class TrackedChastiKey {
   public username: string = ''
   public ticker: TrackedChastiKeyTicker = new TrackedChastiKeyTicker({})
+  public preferences: TrackedChastiKeyPreferences = new TrackedChastiKeyPreferences({})
 
   constructor(init: Partial<TrackedChastiKey>) {
     Object.assign(this, init);
@@ -33,6 +34,17 @@ export class TrackedChastiKeyTicker {
     Object.assign(this, init);
   }
 }
+
+export class TrackedChastiKeyPreferences {
+  keyholder: { showAverage: boolean } = {
+    showAverage: false
+  }
+  
+  constructor(init: Partial<TrackedChastiKeyPreferences>) {
+    Object.assign(this, init);
+  }
+}
+
 
 export class TrackedChastiKeyLockee {
   public username: string
