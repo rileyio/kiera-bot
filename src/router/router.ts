@@ -23,6 +23,7 @@ export type RouteConfigurationCategory = ''
   | 'Root'
   | 'Session'
   | 'User'
+  | 'Utility'
 
 /**
  * Discord Command Route
@@ -160,7 +161,7 @@ export class Router {
    * @param {string} reaction
    * @param {User} user
    * @param {('added' | 'removed')} direction
-   * @returns
+   * @returns 
    * @memberof Router
    */
   public async routeReaction(message: Message, reaction: string, user: User, direction: 'added' | 'removed') {
