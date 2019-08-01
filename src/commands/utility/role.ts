@@ -11,18 +11,27 @@ export const Routes = ExportRoutes(
     category: 'Utility',
     commandTarget: 'argument',
     controller: displayRoles,
-    example: '{{prefix}}util show roles',
+    example: '{{prefix}}util roles show',
     name: 'util-roles-stats',
-    validate: '/util:string/show:string/roles:string'
+    validate: '/util:string/roles:string/show:string'
   },
   {
     type: 'message',
     category: 'Utility',
     commandTarget: 'argument',
     controller: displayRoleRange,
-    example: '{{prefix}}util show role 0 to 10',
+    example: '{{prefix}}util roles show 0 to 10',
     name: 'util-role-stats',
-    validate: '/util:string/show:string/role:string/from=number/to:string/until=number'
+    validate: '/util:string/roles:string/show:string/from=number/to:string/until=number'
+  },
+  {
+    type: 'message',
+    category: 'Utility',
+    commandTarget: 'argument',
+    controller: displayRole,
+    example: '{{prefix}}util role show "RoleNameHere"',
+    name: 'util-role-specific-stats',
+    validate: '/util:string/role:string/show:string/name=string'
   }
 )
 
@@ -70,7 +79,7 @@ export async function displayRoles(routed: RouterRouted) {
 
 
 /**
- * Show specific role
+ * Show specific role range
  * @export
  * @param {RouterRouted} routed
  */
@@ -87,7 +96,7 @@ export async function displayRoleRange(routed: RouterRouted) {
   })
 
   // Splice out only what the user wants
-  const slicedRoles = roles.slice(routed.v.o.from, routed.v.o.until)
+  const slicedRoles = roles.slice(routed.v.o.from, routed.v.o.until + 1)
 
 
   if (slicedRoles.length > 0) {
@@ -96,7 +105,7 @@ export async function displayRoleRange(routed: RouterRouted) {
     message += `\`\`\``
 
     slicedRoles.forEach((r, i) => {
-      message += `Name:        ${r.name}\n`
+      message += `Name         ${r.name}\n`
       message += `Member Count ${r.members}\n`
       message += `Hex color    ${r.hexColor}\n`
       if (i < (slicedRoles.length - 1)) message += `\n` // Add extra space between roles
@@ -108,6 +117,37 @@ export async function displayRoleRange(routed: RouterRouted) {
     routed.message.channel.send(message)
   }
   else routed.message.channel.send('Count not find roles in the given range!')
+  // Successful end
+  return true
+}
+
+/**
+ * Show specific role
+ * @export
+ * @param {RouterRouted} routed
+ */
+export async function displayRole(routed: RouterRouted) {
+  const role = routed.message.guild.roles.array()
+    .find(r => r.name.toLocaleLowerCase().replace(' ', '') === routed.v.o.name.toLocaleLowerCase().replace(' ', ''))
+
+  // If Role was found: Show details about it
+  if (role) {
+    var message = `\n**Server Role**\n`
+
+    message += `\`\`\``
+
+    message += `Name         ${role.name}\n`
+    message += `Member Count ${role.members.size}\n`
+    message += `Hex color    ${role.hexColor}`
+
+    message += `\`\`\``
+
+    routed.message.channel.send(message)
+  }
+  else {
+    routed.message.channel.send(`Count not find role by the given name \`${routed.v.o.name}\`!`)
+  }
+
   // Successful end
   return true
 }
