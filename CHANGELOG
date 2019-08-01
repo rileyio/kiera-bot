@@ -1,6 +1,7 @@
 3.4.0
 - Fixed: !util roles show range command to show the range specified
 - Updated: !util role(s) commands, see help menu by typing !help util or !util role
+- Updated: Rearranged !ck stats lockee cards remaining (when not hidden) to show in the same order as the CK app
 - Added: Command !util role show NameHere (spaces can be omitted as they will be eliminated when looking up the role for better matching)
 
 3.3.0

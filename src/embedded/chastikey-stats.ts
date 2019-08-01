@@ -170,14 +170,14 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
 
       // Green cards
       value += `${cardsEmoji.Green} \`${lock.green_cards}\` `
-      // Yellow cards
-      value += `${cardsEmoji.Yellow} \`${lock.yellow_cards}\` `
       // Red cards
       value += `${cardsEmoji.Red} \`${lock.red_cards}\` `
+      // Yellow cards
+      value += `${cardsEmoji.Yellow} \`${lock.yellow_cards}\` `
+      // Freeze Up cards
+      value += `${cardsEmoji.Freeze} \`${lock.freeze_cards}\` `
       // Double Up cards
-      value += `${cardsEmoji.DoubleUp} \`${lock.double_up_cards}\` `
-      // Reset Up cards
-      value += `${cardsEmoji.Freeze} \`${lock.freeze_cards}\``
+      value += `${cardsEmoji.DoubleUp} \`${lock.double_up_cards}\``
       // Reset Up cards
       value += `${cardsEmoji.Reset} \`${lock.reset_cards}\``
     }
