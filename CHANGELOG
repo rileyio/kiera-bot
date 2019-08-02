@@ -3,6 +3,7 @@
 - Updated: !util role(s) commands, see help menu by typing !help util or !util role
 - Updated: Rearranged !ck stats lockee cards remaining (when not hidden) to show in the same order as the CK app
 - Added: Command !util role show NameHere (spaces can be omitted as they will be eliminated when looking up the role for better matching)
+- Added: Command !util roles show like NameLike to filter and only show names like the passed string
 
 3.3.0
 - Added: More stats + individual lock statistics to the !ck stats keyholder command

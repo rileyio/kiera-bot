@@ -11,6 +11,7 @@ export class TrackedChastiKey {
   public username: string = ''
   public ticker: TrackedChastiKeyTicker = new TrackedChastiKeyTicker({})
   public preferences: TrackedChastiKeyPreferences = new TrackedChastiKeyPreferences({})
+  public isVerified: boolean = false
 
   constructor(init: Partial<TrackedChastiKey>) {
     Object.assign(this, init);
