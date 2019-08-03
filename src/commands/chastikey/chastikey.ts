@@ -1,9 +1,11 @@
 import got = require('got');
+import * as FormData from 'form-data';
 import * as Middleware from '../../middleware';
 import * as Utils from '../../utils';
 import { TrackedUser } from '../../objects/user';
 import { RouterRouted } from '../../router/router';
 import { ExportRoutes } from '../../router/routes-exporter';
+import { ChastiKeyVerifyResponse } from '../../objects/chastikey';
 
 export const Routes = ExportRoutes(
   {
@@ -153,5 +155,41 @@ export async function recoverCombos(routed: RouterRouted) {
  * @param {RouterRouted} routed
  */
 export async function verifyAccount(routed: RouterRouted) {
-  
+  // Lookup user in Kiera's DB
+  const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
+  const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
+
+  // Get the user from the db in their current state
+  const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
+
+  // User not registered with Kiera
+  if (!user) {
+    await routed.message.reply(Utils.sb(Utils.en.error.userNotRegistered))
+    return false; // Stop here
+  }
+
+  // Make request out to ChastiKey to start process
+  const postData = new FormData()
+  postData.append('id', routed.message.author.id)
+  postData.append('username', routed.message.author.username)
+  postData.append('discriminator', routed.message.author.discriminator)
+
+  const { body } = await got.post('https://chastikey.com/api/ella/discordbotqrauthenticator.php', {
+    body: postData
+  } as any);
+
+  // Convery body to JSON
+  const parsedBody = JSON.parse(body) as ChastiKeyVerifyResponse
+
+  console.log(parsedBody);
+  if (parsedBody.success) {
+    // Generate QR code
+    
+  }
+  else {
+    routed.message.reply(Utils.sb(Utils.en.chastikey.verifyNotSuccessfulUsingReason, { reason: parsedBody.reason }))
+  }
+
+  // Successful end
+  return true
 }

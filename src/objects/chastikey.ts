@@ -40,7 +40,7 @@ export class TrackedChastiKeyPreferences {
   keyholder: { showAverage: boolean } = {
     showAverage: false
   }
-  
+
   constructor(init: Partial<TrackedChastiKeyPreferences>) {
     Object.assign(this, init);
   }
@@ -57,6 +57,7 @@ export class TrackedChastiKeyLockee {
   public totalNoOfCompletedLocks: number
   public averageRating: number
   public noOfRatings: number
+  public discordID: number
 }
 
 export class TrackedChastiKeyLock {
@@ -125,8 +126,30 @@ export class TrackedKeyholderStatistics {
   public noOfRatings: number
   public display_in_stats: number
   public dateFirstKeyheld: string
+  public discordID: number
 
   constructor(init: Partial<TrackedKeyholderStatistics>) {
+    Object.assign(this, init);
+  }
+}
+
+export class ChastiKeyVerifyResponse {
+  public success: boolean = false
+  /**
+   * Known responses:
+   * - `Your DiscordID has already been registered.`
+   * - `You have already been issued a code. Please try again shortly.`
+   * - `Generic error, Please try again.`
+   * - `Fatal error, Please try again.`
+   * - `Missing post data.`
+   *
+   * @type {string}
+   * @memberof ChastiKeyVerifyResponse
+   */
+  public reason: string = ''
+  public code: string
+
+  constructor(init: Partial<ChastiKeyVerifyResponse>) {
     Object.assign(this, init);
   }
 }

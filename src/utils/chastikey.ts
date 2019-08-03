@@ -1,3 +1,4 @@
+import * as QRCode from 'qrcode'
 import { TrackedChastiKey } from '../objects/chastikey';
 
 export namespace ChastiKey {
@@ -11,5 +12,9 @@ export namespace ChastiKey {
     const ext = `ext=.png`
 
     return `http://www.chastikey.com/tickers/ticker.php?ty=${tickerType}&${ts}&${un}&${fd}&${r}&${ext}`
+  }
+
+  export function generateVerifyQR() {
+    
   }
 }
