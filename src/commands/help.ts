@@ -85,7 +85,7 @@ export async function commandHelp(routed: RouterRouted) {
     })
   }
   else {
-    await routed.message.reply(Utils.en.error.commandHelpMissing)
+    await routed.message.reply(Utils.en.error.helpCommandMissing)
   }
 
   return true
