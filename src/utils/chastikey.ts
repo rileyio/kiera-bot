@@ -14,7 +14,7 @@ export namespace ChastiKey {
     return `http://www.chastikey.com/tickers/ticker.php?ty=${tickerType}&${ts}&${un}&${fd}&${r}&${ext}`
   }
 
-  export function generateVerifyQR() {
-    
+  export async function generateVerifyQR(code: string) {
+    const QRData = await QRCode.toDataURL(code)
   }
 }

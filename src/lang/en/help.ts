@@ -87,6 +87,8 @@ Currently returns: (1) Keyholder, (2) Lockee, (3) Both
 \`{{prefix}}ck keyholder set average show\` - Get list of lockee names under a KH
 
 \`{{prefix}}ck check multilocked UsernameHere\` - Get list of KH's lockees who have 2 or more KHs
+
+\`{{prefix}}ck recover combos\` - Retrieve past unlock combinations
 `
 
 export const decision = `

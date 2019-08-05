@@ -1,5 +1,6 @@
 export namespace Date {
   export function calculateCumulativeRange(dates: Array<{ start: number, end: number }>) {
+    // console.log('>>>>>>>>>>>>>>>TEST<<<<<<<<<<<<<<<<')
     // Ensure they are sorted by start times
     dates.sort((a, b) => {
       var x = a.start;
@@ -8,7 +9,7 @@ export namespace Date {
       if (x > y) { return 1; }
       return 0;
     })
-    // Sanity check on dates array (negatives)
+    // Sanity check on dates array (negatives) 
     // console.log('=========================')
     var negatives = dates.filter(d => (d.end - d.start) < 0)
     // console.log(`Found (${negatives.length}) that are negatives (excluding active dates)`)

@@ -118,10 +118,16 @@ export async function getLockeeStats(routed: RouterRouted) {
   const userInLockeeTotals = await routed.bot.DB.get<TrackedChastiKeyUserTotalLockedTime>('ck-lockee-totals', { username: usernameRegex })
   // Get user data from API for Keyholder name
   var calculatedCumulative = (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : 0
+
   try {
     const userPastLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
     const userCurrentLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
-    var dates = [].concat(userPastLocksFromAPIresp.body.locks, userCurrentLocksFromAPIresp.body.locks)
+    // var dates = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || [])
+    var dates = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || [])
+
+    // console.log(dates)
+    // console.log('userPastLocksFromAPIresp.body.locks -> undefined?', userPastLocksFromAPIresp.body.locks === undefined)
+    // console.log('userCurrentLocksFromAPIresp.body.locks -> undefined?', userCurrentLocksFromAPIresp.body.locks === undefined)
 
     // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
     dates = dates.map(d => {
@@ -147,12 +153,13 @@ export async function getLockeeStats(routed: RouterRouted) {
     var cumulativeCalc = Utils.Date.calculateCumulativeRange(dates)
     calculatedCumulative = Math.round((cumulativeCalc.cumulative / 2592000) * 100) / 100
     // Calculate average
-    // console.log('!!! Average:', cumulativeCalc.average)
-    // console.log('!!! Average:', Utils.Date.calculateHumanTimeDDHHMM(cumulativeCalc.average))
+    console.log('!!! Average:', cumulativeCalc.average)
+    console.log('!!! Average:', Utils.Date.calculateHumanTimeDDHHMM(cumulativeCalc.average))
     userInLockeeStats.averageTimeLockedInSeconds = cumulativeCalc.average
-
+    console.log('!!!!!!!!!!Got this far!')
   } catch (error) {
     calculatedCumulative = (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : NaN
+    console.log('CK stats lockee Error building cumulative time')
   }
 
   // If the user has display_in_stats === 2 then stop here

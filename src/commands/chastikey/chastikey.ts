@@ -38,21 +38,21 @@ export const Routes = ExportRoutes(
       defaultEnabled: false
     }
   },
-  {
-    type: 'message',
-    category: 'ChastiKey',
-    commandTarget: 'author',
-    controller: verifyAccount,
-    example: '{{prefix}}ck verify',
-    name: 'ck-account-verify',
-    validate: '/ck:string/verify:string',
-    middleware: [
-      Middleware.isUserRegistered
-    ],
-    permissions: {
-      defaultEnabled: false
-    }
-  }
+  // {
+  //   type: 'message',
+  //   category: 'ChastiKey',
+  //   commandTarget: 'author',
+  //   controller: verifyAccount,
+  //   example: '{{prefix}}ck verify',
+  //   name: 'ck-account-verify',
+  //   validate: '/ck:string/verify:string',
+  //   middleware: [
+  //     Middleware.isUserRegistered
+  //   ],
+  //   permissions: {
+  //     defaultEnabled: false
+  //   }
+  // }
 )
 
 /**
