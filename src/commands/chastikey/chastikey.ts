@@ -106,7 +106,7 @@ export async function recoverCombos(routed: RouterRouted) {
     const userCurrentLocksFromAPIresp = await got(`https://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
 
     // Merge Deleted and Non-deleted locks
-    const mergedLocks = [].concat(userPastLocksFromAPIresp.body.locks, userCurrentLocksFromAPIresp.body.locks)
+    const mergedLocks = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || [])
 
     // Catch: If there are no past locks inform the user
     if (mergedLocks.length === 0) {

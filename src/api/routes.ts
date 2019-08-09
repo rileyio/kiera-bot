@@ -163,27 +163,6 @@ export const routes: Array<WebRoute> = [
     ]
   },
   /*
-   * Sessions
-   */
-  {
-    controller: WebController.Sessions.getAll,
-    method: 'post',
-    name: 'sessions-get-all',
-    path: '/api/sessions',
-    middleware: [
-      Middleware.validAuthKey
-    ]
-  },
-  {
-    controller: WebController.Sessions.get,
-    method: 'post',
-    name: 'session-get',
-    path: '/api/session',
-    middleware: [
-      Middleware.validAuthKey
-    ]
-  },
-  /*
    * Server Settings
    */
   {
