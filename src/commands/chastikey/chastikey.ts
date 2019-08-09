@@ -2,6 +2,7 @@ import got = require('got');
 import * as FormData from 'form-data';
 import * as Middleware from '../../middleware';
 import * as Utils from '../../utils';
+import * as Discord from 'discord.js';
 import { TrackedUser } from '../../objects/user';
 import { RouterRouted } from '../../router/router';
 import { ExportRoutes } from '../../router/routes-exporter';
@@ -38,21 +39,21 @@ export const Routes = ExportRoutes(
       defaultEnabled: false
     }
   },
-  // {
-  //   type: 'message',
-  //   category: 'ChastiKey',
-  //   commandTarget: 'author',
-  //   controller: verifyAccount,
-  //   example: '{{prefix}}ck verify',
-  //   name: 'ck-account-verify',
-  //   validate: '/ck:string/verify:string',
-  //   middleware: [
-  //     Middleware.isUserRegistered
-  //   ],
-  //   permissions: {
-  //     defaultEnabled: false
-  //   }
-  // }
+  {
+    type: 'message',
+    category: 'ChastiKey',
+    commandTarget: 'author',
+    controller: verifyAccount,
+    example: '{{prefix}}ck verify',
+    name: 'ck-account-verify',
+    validate: '/ck:string/verify:string',
+    middleware: [
+      Middleware.isUserRegistered
+    ],
+    permissions: {
+      defaultEnabled: false
+    }
+  }
 )
 
 /**
@@ -101,8 +102,8 @@ export async function recoverCombos(routed: RouterRouted) {
     const getCount = routed.v.o.count || 5
 
     // Get user's past locks
-    const userPastLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
-    const userCurrentLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
+    const userPastLocksFromAPIresp = await got(`https://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
+    const userCurrentLocksFromAPIresp = await got(`https://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
 
     // Merge Deleted and Non-deleted locks
     const mergedLocks = [].concat(userPastLocksFromAPIresp.body.locks, userCurrentLocksFromAPIresp.body.locks)
@@ -162,32 +163,74 @@ export async function verifyAccount(routed: RouterRouted) {
   // Get the user from the db in their current state
   const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
 
+  // Make request out to ChastiKey to start process
+  const postData = new FormData()
+
+  // Statuses
+  var isNewRequest = false
+  var isSuccessful = false
+  var isNotSuccessfulReason = 'Unknown, Try again later.'
+
   // User not registered with Kiera
   if (!user) {
     await routed.message.reply(Utils.sb(Utils.en.error.userNotRegistered))
     return false; // Stop here
   }
 
-  // Make request out to ChastiKey to start process
-  const postData = new FormData()
-  postData.append('id', routed.message.author.id)
-  postData.append('username', routed.message.author.username)
-  postData.append('discriminator', routed.message.author.discriminator)
-
-  const { body } = await got.post('https://chastikey.com/api/ella/discordbotqrauthenticator.php', {
-    body: postData
-  } as any);
-
-  // Convery body to JSON
-  const parsedBody = JSON.parse(body) as ChastiKeyVerifyResponse
-
-  console.log(parsedBody);
-  if (parsedBody.success) {
-    // Generate QR code
-    
+  // Check if verify key has been cached recently
+  if (user.ChastiKey.verificationCode !== '' && ((Date.now() - 300000) < user.ChastiKey.verificationCodeRequestedAt)) {
+    isNewRequest = false
+    isSuccessful = true
   }
   else {
-    routed.message.reply(Utils.sb(Utils.en.chastikey.verifyNotSuccessfulUsingReason, { reason: parsedBody.reason }))
+    postData.append('id', routed.message.author.id)
+    postData.append('username', routed.message.author.username)
+    postData.append('discriminator', routed.message.author.discriminator)
+
+    const { body } = await got.post('https://chastikey.com/api/ella/discordbotqrauthenticator.php', {
+      body: postData
+    } as any);
+
+    // Convery body to JSON
+    const parsedBody = JSON.parse(body) as ChastiKeyVerifyResponse
+
+    console.log(parsedBody);
+
+    if (parsedBody.success) {
+      isNewRequest = true
+      isSuccessful = true
+      // Track User's verification code
+      user.ChastiKey.verificationCode = parsedBody.code
+      // Commit Verify code to db, to have on hand
+      await routed.bot.DB.update('users', userQuery, user)
+    }
+    else {
+      isNotSuccessfulReason = parsedBody.reason || isNotSuccessfulReason
+    }
+  }
+
+  if (isSuccessful) {
+    const QRImgStream = await Utils.ChastiKey.generateVerifyQR(user.ChastiKey.verificationCode)
+    // Let user know in a reply to check their DMs
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyCkeckYourDMs))
+    // Send QR Code via DM
+    await routed.message.author.send({
+      files: [new Discord.Attachment(QRImgStream, 'QRVerify.png')],
+      embed: {
+        title: `ChastiKey - User Verification`,
+        description: Utils.sb(Utils.en.chastikey.verifyDMInstructions),
+        color: 9125611,
+        timestamp: new Date(),
+        footer: {
+          icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+          text: 'QR Generated by Kiera'
+        },
+      }
+    })
+  }
+  else {
+    // Generate & DM QR code to requestor
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyNotSuccessfulUsingReason, { reason: isNotSuccessfulReason }))
   }
 
   // Successful end

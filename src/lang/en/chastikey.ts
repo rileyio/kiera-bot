@@ -19,3 +19,5 @@ export const userRequestedNoStats = `This user has requested their stats remain 
 
 // Verify
 export const verifyNotSuccessfulUsingReason = `{{reason}}`
+export const verifyDMInstructions = `Scan this code with the ChastiKey App like loading a lock (within the next 5 minutes), this will verify your Discord Account to ChastiKey.`
+export const verifyCkeckYourDMs = `Check your DMs from Kiera for further instructions.`

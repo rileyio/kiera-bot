@@ -1,3 +1,6 @@
+3.5.0
+- Added: !ck verify to verify Discord account to ChastiKey
+
 3.4.0
 - Fixed: !util roles show range command to show the range specified
 - Updated: !util role(s) commands, see help menu by typing !help util or !util role

@@ -1,4 +1,5 @@
-import * as QRCode from 'qrcode'
+import * as QRCode from 'qrcode';
+import { Transform, Stream } from 'stream';
 import { TrackedChastiKey } from '../objects/chastikey';
 
 export namespace ChastiKey {
@@ -14,7 +15,15 @@ export namespace ChastiKey {
     return `http://www.chastikey.com/tickers/ticker.php?ty=${tickerType}&${ts}&${un}&${fd}&${r}&${ext}`
   }
 
-  export async function generateVerifyQR(code: string) {
-    const QRData = await QRCode.toDataURL(code)
+  export function generateVerifyQR(code: string) {
+    const stream = new Transform({
+      transform(chunk, encoding, callback) {
+        this.push(chunk)
+        callback()
+      },
+    })
+
+    QRCode.toFileStream(stream, `ChastiKey-Shareable-Lock-!A${code}`, { errorCorrectionLevel: 'high', scale: 5, margin: 2 })
+    return stream
   }
 }

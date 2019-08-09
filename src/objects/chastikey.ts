@@ -12,6 +12,8 @@ export class TrackedChastiKey {
   public ticker: TrackedChastiKeyTicker = new TrackedChastiKeyTicker({})
   public preferences: TrackedChastiKeyPreferences = new TrackedChastiKeyPreferences({})
   public isVerified: boolean = false
+  public verificationCode: string = ''
+  public verificationCodeRequestedAt: number = 0
 
   constructor(init: Partial<TrackedChastiKey>) {
     Object.assign(this, init);
@@ -115,17 +117,78 @@ export class TrackedChastiKeyUserTotalLockedTime {
   public totalMonthsLocked: number
 }
 
+/**
+ * ChastiKey Keyholder Statistcs
+ * @export
+ * @class TrackedKeyholderStatistics
+ */
 export class TrackedKeyholderStatistics {
+  /**
+   * ChastiKey Username
+   * @type {string}
+   * @memberof TrackedKeyholderStatistics
+   */
   public username: string
+  /**
+   * Date Joined ChastiKey App
+   * @type {string}
+   * @memberof TrackedKeyholderStatistics
+   */
   public joined: string
+  /**
+   * # of locks created (not active, non-deleted)
+   * @type {number}
+   * @memberof TrackedKeyholderStatistics
+   */
   public noOfSharedLocks: number = 0
+  /**
+   * # of active Locks (Running now)
+   *
+   * @type {number}
+   * @memberof TrackedKeyholderStatistics
+   */
   public noOfLocksManagingNow: number = 0
+  /**
+   * # of lockee's who have flagged KH as trusted
+   * @type {number}
+   * @memberof TrackedKeyholderStatistics
+   */
   public noOfLocksFlaggedAsTrusted: number = 0
+  /**
+   * # of locks loaded and used (inc current)
+   * @type {number}
+   * @memberof TrackedKeyholderStatistics
+   */
   public totalLocksManaged: number = 0
+  /**
+   * Average KH Rating provided by ChastiKey
+   * @type {number}
+   * @memberof TrackedKeyholderStatistics
+   */
   public averageRating: number
+  /**
+   * Number of Ratings from ChastiKey
+   * @type {number}
+   * @memberof TrackedKeyholderStatistics
+   */
   public noOfRatings: number
+  /**
+   * If KH want's their stats displayed
+   * @type {number}
+   * @memberof TrackedKeyholderStatistics
+   */
   public display_in_stats: number
+  /**
+   * Date User began keyholding
+   * @type {string}
+   * @memberof TrackedKeyholderStatistics
+   */
   public dateFirstKeyheld: string
+  /**
+   * Discord Showflake
+   * @type {number}
+   * @memberof TrackedKeyholderStatistics
+   */
   public discordID: number
 
   constructor(init: Partial<TrackedKeyholderStatistics>) {
@@ -133,6 +196,11 @@ export class TrackedKeyholderStatistics {
   }
 }
 
+/**
+ * Response from ChastiKey server when starting verification
+ * @export
+ * @class ChastiKeyVerifyResponse
+ */
 export class ChastiKeyVerifyResponse {
   public success: boolean = false
   /**

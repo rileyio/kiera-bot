@@ -153,10 +153,10 @@ export async function getLockeeStats(routed: RouterRouted) {
     var cumulativeCalc = Utils.Date.calculateCumulativeRange(dates)
     calculatedCumulative = Math.round((cumulativeCalc.cumulative / 2592000) * 100) / 100
     // Calculate average
-    console.log('!!! Average:', cumulativeCalc.average)
-    console.log('!!! Average:', Utils.Date.calculateHumanTimeDDHHMM(cumulativeCalc.average))
+    // console.log('!!! Average:', cumulativeCalc.average)
+    // console.log('!!! Average:', Utils.Date.calculateHumanTimeDDHHMM(cumulativeCalc.average))
     userInLockeeStats.averageTimeLockedInSeconds = cumulativeCalc.average
-    console.log('!!!!!!!!!!Got this far!')
+    // console.log('!!!!!!!!!!Got this far!')
   } catch (error) {
     calculatedCumulative = (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : NaN
     console.log('CK stats lockee Error building cumulative time')
