@@ -1,3 +1,7 @@
+4.0.0
+- Removed: Old command permissions system
+- Added: New command permissions system - now will be by permissions only when set
+
 3.5.0
 - Added: !ck verify to verify Discord account to ChastiKey
 
