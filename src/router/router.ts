@@ -4,8 +4,7 @@ import { Validate, ValidationType } from './validate';
 import { Message, User, TextChannel } from 'discord.js';
 import { Bot } from '..';
 import { TrackedMessage } from '../objects/message';
-import { CommandPermissions } from '../objects/permission';
-import { Permissions } from '../permissions/';
+import { CommandPermission } from '../objects/permission';
 import { TrackedAvailableObject } from '../objects/available-objects';
 import { performance } from 'perf_hooks';
 import { fallbackHelp } from '../embedded/fallback-help';
@@ -496,30 +495,27 @@ export class Router {
       }
     }
 
-    // Get the server level permission for this command stored in the DB
-    var globalPermission = await routed.bot.DB
-      .get<CommandPermissions>('command-permissions',
-        { serverID: routed.message.guild.id, command: routed.route.name })
+    // Get the command permission if its in the DB
+    var commandPermission = new CommandPermission(await routed.bot.DB
+      .get<CommandPermission>('command-permissions',
+        { serverID: routed.message.guild.id, channelID: routed.message.channel.id, command: routed.route.name })
+      ||
+      // Defaults to True
+      {
+        serverID: routed.message.guild.id,
+        channelID: routed.message.channel.id,
+        command: routed.route.name,
+        enabled: true
+      })
 
-    // Not in DB? Fail
-    if (!globalPermission) {
+    // Some how if it gets here without a permission constructed then just block the command from running
+    if (!commandPermission) {
       checks.outcome = 'FailedPermissionsCheck'
       checks.pass = false
       return checks // Stop here
     }
 
-    // Construct Server Level Command permission
-    globalPermission = new CommandPermissions(globalPermission)
-    // console.log('globalPermission', globalPermission)
-    // console.log('routed.route.name', routed.route.name)
-
-    const permissionCheck = Permissions.VerifyCommandPermissions([globalPermission]).command(routed.route.name).end({
-      user: routed.message.author.id,
-      channel: routed.message.channel.id,
-      // role: 'developer'
-    })
-
-    if (permissionCheck) {
+    if (commandPermission.isAllowed()) {
       checks.outcome = 'Pass'
       checks.pass = true
       return checks

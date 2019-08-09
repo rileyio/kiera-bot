@@ -8,7 +8,6 @@ import { Router } from './router/router';
 import { Logging } from './utils/';
 import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler';
 import { BotMonitor } from './monitor';
-import { buildBasePermissions, buildMissingPermissions } from './permissions/builder';
 import { routeLoader } from './router/route-loader';
 import { Audit } from './audit';
 import { BattleNet } from './BNet';
@@ -70,9 +69,6 @@ export class Bot {
       new Task.ChastiKeyAPIKeyholders(this),
       new Task.ChastiKeyAPILockees(this),
       new Task.ChastiKeyAPITotalLockedTime(this),
-      new Task.PermissionsGlobalAdditions(this),
-      new Task.PermissionsChannelAdditions(this),
-      new Task.PermissionsGlobalCleanup(this)
     ])
 
     ////////////////////////////////////////
@@ -122,11 +118,6 @@ export class Bot {
         const guild = guilds[index];
         this.DEBUG.log(`===> connecting to server => ${guild.name}`)
         await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
-        // console.log(buildBasePermissions(guild, this.Router.routes), { upsert: true })
-
-        // Run utility to add build and add any missing permissions on each server the bot is
-        // apart of
-        await buildMissingPermissions(this, guild)
       }
     }
   }
@@ -145,10 +136,6 @@ export class Bot {
 
   private async onGuildCreate(guild: Discord.Guild) {
     this.DEBUG.log('Joined a new server: ' + guild.name);
-    // Generate & store base permissions
-    // const permissions = buildBasePermissions(guild, this.Router.routes)
-    await this.DB.addMany('command-permissions',
-      buildBasePermissions(guild, this.Router.routes))
     // Save some info about the server in db
     await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
   }

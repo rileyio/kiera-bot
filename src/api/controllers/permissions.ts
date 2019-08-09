@@ -2,7 +2,7 @@ import * as Validation from '../validations/index';
 import * as errors from 'restify-errors';
 import { validate } from '../utils/validate';
 import { WebRouted } from '../web-router';
-import { CommandPermissions } from '../../objects/permission';
+import { CommandPermission } from '../../objects/permission';
 import { ObjectID } from 'bson';
 import { routeLoader } from '../../router/route-loader';
 import { sb } from '../../utils';
@@ -37,7 +37,7 @@ export namespace Permissions {
       console.log(ckEnabledState, query)
 
       // Get permissions stored in the db
-      const permissions = await routed.Bot.DB.getMultiple<CommandPermissions>('command-permissions', query)
+      const permissions = await routed.Bot.DB.getMultiple<CommandPermission>('command-permissions', query)
       // Sort by permission name
       permissions.sort((a, b) => {
         var x = a.command.toLowerCase();
