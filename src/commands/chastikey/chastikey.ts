@@ -194,13 +194,14 @@ export async function verifyAccount(routed: RouterRouted) {
     // Convery body to JSON
     const parsedBody = JSON.parse(body) as ChastiKeyVerifyResponse
 
-    console.log(parsedBody);
+    // console.log(parsedBody);
 
     if (parsedBody.success) {
       isNewRequest = true
       isSuccessful = true
       // Track User's verification code
       user.ChastiKey.verificationCode = parsedBody.code
+      // user.ChastiKey.verificationCodeRequestedAt = Date.now()
       // Commit Verify code to db, to have on hand
       await routed.bot.DB.update('users', userQuery, user)
     }
