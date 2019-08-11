@@ -1,3 +1,7 @@
+3.5.1
+- Fixed: CK recover combos command
+- Updating: CK endpoint for verify command
+
 3.5.0
 - Added: !ck verify to verify Discord account to ChastiKey
 
