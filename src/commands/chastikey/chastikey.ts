@@ -106,7 +106,7 @@ export async function recoverCombos(routed: RouterRouted) {
     const userCurrentLocksFromAPIresp = await got(`https://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
 
     // Merge Deleted and Non-deleted locks
-    const mergedLocks = [].concat(userPastLocksFromAPIresp.body.locks, userCurrentLocksFromAPIresp.body.locks)
+    const mergedLocks = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || [])
 
     // Catch: If there are no past locks inform the user
     if (mergedLocks.length === 0) {
@@ -187,7 +187,7 @@ export async function verifyAccount(routed: RouterRouted) {
     postData.append('username', routed.message.author.username)
     postData.append('discriminator', routed.message.author.discriminator)
 
-    const { body } = await got.post('https://chastikey.com/api/ella/discordbotqrauthenticator.php', {
+    const { body } = await got.post('https://chastikey.com/api/kiera/discordbotqrauthenticator.php', {
       body: postData
     } as any);
 
