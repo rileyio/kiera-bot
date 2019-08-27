@@ -1,6 +1,8 @@
 4.0.0
 - Removed: Old command permissions system
+- Removed: Large sections of old or disabled command code that was no longer being maintained or developed for several months.
 - Added: New command permissions system - now will be by permissions only when set
+- Added: Info text if CK stats lockee fails some areas to check
 
 3.5.0
 - Added: !ck verify to verify Discord account to ChastiKey
@@ -28,7 +30,7 @@
 3.2.3
 - Added: Date first Keyheld to ck stats keyholder
 
-3.2.2
+3.2.2pm
 - Added: Proper yellow card with a ? for remaining cards in CK stats lockee command
 - Updated: Keyholder for CK stats keyholder to have defaults for missing counts
 - Updated: CK cards re-uploaded to save character space

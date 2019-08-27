@@ -113,11 +113,21 @@ export async function getLockeeStats(routed: RouterRouted) {
   // Get current locks by user store in the collection
   const activeLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { username: usernameRegex })
   // Get user from lockee data (Total locks, raitings, averages)
-  const userInLockeeStats = await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { username: usernameRegex })
+  const userInLockeeStats = new TrackedChastiKeyLockee(await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { username: usernameRegex }))
   // Get user from lockee data (Total locks, raitings, averages)
   const userInLockeeTotals = await routed.bot.DB.get<TrackedChastiKeyUserTotalLockedTime>('ck-lockee-totals', { username: usernameRegex })
   // Get user data from API for Keyholder name
   var calculatedCumulative = (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : 0
+
+  // User has no data in the Lockee stats db
+  // Causes
+  //  - Have not opened the App in >=2 week
+  //  - Wrong Username set with Kiera
+  if (!userInLockeeStats._hasDBData) {
+    // Notify in chat what the issue could be
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeStatsMissing, { user: routed.v.o.user })) as Message
+    return true // Stop here
+  }
 
   try {
     const userPastLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
@@ -240,7 +250,7 @@ export async function getLockeeStats(routed: RouterRouted) {
 
 export async function getKeyholderStats(routed: RouterRouted) {
   // Get user's current ChastiKey username from users collection or by the override
-  var  user = (routed.v.o.user)
+  var user = (routed.v.o.user)
     ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') }) ||
     (<TrackedUser>{
       __notStored: true, ChastiKey: {
