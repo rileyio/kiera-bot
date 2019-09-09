@@ -18,19 +18,6 @@ export const mainPoll = `\`{{prefix}}poll\` - Create a poll to vote on`
 export const mainRoll = `\`{{prefix}}roll\` - Dice roller`
 export const mainStats =`\`{{prefix}}stats\` - Bot tracked statistics`
 
-// **[Lockee] Commands (*Must be entered by the device owner*)**
-// \`{{prefix}}session\` - Creates a new session for playing with a device (required for: \`{{prefix}}limit\` \`{{prefix}}duration\` \`{{prefix}}react\`)
-// \`{{prefix}}limit\` - Lockee defined limits (Cannot be surpassed by KH.. at this time..)
-// \`{{prefix}}task\` - *Coming Soon*
-// \`{{prefix}}punishment\` - *Coming Soon*
-
-// **[Keyholder] Commands**
-// \`{{prefix}}react\` - Sets how much time to be added per react
-// \`{{prefix}}duration\` - Sets base duration (reacts can add to this)
-// \`{{prefix}}task\` - *Coming Soon*
-// \`{{prefix}}punishment\` - *Coming Soon*
-// `
-
 export const register = `
 Registers (opt-in) the user to use the full suite of bot commands.
 Using this means you agree to having some basic information stored (IDs, etc) for proper bot usage.
@@ -38,34 +25,6 @@ Using this means you agree to having some basic information stored (IDs, etc) fo
 Usage Example:
 \`{{prefix}}register\`
 `
-
-// export const intensity = `
-// **\`{{prefix}}intensity\` Command Usage**
-
-// Constraints: [Keyholder's Only]
-// Available Range: \`0-100\`
-
-// Sets intensity thresholds for the session (10 = 10%), reacts will remain at or below the
-// lockee's defined limit.
-
-// Setting the modifier means when a react (for example using :rolling_eyes:) will only result
-// in nudging the intensity towards 100%. A modifier of 10 where a intensity min is also 10
-// when \`:rolling_eyes:\` is used would nudge the intensity up/down by { -10%, -5%, 0, +5%, +10% }
-
-// Example: Where modifier (%) is 10    { \`-%\`, \`-%/2\`, \`no-change\`, \`+%*2\`,\`+%\` }
-
-// Usage Example:
-// \`\`\`md
-// Set initial time to receive reactions
-// {{prefix}}intensity @user#0000 set min 10
-
-// Set maximum time that added reacts cannot exceed
-// {{prefix}}intensity @user#0000 set max 80
-
-
-// {{prefix}}intensity @user#0000 set modifier 10
-// \`\`\`
-// `
 
 export const ck = `
 Used to configure and return from ChastiKey API.
@@ -100,51 +59,6 @@ A random decision maker based on given or saved outcomes.
 \`{{prefix}}decision "DecisionID" add "New outcome here"\` - Add options to saved decision
 \`{{prefix}}decision roll 'DecisionID'\` - Roll for a result from a saved decision
 `
-
-// export const duration = `
-// Constraints: [Keyholder's Only]
-
-// Sets a duration of the session, time can be added to this via reacts.
-
-// Usage Example:
-// \`\`\`md
-// Set the base time, this is a period of time when initially starting the
-// session to wait for incoming reactions, nothing will happen until a reaction
-// is added
-// {{prefix}}duration @user#0000 min 5
-
-// Sets the maximum time that cannot be exceeded by added reactions
-// {{prefix}}duration @user#0000 max 10
-// \`\`\`
-// `
-
-// export const limit = `
-// **\`{{prefix}}limit\` Command Usage**
-
-// Constraints: [Lockee's Only]
-
-// Sets intensity lockee's thresholds/limits.
-
-// Usage Example:
-// \`\`\`md
-// {{prefix}}limit intensity 80
-// {{prefix}}limit time 75
-// \`\`\`
-// `
-
-// export const react = `
-// **\`{{prefix}}react\` Command Usage**
-
-// Constraints: [Keyholder's Only]
-
-// Sets how much time to be added/removed per react.
-
-// Usage Example:
-// \`\`\`md
-// {{prefix}}react @user#0000 time 10
-// \`\`\`
-// `
-
 export const bnet = `
 BattleNet Commands
 

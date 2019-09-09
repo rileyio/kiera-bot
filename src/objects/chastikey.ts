@@ -50,6 +50,7 @@ export class TrackedChastiKeyPreferences {
 
 
 export class TrackedChastiKeyLockee {
+  public readonly _hasDBData: boolean = false
   public username: string
   public joined: string
   public timestamp_last_active: number
@@ -60,6 +61,11 @@ export class TrackedChastiKeyLockee {
   public averageRating: number
   public noOfRatings: number
   public discordID: number
+
+  constructor(init: Partial<TrackedChastiKeyLockee>) {
+    this._hasDBData = init === null ? false : true
+    Object.assign(this, init !== null ? init : {});
+  }
 }
 
 export class TrackedChastiKeyLock {

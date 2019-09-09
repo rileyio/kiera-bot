@@ -11,7 +11,8 @@ export const Routes = ExportRoutes(
     controller: eightBall,
     example: '{{prefix}}8ball',
     name: '8ball',
-    validate: '/8ball:string/question?=string'
+    validate: '/8ball:string/question?=string',
+    permissions: { serverOnly: false }
   }
 )
 

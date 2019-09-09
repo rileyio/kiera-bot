@@ -67,4 +67,3 @@ export class TaskManager {
 }
 
 export * from './chastikey'
-export * from './templates/permissions'

@@ -11,7 +11,8 @@ export const Routes = ExportRoutes(
     controller: commandHelp,
     example: '{{prefix}}help poll',
     name: 'help-command',
-    validate: '/help:string/command=string'
+    validate: '/help:string/command=string',
+    permissions: { serverOnly: false }
   },
   {
     type: 'message',
@@ -20,7 +21,8 @@ export const Routes = ExportRoutes(
     controller: genericFallback,
     example: '{{prefix}}help',
     name: 'help',
-    validate: '/help:string'
+    validate: '/help:string',
+    permissions: { serverOnly: false }
   },
 )
 

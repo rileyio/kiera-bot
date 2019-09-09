@@ -1,29 +1,17 @@
 import * as XRegex from 'xregexp';
 import * as Utils from '../utils/';
 import { Validate, ValidationType } from './validate';
-import { Message, User, TextChannel } from 'discord.js';
+import { Message, User, TextChannel, DMChannel } from 'discord.js';
 import { Bot } from '..';
 import { TrackedMessage } from '../objects/message';
-import { CommandPermissions } from '../objects/permission';
-import { Permissions } from '../permissions/';
+import { CommandPermission } from '../objects/permission';
 import { TrackedAvailableObject } from '../objects/available-objects';
 import { performance } from 'perf_hooks';
 import { fallbackHelp } from '../embedded/fallback-help';
+import { RouteConfigurationCategory } from './route-categories';
+import { RouteActionUserTarget, ProcessedPermissions } from './route-permissions';
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
-
-export type RouteConfigurationCategory = ''
-  | 'Admin'
-  | 'BNet'
-  | 'ChastiKey'
-  | 'Fun'
-  | 'Info'
-  | 'Integration'
-  | 'Reddit'
-  | 'Root'
-  | 'Session'
-  | 'User'
-  | 'Utility'
 
 /**
  * Discord Command Route
@@ -45,31 +33,11 @@ export interface RouteConfiguration {
     restricted?: boolean
     serverAdminOnly?: boolean
     restrictedTo?: Array<string>
+    serverOnly?: boolean
   }
   type: 'message' | 'reaction'
   validate?: string
 }
-
-export interface ProcessedPermissions {
-  // Permissions of user
-  hasAdministrator: boolean
-  hasManageGuild: boolean
-  // Checks
-  outcome?: ProcessedPermissionOutcome
-  // Bool state outcome
-  pass?: boolean
-}
-
-export type ProcessedPermissionOutcome = 'Pass'
-  | 'FailedAdmin'
-  | 'FailedIDCheck'
-  | 'FailedManageGuild'
-  | 'FailedPermissionsCheck'
-
-export type RouteActionUserTarget = 'none'
-  | 'author'
-  | 'argument'
-  | 'controller-decision'
 
 /**
  * Message routing configured to Object for use by the router
@@ -82,7 +50,8 @@ export class MessageRoute {
     defaultEnabled: true,
     restricted: false,
     serverAdminOnly: false,
-    restrictedTo: []
+    restrictedTo: [],
+    serverOnly: true
   }
 
   public command: string
@@ -96,7 +65,8 @@ export class MessageRoute {
     defaultEnabled: boolean,
     restricted: boolean,
     serverAdminOnly: boolean,
-    restrictedTo: Array<string>
+    restrictedTo: Array<string>,
+    serverOnly: boolean
   }
   public type: 'message' | 'reaction'
   public validate: string
@@ -271,8 +241,8 @@ export class Router {
       this.bot.BotMonitor.Stats.increment('dms-received')
 
       // (as of 2.9.0) Hard Stop
-      message.reply('As of `2.9.0` commands are restricted to servers where Kiera is present!')
-      return;
+      // message.reply('As of `2.9.0` commands are restricted to servers where Kiera is present!')
+      // return;
     }
 
     const containsPrefix = message.content.startsWith(prefix)
@@ -350,50 +320,56 @@ export class Router {
       })
 
       // Only check permissions if message type isn't a dm
-      // if (message.channel.type !== 'dm') {
-      // Process Permissions
-      const permissionCheckResults = await this.processPermissions(routed)
+      if (message.channel.type !== 'dm') {
+        // Process Permissions
+        const permissionCheckResults = await this.processPermissions(routed)
 
-      this.bot.DEBUG_MSG_COMMAND.log('Router -> Permissions Check Results:', permissionCheckResults)
+        this.bot.DEBUG_MSG_COMMAND.log('Router -> Permissions Check Results:', permissionCheckResults)
 
-      if (!permissionCheckResults.pass) {
-        this.bot.BotMonitor.Stats.increment('commands-invalid')
+        if (!permissionCheckResults.pass) {
+          this.bot.BotMonitor.Stats.increment('commands-invalid')
 
-        // If it admin failed -or- command is an admin command, don't go any further at this time
-        if (permissionCheckResults.outcome === 'FailedAdmin' || routed.route.permissions.serverAdminOnly) return // Hard Stop
+          // If it admin failed -or- command is an admin command, don't go any further at this time
+          if (permissionCheckResults.outcome === 'FailedAdmin' || routed.route.permissions.serverAdminOnly) return // Hard Stop
 
-        // Notify user via DM - If this server has the key configured
-        const altChannel = await this.bot.DB.get<TrackedAvailableObject>('server-settings', {
-          key: 'server.permissions.channel.suggestedCommandChannel',
-          serverID: message.guild.id,
-          state: true
-        })
+          // Notify user via DM - If this server has the key configured
+          const altChannel = await this.bot.DB.get<TrackedAvailableObject>('server-settings', {
+            key: 'server.permissions.channel.suggestedCommandChannel',
+            serverID: message.guild.id,
+            state: true
+          })
 
-        // If an alt channel recommendation is set
-        if (altChannel) {
-          await message.author
-            .sendMessage(Utils.sb(Utils.en.error.commandDisabledInChannel, {
-              command: message.content,
-              channel: altChannel.value,
-              server: message.guild.name
-            }))
+          // If an alt channel recommendation is set
+          if (altChannel) {
+            await message.author
+              .sendMessage(Utils.sb(Utils.en.error.commandDisabledInChannel, {
+                command: message.content,
+                channel: altChannel.value,
+                server: message.guild.name
+              }))
+          }
+
+          // Track in an audit event
+          this.bot.Audit.NewEntry({
+            name: routed.route.name,
+            details: routed.message.content,
+            guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
+            error: 'Command disabled by permission in this channel',
+            runtime: Math.round(performance.now() - runtimeStart),
+            owner: routed.message.author.id,
+            successful: false,
+            type: 'bot.command',
+            where: 'Discord'
+          })
+          return; // Hard Stop
         }
-
-        // Track in an audit event
-        this.bot.Audit.NewEntry({
-          name: routed.route.name,
-          details: routed.message.content,
-          guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
-          error: 'Command disabled by permission in this channel',
-          runtime: Math.round(performance.now() - runtimeStart),
-          owner: routed.message.author.id,
-          successful: false,
-          type: 'bot.command',
-          where: 'Discord'
-        })
-        return; // Hard Stop
       }
-      // }
+      // Is a DM
+      else {
+        if (routed.route.permissions.serverOnly === true) {
+          return; // Hard Stop - Command is clearly meant for only servers
+        }
+      }
 
       const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
       var mwareProcessed = 0
@@ -424,7 +400,9 @@ export class Router {
           this.bot.Audit.NewEntry({
             name: routed.route.name,
             details: routed.message.content,
-            guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
+            guild: (message.channel.type === 'dm')
+              ? { id: 'dm', name: 'dm', channel: 'dm' }
+              : { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
             owner: routed.message.author.id,
             runtime: Math.round(performance.now() - runtimeStart),
             successful: true,
@@ -496,30 +474,27 @@ export class Router {
       }
     }
 
-    // Get the server level permission for this command stored in the DB
-    var globalPermission = await routed.bot.DB
-      .get<CommandPermissions>('command-permissions',
-        { serverID: routed.message.guild.id, command: routed.route.name })
+    // Get the command permission if its in the DB
+    var commandPermission = new CommandPermission(await routed.bot.DB
+      .get<CommandPermission>('command-permissions',
+        { serverID: routed.message.guild.id, channelID: routed.message.channel.id, command: routed.route.name })
+      ||
+      // Defaults to True
+      {
+        serverID: routed.message.guild.id,
+        channelID: routed.message.channel.id,
+        command: routed.route.name,
+        enabled: true
+      })
 
-    // Not in DB? Fail
-    if (!globalPermission) {
+    // Some how if it gets here without a permission constructed then just block the command from running
+    if (!commandPermission) {
       checks.outcome = 'FailedPermissionsCheck'
       checks.pass = false
       return checks // Stop here
     }
 
-    // Construct Server Level Command permission
-    globalPermission = new CommandPermissions(globalPermission)
-    // console.log('globalPermission', globalPermission)
-    // console.log('routed.route.name', routed.route.name)
-
-    const permissionCheck = Permissions.VerifyCommandPermissions([globalPermission]).command(routed.route.name).end({
-      user: routed.message.author.id,
-      channel: routed.message.channel.id,
-      // role: 'developer'
-    })
-
-    if (permissionCheck) {
+    if (commandPermission.isAllowed()) {
       checks.outcome = 'Pass'
       checks.pass = true
       return checks

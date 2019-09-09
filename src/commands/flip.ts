@@ -10,7 +10,8 @@ export const Routes = ExportRoutes(
     controller: flip,
     example: '{{prefix}}flip',
     name: 'flip-coin',
-    validate: '/flip:string'
+    validate: '/flip:string',
+    permissions: { serverOnly: false }
   }
 )
 

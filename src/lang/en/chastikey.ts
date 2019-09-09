@@ -16,6 +16,10 @@ export const keyholderCommandNotification = `\`{{user}}\` has just looked up you
 export const lockeeOrKeyholderRequired = `You'll need to supply a type with that command such as \`{{prefix}}ck stats lockee\` \`{{prefix}}ck stats keyholder\``
 export const keyholderNoLocks = `The requested user seems to not have any active locks or past lockees, there will be no stats to display`
 export const userRequestedNoStats = `This user has requested their stats remain private`
+export const lockeeStatsMissing = `There seems to be an error finding this user's stats (\`{{user}}\`), here are some common issues:
+  - Have not opened (ChastiKey) the App in >=2 week, if this is the case, try opening the app and wait ~30 minutes for the stats to refresh.
+  - Wrong Username set with Kiera, the username that needs to be set with Kiera is from the ChastiKey app.
+  - Quotes stored with username, if you see something like “YourUsernameHere” then try setting again without the “ ”`
 
 // Verify
 export const verifyNotSuccessfulUsingReason = `{{reason}}`

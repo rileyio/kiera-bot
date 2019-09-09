@@ -2,78 +2,37 @@ import { ObjectID } from 'bson';
 import { GuildChannel } from 'discord.js';
 
 export interface TextChannelExtended extends GuildChannel {
-  permissions: Array<CommandPermissionsAllowed>
+  permissions: Array<any>
 }
 
-export class CommandPermissions {
+export class CommandPermission {
   public readonly _id: ObjectID
   /**
-   * DB Reference record
-   * @type {ObjectID}
-   * @memberof CommandPermissions
-   */
-  public sid: ObjectID
-  /**
-   * Discord server ID - quicker lookup to avoid multiple queries 
-   * at command validate runtime
-   * @type {string}
-   * @memberof CommandPermissions
+   * Discord server ID
+   * @memberof CommandPermission
    */
   public serverID: string
+  /**
+   * Discord channel ID
+   * @type {string}
+   * @memberof CommandPermission
+   */
+  public channelID: string
   public command: string
   /**
-   * Defaults to true for: on
+   * Defaults to true for: On
    * @type {boolean}
-   * @memberof CommandPermissions
+   * @memberof CommandPermission
    */
   public enabled: boolean = true
-  public allowed: Array<CommandPermissionsAllowed> = []
-  /**
-   * Example command (Note: Really should only should be mapped for display purposes)
-   * @type {string}
-   * @memberof CommandPermissions
-   */
   public example?: string
   public category?: string
 
-  constructor(init: Partial<CommandPermissions>) {
+  constructor(init: Partial<CommandPermission>) {
     Object.assign(this, init)
   }
-}
 
-export class CommandPermissionsAllowed {
-  /**
-   * Type of target to apply rule for
-   * @type {('channel' | 'user')}
-   * @memberof CommandPermissionsAllowed
-   */
-  public type: 'channel' | 'role' | 'user'
-  /**
-   * Target should contain the <DISCORD> channel ID, or User ID, etc
-   * TODO: add support for ObjectID since they are alphanum vs discord's being number only
-   * @type {string}
-   * @memberof CommandPermissionsAllowed
-   */
-  public target: string
-  /**
-   * Flat: Is it allowed
-   * 
-   * Defaults to allow
-   * 
-   * @type {boolean}
-   * @memberof CommandPermissionsAllowed
-   */
-  public allow?: boolean = true
-  public name: string
-  /**
-   * Nested, but should only be 1 layer deep
-   * TODO: Look into possible nesting
-   * @type {Array<CommandPermissionsAllowed>}
-   * @memberof CommandPermissionsAllowed
-   */
-  public exceptions?: Array<CommandPermissionsAllowed> = []
-
-  constructor(init: Partial<CommandPermissionsAllowed>) {
-    Object.assign(this, init)
+  public isAllowed() {
+    return this.enabled
   }
 }

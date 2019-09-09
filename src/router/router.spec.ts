@@ -1,7 +1,6 @@
 import test from 'ava';
 import { MessageRoute, Router } from './router';
 import { Bot } from '..';
-import { setDurationTime } from '../commands/lovense/duration';
 import { setTickerType } from '../commands/chastikey/ticker';
 
 var router: Router;
@@ -12,7 +11,7 @@ test('Utils:Router', t => {
     {
       type: 'message',
       commandTarget: 'argument',
-      controller: setDurationTime,
+      controller: () => {},
       example: '{{prefix}}duration @user#0000 time 10',
       help: 'duration',
       name: 'duration-set-time',

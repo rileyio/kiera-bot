@@ -21,7 +21,8 @@ export const Routes = ExportRoutes(
       Middleware.isUserRegistered
     ],
     permissions: {
-      defaultEnabled: false
+      defaultEnabled: false,
+      serverOnly: false
     }
   },
   {
@@ -36,7 +37,8 @@ export const Routes = ExportRoutes(
       Middleware.isUserRegistered
     ],
     permissions: {
-      defaultEnabled: false
+      defaultEnabled: false,
+      serverOnly: false
     }
   },
   {
@@ -51,7 +53,8 @@ export const Routes = ExportRoutes(
       Middleware.isUserRegistered
     ],
     permissions: {
-      defaultEnabled: false
+      defaultEnabled: false,
+      serverOnly: false
     }
   }
 )
