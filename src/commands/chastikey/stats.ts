@@ -121,8 +121,11 @@ export async function getLockeeStats(routed: RouterRouted) {
   const userInLockeeStats = new TrackedChastiKeyLockee(await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { username: usernameRegex }))
   // Get user from lockee data (Total locks, raitings, averages)
   const userInLockeeTotals = await routed.bot.DB.get<TrackedChastiKeyUserTotalLockedTime>('ck-lockee-totals', { username: usernameRegex })
-  // Get user data from API for Keyholder name
+
+  // Variables - Defaults (unless changed later)
   var calculatedCumulative = (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : 0
+  var calculatedTimeSinceLastLock = 0
+  var allLockeesLocks = []
 
   // User has no data in the Lockee stats db
   // Causes
@@ -138,14 +141,14 @@ export async function getLockeeStats(routed: RouterRouted) {
     const userPastLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
     const userCurrentLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
     // var dates = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || [])
-    var dates = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || [])
+    allLockeesLocks = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || [])
 
     // console.log(dates)
     // console.log('userPastLocksFromAPIresp.body.locks -> undefined?', userPastLocksFromAPIresp.body.locks === undefined)
     // console.log('userCurrentLocksFromAPIresp.body.locks -> undefined?', userCurrentLocksFromAPIresp.body.locks === undefined)
 
     // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
-    dates = dates.map(d => {
+    allLockeesLocks = allLockeesLocks.map(d => {
       // Insert current date on existing locked locks that are not deleted
       // console.log(d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0, d.timestampLocked)
 
@@ -160,12 +163,19 @@ export async function getLockeeStats(routed: RouterRouted) {
         d.timestampUnlocked = Math.round(Date.now() / 1000)
       }
 
+      // Find newest lock ended - only if no locks are active
+      if (activeLocks.length === 0) {
+        calculatedTimeSinceLastLock = (d.timestampUnlocked > calculatedTimeSinceLastLock)
+          ? d.timestampUnlocked
+          : calculatedTimeSinceLastLock
+      }
+
       // Transform data a little
       return { start: d.timestampLocked, end: d.timestampUnlocked }
     })
 
     // Calculate cumulative using algorithm
-    var cumulativeCalc = Utils.Date.calculateCumulativeRange(dates)
+    var cumulativeCalc = Utils.Date.calculateCumulativeRange(allLockeesLocks)
     calculatedCumulative = Math.round((cumulativeCalc.cumulative / 2592000) * 100) / 100
     // Calculate average
     // console.log('!!! Average:', cumulativeCalc.average)
@@ -225,6 +235,7 @@ export async function getLockeeStats(routed: RouterRouted) {
     totalNoOfCompletedLocks: (userInLockeeStats) ? userInLockeeStats.totalNoOfCompletedLocks : 0,
     username: user.ChastiKey.username,
     joined: (userInLockeeStats) ? userInLockeeStats.joined : '-',
+    _additional: { timeSinceLast: (calculatedTimeSinceLastLock > 0) ? ((Date.now() / 1000) - calculatedTimeSinceLastLock) : 0 },
     _performance: _performance
   }, { showRating: user.ChastiKey.ticker.showStarRatingScore }))
 

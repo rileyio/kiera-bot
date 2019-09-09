@@ -13,6 +13,8 @@ export interface LockeeStats {
   totalNoOfCompletedLocks: number
   username: string
   joined: string
+  // Custom
+  _additional: { timeSinceLast: number }
   // Performance tracking
   _performance: { start: number, end: number }
 }
@@ -70,7 +72,7 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean })
   if (fields.length === 0) {
     fields.push({
       name: 'No active locks',
-      value: 'To see any additional stats a lock must be active.'
+      value: `To see any additional stats a lock must be active.\n Time Since Last Lock \`${Utils.Date.calculateHumanTimeDDHHMM(data._additional.timeSinceLast)}\``
     })
   }
 
@@ -268,7 +270,9 @@ export function keyholderStats(data: TrackedKeyholderStatistics, activeLocks: Ar
   // For each lock
   description += `**Locks**\n`
   if (lockCount > 0) individualLockStats.forEach(lock => description += `\`${lock.count}\` ${lock.name} \`[${lock.fixed ? 'F' : 'V'}]\`\n`)
-  else description += `No active locks to display!`
+  else {
+    description += `No active locks to display!`
+  }
 
   return {
     embed: {
