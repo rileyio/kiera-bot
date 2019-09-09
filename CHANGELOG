@@ -3,6 +3,7 @@
 - Removed: Large sections of old or disabled command code that was no longer being maintained or developed for several months.
 - Added: New command permissions system - now will be by permissions only when set
 - Added: Info text if CK stats lockee fails some areas to check
+- Updated: Re-enabled DMs on as many commands as possible - will need to monitor for any issues on specific commands
 
 3.5.0
 - Added: !ck verify to verify Discord account to ChastiKey
