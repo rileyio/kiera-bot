@@ -28,7 +28,12 @@ export const Routes = ExportRoutes(
     validate: '/user:string/key:string/new:string',
     middleware: [
       Middleware.isUserRegistered
-    ]
+    ],
+    permissions: {
+      restrictedTo: [
+        '146439529824256000'  // Emma#1366
+      ]
+    }
   },
   {
     type: 'message',
@@ -40,7 +45,12 @@ export const Routes = ExportRoutes(
     validate: '/user:string/key:string/destroy:string/authkey=string',
     middleware: [
       Middleware.isUserRegistered
-    ]
+    ],
+    permissions: {
+      restrictedTo: [
+        '146439529824256000'  // Emma#1366
+      ]
+    }
   }
 )
 

@@ -22,7 +22,8 @@ export const Routes = ExportRoutes(
     name: 'ck-get-stats-lockee',
     validate: '/ck:string/stats:string/lockee:string/user?=string',
     permissions: {
-      defaultEnabled: false
+      defaultEnabled: false,
+      serverOnly: false
     }
   },
   {
@@ -34,7 +35,8 @@ export const Routes = ExportRoutes(
     name: 'ck-get-stats-keyholder',
     validate: '/ck:string/stats:string/keyholder:string/user?=string',
     permissions: {
-      defaultEnabled: false
+      defaultEnabled: false,
+      serverOnly: false
     }
   },
   {
@@ -46,7 +48,8 @@ export const Routes = ExportRoutes(
     name: 'ck-check-multilocked',
     validate: '/ck:string/check:string/multilocked:string/user=string',
     permissions: {
-      defaultEnabled: false
+      defaultEnabled: false,
+      serverOnly: false
     }
   },
   {
@@ -58,7 +61,8 @@ export const Routes = ExportRoutes(
     name: 'ck-keyholder-lockees',
     validate: '/ck:string/keyholder:string/lockees:string/user=string',
     permissions: {
-      defaultEnabled: false
+      defaultEnabled: false,
+      serverOnly: false
     }
   },
   {
@@ -72,7 +76,8 @@ export const Routes = ExportRoutes(
       Middleware.isUserRegistered
     ],
     permissions: {
-      defaultEnabled: false
+      defaultEnabled: false,
+      serverOnly: false
     }
   },
 )

@@ -9,7 +9,8 @@ export const Routes = ExportRoutes(
     controller: commandUsageStats,
     example: '{{prefix}}stats commands',
     name: 'stats-commands',
-    validate: '/stats:string/commands:string'
+    validate: '/stats:string/commands:string',
+    permissions: { serverOnly: false }
   }
 )
 

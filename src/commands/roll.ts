@@ -10,7 +10,8 @@ export const Routes = ExportRoutes(
     controller: roll,
     example: '{{prefix}}roll',
     name: 'roll-die',
-    validate: '/roll:string/count1?=number/count2?=number'
+    validate: '/roll:string/count1?=number/count2?=number',
+    permissions: { serverOnly: false }
   }
 )
 

@@ -30,7 +30,7 @@
 3.2.3
 - Added: Date first Keyheld to ck stats keyholder
 
-3.2.2pm
+3.2.2
 - Added: Proper yellow card with a ? for remaining cards in CK stats lockee command
 - Updated: Keyholder for CK stats keyholder to have defaults for missing counts
 - Updated: CK cards re-uploaded to save character space

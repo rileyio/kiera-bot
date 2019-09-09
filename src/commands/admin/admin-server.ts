@@ -14,6 +14,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}version',
     name: 'admin-version',
     validate: '/version:string',
+    permissions: { serverOnly: false }
   },
   {
     type: 'message',
@@ -22,7 +23,8 @@ export const Routes = ExportRoutes(
     controller: pingPong,
     example: '{{prefix}}ping',
     name: 'admin-ping',
-    validate: '/ping:string'
+    validate: '/ping:string',
+    permissions: { serverOnly: false }
   },
   // {
   //   type: 'message',
