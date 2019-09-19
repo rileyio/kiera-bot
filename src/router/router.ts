@@ -20,7 +20,7 @@ const prefix = process.env.BOT_MESSAGE_PREFIX
  * @interface RouteConfiguration
  */
 export interface RouteConfiguration {
-  category?: RouteConfigurationCategory
+  category: RouteConfigurationCategory
   command?: string
   commandTarget: RouteActionUserTarget
   controller: Function | void
@@ -54,6 +54,7 @@ export class MessageRoute {
     serverOnly: true
   }
 
+  public category: string
   public command: string
   public commandTarget: RouteActionUserTarget = 'none' // Default to none
   public controller: (routed: RouterRouted) => Promise<Boolean>

@@ -67,6 +67,7 @@ export const Routes = ExportRoutes(
   },
   {
     type: 'message',
+    category: 'ChastiKey',
     commandTarget: 'author',
     controller: setKHAverageDisplay,
     example: '{{prefix}}ck keyholder set average show',

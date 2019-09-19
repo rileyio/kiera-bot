@@ -10,8 +10,9 @@ test('Utils:Router', t => {
   router = new Router([
     {
       type: 'message',
+      category: 'Info',
       commandTarget: 'argument',
-      controller: () => {},
+      controller: () => { },
       example: '{{prefix}}duration @user#0000 time 10',
       help: 'duration',
       name: 'duration-set-time',
@@ -19,6 +20,7 @@ test('Utils:Router', t => {
     },
     {
       type: 'message',
+      category: 'Info',
       commandTarget: 'author',
       controller: setTickerType,
       example: '{{prefix}}ck ticker set type 2',
@@ -34,6 +36,7 @@ test('Utils:Router', t => {
 test('Utils:Router:Route => Generate Route', t => {
   const r = new MessageRoute({
     type: 'message',
+    category: 'Info',
     commandTarget: 'author',
     controller: setTickerType,
     example: '{{prefix}}ck ticker set type 2',
