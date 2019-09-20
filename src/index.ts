@@ -69,6 +69,7 @@ export class Bot {
       new Task.ChastiKeyAPIKeyholders(this),
       new Task.ChastiKeyAPILockees(this),
       new Task.ChastiKeyAPITotalLockedTime(this),
+      new Task.ChastiKeyAPILocktober(this)
     ])
 
     ////////////////////////////////////////

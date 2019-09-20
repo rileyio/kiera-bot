@@ -32,3 +32,12 @@ export class ChastiKeyAPITotalLockedTime extends ChastiKeyAPIFetchAndStore {
   frequency = 1800000 // 30 minutes
   dbCollection: Collections = 'ck-lockee-totals'
 }
+
+// TO be removed in December/January
+export class ChastiKeyAPILocktober extends ChastiKeyAPIFetchAndStore {
+  // Setting the props for this Task
+  name = 'ChastiKeyAPILocktober'
+  APIEndpoint = `http://chastikey.com/json/v1.0/kiera_locked_for_september.json`
+  frequency = 1800000 // 30 minutes
+  dbCollection: Collections = 'ck-locktober'
+}

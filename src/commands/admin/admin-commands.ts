@@ -27,6 +27,18 @@ export const Routes = ExportRoutes(
     permissions: {
       serverAdminOnly: true
     }
+  },
+  {
+    type: 'message',
+    category: 'Admin',
+    commandTarget: 'none',
+    controller: commandRestrict,
+    example: '{{prefix}}admin restrict command 8ball',
+    name: 'admin-command-restrict',
+    validate: '/admin:string/commands:string/category:string/category=string',
+    permissions: {
+      serverAdminOnly: true
+    }
   }
 )
 
@@ -116,4 +128,8 @@ export async function listCategoryCommands(routed: RouterRouted) {
 
   await routed.message.reply(Utils.sb(Utils.en.admin.commandCategoryCommands, { category: routed.v.o.category, commands: responseString }))
   return true // Successful
+}
+
+export async function commandRestrict(){
+  
 }

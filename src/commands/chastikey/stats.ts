@@ -80,7 +80,7 @@ export const Routes = ExportRoutes(
       defaultEnabled: false,
       serverOnly: false
     }
-  },
+  }
 )
 
 export async function getLockeeStats(routed: RouterRouted) {
