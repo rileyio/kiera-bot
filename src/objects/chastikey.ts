@@ -53,7 +53,7 @@ export class TrackedChastiKeyLockee {
   public readonly _hasDBData: boolean = false
   public username: string
   public joined: string
-  public timestamp_last_active: number
+  public timestampLastActive: number
   public secondsLockedInCurrentLock: number
   public averageTimeLockedInSeconds: number
   public longestCompletedLockInSeconds: number
@@ -83,24 +83,22 @@ export class TrackedChastiKeyLock {
   public secondsLocked: number
   public fixed: number
   public cumulative: number
-  public card_info_hidden: number
-  public timer_hidden: number
+  public cardInfoHidden: number
+  public timerHidden: number
   public noOfTurns: number
-  public lock_frozen_by_card: number
-  public lock_frozen_by_keyholder: number
-  public discard_pile: string
-  public version: string
-  public build: number
+  public lockFrozenByCard: number
+  public lockFrozenByKeyholder: number
+  public discardPile: string
   public lockedBy: string
-  public display_in_stats: number
+  public displayInStats: number
   public sharedLockName: string
   /// Cards ///
-  public double_up_cards: number
-  public freeze_cards: number
-  public green_cards: number
-  public red_cards: number
-  public reset_cards: number
-  public yellow_cards: number
+  public doubleUpCards: number
+  public freezeCards: number
+  public greenCards: number
+  public redCards: number
+  public resetCards: number
+  public yellowCards: number
 }
 
 export class TrackedChastiKeyUserAPIFetch {
@@ -183,7 +181,7 @@ export class TrackedKeyholderStatistics {
    * @type {number}
    * @memberof TrackedKeyholderStatistics
    */
-  public display_in_stats: number
+  public displayInStats: number
   /**
    * Date User began keyholding
    * @type {string}

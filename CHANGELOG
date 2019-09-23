@@ -1,3 +1,6 @@
+4.1.0
+- Updating Kiera to use newer API formatted output
+
 4.0.0
 - Removed: Old command permissions system
 - Removed: Large sections of old or disabled command code that was no longer being maintained or developed for several months

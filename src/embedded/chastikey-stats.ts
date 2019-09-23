@@ -129,7 +129,7 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   if (lock.regularity > 1) { regularity = `${lock.regularity}hrs` }
 
   // Calculate count and Prep discard pile
-  var discardPile = lock.discard_pile.split(',').filter(c => c !== '')
+  var discardPile = lock.discardPile.split(',').filter(c => c !== '')
 
   // If the cardpile is above 15 cards remove the last 5 (oldest 5)
   // if (totalExpected <= 5 && discardPile.length > 5) { discardPile.splice(15, 22); /* console.log(totalExpected, 'NOT extra splicy') */ }
@@ -153,9 +153,9 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
     var name = `Active Lock ${(index + 1)}`
   }
 
-  name += ` ${(lock.card_info_hidden || lock.timer_hidden) ? indicatorEmoji.Hidden : ''}`
-  name += ` ${(lock.lock_frozen_by_keyholder || lock.lock_frozen_by_card)
-    ? (lock.lock_frozen_by_keyholder) ? indicatorEmoji.Frozen : cardsEmoji.Freeze : ''}`
+  name += ` ${(lock.cardInfoHidden || lock.timerHidden) ? indicatorEmoji.Hidden : ''}`
+  name += ` ${(lock.lockFrozenByKeyholder || lock.lockFrozenByCard)
+    ? (lock.lockFrozenByKeyholder) ? indicatorEmoji.Frozen : cardsEmoji.Freeze : ''}`
 
   var value = ``
   value += `Keyholder **\`${lock.lockedBy}\`** Status **\`Locked\`** **\`${combined}\`**`
@@ -166,22 +166,22 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
     if (totalExpected < 6) value += `\nThe last (${discardPile.length}) cards discarded (not greens):\n${discardPileStr}`
     else value += `\n${discardPileStr}`
 
-    if (lock.card_info_hidden === 0) {
+    if (lock.cardInfoHidden === 0) {
       // Extra space
       value += `\n\nCards Remaining:`
 
       // Green cards
-      value += `${cardsEmoji.Green} \`${lock.green_cards}\` `
+      value += `${cardsEmoji.Green} \`${lock.greenCards}\` `
       // Red cards
-      value += `${cardsEmoji.Red} \`${lock.red_cards}\` `
+      value += `${cardsEmoji.Red} \`${lock.redCards}\` `
       // Yellow cards
-      value += `${cardsEmoji.Yellow} \`${lock.yellow_cards}\` `
+      value += `${cardsEmoji.Yellow} \`${lock.yellowCards}\` `
       // Freeze Up cards
-      value += `${cardsEmoji.Freeze} \`${lock.freeze_cards}\` `
+      value += `${cardsEmoji.Freeze} \`${lock.freezeCards}\` `
       // Double Up cards
-      value += `${cardsEmoji.DoubleUp} \`${lock.double_up_cards}\``
+      value += `${cardsEmoji.DoubleUp} \`${lock.doubleUpCards}\``
       // Reset Up cards
-      value += `${cardsEmoji.Reset} \`${lock.reset_cards}\``
+      value += `${cardsEmoji.Reset} \`${lock.resetCards}\``
     }
   }
   else {

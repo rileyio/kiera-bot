@@ -189,7 +189,7 @@ export async function getLockeeStats(routed: RouterRouted) {
   }
 
   // If the user has display_in_stats === 2 then stop here
-  if (activeLocks.length > 0 ? activeLocks[0].display_in_stats === 2 : false) {
+  if (activeLocks.length > 0 ? activeLocks[0].displayInStats === 2 : false) {
     // Track incoming message and delete for the target user's privacy
     await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
       authorID: routed.message.author.id,
