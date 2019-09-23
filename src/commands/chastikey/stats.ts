@@ -237,7 +237,8 @@ export async function getLockeeStats(routed: RouterRouted) {
     username: user.ChastiKey.username,
     joined: (userInLockeeStats) ? userInLockeeStats.joined : '-',
     _additional: { timeSinceLast: (calculatedTimeSinceLastLock > 0) ? ((Date.now() / 1000) - calculatedTimeSinceLastLock) : 0 },
-    _performance: _performance
+    _performance: _performance,
+    _isVerified: userInLockeeStats.isVerified(Number(user.id || 0))
   }, { showRating: user.ChastiKey.ticker.showStarRatingScore }))
 
   // Notify the stats owner if that's applicable
@@ -348,7 +349,12 @@ export async function getKeyholderStats(routed: RouterRouted) {
   keyholder = new TrackedKeyholderStatistics(keyholder)
 
   // Send stats
-  await routed.message.channel.send(keyholderStats(keyholder, activeLocks, { showRating: user.ChastiKey.ticker.showStarRatingScore, showAverage: user.ChastiKey.preferences.keyholder.showAverage }))
+  await routed.message.channel.send(keyholderStats(keyholder, activeLocks, {
+    showRating: user.ChastiKey.ticker.showStarRatingScore,
+    showAverage: user.ChastiKey.preferences.keyholder.showAverage,
+    _isVerified: keyholder.isVerified(Number(user.id || 0))
+  }))
+
   // Notify the stats owner if that's applicable
   if (userNotifyConfig !== null) {
     if (userNotifyConfig.where !== 'Discord' || userNotifyConfig.state !== true) return // stop here

@@ -1,5 +1,6 @@
 4.1.0
-- Updating Kiera to use newer API formatted output
+- Updated: Kiera to use newer API formatted output
+- Added: Verify checkmarks for regular CK stats lookups (lockee & kh)
 
 4.0.0
 - Removed: Old command permissions system

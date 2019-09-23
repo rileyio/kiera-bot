@@ -17,6 +17,8 @@ export interface LockeeStats {
   _additional: { timeSinceLast: number }
   // Performance tracking
   _performance: { start: number, end: number }
+  // For Discord/CK verified check
+  _isVerified: boolean
 }
 
 export interface TrackedSharedKeyholderStatistics {
@@ -87,7 +89,7 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean })
 
   const messageBlock = {
     embed: {
-      title: `\`${data.username}\` - ChastiKey Lockee Statistics`,
+      title: `${data._isVerified ? '<:verified:625628727820288000> ' : ''}\`${data.username}\` - ChastiKey Lockee Statistics`,
       description: description,
       color: 9125611,
       timestamp: (data.cacheTimestamp) ? new Date((<number>data.cacheTimestamp) * 1000).toISOString() : '',
@@ -194,7 +196,7 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   }
 }
 
-export function keyholderStats(data: TrackedKeyholderStatistics, activeLocks: Array<TrackedKeyholderLockeesStatistics>, options: { showRating: boolean, showAverage: boolean }) {
+export function keyholderStats(data: TrackedKeyholderStatistics, activeLocks: Array<TrackedKeyholderLockeesStatistics>, options: { showRating: boolean, showAverage: boolean, _isVerified: boolean }) {
   var dateJoinedDaysAgo = (data.joined !== '-')
     ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)`
     : ''
@@ -276,7 +278,7 @@ export function keyholderStats(data: TrackedKeyholderStatistics, activeLocks: Ar
 
   return {
     embed: {
-      title: `\`${data.username}\` - ChastiKey Keyholder Statistics`,
+      title: `${options._isVerified ? '<:verified:625628727820288000> ' : ''}\`${data.username}\` - ChastiKey Keyholder Statistics`,
       description: description,
       color: 9125611,
       // timestamp: '',

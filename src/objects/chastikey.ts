@@ -66,6 +66,16 @@ export class TrackedChastiKeyLockee {
     this._hasDBData = init === null ? false : true
     Object.assign(this, init !== null ? init : {});
   }
+
+  /**
+   * Compares what's in Kiera's DB for known Discord ID's and compares against what ChastiKey knows as verified
+   * @param {number} knownID
+   * @returns
+   * @memberof TrackedChastiKeyLockee
+   */
+  public isVerified(knownID: number) {
+    return this.discordID === knownID
+  }
 }
 
 export class TrackedChastiKeyLock {
@@ -196,7 +206,17 @@ export class TrackedKeyholderStatistics {
   public discordID: number
 
   constructor(init: Partial<TrackedKeyholderStatistics>) {
-    Object.assign(this, init);
+    Object.assign(this, init)
+  }
+
+  /**
+   * Compares what's in Kiera's DB for known Discord ID's and compares against what ChastiKey knows as verified
+   * @param {number} knownID
+   * @returns
+   * @memberof TrackedChastiKeyLockee
+   */
+  public isVerified(knownID: number) {
+    return this.discordID === knownID
   }
 }
 
