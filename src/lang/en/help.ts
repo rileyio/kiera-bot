@@ -43,6 +43,7 @@ Currently returns: (1) Keyholder, (2) Lockee, (3) Both
 \`{{prefix}}ck stats lockee\` - Get your lockee stats (by saved username)
 \`{{prefix}}ck stats keyholder\` - Get your keyholder stats (by saved username)
 \`{{prefix}}ck stats lockee UsernameHere\` - Get stats for defined username
+\`{{prefix}}ck stats locktober\` - Display Locktober stats
 
 \`{{prefix}}ck keyholder lockees UsernameHere\` - Get list of lockee names under a KH
 \`{{prefix}}ck keyholder set average show\` - Get list of lockee names under a KH
