@@ -121,7 +121,7 @@ export class TrackedChastiKeyUserAPIFetchLock {
   public lockedBy: string
   public timestampLocked: number
   public timestampUnlocked: number
-  public status: string
+  public status: 'UnlockedReal' | 'Locked' | 'ReadyToUnlock'
   public combination: number
 }
 

@@ -3,9 +3,9 @@ import got = require('got');
 import * as Middleware from '../../middleware';
 import * as Utils from '../../utils'
 import { RouterRouted } from '../../utils';
-import { lockeeStats, keyholderStats, sharedKeyholdersStats, TrackedSharedKeyholderStatistics, keyholderLockees } from '../../embedded/chastikey-stats';
+import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '../../embedded/chastikey-stats';
 import { TrackedUser } from '../../objects/user';
-import { TrackedChastiKeyLock, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics } from '../../objects/chastikey';
+import { TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics } from '../../objects/chastikey';
 import { performance } from 'perf_hooks';
 import { TrackedNotification } from '../../objects/notification';
 import { TextChannel, Message } from 'discord.js';
@@ -21,6 +21,9 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats lockee',
     name: 'ck-get-stats-lockee',
     validate: '/ck:string/stats:string/lockee:string/user?=string',
+    middleware: [
+      Middleware.isUserRegistered
+    ],
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -31,9 +34,12 @@ export const Routes = ExportRoutes(
     category: 'ChastiKey',
     commandTarget: 'author',
     controller: getKeyholderStats,
-    example: '{{prefix}}ck stats keyholder "Username"',
+    example: '{{prefix}}ck stats keyholder UsernameHere',
     name: 'ck-get-stats-keyholder',
     validate: '/ck:string/stats:string/keyholder:string/user?=string',
+    middleware: [
+      Middleware.isUserRegistered
+    ],
     permissions: {
       defaultEnabled: false,
       serverOnly: false

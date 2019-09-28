@@ -17,6 +17,9 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats locktober',
     name: 'ck-stats-locktober',
     validate: '/ck:string/stats:string/locktober:string',
+    middleware: [
+      Middleware.isUserRegistered
+    ],
     permissions: {
       defaultEnabled: true,
       serverOnly: false

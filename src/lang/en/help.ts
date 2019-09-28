@@ -32,6 +32,7 @@ Currently returns: (1) Keyholder, (2) Lockee, (3) Both
 
 \`{{prefix}}ck verify\` - Verify your Discord Account to ChastiKey
 \`{{prefix}}ck username YourUsername\` - Configures ChastiKey App username for defaults
+\`{{prefix}}ck update\` - Update your Roles: Locked/Unlocked, Experience, Event Specific
 
 \`{{prefix}}ck ticker\` - Returns your ticker
 \`{{prefix}}ck ticker #\` - Returns a specific ticker type (replace \`#\`)

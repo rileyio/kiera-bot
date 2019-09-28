@@ -1,6 +1,8 @@
 4.1.0
 - Updated: Kiera to use newer API formatted output
+- Updated: Command router to better handle permissions between Servers and DMs
 - Added: Verify checkmarks for regular CK stats lookups (lockee & kh)
+- Added: ChastiKey command to update various roles (Locked/Unlocked, Experience, Event Specific)
 - Removing: " " from CK commands where still present due to issues where users have different lang keyboards
 
 4.0.0

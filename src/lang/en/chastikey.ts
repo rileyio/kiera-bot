@@ -1,7 +1,10 @@
 export const adminRefreshStats = `Manual stats refresh triggered..`
 
 // Error
-export const usernameNotSet = `You'll need to tell the bot your username in order to use the \`{{prefix}}ticker\`, Set your username (found in the ChastiKey app) using \`{{prefix}}ck username "YourUsernameHere"\``
+export const usernameNotSet = `You'll need to tell the bot your username in order to use this command, Set your username (found in the ChastiKey app) using \`{{prefix}}ck username YourUsernameHere\``
+export const usernameNotSetByOwner = `The requested ChastiKey username does not exist -or- the owner of it has not set it with Kiera.`
+export const usernameNoResultsFromServer = `User not found!`
+export const keyholderOrAboveRoleRequired = `Calling this command for another user requires you hold the Keyholder or above role.`
 
 // Ticker
 export const invalidOverrideType = `Invalid override type, please use: (1) Keyholder, (2) Lockee, (3) Both`
