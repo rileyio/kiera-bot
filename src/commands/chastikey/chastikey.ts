@@ -452,39 +452,43 @@ export async function update(routed: RouterRouted) {
     if (successfullyCalculatedCumulative) {
       // Determine which color the user prefers, blue or pink
       var userHasPref = false
+      var isChanging = false
       const prefPink = discordUserHasRole.devotedLockeePink || discordUserHasRole.experiencedLockeePink || discordUserHasRole.intermediateLockeePink || discordUserHasRole.noviceLockeePink
       const prefBlue = discordUserHasRole.devotedLockeeBlue || discordUserHasRole.experiencedLockeeBlue || discordUserHasRole.intermediateLockeeBlue || discordUserHasRole.noviceLockeeBlue
 
       // Ensure user has a color preference already selected, otherwise don't pick one
       if (prefBlue || prefPink) userHasPref = true
 
-      // Remove all Level roles
-      if (discordUserHasRole.experiencedLockeePink) { await discordUser.removeRole(role.experiencedLockeePink); changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Experienced Lockee' }); }
-      if (discordUserHasRole.experiencedLockeeBlue) { await discordUser.removeRole(role.experiencedLockeeBlue); changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Experienced Lockee' }); }
-      if (discordUserHasRole.intermediateLockeePink) { await discordUser.removeRole(role.intermediateLockeePink); changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Intermediate Lockee' }); }
-      if (discordUserHasRole.intermediateLockeeBlue) { await discordUser.removeRole(role.intermediateLockeeBlue); changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Intermediate Lockee' }); }
-      if (discordUserHasRole.noviceLockeePink) { await discordUser.removeRole(role.noviceLockeePink); changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Novice Lockee' }); }
-      if (discordUserHasRole.noviceLockeeBlue) { await discordUser.removeRole(role.noviceLockeeBlue); changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Novice Lockee' }); }
 
       // Devoted
       if (calculatedCumulative >= 12 && userHasPref) {
         // Add Proper Devoted role
-        if (!discordUserHasRole.devotedLockeePink && prefPink) { await discordUser.addRole(role.devotedLockeePink); changesImplemented.push({ action: 'added', type: 'role', result: '(Pink) Devoted Lockee' }); }
-        if (!discordUserHasRole.devotedLockeeBlue && prefBlue) { await discordUser.addRole(role.devotedLockeeBlue); changesImplemented.push({ action: 'added', type: 'role', result: '(Blue) Devoted Lockee' }); }
+        if (!discordUserHasRole.devotedLockeePink && prefPink) { isChanging = true; await discordUser.addRole(role.devotedLockeePink); changesImplemented.push({ action: 'added', type: 'role', result: '(Pink) Devoted Lockee' }); }
+        if (!discordUserHasRole.devotedLockeeBlue && prefBlue) { isChanging = true; await discordUser.addRole(role.devotedLockeeBlue); changesImplemented.push({ action: 'added', type: 'role', result: '(Blue) Devoted Lockee' }); }
       }
 
       // Experienced
       if (calculatedCumulative >= 6 && userHasPref) {
         // Add Proper Experienced role
-        if (!discordUserHasRole.experiencedLockeePink && prefPink) { await discordUser.addRole(role.experiencedLockeePink); changesImplemented.push({ action: 'added', type: 'role', result: '(Pink) Experienced Lockee' }); }
-        if (!discordUserHasRole.experiencedLockeeBlue && prefBlue) { await discordUser.addRole(role.experiencedLockeePink); changesImplemented.push({ action: 'added', type: 'role', result: '(Blue) Experienced Lockee' }); }
+        if (!discordUserHasRole.experiencedLockeePink && prefPink) { isChanging = true; await discordUser.addRole(role.experiencedLockeePink); changesImplemented.push({ action: 'added', type: 'role', result: '(Pink) Experienced Lockee' }); }
+        if (!discordUserHasRole.experiencedLockeeBlue && prefBlue) { isChanging = true; await discordUser.addRole(role.experiencedLockeePink); changesImplemented.push({ action: 'added', type: 'role', result: '(Blue) Experienced Lockee' }); }
       }
 
       // Intermediate
       if (calculatedCumulative >= 2 && userHasPref) {
         // Add Proper Intermediate role
-        if (!discordUserHasRole.intermediateLockeePink && prefPink) { await discordUser.addRole(role.intermediateLockeePink); changesImplemented.push({ action: 'added', type: 'role', result: '(Pink) Intermediate Lockee' }); }
-        if (!discordUserHasRole.intermediateLockeeBlue && prefBlue) { await discordUser.addRole(role.intermediateLockeeBlue); changesImplemented.push({ action: 'added', type: 'role', result: '(Blue) Intermediate Lockee' }); }
+        if (!discordUserHasRole.intermediateLockeePink && prefPink) { isChanging = true; await discordUser.addRole(role.intermediateLockeePink); changesImplemented.push({ action: 'added', type: 'role', result: '(Pink) Intermediate Lockee' }); }
+        if (!discordUserHasRole.intermediateLockeeBlue && prefBlue) { isChanging = true; await discordUser.addRole(role.intermediateLockeeBlue); changesImplemented.push({ action: 'added', type: 'role', result: '(Blue) Intermediate Lockee' }); }
+      }
+
+      if (isChanging) {
+        // Remove all Level roles
+        if (discordUserHasRole.experiencedLockeePink) { await discordUser.removeRole(role.experiencedLockeePink); changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Experienced Lockee' }); }
+        if (discordUserHasRole.experiencedLockeeBlue) { await discordUser.removeRole(role.experiencedLockeeBlue); changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Experienced Lockee' }); }
+        if (discordUserHasRole.intermediateLockeePink) { await discordUser.removeRole(role.intermediateLockeePink); changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Intermediate Lockee' }); }
+        if (discordUserHasRole.intermediateLockeeBlue) { await discordUser.removeRole(role.intermediateLockeeBlue); changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Intermediate Lockee' }); }
+        if (discordUserHasRole.noviceLockeePink) { await discordUser.removeRole(role.noviceLockeePink); changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Novice Lockee' }); }
+        if (discordUserHasRole.noviceLockeeBlue) { await discordUser.removeRole(role.noviceLockeeBlue); changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Novice Lockee' }); }
       }
     }
   } catch (e) { console.log('CK Update Error updating Experience role') }
