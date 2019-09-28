@@ -310,9 +310,10 @@ export class Router {
       this.bot.DEBUG_MSG_COMMAND.log('Router -> Route:', route)
 
       // Normal routed behaviour
-      var routed = new RouterRouted({
+      var routed: RouterRouted = new RouterRouted({
         args: args,
         bot: this.bot,
+        isDM: message.channel.type === 'dm',
         message: message,
         route: route,
         type: 'message',
@@ -320,41 +321,23 @@ export class Router {
         runtimeStart: runtimeStart
       })
 
-      // Only check permissions if message type isn't a dm
-      if (message.channel.type !== 'dm') {
-        // Process Permissions
-        const permissionCheckResults = await this.processPermissions(routed)
+      // Process Permissions
+      routed.permissions = await this.processPermissions(routed)
 
-        this.bot.DEBUG_MSG_COMMAND.log('Router -> Permissions Check Results:', permissionCheckResults)
+      this.bot.DEBUG_MSG_COMMAND.log('Router -> Permissions Check Results:', routed.permissions)
 
-        if (!permissionCheckResults.pass) {
-          this.bot.BotMonitor.Stats.increment('commands-invalid')
+      if (!routed.permissions.pass) {
+        this.bot.BotMonitor.Stats.increment('commands-invalid')
 
-          // If it admin failed -or- command is an admin command, don't go any further at this time
-          if (permissionCheckResults.outcome === 'FailedAdmin' || routed.route.permissions.serverAdminOnly) return // Hard Stop
-
-          // Notify user via DM - If this server has the key configured
-          const altChannel = await this.bot.DB.get<TrackedAvailableObject>('server-settings', {
-            key: 'server.permissions.channel.suggestedCommandChannel',
-            serverID: message.guild.id,
-            state: true
-          })
-
-          // If an alt channel recommendation is set
-          if (altChannel) {
-            await message.author
-              .sendMessage(Utils.sb(Utils.en.error.commandDisabledInChannel, {
-                command: message.content,
-                channel: altChannel.value,
-                server: message.guild.name
-              }))
-          }
+        if (routed.permissions.outcome === 'FailedServerOnlyRestriction') {
+          // Send message in response
+          await routed.message.reply(Utils.sb(Utils.en.error.commandDisabledInChannel, { command: routed.message.content }))
 
           // Track in an audit event
           this.bot.Audit.NewEntry({
             name: routed.route.name,
             details: routed.message.content,
-            guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
+            guild: { id: 'DM', name: 'DM', channel: 'DM' },
             error: 'Command disabled by permission in this channel',
             runtime: Math.round(performance.now() - runtimeStart),
             owner: routed.message.author.id,
@@ -362,14 +345,24 @@ export class Router {
             type: 'bot.command',
             where: 'Discord'
           })
-          return; // Hard Stop
         }
-      }
-      // Is a DM
-      else {
-        if (routed.route.permissions.serverOnly === true) {
-          return; // Hard Stop - Command is clearly meant for only servers
+        else {
+          // Track in an audit event
+          this.bot.Audit.NewEntry({
+            name: routed.route.name,
+            details: routed.message.content,
+            guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
+            error: 'Command disabled by permissions',
+            runtime: Math.round(performance.now() - runtimeStart),
+            owner: routed.message.author.id,
+            successful: false,
+            type: 'bot.command',
+            where: 'Discord'
+          })
         }
+
+
+        return; // Hard Stop
       }
 
       const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
@@ -401,7 +394,7 @@ export class Router {
           this.bot.Audit.NewEntry({
             name: routed.route.name,
             details: routed.message.content,
-            guild: (message.channel.type === 'dm')
+            guild: (routed.isDM)
               ? { id: 'dm', name: 'dm', channel: 'dm' }
               : { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
             owner: routed.message.author.id,
@@ -435,7 +428,6 @@ export class Router {
     }
   }
 
-
   /**
    * Perform permissions check
    *
@@ -447,8 +439,15 @@ export class Router {
   private async processPermissions(routed: RouterRouted): Promise<ProcessedPermissions> {
     var checks: ProcessedPermissions = {
       // Permissions of user
-      hasAdministrator: routed.message.member.hasPermission('ADMINISTRATOR'),
-      hasManageGuild: routed.message.member.hasPermission('MANAGE_GUILD')
+      hasAdministrator: !routed.isDM ? routed.message.member.hasPermission('ADMINISTRATOR') : false,
+      hasManageGuild: !routed.isDM ? routed.message.member.hasPermission('MANAGE_GUILD') : false
+    }
+
+    // [IF: serverOnly is set] Command is clearly meant for only servers
+    if (routed.route.permissions.serverOnly === true && routed.isDM) {
+      checks.outcome = 'FailedServerOnlyRestriction'
+      checks.pass = false
+      return checks // Hard stop here
     }
 
     // [IF: Required user ID] Verify that the user calling is allowd to access (mostly legacy commands)
@@ -475,14 +474,15 @@ export class Router {
       }
     }
 
+    // Skip if a DM, as no one would have set a permission for a channel for this
     // Get the command permission if its in the DB
     var commandPermission = new CommandPermission(await routed.bot.DB
       .get<CommandPermission>('command-permissions',
-        { serverID: routed.message.guild.id, channelID: routed.message.channel.id, command: routed.route.name })
+        { serverID: !routed.isDM ? routed.message.guild.id : 'DM', channelID: !routed.isDM ? routed.message.channel.id : 'DM', command: routed.route.name })
       ||
       // Defaults to True
       {
-        serverID: routed.message.guild.id,
+        serverID: !routed.isDM ? routed.message.guild.id : 'DM',
         channelID: routed.message.channel.id,
         command: routed.route.name,
         enabled: true
@@ -517,7 +517,9 @@ export class Router {
 export class RouterRouted {
   public args: Array<string>
   public bot: Bot
+  public isDM: boolean
   public message: Message
+  public permissions: ProcessedPermissions
   public reaction: {
     snowflake: string,
     reaction: string
@@ -538,7 +540,9 @@ export class RouterRouted {
     // Object.assign(this, init)
     this.args = init.args
     this.bot = init.bot
+    this.isDM = init.isDM
     this.message = init.message
+    this.permissions = init.permissions
     this.reaction = init.reaction
       ? {
         snowflake: init.reaction.snowflake,

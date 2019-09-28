@@ -13,6 +13,7 @@ export type ProcessedPermissionOutcome = 'Pass'
   | 'FailedIDCheck'
   | 'FailedManageGuild'
   | 'FailedPermissionsCheck'
+  | 'FailedServerOnlyRestriction'
 
 export type RouteActionUserTarget = 'none'
   | 'author'

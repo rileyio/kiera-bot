@@ -1,6 +1,7 @@
 4.1.0
 - Updated: Kiera to use newer API formatted output
 - Added: Verify checkmarks for regular CK stats lookups (lockee & kh)
+- Removing: " " from CK commands where still present due to issues where users have different lang keyboards
 
 4.0.0
 - Removed: Old command permissions system
