@@ -388,7 +388,6 @@ export async function update(routed: RouterRouted) {
     if (r.hexColor.toLowerCase() === '#4383fc' && r.name.toLowerCase() === 'intermediate lockee') discordUserHasRole.intermediateLockeeBlue = true
     if (r.hexColor.toLowerCase() === '#f592ac' && r.name.toLowerCase() === 'novice lockee') discordUserHasRole.noviceLockeePink = true
     if (r.hexColor.toLowerCase() === '#3498db' && r.name.toLowerCase() === 'novice lockee') discordUserHasRole.noviceLockeeBlue = true
-    console.log(r.hexColor.toLowerCase(), r.name)
   })
 
   // Calculate cumulative time locked

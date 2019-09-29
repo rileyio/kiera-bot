@@ -37,7 +37,7 @@ export class ChastiKeyAPITotalLockedTime extends ChastiKeyAPIFetchAndStore {
 export class ChastiKeyAPILocktober extends ChastiKeyAPIFetchAndStore {
   // Setting the props for this Task
   name = 'ChastiKeyAPILocktober'
-  APIEndpoint = `http://chastikey.com/json/v1.0/kiera_locked_for_september.json`
+  APIEndpoint = `https://chastikey.com/json/v1.0/kiera_locked_for_locktober.json`
   frequency = 1800000 // 30 minutes
   dbCollection: Collections = 'ck-locktober'
 }
