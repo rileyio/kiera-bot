@@ -366,7 +366,7 @@ export async function update(routed: RouterRouted) {
   routed.message.guild.roles.forEach(r => {
     if (r.name.toLowerCase() === 'locked') role.locked = r
     if (r.name.toLowerCase() === 'unlocked') role.unlocked = r
-    if (r.name.toLowerCase() === 'locktober') role.locktober = r
+    if (r.name.toLowerCase() === 'locktober 2019') role.locktober = r
     if (r.hexColor.toLowerCase() === '#dd3c68' && r.name.toLowerCase() === 'devoted lockee') role.devotedLockeePink = r
     if (r.hexColor.toLowerCase() === '#0359fd' && r.name.toLowerCase() === 'devoted lockee') role.devotedLockeeBlue = r
     if (r.hexColor.toLowerCase() === '#db4a71' && r.name.toLowerCase() === 'experienced lockee') role.experiencedLockeePink = r
@@ -379,7 +379,7 @@ export async function update(routed: RouterRouted) {
   discordUser.roles.forEach(r => {
     if (r.name.toLowerCase() === 'locked') discordUserHasRole.locked = true
     if (r.name.toLowerCase() === 'unlocked') discordUserHasRole.unlocked = true
-    if (r.name.toLowerCase() === 'locktober') discordUserHasRole.locktober = true
+    if (r.name.toLowerCase() === 'locktober 2019') discordUserHasRole.locktober = true
     if (r.hexColor.toLowerCase() === '#dd3c68' && r.name.toLowerCase() === 'devoted lockee') discordUserHasRole.devotedLockeePink = true
     if (r.hexColor.toLowerCase() === '#0359fd' && r.name.toLowerCase() === 'devoted lockee') discordUserHasRole.devotedLockeeBlue = true
     if (r.hexColor.toLowerCase() === '#db4a71' && r.name.toLowerCase() === 'experienced lockee') discordUserHasRole.experiencedLockeePink = true
@@ -514,17 +514,17 @@ export async function update(routed: RouterRouted) {
   ///////////////////////////////////////
   /// Role Update: Locktober          ///
   ///////////////////////////////////////
-  // try {
-  //   if (isLocktoberParticipant) {
-  //     // User is found in participants list, is missing the role, add the role
-  //     if (!discordUserHasRole.locktober) { await discordUser.addRole(role.locktober); changesImplemented.push({ action: 'added', type: 'role', result: 'Locktober' }); }
-  //   }
-  //   // Else: User is not longer in the participants list
-  //   else {
-  //     // User is NOT found in participants list, remove the role
-  //     if (discordUserHasRole.locktober) { await discordUser.removeRole(role.locktober); changesImplemented.push({ action: 'removed', type: 'role', result: 'Locktober' }); }
-  //   }
-  // } catch (e) { console.log('CK Update Error updating Locktober role') }
+  try {
+    if (isLocktoberParticipant) {
+      // User is found in participants list, is missing the role, add the role
+      if (!discordUserHasRole.locktober) { await discordUser.addRole(role.locktober); changesImplemented.push({ action: 'added', type: 'role', result: 'Locktober 2019' }); }
+    }
+    // Else: User is not longer in the participants list
+    else {
+      // User is NOT found in participants list, remove the role
+      if (discordUserHasRole.locktober) { await discordUser.removeRole(role.locktober); changesImplemented.push({ action: 'removed', type: 'role', result: 'Locktober 2019' }); }
+    }
+  } catch (e) { console.log('CK Update Error updating Locktober 2019 role') }
 
   // Print results in chat of changes
   var results: string = `Summary of changes to \`${discordUser.nickname || discordUser.user.username}#${discordUser.user.discriminator}\`\n\`\`\``
