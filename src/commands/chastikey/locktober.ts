@@ -28,13 +28,16 @@ export const Routes = ExportRoutes(
  * @param {RouterRouted} routed
  */
 export async function statsLocktober(routed: RouterRouted) {
+  const isVerifiedLockee = await routed.bot.DB.verify('ck-lockees', { discordID: Number(routed.user.id) })
+  const isVerifiedKH = await routed.bot.DB.verify('ck-keyholders', { discordID: Number(routed.user.id) })
+  const isVerified = isVerifiedLockee || isVerifiedKH
   // Get Locktober stats from DB
-  const stored = await routed.bot.DB.getMultiple<{ username: string, discordID: number }>('ck-locktober', {})
+  const stored = await routed.bot.DB.getMultiple<{ username: string, discordID: number }>('ck-locktober', { discordID: { $ne: null } })
 
   // Are you (the person calling the command) apart of that list?
   const apartOfLocktober = stored.findIndex(lockee => lockee.discordID === Number(routed.user.id)) > -1
 
-  await routed.message.channel.send(locktoberStats(stored.length, apartOfLocktober))
+  await routed.message.channel.send(locktoberStats(stored.length, apartOfLocktober, isVerified))
   // Successful end
   return true
 }
