@@ -66,7 +66,8 @@ export const Routes = ExportRoutes(
     name: 'ck-update',
     validate: '/ck:string/update:string/user?=string',
     middleware: [
-      Middleware.isUserRegistered
+      Middleware.isUserRegistered,
+      Middleware.isCKVerified
     ],
     permissions: {
       defaultEnabled: true,
