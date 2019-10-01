@@ -3,6 +3,7 @@
 - Added: Background task to manage Event/Role assignment.
 - Added: Middleware for ChastiKey verification, Implemented on !ck update command.
 - Updated: CK Update command to use Discord ID to determine event eligibility.
+- Updated: CK Data refresh frequencies.
 - Removing: Old unused ChastiKey dataset.
 
 4.1.2
