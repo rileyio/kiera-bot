@@ -1,5 +1,6 @@
 import { Task } from '../task';
 import { Collections } from '../../db/database';
+import { TextChannel } from 'discord.js';
 
 export class ChastiKeyEventRoleMonitor extends Task {
   public dbCollection: Collections
@@ -16,6 +17,8 @@ export class ChastiKeyEventRoleMonitor extends Task {
       // Get users who are eligible from the db, but only users who have verified their discord ID
       const stored = await this.Bot.DB.getMultiple<{ username: string, discordID: number }>('ck-locktober', { discordID: { $ne: null } })
       const guilds = this.Bot.client.guilds.filter((g) => g.id === '473856867768991744' || g.id === '389204362959781899').array()
+      const auditLogChannel = (<TextChannel>this.Bot.client.channels.find(c => c.id === this.Bot.auditLogChannel))
+
       console.log(`Event Role Monitor::Users Eligible = ${stored.length}`)
 
       // Loop through guilds
@@ -35,7 +38,11 @@ export class ChastiKeyEventRoleMonitor extends Task {
             // Do they NOT already have the role? If this is the case, add it
             if (!member.roles.has(role.id)) {
               console.log(`Event Role Monitor::Giving event role = ${role.name}, To = @${member.user.username}#${member.user.discriminator}`)
+              // Assign event role
               await member.addRole(role)
+              await this.sleep(250)
+              // Print in Audit log
+              await auditLogChannel.send(`:robot: **Event Role Monitor**\nGiving event role = \`${role.name}\`\nServer = \`${guild.name}\`\nTo = \`@${member.nickname || member.user.username}#${member.user.discriminator}\``)
               await this.sleep(250)
             }
           }
@@ -44,7 +51,11 @@ export class ChastiKeyEventRoleMonitor extends Task {
             // Remove as they should not have it
             if (member.roles.has(role.id)) {
               console.log(`Event Role Monitor::Removing event role = ${role.name}, From = @${member.user.username}#${member.user.discriminator}`)
+              // Remove event role
               await member.removeRole(role)
+              await this.sleep(250)
+              //Print in Audit log
+              await auditLogChannel.send(`:robot: **Event Role Monitor**\nRemoving event role = \`${role.name}\`\nServer = \`${guild.name}\`\nFrom = \`@${member.nickname || member.user.username}#${member.user.discriminator}\``)
               await this.sleep(250)
             }
           }

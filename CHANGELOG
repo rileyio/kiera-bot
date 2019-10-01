@@ -1,7 +1,9 @@
 4.2.0
 - GoLive: ChastiKey Locktober 2019 event!
-- Added: Background task to manage Event/Role assignment
-- Added: Middleware for ChastiKey verification, Implemented on !ck update command
+- Added: Background task to manage Event/Role assignment.
+- Added: Middleware for ChastiKey verification, Implemented on !ck update command.
+- Updated: CK Update command to use Discord ID to determine event eligibility.
+- Removing: Old unused ChastiKey dataset.
 
 4.1.2
 - Fixed: Bugs & Issue with multiple conditions being met and assigning the wrong Experience role.

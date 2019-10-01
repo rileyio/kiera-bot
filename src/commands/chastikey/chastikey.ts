@@ -315,7 +315,7 @@ export async function update(routed: RouterRouted) {
   }
 
   // Locktober Data (DB Cached)
-  const isLocktoberParticipant = await routed.bot.DB.verify<{ username: string }>('ck-locktober', { username: user.ChastiKey.username })
+  const isLocktoberParticipant = await routed.bot.DB.verify<{ username: string, discordID: number }>('ck-locktober', { discordID: Number(user.id) })
 
   // From API -or- Default
   const fromAPI = body.locks || []

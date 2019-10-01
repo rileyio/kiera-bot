@@ -22,6 +22,7 @@ export class Bot {
   public MsgTracker: MsgTracker
   public version: string
   public tokens: { bnet: string }
+  public auditLogChannel: string = process.env.DISCORD_AUDITLOG_CHANNEL
 
   // Audit Manager
   public Audit: Audit = new Audit(this)
@@ -68,7 +69,6 @@ export class Bot {
       new Task.ChastiKeyAPIRunningLocks(this),
       new Task.ChastiKeyAPIKeyholders(this),
       new Task.ChastiKeyAPILockees(this),
-      new Task.ChastiKeyAPITotalLockedTime(this),
       new Task.ChastiKeyAPILocktober(this),
       new Task.ChastiKeyBackgroundLocktoberMonitor(this)
     ])

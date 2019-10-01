@@ -126,11 +126,9 @@ export async function getLockeeStats(routed: RouterRouted) {
   const activeLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { username: usernameRegex })
   // Get user from lockee data (Total locks, raitings, averages)
   const userInLockeeStats = new TrackedChastiKeyLockee(await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { username: usernameRegex }))
-  // Get user from lockee data (Total locks, raitings, averages)
-  const userInLockeeTotals = await routed.bot.DB.get<TrackedChastiKeyUserTotalLockedTime>('ck-lockee-totals', { username: usernameRegex })
 
   // Variables - Defaults (unless changed later)
-  var calculatedCumulative = (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : 0
+  var calculatedCumulative = 0
   var calculatedTimeSinceLastLock = 0
   var allLockeesLocks = []
 
@@ -190,7 +188,7 @@ export async function getLockeeStats(routed: RouterRouted) {
     userInLockeeStats.averageTimeLockedInSeconds = cumulativeCalc.average
     // console.log('!!!!!!!!!!Got this far!')
   } catch (error) {
-    calculatedCumulative = (userInLockeeTotals) ? userInLockeeTotals.totalMonthsLocked : NaN
+    calculatedCumulative = NaN
     console.log('CK stats lockee Error building cumulative time')
   }
 
