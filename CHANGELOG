@@ -2,8 +2,10 @@
 - GoLive: ChastiKey Locktober 2019 event!
 - Added: Background task to manage Event/Role assignment.
 - Added: Middleware for ChastiKey verification, Implemented on !ck update command.
+- Added: Condition for CK Locktober stats to show verification info if not verified when running command.
 - Updated: CK Update command to use Discord ID to determine event eligibility.
 - Updated: CK Data refresh frequencies.
+- Updated: CK Locktober event to only show stats for those who have verified.
 - Removing: Old unused ChastiKey dataset.
 
 4.1.2
