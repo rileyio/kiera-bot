@@ -1,5 +1,6 @@
 import { Collections } from '../db/database';
 import { ChastiKeyAPIFetchAndStore } from './templates/ck-api-fetch-store';
+import { ChastiKeyEventRoleMonitor } from './templates/ck-locktober-monitor';
 
 export class ChastiKeyAPIRunningLocks extends ChastiKeyAPIFetchAndStore {
   // Setting the props for this Task
@@ -40,4 +41,13 @@ export class ChastiKeyAPILocktober extends ChastiKeyAPIFetchAndStore {
   APIEndpoint = `https://chastikey.com/json/v1.0/kiera_locked_for_locktober.json`
   frequency = 1800000 // 30 minutes
   dbCollection: Collections = 'ck-locktober'
+}
+
+// TO be removed in December/January
+export class ChastiKeyBackgroundLocktoberMonitor extends ChastiKeyEventRoleMonitor {
+  // Setting the props for this Task
+  name = 'ChastiKeyBackgroundLocktoberMonitor'
+  frequency = 1800000 // 30 minutes
+  dbCollection: Collections = 'ck-locktober'
+  eventRole = 'Locktober 2019'
 }

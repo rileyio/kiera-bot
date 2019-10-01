@@ -62,7 +62,7 @@ export class TaskManager {
       }
 
       this.isTaskRunnerProcessing = false
-    }, 30000)
+    }, 5000)
   }
 }
 
