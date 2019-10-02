@@ -218,7 +218,7 @@ export async function verifyAccount(routed: RouterRouted) {
   }
 
   if (isSuccessful) {
-    const QRImgStream = Utils.ChastiKey.generateVerifyQR(user.ChastiKey.verificationCode)
+    const QRImgStream = await Utils.ChastiKey.generateVerifyQR(user.ChastiKey.verificationCode)
     // Let user know in a reply to check their DMs
     await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyCkeckYourDMs))
     // Send QR Code via DM
@@ -355,27 +355,27 @@ export async function update(routed: RouterRouted) {
     if (r.name.toLowerCase() === 'locked') role.locked = r
     if (r.name.toLowerCase() === 'unlocked') role.unlocked = r
     if (r.name.toLowerCase() === 'locktober 2019') role.locktober = r
-    if (r.hexColor.toLowerCase() === '#dd3c68' && r.name.toLowerCase() === 'devoted lockee') role.devotedLockeePink = r
-    if (r.hexColor.toLowerCase() === '#0359fd' && r.name.toLowerCase() === 'devoted lockee') role.devotedLockeeBlue = r
-    if (r.hexColor.toLowerCase() === '#db4a71' && r.name.toLowerCase() === 'experienced lockee') role.experiencedLockeePink = r
-    if (r.hexColor.toLowerCase() === '#206bfa' && r.name.toLowerCase() === 'experienced lockee') role.experiencedLockeeBlue = r
-    if (r.hexColor.toLowerCase() === '#f3688b' && r.name.toLowerCase() === 'intermediate lockee') role.intermediateLockeePink = r
-    if (r.hexColor.toLowerCase() === '#4383fc' && r.name.toLowerCase() === 'intermediate lockee') role.intermediateLockeeBlue = r
-    if (r.hexColor.toLowerCase() === '#f592ac' && r.name.toLowerCase() === 'novice lockee') role.noviceLockeePink = r
-    if (r.hexColor.toLowerCase() === '#3498db' && r.name.toLowerCase() === 'novice lockee') role.noviceLockeeBlue = r
+    if (r.id === '535495268578361345' || r.id === '627557066382245888') role.devotedLockeePink = r
+    if (r.id === '535464527798599680' || r.id === '627557412794007552') role.devotedLockeeBlue = r
+    if (r.id === '535495266166505492' || r.id === '627557512677163029') role.experiencedLockeePink = r
+    if (r.id === '535464218552434688' || r.id === '627557489495506944') role.experiencedLockeeBlue = r
+    if (r.id === '535495259832975373' || r.id === '627556836056367139') role.intermediateLockeePink = r
+    if (r.id === '535463909910380554' || r.id === '627519997559701504') role.intermediateLockeeBlue = r
+    if (r.id === '477751398499614720' || r.id === '627556385646837780') role.noviceLockeePink = r
+    if (r.id === '474693333118353439' || r.id === '627550374856884238') role.noviceLockeeBlue = r
   })
   discordUser.roles.forEach(r => {
     if (r.name.toLowerCase() === 'locked') discordUserHasRole.locked = true
     if (r.name.toLowerCase() === 'unlocked') discordUserHasRole.unlocked = true
     if (r.name.toLowerCase() === 'locktober 2019') discordUserHasRole.locktober = true
-    if (r.hexColor.toLowerCase() === '#dd3c68' && r.name.toLowerCase() === 'devoted lockee') discordUserHasRole.devotedLockeePink = true
-    if (r.hexColor.toLowerCase() === '#0359fd' && r.name.toLowerCase() === 'devoted lockee') discordUserHasRole.devotedLockeeBlue = true
-    if (r.hexColor.toLowerCase() === '#db4a71' && r.name.toLowerCase() === 'experienced lockee') discordUserHasRole.experiencedLockeePink = true
-    if (r.hexColor.toLowerCase() === '#206bfa' && r.name.toLowerCase() === 'experienced lockee') discordUserHasRole.experiencedLockeeBlue = true
-    if (r.hexColor.toLowerCase() === '#f3688b' && r.name.toLowerCase() === 'intermediate lockee') discordUserHasRole.intermediateLockeePink = true
-    if (r.hexColor.toLowerCase() === '#4383fc' && r.name.toLowerCase() === 'intermediate lockee') discordUserHasRole.intermediateLockeeBlue = true
-    if (r.hexColor.toLowerCase() === '#f592ac' && r.name.toLowerCase() === 'novice lockee') discordUserHasRole.noviceLockeePink = true
-    if (r.hexColor.toLowerCase() === '#3498db' && r.name.toLowerCase() === 'novice lockee') discordUserHasRole.noviceLockeeBlue = true
+    if (r.id === '535495268578361345' || r.id === '627557066382245888') discordUserHasRole.devotedLockeePink = true
+    if (r.id === '535464527798599680' || r.id === '627557412794007552') discordUserHasRole.devotedLockeeBlue = true
+    if (r.id === '535495266166505492' || r.id === '627557512677163029') discordUserHasRole.experiencedLockeePink = true
+    if (r.id === '535464218552434688' || r.id === '627557489495506944') discordUserHasRole.experiencedLockeeBlue = true
+    if (r.id === '535495259832975373' || r.id === '627556836056367139') discordUserHasRole.intermediateLockeePink = true
+    if (r.id === '535463909910380554' || r.id === '627519997559701504') discordUserHasRole.intermediateLockeeBlue = true
+    if (r.id === '477751398499614720' || r.id === '627556385646837780') discordUserHasRole.noviceLockeePink = true
+    if (r.id === '474693333118353439' || r.id === '627550374856884238') discordUserHasRole.noviceLockeeBlue = true
   })
 
   // Calculate cumulative time locked
