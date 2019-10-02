@@ -378,6 +378,15 @@ export async function update(routed: RouterRouted) {
     if (r.id === '474693333118353439' || r.id === '627550374856884238') discordUserHasRole.noviceLockeeBlue = true
   })
 
+  // Determine which color the user prefers, blue or pink
+  var userHasPref = false
+  var isChanging = false
+  const prefPink = discordUserHasRole.devotedLockeePink || discordUserHasRole.experiencedLockeePink || discordUserHasRole.intermediateLockeePink || discordUserHasRole.noviceLockeePink
+  const prefBlue = discordUserHasRole.devotedLockeeBlue || discordUserHasRole.experiencedLockeeBlue || discordUserHasRole.intermediateLockeeBlue || discordUserHasRole.noviceLockeeBlue
+
+  // Ensure user has a color preference already selected, otherwise don't pick one
+  if (prefBlue || prefPink) userHasPref = true
+
   // Calculate cumulative time locked
   try {
     const userPastLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
@@ -412,19 +421,21 @@ export async function update(routed: RouterRouted) {
   /// Role Update: Locked || Unlocked ///
   ///////////////////////////////////////
   try {
-    // When there are locks Locked or not yet unlocked: set the locked role
-    if (hasLockedLock.length > 0) {
-      // Remove any unlocked role if user has it
-      if (discordUserHasRole.unlocked) { await discordUser.removeRole(role.unlocked); changesImplemented.push({ action: 'removed', type: 'role', result: 'Unlocked' }); }
-      // Add locked role (If not already set)
-      if (!discordUserHasRole.locked) { await discordUser.addRole(role.locked); changesImplemented.push({ action: 'added', type: 'role', result: 'Locked' }); }
-    }
-    // Else: Set unlocked role & remove any locked role if they have
-    else {
-      // Remove any locked role if user has it
-      if (discordUserHasRole.locked) { await discordUser.removeRole(role.locked); changesImplemented.push({ action: 'removed', type: 'role', result: 'Locked' }); }
-      // Add unlocked role (If not already set)
-      if (!discordUserHasRole.unlocked) { await discordUser.addRole(role.unlocked); changesImplemented.push({ action: 'added', type: 'role', result: 'Unlocked' }); }
+    if (userHasPref || discordUserHasRole.unlocked || discordUserHasRole.locked) {
+      // When there are locks Locked or not yet unlocked: set the locked role
+      if (hasLockedLock.length > 0) {
+        // Remove any unlocked role if user has it
+        if (discordUserHasRole.unlocked) { await discordUser.removeRole(role.unlocked); changesImplemented.push({ action: 'removed', type: 'role', result: 'Unlocked' }); }
+        // Add locked role (If not already set)
+        if (!discordUserHasRole.locked) { await discordUser.addRole(role.locked); changesImplemented.push({ action: 'added', type: 'role', result: 'Locked' }); }
+      }
+      // Else: Set unlocked role & remove any locked role if they have
+      else {
+        // Remove any locked role if user has it
+        if (discordUserHasRole.locked) { await discordUser.removeRole(role.locked); changesImplemented.push({ action: 'removed', type: 'role', result: 'Locked' }); }
+        // Add unlocked role (If not already set)
+        if (!discordUserHasRole.unlocked) { await discordUser.addRole(role.unlocked); changesImplemented.push({ action: 'added', type: 'role', result: 'Unlocked' }); }
+      }
     }
   } catch (e) { console.log('CK Update Error updating Locked/Unlocked role') }
 
@@ -437,15 +448,6 @@ export async function update(routed: RouterRouted) {
   // Novice       =  0
   try {
     if (successfullyCalculatedCumulative) {
-      // Determine which color the user prefers, blue or pink
-      var userHasPref = false
-      var isChanging = false
-      const prefPink = discordUserHasRole.devotedLockeePink || discordUserHasRole.experiencedLockeePink || discordUserHasRole.intermediateLockeePink || discordUserHasRole.noviceLockeePink
-      const prefBlue = discordUserHasRole.devotedLockeeBlue || discordUserHasRole.experiencedLockeeBlue || discordUserHasRole.intermediateLockeeBlue || discordUserHasRole.noviceLockeeBlue
-
-      // Ensure user has a color preference already selected, otherwise don't pick one
-      if (prefBlue || prefPink) userHasPref = true
-
       // Devoted
       if (calculatedCumulative >= 12 && userHasPref) {
         // Add Proper Devoted role

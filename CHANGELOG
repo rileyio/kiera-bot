@@ -1,6 +1,7 @@
 4.3.0
 - Added: More statistics to CK Locktober stats command.
 - Updated: CK Update command to account for Role color changes and using IDs now.
+- Fixed/Updated: CK Update command will now check if you have Locked, Unlocked, or a Lockee Color role before assigining Locked -or Unlocked.
 
 4.2.0
 - GoLive: ChastiKey Locktober 2019 event!
