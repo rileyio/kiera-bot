@@ -240,6 +240,7 @@ export class ChastiKeyVerifyResponse {
    */
   public reason: string = ''
   public code: string
+  public isVerified: boolean = false
 
   constructor(init: Partial<ChastiKeyVerifyResponse>) {
     Object.assign(this, init);

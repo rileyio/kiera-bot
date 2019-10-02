@@ -176,18 +176,13 @@ export async function recoverCombos(routed: RouterRouted) {
  * @param {RouterRouted} routed
  */
 export async function verifyAccount(routed: RouterRouted) {
-  // Lookup user in Kiera's DB
-  const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
-  const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
-
   // Get the user from the db in their current state
-  const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
+  const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id }))
 
   // Make request out to ChastiKey to start process
   const postData = new FormData()
 
   // Statuses
-  var isNewRequest = false
   var isSuccessful = false
   var isNotSuccessfulReason = 'Unknown, Try again later.'
 
@@ -198,40 +193,32 @@ export async function verifyAccount(routed: RouterRouted) {
   }
 
   // Check if verify key has been cached recently
-  if (user.ChastiKey.verificationCode !== '' && ((Date.now() - 300000) < user.ChastiKey.verificationCodeRequestedAt)) {
-    isNewRequest = false
+  postData.append('id', routed.message.author.id)
+  postData.append('username', routed.message.author.username)
+  postData.append('discriminator', routed.message.author.discriminator)
+
+  const { body } = await got.post('https://chastikey.com/api/kiera/discordbotqrauthenticator.php', {
+    body: postData
+  } as any);
+
+  // Convery body to JSON
+  const parsedBody = JSON.parse(body) as ChastiKeyVerifyResponse
+
+  // console.log(parsedBody);
+
+  if (parsedBody.success) {
     isSuccessful = true
+    // Track User's verification code
+    user.ChastiKey.verificationCode = parsedBody.code
+    // Commit Verify code to db, to have on hand
+    await routed.bot.DB.update('users', { id: routed.user.id }, user)
   }
   else {
-    postData.append('id', routed.message.author.id)
-    postData.append('username', routed.message.author.username)
-    postData.append('discriminator', routed.message.author.discriminator)
-
-    const { body } = await got.post('https://chastikey.com/api/kiera/discordbotqrauthenticator.php', {
-      body: postData
-    } as any);
-
-    // Convery body to JSON
-    const parsedBody = JSON.parse(body) as ChastiKeyVerifyResponse
-
-    // console.log(parsedBody);
-
-    if (parsedBody.success) {
-      isNewRequest = true
-      isSuccessful = true
-      // Track User's verification code
-      user.ChastiKey.verificationCode = parsedBody.code
-      // user.ChastiKey.verificationCodeRequestedAt = Date.now()
-      // Commit Verify code to db, to have on hand
-      await routed.bot.DB.update('users', userQuery, user)
-    }
-    else {
-      isNotSuccessfulReason = parsedBody.reason || isNotSuccessfulReason
-    }
+    isNotSuccessfulReason = parsedBody.reason || isNotSuccessfulReason
   }
 
   if (isSuccessful) {
-    const QRImgStream = await Utils.ChastiKey.generateVerifyQR(user.ChastiKey.verificationCode)
+    const QRImgStream = Utils.ChastiKey.generateVerifyQR(user.ChastiKey.verificationCode)
     // Let user know in a reply to check their DMs
     await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyCkeckYourDMs))
     // Send QR Code via DM

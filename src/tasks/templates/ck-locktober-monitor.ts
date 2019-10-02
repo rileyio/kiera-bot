@@ -13,6 +13,13 @@ export class ChastiKeyEventRoleMonitor extends Task {
   protected async process() {
     if ((Date.now() - this.previousRefresh) < this.frequency) return // Stop here
 
+    // If Debug block is in place, stop here
+    if (process.env.BOT_BLOCK_EVENT) {
+      console.log('Event Role Monitor::Blocking Event update per debug setting in .env file.')
+      this.previousRefresh = Date.now()
+      return true
+    }
+
     try {
       // Get users who are eligible from the db, but only users who have verified their discord ID
       const stored = await this.Bot.DB.getMultiple<{ username: string, discordID: number }>('ck-locktober', { discordID: { $ne: null } })
