@@ -6,7 +6,7 @@ import * as Discord from 'discord.js';
 import { TrackedUser } from '../../objects/user';
 import { RouterRouted } from '../../router/router';
 import { ExportRoutes } from '../../router/routes-exporter';
-import { ChastiKeyVerifyResponse, TrackedChastiKeyUserAPIFetch } from '../../objects/chastikey';
+import { ChastiKeyVerifyResponse, TrackedChastiKeyUserAPIFetch, TrackedKeyholderStatistics } from '../../objects/chastikey';
 
 export const Routes = ExportRoutes(
   {
@@ -326,6 +326,8 @@ export async function update(routed: RouterRouted) {
     locked: undefined,
     unlocked: undefined,
     locktober: undefined,
+    keyholder: undefined,
+    noviceKeyholder: undefined,
     devotedLockeePink: undefined,
     experiencedLockeePink: undefined,
     intermediateLockeePink: undefined,
@@ -340,6 +342,8 @@ export async function update(routed: RouterRouted) {
     locked: false,
     unlocked: false,
     locktober: false,
+    keyholder: false,
+    noviceKeyholder: false,
     devotedLockeePink: false,
     experiencedLockeePink: false,
     intermediateLockeePink: false,
@@ -355,6 +359,8 @@ export async function update(routed: RouterRouted) {
     if (r.name.toLowerCase() === 'locked') role.locked = r
     if (r.name.toLowerCase() === 'unlocked') role.unlocked = r
     if (r.name.toLowerCase() === 'locktober 2019') role.locktober = r
+    if (r.name.toLowerCase() === 'keyholder') role.keyholder = r
+    if (r.name.toLowerCase() === 'novice keyholder') role.noviceKeyholder = r
     if (r.id === '535495268578361345' || r.id === '627557066382245888') role.devotedLockeePink = r
     if (r.id === '535464527798599680' || r.id === '627557412794007552') role.devotedLockeeBlue = r
     if (r.id === '535495266166505492' || r.id === '627557512677163029') role.experiencedLockeePink = r
@@ -368,6 +374,8 @@ export async function update(routed: RouterRouted) {
     if (r.name.toLowerCase() === 'locked') discordUserHasRole.locked = true
     if (r.name.toLowerCase() === 'unlocked') discordUserHasRole.unlocked = true
     if (r.name.toLowerCase() === 'locktober 2019') discordUserHasRole.locktober = true
+    if (r.name.toLowerCase() === 'keyholder') discordUserHasRole.keyholder = true
+    if (r.name.toLowerCase() === 'novice keyholder') discordUserHasRole.noviceKeyholder = true
     if (r.id === '535495268578361345' || r.id === '627557066382245888') discordUserHasRole.devotedLockeePink = true
     if (r.id === '535464527798599680' || r.id === '627557412794007552') discordUserHasRole.devotedLockeeBlue = true
     if (r.id === '535495266166505492' || r.id === '627557512677163029') discordUserHasRole.experiencedLockeePink = true
@@ -515,6 +523,23 @@ export async function update(routed: RouterRouted) {
       if (discordUserHasRole.locktober) { await discordUser.removeRole(role.locktober); changesImplemented.push({ action: 'removed', type: 'role', result: 'Locktober 2019' }); }
     }
   } catch (e) { console.log('CK Update Error updating Locktober 2019 role') }
+
+  ///////////////////////////////////////
+  /// Role Update: Keyholder Exp      ///
+  ///////////////////////////////////////
+  try {
+    if (discordUserHasRole.noviceKeyholder) {
+      // Check their KH stats to see if eligible for a Role upgrade
+      const khData = await routed.bot.DB.get<TrackedKeyholderStatistics>('ck-keyholders', { discordID: Number(user.id) })
+      const eligibleForUpgrade = khData.totalLocksManaged >= 10
+
+      // Assign Keyholder role
+      if (eligibleForUpgrade) {
+        await discordUser.addRole(role.keyholder); changesImplemented.push({ action: 'added', type: 'role', result: 'Keyholder' });
+        await discordUser.removeRole(role.noviceKeyholder); changesImplemented.push({ action: 'removed', type: 'role', result: 'Novice Keyholder' });
+      }
+    }
+  } catch (e) { console.log('CK Update Error updating Keyholder Exp role(s)') }
 
   // Print results in chat of changes
   var results: string = `Summary of changes to \`${discordUser.nickname || discordUser.user.username}#${discordUser.user.discriminator}\`\n\`\`\``

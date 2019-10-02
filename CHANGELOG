@@ -1,5 +1,6 @@
 4.3.0
 - Added: More statistics to CK Locktober stats command.
+- Added: CK Update command will now verify if Novice KHs are eligible for the Regular KH role.
 - Updated: CK Update command to account for Role color changes and using IDs now.
 - Fixed/Updated: CK Update command will now check if you have Locked, Unlocked, or a Lockee Color role before assigining Locked -or Unlocked.
 
