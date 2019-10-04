@@ -9,22 +9,22 @@ import { ExportRoutes } from '../../router/routes-exporter';
 import { ChastiKeyVerifyResponse, TrackedChastiKeyUserAPIFetch, TrackedKeyholderStatistics, TrackedChastiKeyCombinationsAPIFetch } from '../../objects/chastikey';
 
 export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'ChastiKey',
-    commandTarget: 'author',
-    controller: setUsername,
-    example: '{{prefix}}ck username MyUsername',
-    name: 'ck-set-username',
-    validate: '/ck:string/username:string/ckusername=string',
-    middleware: [
-      Middleware.isUserRegistered
-    ],
-    permissions: {
-      defaultEnabled: false,
-      serverOnly: false
-    }
-  },
+  // {
+  //   type: 'message',
+  //   category: 'ChastiKey',
+  //   commandTarget: 'author',
+  //   controller: setUsername,
+  //   example: '{{prefix}}ck username MyUsername',
+  //   name: 'ck-set-username',
+  //   validate: '/ck:string/username:string/ckusername=string',
+  //   middleware: [
+  //     Middleware.isUserRegistered
+  //   ],
+  //   permissions: {
+  //     defaultEnabled: false,
+  //     serverOnly: false
+  //   }
+  // },
   {
     type: 'message',
     category: 'ChastiKey',
@@ -34,7 +34,6 @@ export const Routes = ExportRoutes(
     name: 'ck-account-recover-combos',
     validate: '/ck:string/recover:string/combos:string/count?=number',
     middleware: [
-      Middleware.isUserRegistered,
       Middleware.isCKVerified
     ],
     permissions: {
@@ -50,9 +49,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck verify',
     name: 'ck-account-verify',
     validate: '/ck:string/verify:string',
-    middleware: [
-      Middleware.isUserRegistered
-    ],
+    middleware: [], // No Middleware - From 4.4.0 and onward this will replace both !register & !ck verify
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -67,7 +64,6 @@ export const Routes = ExportRoutes(
     name: 'ck-update',
     validate: '/ck:string/update:string/user?=string',
     middleware: [
-      Middleware.isUserRegistered,
       Middleware.isCKVerified
     ],
     permissions: {
@@ -77,34 +73,34 @@ export const Routes = ExportRoutes(
   }
 )
 
-/**
- * Sets username for ChastiKey
- * @export
- * @param {RouterRouted} routed
- */
-export async function setUsername(routed: RouterRouted) {
-  const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
-  const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
+// /**
+//  * Sets username for ChastiKey
+//  * @export
+//  * @param {RouterRouted} routed
+//  */
+// export async function setUsername(routed: RouterRouted) {
+//   const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
+//   const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
 
-  // Get the user from the db in their current state
-  const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
-  // Change/Update TrackedChastiKey.Username Prop
-  user.ChastiKey.username = routed.v.o.ckusername
-  // Commit change to db
-  const updateResult = await routed.bot.DB.update('users', userQuery, user)
+//   // Get the user from the db in their current state
+//   const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
+//   // Change/Update TrackedChastiKey.Username Prop
+//   user.ChastiKey.username = routed.v.o.ckusername
+//   // Commit change to db
+//   const updateResult = await routed.bot.DB.update('users', userQuery, user)
 
-  if (updateResult > 0) {
-    await routed.message.author.send(`:white_check_mark: ChastiKey Username now set to: \`${routed.v.o.ckusername}\``)
-    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck username ${routed.v.o.ckusername}`)
-    // Successful end
-    return true
-  }
-  else {
-    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck username ${routed.v.o.ckusername} -> update unsuccessful!`)
-    // Unsuccessful end
-    return false
-  }
-}
+//   if (updateResult > 0) {
+//     await routed.message.author.send(`:white_check_mark: ChastiKey Username now set to: \`${routed.v.o.ckusername}\``)
+//     routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck username ${routed.v.o.ckusername}`)
+//     // Successful end
+//     return true
+//   }
+//   else {
+//     routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck username ${routed.v.o.ckusername} -> update unsuccessful!`)
+//     // Unsuccessful end
+//     return false
+//   }
+// }
 
 /**
  * Recover ChastiKey recent combinations (with optional count to return)
@@ -169,7 +165,7 @@ export async function recoverCombos(routed: RouterRouted) {
  */
 export async function verifyAccount(routed: RouterRouted) {
   // Get the user from the db in their current state
-  const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id }))
+  var user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id }))
 
   // Make request out to ChastiKey to start process
   const postData = new FormData()
@@ -178,16 +174,22 @@ export async function verifyAccount(routed: RouterRouted) {
   var isSuccessful = false
   var isNotSuccessfulReason = 'Unknown, Try again later.'
 
-  // User not registered with Kiera
-  if (!user) {
-    await routed.message.reply(Utils.sb(Utils.en.error.userNotRegistered))
-    return false; // Stop here
+  // User not previously registered with Kiera
+  if (user.id === '') {
+    // Create a record for them like !register would have
+    user = new TrackedUser({
+      id: routed.user.id,
+      username: routed.user.username,
+      discriminator: routed.user.discriminator
+    })
+    // Add to DB
+    await routed.bot.DB.add('users', user)
   }
 
   // Check if verify key has been cached recently
-  postData.append('id', routed.message.author.id)
-  postData.append('username', routed.message.author.username)
-  postData.append('discriminator', routed.message.author.discriminator)
+  postData.append('id', routed.user.id)
+  postData.append('username', routed.user.username)
+  postData.append('discriminator', routed.user.discriminator)
 
   const { body } = await got.post('https://chastikey.com/api/kiera/discordbotqrauthenticator.php', {
     body: postData

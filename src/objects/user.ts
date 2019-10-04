@@ -9,7 +9,6 @@ export class TrackedUser {
   public _id: ObjectId
   public accessToken: string
   public avatar: string = ''
-  public createdTimestamp: number = 0
   public discriminator: string = ''
   public flags: number
   public id: string = ''

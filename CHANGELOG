@@ -2,6 +2,10 @@
 - Updated: CK recover combos command to work only when Verified.
 - Updated: CK isCKVerified middleware to check new dataset, will speed up step.
 - Updated: CK Stats Locktober command to completely utilize new direction with lookups & verification.
+- Updated: CK Verify command will now replace !register & !ck username UNameHere.
+- Updated: Remaining CK commands converted to require verify.
+- Updated: Lockee and KH stats prints to show Verified checkmark when others lookup where applicable.
+- Removed: CK Set Username command.
 
 4.3.0
 - Added: More statistics to CK Locktober stats command.

@@ -5,7 +5,7 @@ import * as Utils from '../../utils'
 import { RouterRouted } from '../../utils';
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '../../embedded/chastikey-stats';
 import { TrackedUser } from '../../objects/user';
-import { TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics } from '../../objects/chastikey';
+import { TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics, TrackedChastiKey, TrackedChastiKeyUser } from '../../objects/chastikey';
 import { performance } from 'perf_hooks';
 import { TrackedNotification } from '../../objects/notification';
 import { TextChannel, Message } from 'discord.js';
@@ -21,9 +21,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats lockee',
     name: 'ck-get-stats-lockee',
     validate: '/ck:string/stats:string/lockee:string/user?=string',
-    middleware: [
-      Middleware.isUserRegistered
-    ],
+    middleware: [],
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -37,9 +35,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats keyholder UsernameHere',
     name: 'ck-get-stats-keyholder',
     validate: '/ck:string/stats:string/keyholder:string/user?=string',
-    middleware: [
-      Middleware.isUserRegistered
-    ],
+    middleware: [],
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -80,7 +76,7 @@ export const Routes = ExportRoutes(
     name: 'ck-set-kh-average-display',
     validate: '/ck:string/keyholder:string/set:string/average:string/state=string',
     middleware: [
-      Middleware.isUserRegistered
+      Middleware.isCKVerified
     ],
     permissions: {
       defaultEnabled: false,
@@ -95,32 +91,43 @@ export async function getLockeeStats(routed: RouterRouted) {
     end: undefined
   }
 
+  // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
+  const ckUser = (routed.v.o.user)
+    ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: routed.v.o.user }))
+    : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
+
+  // If the lookup is upon someone else with no data, return the standard response
+  if (ckUser._noData === true && routed.v.o.user) {
+    // Notify in chat what the issue could be
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeStatsMissing, { user: routed.v.o.user }))
+    return true // Stop here
+  }
+
   // Get user's current ChastiKey username from users collection or by the override
   const user = (routed.v.o.user)
-    ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') }) ||
-    (<TrackedUser>{ __notStored: true, ChastiKey: { username: routed.v.o.user, ticker: { showStarRatingScore: true } } })
-    : await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
+    ? await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) || 123 }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] })
+    // Fallback: Create a mock record
+    || (<TrackedUser>{ __notStored: true, ChastiKey: { username: ckUser.username, ticker: { showStarRatingScore: true } } })
+    // Else: Lookup the user by Discord ID
+    : await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
 
-  // If someone else is looking up a user
-  // const userToNotifyConfig = (routed.v.o.user)
-  //   ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
-  //   : undefined
+  // If the lookup is not upon someone else & the requestor's account is not yet verified: stop and inform
+  if (ckUser._noData === true && !routed.v.o.user) {
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyRequired))
+    return false // Stop
+  }
+
   // Check to see if there are any notifications programmed for this user in the db
   const userNotifyConfig = (routed.v.o.user && user._id && user.__notStored === undefined)
     ? await routed.bot.DB.get<TrackedNotification>('notifications', {
-      authorID: user.id,
+      authorID: routed.user.id,
       serverID: routed.message.guild.id,
       name: 'notify-ck-stats-lockee'
     })
     : null
-  // If user does not have a ChastiKey username set, warn them
-  if (user.ChastiKey.username === '') {
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.usernameNotSet))
-    return false; // Stop here
-  }
 
   // Generate regex for username to ignore case
-  const usernameRegex = new RegExp(`^${user.ChastiKey.username}$`, 'i')
+  const usernameRegex = new RegExp(`^${ckUser.username}$`, 'i')
 
   // Get current locks by user store in the collection
   const activeLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { username: usernameRegex })
@@ -138,7 +145,7 @@ export async function getLockeeStats(routed: RouterRouted) {
   //  - Wrong Username set with Kiera
   if (!userInLockeeStats._hasDBData) {
     // Notify in chat what the issue could be
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeStatsMissing, { user: routed.v.o.user })) as Message
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeStatsMissing, { user: routed.v.o.user }))
     return true // Stop here
   }
 
@@ -242,7 +249,7 @@ export async function getLockeeStats(routed: RouterRouted) {
     joined: (userInLockeeStats) ? userInLockeeStats.joined : '-',
     _additional: { timeSinceLast: (calculatedTimeSinceLastLock > 0) ? ((Date.now() / 1000) - calculatedTimeSinceLastLock) : 0 },
     _performance: _performance,
-    _isVerified: userInLockeeStats.isVerified(Number(user.id || 0))
+    _isVerified: ckUser.isVerified()
   }, { showRating: user.ChastiKey.ticker.showStarRatingScore }))
 
   // Notify the stats owner if that's applicable
@@ -271,12 +278,26 @@ export async function getLockeeStats(routed: RouterRouted) {
 }
 
 export async function getKeyholderStats(routed: RouterRouted) {
+  // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
+  const ckUser = (routed.v.o.user)
+    ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: routed.v.o.user }))
+    : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
+
+  // If the lookup is upon someone else with no data, return the standard response
+  if (ckUser._noData === true && routed.v.o.user) {
+    // Notify in chat what the issue could be
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.keyholderNoLocks))
+    return true // Stop here
+  }
+
   // Get user's current ChastiKey username from users collection or by the override
   var user = (routed.v.o.user)
-    ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') }) ||
-    (<TrackedUser>{
-      __notStored: true, ChastiKey: {
-        username: routed.v.o.user,
+    ? await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) || 123 }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] })
+    // Fallback: Create a mock record
+    || (<TrackedUser>{
+      __notStored: true,
+      ChastiKey: {
+        username: ckUser.username,
         preferences: {
           keyholder: { showAverage: false }
         },
@@ -288,28 +309,23 @@ export async function getKeyholderStats(routed: RouterRouted) {
   // Construct user
   user = new TrackedUser(user)
 
-  // If someone else is looking up a user
-  // const userToNotifyConfig = (routed.v.o.user)
-  //   ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
-  //   : undefined
-  // Check to see if there are any notifications programmed for this user in the db
+  // If the lookup is not upon someone else & the requestor's account is not yet verified: stop and inform
+  if (ckUser._noData === true && !routed.v.o.user) {
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyRequired))
+    return false // Stop
+  }
+
   // Check to see if there are any notifications programmed for this user in the db
   const userNotifyConfig = (routed.v.o.user && user._id && user.__notStored === undefined)
     ? await routed.bot.DB.get<TrackedNotification>('notifications', {
-      authorID: user.id,
+      authorID: routed.user.id,
       serverID: routed.message.guild.id,
       name: 'notify-ck-stats-keyholder'
     })
     : null
 
-  // If user does not have a ChastiKey username set, warn them (& none was passed)
-  if (user.ChastiKey.username === '') {
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.usernameNotSet))
-    return false; // Stop here
-  }
-
   // Generate regex for username to ignore case
-  const usernameRegex = new RegExp(`^${user.ChastiKey.username}$`, 'i')
+  const usernameRegex = new RegExp(`^${ckUser.username}$`, 'i')
 
   // Get current locks by user store in the collection
   var keyholder = await routed.bot.DB.get<TrackedKeyholderStatistics>('ck-keyholders', { username: usernameRegex })
@@ -356,7 +372,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
   await routed.message.channel.send(keyholderStats(keyholder, activeLocks, {
     showRating: user.ChastiKey.ticker.showStarRatingScore,
     showAverage: user.ChastiKey.preferences.keyholder.showAverage,
-    _isVerified: keyholder.isVerified(Number(user.id || 0))
+    _isVerified: ckUser.isVerified()
   }))
 
   // Notify the stats owner if that's applicable
@@ -455,8 +471,8 @@ export async function getKeyholderLockees(routed: RouterRouted) {
 }
 
 export async function setKHAverageDisplay(routed: RouterRouted) {
-  const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
-  const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
+  const userArgType = Utils.User.verifyUserRefType(routed.user.id)
+  const userQuery = Utils.User.buildUserQuery(routed.user.id, userArgType)
 
   // True or False sent
   if (routed.v.o.state.toLowerCase() === 'show' || routed.v.o.state.toLowerCase() === 'hide') {

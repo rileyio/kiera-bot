@@ -64,7 +64,6 @@ export async function registerUser(routed: RouterRouted) {
       id: routed.message.author.id,
       username: routed.message.author.username,
       discriminator: routed.message.author.discriminator,
-      createdTimestamp: routed.message.author.createdTimestamp,
     }))
     const user = await routed.bot.DB.get<TrackedUser>('users', { _id: userID })
     const userAt = Utils.User.buildUserChatAt(user, userArgType)

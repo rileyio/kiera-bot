@@ -9,7 +9,6 @@ const newUser = new TrackedUser({
   id: '526039977247899649',
   username: 'ldi-bot',
   discriminator: '9713',
-  createdTimestamp: 1454984304625
 })
 
 test('DB:insert => Insert a record', async t => {
