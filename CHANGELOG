@@ -1,6 +1,7 @@
 4.4.0
 - Updated: CK recover combos command to work only when Verified.
 - Updated: CK isCKVerified middleware to check new dataset, will speed up step.
+- Updated: CK Stats Locktober command to completely utilize new direction with lookups & verification.
 
 4.3.0
 - Added: More statistics to CK Locktober stats command.

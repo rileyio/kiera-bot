@@ -13,7 +13,7 @@ export const Routes = ExportRoutes(
     name: 'ck-stats-locktober',
     validate: '/ck:string/stats:string/locktober:string',
     middleware: [
-      Middleware.isUserRegistered
+      Middleware.isCKVerified
     ],
     permissions: {
       defaultEnabled: true,
@@ -28,7 +28,6 @@ export const Routes = ExportRoutes(
  * @param {RouterRouted} routed
  */
 export async function statsLocktober(routed: RouterRouted) {
-  const isVerified = await routed.bot.DB.verify('ck-users', { discordID: Number(routed.user.id) })
   const verifiedCount = await routed.bot.DB.count('ck-users', { discordID: { $ne: null } })
   // Get Locktober stats from DB
   const stored = await routed.bot.DB.getMultiple<{ username: string, discordID: number }>('ck-locktober', { discordID: { $ne: null } })
@@ -68,7 +67,7 @@ export async function statsLocktober(routed: RouterRouted) {
   // Are you (the person calling the command) apart of that list?
   const apartOfLocktober = stored.findIndex(lockee => lockee.discordID === Number(routed.user.id)) > -1
 
-  await routed.message.channel.send(locktoberStats({ participants: stored.length, verified: verifiedCount }, breakdownByKH, apartOfLocktober, isVerified))
+  await routed.message.channel.send(locktoberStats({ participants: stored.length, verified: verifiedCount }, breakdownByKH, apartOfLocktober, true))
   // Successful end
   return true
 }
