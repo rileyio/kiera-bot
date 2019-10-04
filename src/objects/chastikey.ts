@@ -111,6 +111,52 @@ export class TrackedChastiKeyLock {
   public yellowCards: number
 }
 
+export class ProposedChastiKeyUserResponse {
+  public discordID: number           // Discord ID
+  // Would like to get this if possible when the lookup by discordID 
+  // happens, would help with eliminating the need for setting a username
+  public username: string            // ChastiKey Username
+  public status: number              // Status code (200, 400)
+  public message: string             // Status message (Success, $error)
+  public timestampGenerated: number
+  public locks: Array<{            /* Array Keys: */
+    lockedBy: string                 // Keyholder
+    combination: number              // Combination
+    lockID: number                   // Lock ID
+    lockName: number | string        // Lock Name
+    timestampLocked: number          // When the lock started
+    timestampUnlocked: number        // When the lock unlocked
+  }>
+}
+
+/**
+ * Lookup for basic past lock details & combinations
+ * 
+ * Found at: http://chastikey.com/api/kiera/combinations.php?discord_id=146439529824256000
+ * @export
+ * @class TrackedChastiKeyCombinationsAPIFetch
+ */
+export class TrackedChastiKeyCombinationsAPIFetch {
+  public discord_id: number
+  public status: number
+  public message: string
+  public timestampGenerated: number
+  // Different from TrackedChastiKeyUserAPIFetchLock
+  public locks: Array<{
+    combination: number
+    lock_id: number
+    lock_name: number | string
+    timestamp_unlocked: number
+  }>
+}
+
+/**
+ * Standard Realtime User lookup
+ * 
+ * Found at: https://chastikey.com/api/v0.3/listlocks2.php?username=Emma&showdeleted=0&bot=Kiera
+ * @export
+ * @class TrackedChastiKeyUserAPIFetch
+ */
 export class TrackedChastiKeyUserAPIFetch {
   public response: Array<{ status: number; message: string; timestampGenerated: number }>
   public locks: Array<TrackedChastiKeyUserAPIFetchLock>
