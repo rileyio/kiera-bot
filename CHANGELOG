@@ -1,3 +1,6 @@
+4.5.0
+- Updated: All CK API Endpoint paths
+
 4.4.0
 - Updated: CK recover combos command to work only when Verified.
 - Updated: CK isCKVerified middleware to check new dataset, will speed up step.

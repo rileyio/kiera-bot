@@ -1,4 +1,5 @@
 import got = require('got');
+import * as APIUrls from '../../api-urls';
 import * as FormData from 'form-data';
 import * as Middleware from '../../middleware';
 import * as Utils from '../../utils';
@@ -112,7 +113,7 @@ export async function recoverCombos(routed: RouterRouted) {
   const getCount = routed.v.o.count || 5
 
   // Get user's past locks
-  const { body }: got.Response<TrackedChastiKeyCombinationsAPIFetch> = await got(`http://chastikey.com/api/kiera/combinations.php?discord_id=${routed.user.id}`, { json: true })
+  const { body }: got.Response<TrackedChastiKeyCombinationsAPIFetch> = await got(`${APIUrls.ChastiKey.Combinations}?discord_id=${routed.user.id}`, { json: true })
 
   // Stop if error in lookup
   if (body.status !== 200) {
@@ -191,7 +192,7 @@ export async function verifyAccount(routed: RouterRouted) {
   postData.append('username', routed.user.username)
   postData.append('discriminator', routed.user.discriminator)
 
-  const { body } = await got.post('https://chastikey.com/api/kiera/discordbotqrauthenticator.php', {
+  const { body } = await got.post(APIUrls.ChastiKey.DiscordAuth, {
     body: postData
   } as any);
 
@@ -287,7 +288,7 @@ export async function update(routed: RouterRouted) {
   /// Collect User Data for update    ///
   ///////////////////////////////////////
   // Get user's Current live Locks / Data
-  const { body }: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`https://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
+  const { body }: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
 
   // Check status code from CK server
   if (body.response[0].status === 400) {
@@ -391,8 +392,8 @@ export async function update(routed: RouterRouted) {
 
   // Calculate cumulative time locked
   try {
-    const userPastLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
-    const userCurrentLocksFromAPIresp = await got(`http://chastikey.com/api/v0.3/listlocks2.php?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
+    const userPastLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
+    const userCurrentLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
     // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
     const allLockeesLocks = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || []).map(d => {
       // Insert current date on existing locked locks that are not deleted

@@ -1,3 +1,4 @@
+import * as APIUrls from '../api-urls';
 import { Collections } from '../db/database';
 import { ChastiKeyAPIFetchAndStore } from './templates/ck-api-fetch-store';
 import { ChastiKeyEventRoleMonitor } from './templates/ck-locktober-monitor';
@@ -5,7 +6,7 @@ import { ChastiKeyEventRoleMonitor } from './templates/ck-locktober-monitor';
 export class ChastiKeyAPIRunningLocks extends ChastiKeyAPIFetchAndStore {
   // Setting the props for this Task
   name = 'ChastiKeyAPIRunningLocks'
-  APIEndpoint = `https://chastikey.com/json/v1.0/kiera_running_locks.json`
+  APIEndpoint = APIUrls.ChastiKey.CachedRunningLocks
   frequency = (1800000 / 2) // 15 minutes (this is the refresh rate of this data)
   dbCollection: Collections = 'ck-running-locks'
 }
@@ -13,7 +14,7 @@ export class ChastiKeyAPIRunningLocks extends ChastiKeyAPIFetchAndStore {
 export class ChastiKeyAPIKeyholders extends ChastiKeyAPIFetchAndStore {
   // Setting the props for this Task
   name = 'ChastiKeyAPIKeyholders'
-  APIEndpoint = `https://chastikey.com/json/v1.0/kiera_keyholders_data.json`
+  APIEndpoint = APIUrls.ChastiKey.CachedKeyholderData
   frequency = (1800000 / 2) // 15 minutes (this is the refresh rate of this data)
   dbCollection: Collections = 'ck-keyholders'
 }
@@ -21,7 +22,7 @@ export class ChastiKeyAPIKeyholders extends ChastiKeyAPIFetchAndStore {
 export class ChastiKeyAPILockees extends ChastiKeyAPIFetchAndStore {
   // Setting the props for this Task
   name = 'ChastiKeyAPILockees'
-  APIEndpoint = `https://chastikey.com/json/v1.0/kiera_lockees_data.json`
+  APIEndpoint = APIUrls.ChastiKey.CachedLockeeData
   frequency = (1800000 / 2) // 15 minutes
   dbCollection: Collections = 'ck-lockees'
 }
@@ -29,7 +30,7 @@ export class ChastiKeyAPILockees extends ChastiKeyAPIFetchAndStore {
 export class ChastiKeyAPIUsers extends ChastiKeyAPIFetchAndStore {
   // Setting the props for this Task
   name = 'ChastiKeyAPIUsers'
-  APIEndpoint = `https://chastikey.com/json/v1.0/kiera_user_data.json`
+  APIEndpoint = APIUrls.ChastiKey.CachedCKUserData
   frequency = (1800000 / 2) // 15 minutes
   dbCollection: Collections = 'ck-users'
 }
@@ -38,7 +39,7 @@ export class ChastiKeyAPIUsers extends ChastiKeyAPIFetchAndStore {
 export class ChastiKeyAPILocktober extends ChastiKeyAPIFetchAndStore {
   // Setting the props for this Task
   name = 'ChastiKeyAPILocktober'
-  APIEndpoint = `https://chastikey.com/json/v1.0/kiera_locked_for_locktober.json`
+  APIEndpoint = APIUrls.ChastiKey.CachedLocktober
   frequency = (1800000 / 2) // 15 minutes
   dbCollection: Collections = 'ck-locktober'
 }

@@ -1,3 +1,4 @@
+import * as APIUrls from '../api-urls';
 import * as QRCode from 'qrcode';
 import { Transform, Stream } from 'stream';
 import { TrackedChastiKey } from '../objects/chastikey';
@@ -12,7 +13,7 @@ export namespace ChastiKey {
     const r = `r=${ck.ticker.showStarRatingScore ? '1' : '0'}`
     const ext = `ext=.png`
 
-    return `http://www.chastikey.com/tickers/ticker.php?ty=${tickerType}&${ts}&${un}&${fd}&${r}&${ext}`
+    return `${APIUrls.ChastiKey.Ticker}?ty=${tickerType}&${ts}&${un}&${fd}&${r}&${ext}`
   }
 
   export function generateVerifyQR(code: string) {
