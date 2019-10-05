@@ -7,7 +7,7 @@ import * as Discord from 'discord.js';
 import { TrackedUser } from '../../objects/user';
 import { RouterRouted } from '../../router/router';
 import { ExportRoutes } from '../../router/routes-exporter';
-import { ChastiKeyVerifyResponse, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyCombinationsAPIFetch } from '../../objects/chastikey';
+import { ChastiKeyVerifyResponse, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyCombinationsAPIFetch, ChastiKeyVerifyDiscordID } from '../../objects/chastikey';
 
 export const Routes = ExportRoutes(
   {
@@ -154,7 +154,7 @@ export async function verifyAccount(routed: RouterRouted) {
   var isNotSuccessfulReason = 'Unknown, Try again later.'
 
   // User not previously registered with Kiera
-  if (user.id === '') {
+  if (!user._id) {
     // Create a record for them like !register would have
     user = new TrackedUser({
       id: routed.user.id,
@@ -163,6 +163,25 @@ export async function verifyAccount(routed: RouterRouted) {
     })
     // Add to DB
     await routed.bot.DB.add('users', user)
+  }
+
+  // If user exists & this command is being re-run, try checking if they're verified on the ChastiKey side before
+  // Triggering a new verify
+  if (!user.ChastiKey.isVerified) {
+    const { body }: got.Response<ChastiKeyVerifyDiscordID> = await got(`${APIUrls.ChastiKey.VerifyDiscordID}?discord_id=${routed.user.id}`, { json: true })
+    const parsedVerifyDiscordID = new ChastiKeyVerifyDiscordID(body)
+
+    // When they are already verified, let them know & update the ChastiKey user record
+    if (parsedVerifyDiscordID.status === 200) {
+      // Update that we know they're at least verified
+      user.ChastiKey.isVerified = true
+      user.ChastiKey.username = parsedVerifyDiscordID.username
+
+      await routed.bot.DB.update('users', { id: routed.user.id }, user)
+      // We can safely stop here - let the user know nothing more is needed at this time
+      await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyFastForward))
+      return true // Stop here
+    }
   }
 
   // Check if verify key has been cached recently
@@ -241,25 +260,57 @@ export async function update(routed: RouterRouted) {
     : (routed.message.mentions.members.first() ? 'Snowflake' : 'CKUsername')
 
   // Track changes made later - if any
-  var changesImplemented: Array<{ action: 'changed' | 'added' | 'removed', type: 'role', result: string }> = []
+  var changesImplemented: Array<{ action: 'changed' | 'added' | 'removed', type: 'role' | 'status', result: string }> = []
 
   // Get user's current ChastiKey username from users collection or by the override
   const user = (targetUserType !== 'Self')
     ? (targetUserType === 'Snowflake')
+      // When: Snowflake
       ? await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.mentions.members.first().id })
-      // Fallback: When Snowflake target user does not have a record - return an empty ChastiKey username record
-      || (<TrackedUser>{ __notStored: true, ChastiKey: { username: '' } })
-      // When type is a CK username, try to find based off that
+      // When: CKUsername
       : await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
-      // Fallback: When CK usernamed target user does not have a username set - return an empty ChastiKey username record
-      || (<TrackedUser>{ __notStored: true, ChastiKey: { username: '' } })
-    // User calling the command
+    // When: Self
     : await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
 
-  // If user does not have a ChastiKey username set, warn them
-  if (user.ChastiKey.username === '') {
-    await routed.message.reply(Utils.sb((targetUserType === 'Self') ? Utils.en.chastikey.usernameNotSet : Utils.en.chastikey.usernameNotSetByOwner))
+  const verifyURI = (routed.v.o.user !== undefined)
+    ? (targetUserType === 'Snowflake')
+      // When: Snowflake
+      ? `${APIUrls.ChastiKey.VerifyDiscordID}?discord_id=${routed.message.mentions.members.first().id}`
+      // When: CKUsername
+      : `${APIUrls.ChastiKey.VerifyDiscordID}?username=${routed.v.o.user}`
+    // When: Self
+    : `${APIUrls.ChastiKey.VerifyDiscordID}?discord_id=${routed.user.id}`
+  var verifyAPIResp: got.Response<ChastiKeyVerifyDiscordID> = await got(verifyURI, { json: true })
+  var parsedVerifyDiscordID = new ChastiKeyVerifyDiscordID(verifyAPIResp.body)
+
+  // If target user does not have a record on the server
+  if (!user._id && targetUserType === 'CKUsername' || targetUserType === 'Snowflake') {
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.userNotFound))
     return false; // Stop here
+  }
+
+  // If the user verify lookup failed on someone that is no longer verified on the ChastiKey side (mostly just for testing/the odd time that a user needs to be un-verified)
+  if (parsedVerifyDiscordID.status === 400 && user.ChastiKey.isVerified && targetUserType === 'Self') {
+    // Try looking up the user by username instead
+    console.log('User lookup Special Condition: fallback to username')
+    verifyAPIResp = await got(`${APIUrls.ChastiKey.VerifyDiscordID}?username=${user.ChastiKey.username}`, { json: true })
+    parsedVerifyDiscordID = new ChastiKeyVerifyDiscordID(verifyAPIResp.body)
+    // If its still showing status === 400, then update the record
+    if (verifyAPIResp.body.status === 400) {
+      user.ChastiKey.isVerified = false
+      changesImplemented.push({ action: 'removed', type: 'status', result: 'verified' })
+      await routed.bot.DB.update('users', { id: routed.user.id }, user)
+    }
+  }
+
+  // Update user's record in Kiera's DB if any changes
+  if (parsedVerifyDiscordID.status === 200) {
+    if (!user.ChastiKey.isVerified && parsedVerifyDiscordID.discordID !== null && parsedVerifyDiscordID.verified) changesImplemented.push({ action: 'added', type: 'status', result: 'verified' })
+    if (user.ChastiKey.isVerified && parsedVerifyDiscordID.discordID === null && !parsedVerifyDiscordID.verified) changesImplemented.push({ action: 'removed', type: 'status', result: 'verified' })
+    // Update that we know they're at least verified
+    user.ChastiKey.isVerified = parsedVerifyDiscordID.discordID !== null && parsedVerifyDiscordID.verified
+    user.ChastiKey.username = parsedVerifyDiscordID.username
+    await routed.bot.DB.update('users', { id: routed.user.id }, user)
   }
 
   ///////////////////////////////////////
@@ -267,10 +318,9 @@ export async function update(routed: RouterRouted) {
   ///////////////////////////////////////
   // Get user's Current live Locks / Data
   const { body }: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
-
   // Check status code from CK server
-  if (body.response[0].status === 400) {
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.usernameNoResultsFromServer))
+  if (body.status === 400) {
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.userNotFoundRemote))
     return false; // Stop here
   }
 
@@ -370,8 +420,8 @@ export async function update(routed: RouterRouted) {
 
   // Calculate cumulative time locked
   try {
-    const userPastLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
-    const userCurrentLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
+    const userPastLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?discord_id=${user.id}&showdeleted=1&bot=Kiera`, { json: true })
+    const userCurrentLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?discord_id=${user.id}&showdeleted=0&bot=Kiera`, { json: true })
     // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
     const allLockeesLocks = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || []).map(d => {
       // Insert current date on existing locked locks that are not deleted
@@ -503,7 +553,7 @@ export async function update(routed: RouterRouted) {
   try {
     if (discordUserHasRole.noviceKeyholder) {
       // Check their KH stats to see if eligible for a Role upgrade
-      const khData = await routed.bot.DB.get<TrackedChastiKeyKeyholderStatistics>('ck-keyholders', { discordID: Number(user.id) })
+      const khData = await routed.bot.DB.get<TrackedChastiKeyKeyholderStatistics>('ck-keyholders', { username: user.ChastiKey.username })
       const eligibleForUpgrade = khData.totalLocksManaged >= 10
 
       // Assign Keyholder role

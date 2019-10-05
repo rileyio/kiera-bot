@@ -17,6 +17,7 @@ export class TrackedChastiKey {
   public ticker: TrackedChastiKeyTicker = new TrackedChastiKeyTicker({})
   public preferences: TrackedChastiKeyPreferences = new TrackedChastiKeyPreferences({})
   public isVerified: boolean = false
+  public isVerifiedInData: boolean = false
   public verificationCode: string = ''
   public verificationCodeRequestedAt: number = 0
 
@@ -213,7 +214,7 @@ export class ProposedChastiKeyUserResponse {
  * @class TrackedChastiKeyCombinationsAPIFetch
  */
 export class TrackedChastiKeyCombinationsAPIFetch {
-  public discord_id: number
+  public discordID: number
   public status: number
   public message: string
   public timestampGenerated: number
@@ -234,7 +235,11 @@ export class TrackedChastiKeyCombinationsAPIFetch {
  * @class TrackedChastiKeyUserAPIFetch
  */
 export class TrackedChastiKeyUserAPIFetch {
-  public response: Array<{ status: number; message: string; timestampGenerated: number }>
+  public status: 200 | 400
+  public message: 'Success' | 'Discord ID or username not recognised'
+  public timestampGenerated: number
+  public discordID: number
+  public username: string
   public locks: Array<TrackedChastiKeyUserAPIFetchLock>
 }
 
@@ -377,7 +382,6 @@ export class ChastiKeyVerifyResponse {
 }
 
 export class ChastiKeyVerifyDiscordID {
-  public discord_id: number
   public status: 200 | 400
   public message: string
   public timestampGenerated: number

@@ -81,8 +81,6 @@ export const Routes = ExportRoutes(
  * @param {RouterRouted} routed
  */
 export async function setTickerType(routed: RouterRouted) {
-  const ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
-
   var newTickerType: number
   var newTickerTypeAsString: string
 
@@ -106,11 +104,11 @@ export async function setTickerType(routed: RouterRouted) {
   }
 
   // Get the user from the db in their current state
-  const user = new TrackedUser(await routed.bot.DB.get('users', { id: String(ckUser.discordID) }))
+  const user = new TrackedUser(await routed.bot.DB.get('users', { id: routed.user.id }))
   // Change/Update TrackedChastiKey.Type Prop
   user.ChastiKey.ticker.type = newTickerType
   // Commit change to db
-  const updateResult = await routed.bot.DB.update('users', { id: String(ckUser.discordID) }, user)
+  const updateResult = await routed.bot.DB.update('users', { id: routed.user.id }, user)
 
   if (updateResult > 0) {
     await routed.message.author
@@ -125,11 +123,9 @@ export async function setTickerType(routed: RouterRouted) {
 }
 
 export async function setTickerDate(routed: RouterRouted) {
-  const ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
-
   // Validate ticker date passed
   if (/([0-9]{4}-[0-9]{2}-[0-9]{2})/.test(routed.v.o.number)) {
-    await routed.bot.DB.update('users', { id: String(ckUser.discordID) }, { $set: { 'ChastiKey.ticker.date': routed.v.o.number } }, { atomic: true })
+    await routed.bot.DB.update('users', { id: routed.user.id }, { $set: { 'ChastiKey.ticker.date': routed.v.o.number } }, { atomic: true })
 
     await routed.message.author.send(`:white_check_mark: ChastiKey Start Date now set to: \`${routed.v.o.number}\``)
     routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set date ${routed.v.o.number}`)
@@ -145,11 +141,9 @@ export async function setTickerDate(routed: RouterRouted) {
 }
 
 export async function setTickerRatingDisplay(routed: RouterRouted) {
-  const ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
-
   // True or False sent
   if (routed.v.o.state.toLowerCase() === 'show' || routed.v.o.state.toLowerCase() === 'hide') {
-    await routed.bot.DB.update('users', { id: String(ckUser.discordID) },
+    await routed.bot.DB.update('users', { id: routed.user.id },
       { $set: { 'ChastiKey.ticker.showStarRatingScore': `show` ? routed.v.o.state === 'show' : false } },
       { atomic: true })
 
@@ -167,10 +161,7 @@ export async function setTickerRatingDisplay(routed: RouterRouted) {
 }
 
 export async function getTicker(routed: RouterRouted) {
-  const ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
-  const user = await routed.bot.DB.get<TrackedUser>('users', { id: String(ckUser.discordID) })
-    // Fallback: Create a mock record
-    || (<TrackedUser>{ __notStored: true, ChastiKey: { username: String(ckUser.username), ticker: { showStarRatingScore: true, type: 2 } } })
+  const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id }))
 
   // If the user has passed a type as an argument, use that over what was saved as their default
   if (routed.v.o.type !== undefined) {
@@ -183,7 +174,7 @@ export async function getTicker(routed: RouterRouted) {
   }
 
   // Override stored username on user with ckUser one
-  user.ChastiKey.username = String(ckUser.username)
+  user.ChastiKey.username = String(user.ChastiKey.username)
 
   // If the type is only for a single ticker, return just that
   if (user.ChastiKey.ticker.type === 1 || user.ChastiKey.ticker.type === 2) {

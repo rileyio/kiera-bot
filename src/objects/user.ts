@@ -23,10 +23,11 @@ export class TrackedUser {
   public guilds: Array<TrackedUserGuild>
 
   // ChastiKey Specific //
-  public ChastiKey: TrackedChastiKey = new TrackedChastiKey({})
+  public ChastiKey: TrackedChastiKey
 
   constructor(init: Partial<TrackedUser> | TrackedUser) {
     deepExtend(this, init);
+    this.ChastiKey = new TrackedChastiKey(init !== null ? init.ChastiKey : {})
   }
 
   public oauth(initOauth: Partial<TrackedUser> | TrackedUser) {
