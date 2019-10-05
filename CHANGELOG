@@ -1,5 +1,7 @@
 4.5.0
 - Updated: All CK API Endpoint paths
+- Updated: ChastiKey Object definitions
+- Re-enabled: CK set username with Command Deprecated message
 
 4.4.0
 - Updated: CK recover combos command to work only when Verified.

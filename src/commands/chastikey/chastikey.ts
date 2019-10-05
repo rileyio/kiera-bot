@@ -7,25 +7,23 @@ import * as Discord from 'discord.js';
 import { TrackedUser } from '../../objects/user';
 import { RouterRouted } from '../../router/router';
 import { ExportRoutes } from '../../router/routes-exporter';
-import { ChastiKeyVerifyResponse, TrackedChastiKeyUserAPIFetch, TrackedKeyholderStatistics, TrackedChastiKeyCombinationsAPIFetch } from '../../objects/chastikey';
+import { ChastiKeyVerifyResponse, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyCombinationsAPIFetch } from '../../objects/chastikey';
 
 export const Routes = ExportRoutes(
-  // {
-  //   type: 'message',
-  //   category: 'ChastiKey',
-  //   commandTarget: 'author',
-  //   controller: setUsername,
-  //   example: '{{prefix}}ck username MyUsername',
-  //   name: 'ck-set-username',
-  //   validate: '/ck:string/username:string/ckusername=string',
-  //   middleware: [
-  //     Middleware.isUserRegistered
-  //   ],
-  //   permissions: {
-  //     defaultEnabled: false,
-  //     serverOnly: false
-  //   }
-  // },
+  {
+    type: 'message',
+    category: 'ChastiKey',
+    commandTarget: 'author',
+    controller: setUsername,
+    example: '{{prefix}}ck username MyUsername',
+    name: 'ck-set-username',
+    validate: '/ck:string/username:string/ckusername=string',
+    middleware: [],
+    permissions: {
+      defaultEnabled: false,
+      serverOnly: false
+    }
+  },
   {
     type: 'message',
     category: 'ChastiKey',
@@ -74,34 +72,14 @@ export const Routes = ExportRoutes(
   }
 )
 
-// /**
-//  * Sets username for ChastiKey
-//  * @export
-//  * @param {RouterRouted} routed
-//  */
-// export async function setUsername(routed: RouterRouted) {
-//   const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
-//   const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
-
-//   // Get the user from the db in their current state
-//   const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
-//   // Change/Update TrackedChastiKey.Username Prop
-//   user.ChastiKey.username = routed.v.o.ckusername
-//   // Commit change to db
-//   const updateResult = await routed.bot.DB.update('users', userQuery, user)
-
-//   if (updateResult > 0) {
-//     await routed.message.author.send(`:white_check_mark: ChastiKey Username now set to: \`${routed.v.o.ckusername}\``)
-//     routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck username ${routed.v.o.ckusername}`)
-//     // Successful end
-//     return true
-//   }
-//   else {
-//     routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck username ${routed.v.o.ckusername} -> update unsuccessful!`)
-//     // Unsuccessful end
-//     return false
-//   }
-// }
+/**
+ * Sets username for ChastiKey
+ * @export
+ * @param {RouterRouted} routed
+ */
+export async function setUsername(routed: RouterRouted) {
+  await routed.message.reply(`:information_source: Deprecated command (\`${routed.message.content}\`), please use \`!ck verify\``)
+}
 
 /**
  * Recover ChastiKey recent combinations (with optional count to return)
@@ -525,7 +503,7 @@ export async function update(routed: RouterRouted) {
   try {
     if (discordUserHasRole.noviceKeyholder) {
       // Check their KH stats to see if eligible for a Role upgrade
-      const khData = await routed.bot.DB.get<TrackedKeyholderStatistics>('ck-keyholders', { discordID: Number(user.id) })
+      const khData = await routed.bot.DB.get<TrackedChastiKeyKeyholderStatistics>('ck-keyholders', { discordID: Number(user.id) })
       const eligibleForUpgrade = khData.totalLocksManaged >= 10
 
       // Assign Keyholder role

@@ -6,7 +6,7 @@ import * as Utils from '../../utils'
 import { RouterRouted } from '../../utils';
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '../../embedded/chastikey-stats';
 import { TrackedUser } from '../../objects/user';
-import { TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedKeyholderStatistics, TrackedChastiKey, TrackedChastiKeyUser } from '../../objects/chastikey';
+import { TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedChastiKeyKeyholderStatistics, TrackedChastiKey, TrackedChastiKeyUser } from '../../objects/chastikey';
 import { performance } from 'perf_hooks';
 import { TrackedNotification } from '../../objects/notification';
 import { TextChannel, Message } from 'discord.js';
@@ -329,7 +329,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
   const usernameRegex = new RegExp(`^${ckUser.username}$`, 'i')
 
   // Get current locks by user store in the collection
-  var keyholder = await routed.bot.DB.get<TrackedKeyholderStatistics>('ck-keyholders', { username: usernameRegex })
+  var keyholder = await routed.bot.DB.get<TrackedChastiKeyKeyholderStatistics>('ck-keyholders', { username: usernameRegex })
 
   // If there is no data in the kh dataset inform the user
   if (!keyholder) {
@@ -367,7 +367,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
   ])
 
   // Init TrackedKeyholder
-  keyholder = new TrackedKeyholderStatistics(keyholder)
+  keyholder = new TrackedChastiKeyKeyholderStatistics(keyholder)
 
   // Send stats
   await routed.message.channel.send(keyholderStats(keyholder, activeLocks, {

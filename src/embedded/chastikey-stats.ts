@@ -1,4 +1,4 @@
-import { TrackedChastiKeyLock, TrackedKeyholderStatistics } from '../objects/chastikey';
+import { TrackedChastiKeyLock, TrackedChastiKeyKeyholderStatistics } from '../objects/chastikey';
 import { performance } from 'perf_hooks';
 import * as Utils from '../utils/';
 
@@ -196,7 +196,7 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   }
 }
 
-export function keyholderStats(data: TrackedKeyholderStatistics, activeLocks: Array<TrackedKeyholderLockeesStatistics>, options: { showRating: boolean, showAverage: boolean, _isVerified: boolean }) {
+export function keyholderStats(data: TrackedChastiKeyKeyholderStatistics, activeLocks: Array<TrackedKeyholderLockeesStatistics>, options: { showRating: boolean, showAverage: boolean, _isVerified: boolean }) {
   var dateJoinedDaysAgo = (data.joined !== '-')
     ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)`
     : ''
