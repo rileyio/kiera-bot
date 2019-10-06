@@ -213,6 +213,7 @@ export function keyholderStats(data: TrackedChastiKeyKeyholderStatistics, active
   var dateRearranged = `${dateRearrangedYYYY}-${dateRearrangedMM}-${dateRearrangedDD}`
 
   var lockCount = 0
+  var lockLookedAt: Array<number> = []
   var cumulativeTimelocked = 0
   var numberOfFixed = 0
   var numberOfVar = 0
@@ -222,23 +223,27 @@ export function keyholderStats(data: TrackedChastiKeyKeyholderStatistics, active
   activeLocks.forEach(l => {
     // Add to avg and count for calculation
     var locksTotal = l.locks.reduce((currentVal, lock) => {
-      // Count lock types & other cumulatives
-      numberOfVar += (!lock.fixed) ? 1 : 0
-      numberOfFixed += (lock.fixed) ? 1 : 0
-      numberOfTurns += (!lock.fixed) ? lock.noOfTurns : 0
+      if (lockLookedAt.findIndex(li => li === lock.secondsLocked) === -1) {
+        lockLookedAt.push(lock.secondsLocked)
+        // Count lock types & other cumulatives
+        numberOfVar += (!lock.fixed) ? 1 : 0
+        numberOfFixed += (lock.fixed) ? 1 : 0
+        numberOfTurns += (!lock.fixed) ? lock.noOfTurns : 0
 
-      // Track individual lock stats
-      if (individualLockStats.findIndex(_l => _l.name === lock.sharedLockName) === -1) {
-        individualLockStats.push({ name: lock.sharedLockName, count: 1, fixed: lock.fixed })
-      }
-      else {
-        individualLockStats.find(_l => _l.name === lock.sharedLockName).count += 1
+        // Track individual lock stats
+        if (individualLockStats.findIndex(_l => _l.name === lock.sharedLockName) === -1) {
+          individualLockStats.push({ name: lock.sharedLockName, count: 1, fixed: lock.fixed })
+        }
+        else {
+          individualLockStats.find(_l => _l.name === lock.sharedLockName).count += 1
+        }
+
+        // Only look at if the value is a positive value (to skip over problem causing values)
+        if (lock.secondsLocked >= 0) {
+          return currentVal + lock.secondsLocked
+        }
       }
 
-      // Only look at if the value is a positive value (to skip over problem causing values)
-      if (lock.secondsLocked >= 0) {
-        return currentVal + lock.secondsLocked
-      }
       return currentVal
     }, 0)
 
