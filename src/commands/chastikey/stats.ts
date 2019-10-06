@@ -362,7 +362,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
   // Get lockees under a KH
   const activeLocks = await routed.bot.DB.aggregate<{ _id: string, locks: Array<any>, count: number, uniqueCount: number }>('ck-running-locks', [
     {
-      $match: { lockedBy: 'MissJessica' }
+      $match: { lockedBy: ckUser.username }
     },
     {
       $group: {
