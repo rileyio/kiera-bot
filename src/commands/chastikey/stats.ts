@@ -22,7 +22,9 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats lockee',
     name: 'ck-get-stats-lockee',
     validate: '/ck:string/stats:string/lockee:string/user?=string',
-    middleware: [],
+    middleware: [
+      Middleware.isCKVerified
+    ],
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -36,7 +38,9 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats keyholder UsernameHere',
     name: 'ck-get-stats-keyholder',
     validate: '/ck:string/stats:string/keyholder:string/user?=string',
-    middleware: [],
+    middleware: [
+      Middleware.isCKVerified
+    ],
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -50,6 +54,9 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck check multilocked KeyHolderName',
     name: 'ck-check-multilocked',
     validate: '/ck:string/check:string/multilocked:string/user=string',
+    middleware: [
+      Middleware.isCKVerified
+    ],
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -63,6 +70,9 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck keyholder lockees KeyHolderName',
     name: 'ck-keyholder-lockees',
     validate: '/ck:string/keyholder:string/lockees:string/user=string',
+    middleware: [
+      Middleware.isCKVerified
+    ],
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -106,7 +116,7 @@ export async function getLockeeStats(routed: RouterRouted) {
 
   // Get user's current ChastiKey username from users collection or by the override
   const user = (routed.v.o.user)
-    ? await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) || 123 }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] })
+    ? await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] })
     // Fallback: Create a mock record
     || (<TrackedUser>{ __notStored: true, ChastiKey: { username: ckUser.username, ticker: { showStarRatingScore: true } } })
     // Else: Lookup the user by Discord ID
@@ -281,7 +291,7 @@ export async function getLockeeStats(routed: RouterRouted) {
 export async function getKeyholderStats(routed: RouterRouted) {
   // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
   const ckUser = (routed.v.o.user)
-    ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: routed.v.o.user }))
+    ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: new RegExp(`^${routed.v.o.user}`) }))
     : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -472,12 +482,9 @@ export async function getKeyholderLockees(routed: RouterRouted) {
 }
 
 export async function setKHAverageDisplay(routed: RouterRouted) {
-  const userArgType = Utils.User.verifyUserRefType(routed.user.id)
-  const userQuery = Utils.User.buildUserQuery(routed.user.id, userArgType)
-
   // True or False sent
   if (routed.v.o.state.toLowerCase() === 'show' || routed.v.o.state.toLowerCase() === 'hide') {
-    await routed.bot.DB.update('users', userQuery,
+    await routed.bot.DB.update('users', { id: routed.user.id },
       { $set: { 'ChastiKey.preferences.keyholder.showAverage': `show` ? routed.v.o.state === 'show' : false } },
       { atomic: true })
 

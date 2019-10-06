@@ -67,7 +67,7 @@ export class TrackedChastiKeyUser {
   public _noData: boolean = true
   public userID: number
   public username: number | string
-  public discordID: number
+  public discordID: number = null
   public displayInStats: number
   public joined: string
   public keyholderLevel: number
