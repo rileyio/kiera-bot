@@ -15,7 +15,7 @@ export function locktoberStats(participation: { participants: number, verified: 
   description += `# of participants (who have verified): **\`${participation.participants}\`**\n`
   description += `% of participation among verified users: **\`${Math.round((participation.participants / participation.verified) * 100)}%\` \`(${participation.participants}/${participation.verified})\`**\n`
   // If user's eligible for the Locktober role
-  description += isUserApart ? `\n**Your lock is a valid Locktober lock!**\n` : ``
+  description += isUserApart ? `\n🎃 **Your lock is a valid Locktober lock!** 🎃\n` : ``
   // Display KH breakdown
   description += `\n**Top 5 KH by eligible Locktober lockees:**`
   description += `\`\`\``
