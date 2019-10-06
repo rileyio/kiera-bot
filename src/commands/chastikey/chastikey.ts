@@ -632,22 +632,32 @@ export async function roleCounts(routed: RouterRouted) {
 
   response += `\`\`\``
   response += `Everyone               # ${routed.message.guild.members.size}\n`
-  response += `====================================\n`
-  response += `Locked                 # ${counts.locked} ${Array.from(Array((largestNumberString + 3) - String(counts.locked).length)).join(' ')} ${Math.round((counts.locked / routed.message.guild.members.size) * 100)}%\n`
-  response += `Unlocked               # ${counts.unlocked} ${Array.from(Array((largestNumberString + 3) - String(counts.unlocked).length)).join(' ')} ${Math.round((counts.unlocked / routed.message.guild.members.size) * 100)}%\n`
-  response += `Locktober 2019         # ${counts.locktober} ${Array.from(Array((largestNumberString + 3) - String(counts.locktober).length)).join(' ')} ${Math.round((counts.locktober / routed.message.guild.members.size) * 100)}%\n`
-  response += `====================================\n`
-  response += `Renowned Keyholder     # ${counts.renownedKeyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.renownedKeyholder).length)).join(' ')} ${Math.round((counts.renownedKeyholder / routed.message.guild.members.size) * 100)}%\n`
-  response += `Established Keyholder  # ${counts.establishedKeyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.establishedKeyholder).length)).join(' ')} ${Math.round((counts.establishedKeyholder / routed.message.guild.members.size) * 100)}%\n`
-  response += `Keyholder              # ${counts.keyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.keyholder).length)).join(' ')} ${Math.round((counts.keyholder / routed.message.guild.members.size) * 100)}%\n`
-  response += `Novice Keyholder       # ${counts.noviceKeyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.noviceKeyholder).length)).join(' ')} ${Math.round((counts.noviceKeyholder / routed.message.guild.members.size) * 100)}%\n`
-  response += `====================================\n`
-  response += `Devoted Lockee         # ${counts.devotedLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.devotedLockee).length)).join(' ')} ${Math.round((counts.devotedLockee / routed.message.guild.members.size) * 100)}%\n`
-  response += `Experienced Lockee     # ${counts.experiencedLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.experiencedLockee).length)).join(' ')} ${Math.round((counts.experiencedLockee / routed.message.guild.members.size) * 100)}%\n`
-  response += `Intermediate Lockee    # ${counts.intermediateLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.intermediateLockee).length)).join(' ')} ${Math.round((counts.intermediateLockee / routed.message.guild.members.size) * 100)}%\n`
-  response += `Novice Lockee          # ${counts.noviceLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.noviceLockee).length)).join(' ')} ${Math.round((counts.noviceLockee / routed.message.guild.members.size) * 100)}%\n`
+  response += `=======================================\n`
+  response += `Locked                 # ${counts.locked} ${Array.from(Array((largestNumberString + 3) - String(counts.locked).length)).join(' ')} ${roundedDisplay((counts.locked / routed.message.guild.members.size))}%\n`
+  response += `Unlocked               # ${counts.unlocked} ${Array.from(Array((largestNumberString + 3) - String(counts.unlocked).length)).join(' ')} ${roundedDisplay((counts.unlocked / routed.message.guild.members.size))}%\n`
+  response += `Locktober 2019         # ${counts.locktober} ${Array.from(Array((largestNumberString + 3) - String(counts.locktober).length)).join(' ')} ${roundedDisplay((counts.locktober / routed.message.guild.members.size))}%\n`
+  response += `=======================================\n`
+  response += `Renowned Keyholder     # ${counts.renownedKeyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.renownedKeyholder).length)).join(' ')} ${roundedDisplay((counts.renownedKeyholder / routed.message.guild.members.size))}%\n`
+  response += `Established Keyholder  # ${counts.establishedKeyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.establishedKeyholder).length)).join(' ')} ${roundedDisplay((counts.establishedKeyholder / routed.message.guild.members.size))}%\n`
+  response += `Keyholder              # ${counts.keyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.keyholder).length)).join(' ')} ${roundedDisplay((counts.keyholder / routed.message.guild.members.size))}%\n`
+  response += `Novice Keyholder       # ${counts.noviceKeyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.noviceKeyholder).length)).join(' ')} ${roundedDisplay((counts.noviceKeyholder / routed.message.guild.members.size))}%\n`
+  response += `=======================================\n`
+  response += `Devoted Lockee         # ${counts.devotedLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.devotedLockee).length)).join(' ')} ${roundedDisplay((counts.devotedLockee / routed.message.guild.members.size))}%\n`
+  response += `Experienced Lockee     # ${counts.experiencedLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.experiencedLockee).length)).join(' ')} ${roundedDisplay((counts.experiencedLockee / routed.message.guild.members.size))}%\n`
+  response += `Intermediate Lockee    # ${counts.intermediateLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.intermediateLockee).length)).join(' ')} ${roundedDisplay((counts.intermediateLockee / routed.message.guild.members.size))}%\n`
+  response += `Novice Lockee          # ${counts.noviceLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.noviceLockee).length)).join(' ')} ${roundedDisplay((counts.noviceLockee / routed.message.guild.members.size))}%\n`
   response += `\`\`\``
 
   await routed.message.channel.send(response)
   return true
+}
+
+function roundedDisplay(perc: number) {
+  var moddedPerc: string
+  // Calculate with decimal place adjusted
+  moddedPerc = parseFloat(String(perc * 100)).toFixed(2)
+
+  // When less than 10 add leading 0 before returning
+  if (Number(moddedPerc) < 10) moddedPerc = `0${moddedPerc}`
+  return moddedPerc
 }
