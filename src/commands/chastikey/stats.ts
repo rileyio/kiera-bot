@@ -103,7 +103,7 @@ export async function getLockeeStats(routed: RouterRouted) {
   }
 
   // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
-  const ckUser = (routed.v.o.user)
+  var ckUser = (routed.v.o.user)
     ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: routed.v.o.user }))
     : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
 
@@ -118,14 +118,20 @@ export async function getLockeeStats(routed: RouterRouted) {
   const user = (routed.v.o.user)
     ? await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] })
     // Fallback: Create a mock record
-    || (<TrackedUser>{ __notStored: true, ChastiKey: { username: ckUser.username, ticker: { showStarRatingScore: true } } })
+    || (<TrackedUser>{ __notStored: true, ChastiKey: { username: ckUser.username, isVerified: false, ticker: { showStarRatingScore: true } } })
     // Else: Lookup the user by Discord ID
     : await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
 
   // If the lookup is not upon someone else & the requestor's account is not yet verified: stop and inform
-  if (ckUser._noData === true && !routed.v.o.user) {
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyRequired))
+  if (ckUser._noData && !routed.v.o.user && !user.ChastiKey.isVerified) {
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyVerifyReq2))
     return false // Stop
+  }
+
+  // If the user is verified in the Kiera table (meaning they followed the FF steps)
+  if (ckUser._noData && !routed.v.o.user && user.ChastiKey.isVerified) {
+    // Update the ckUser record for this run to let them see stuff
+    ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: user.ChastiKey.username }))
   }
 
   // Check to see if there are any notifications programmed for this user in the db
@@ -290,7 +296,7 @@ export async function getLockeeStats(routed: RouterRouted) {
 
 export async function getKeyholderStats(routed: RouterRouted) {
   // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
-  const ckUser = (routed.v.o.user)
+  var ckUser = (routed.v.o.user)
     ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: new RegExp(`^${routed.v.o.user}`) }))
     : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
 
@@ -321,9 +327,15 @@ export async function getKeyholderStats(routed: RouterRouted) {
   user = new TrackedUser(user)
 
   // If the lookup is not upon someone else & the requestor's account is not yet verified: stop and inform
-  if (ckUser._noData === true && !routed.v.o.user) {
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyRequired))
+  if (ckUser._noData && !routed.v.o.user && !user.ChastiKey.isVerified) {
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyVerifyReq2))
     return false // Stop
+  }
+
+  // If the user is verified in the Kiera table (meaning they followed the FF steps)
+  if (ckUser._noData && !routed.v.o.user && user.ChastiKey.isVerified) {
+    // Update the ckUser record for this run to let them see stuff
+    ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: user.ChastiKey.username }))
   }
 
   // Check to see if there are any notifications programmed for this user in the db

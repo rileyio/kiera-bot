@@ -27,6 +27,6 @@ export const lockeeStatsMissing = `There seems to be an error finding this user'
 export const verifyNotSuccessfulUsingReason = `{{reason}}`
 export const verifyDMInstructions = `Scan this code with the ChastiKey App like loading a lock (within the next 5 minutes), this will verify your Discord Account to ChastiKey.\n\nIf your ChastiKey account is new in the last 15-30 minutes, it may take this long for Kiera to receive all the required data.`
 export const verifyCkeckYourDMs = `Check your DMs from Kiera for further instructions.`
-export const verifyRequired = `You'll need to run \`{{prefix}}ck verify\` and complete the steps before this lookup can be performed.`
 export const verifyFastForward = `Your account has been verified! Some data may still take **up to 15 minutes** to be cached and fully accessable.`
 export const verifyPreviouslyCompleted = `Your account has already been verified! If there are any issues with this please reachout to @emma#1366`
+export const verifyVerifyReq2 = `This command requires your account be verified with ChastiKey using the following command: \`!ck verify\`\n\nIf you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running \`!ck verify\` again.`

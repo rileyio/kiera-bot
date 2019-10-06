@@ -12,7 +12,7 @@ export async function isCKVerified(routed: RouterRouted) {
     await routed.bot.DB.update('users', { id: routed.user.id }, { $set: { 'ChastiKey.isVerified': ckUser.isVerified(), 'ChastiKey.username': ckUser.username } }, { atomic: true })
 
   // Verified!!
-  if (!ckUser._noData || kieraUser) return routed // No need to hault if this passes
+  if (!ckUser._noData || kieraUser.ChastiKey.isVerified) return routed // No need to hault if this passes
   // Fallback, user not yet registered
   await routed.message.reply(
     'This command requires your account be verified with ChastiKey using the following command: `!ck verify`\n\nIf you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `!ck verify` again.'

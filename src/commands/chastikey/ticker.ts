@@ -4,7 +4,6 @@ import { RouterRouted } from '../../router/router';
 import { Attachment } from 'discord.js';
 import { TrackedUser } from '../../objects/user';
 import { ExportRoutes } from '../../router/routes-exporter';
-import { TrackedChastiKeyUser } from '../../objects/chastikey';
 
 export const Routes = ExportRoutes(
   {
