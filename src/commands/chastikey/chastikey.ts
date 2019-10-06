@@ -20,7 +20,7 @@ export const Routes = ExportRoutes(
     validate: '/ck:string/username:string/ckusername=string',
     middleware: [],
     permissions: {
-      defaultEnabled: false,
+      defaultEnabled: true,
       serverOnly: false
     }
   },
@@ -36,7 +36,7 @@ export const Routes = ExportRoutes(
       Middleware.isCKVerified
     ],
     permissions: {
-      defaultEnabled: false,
+      defaultEnabled: true,
       serverOnly: false
     }
   },
@@ -50,7 +50,7 @@ export const Routes = ExportRoutes(
     validate: '/ck:string/verify:string',
     middleware: [], // No Middleware - From 4.4.0 and onward this will replace both !register & !ck verify
     permissions: {
-      defaultEnabled: false,
+      defaultEnabled: true,
       serverOnly: false
     }
   },
@@ -65,6 +65,20 @@ export const Routes = ExportRoutes(
     middleware: [
       Middleware.isCKVerified
     ],
+    permissions: {
+      defaultEnabled: true,
+      serverOnly: true
+    }
+  },
+  {
+    type: 'message',
+    category: 'ChastiKey',
+    commandTarget: 'none',
+    controller: roleCounts,
+    example: '{{prefix}}ck role counts',
+    name: 'ck-role-counts',
+    validate: '/ck:string/role:string/counts:string',
+    middleware: [],
     permissions: {
       defaultEnabled: true,
       serverOnly: true
@@ -571,5 +585,69 @@ export async function update(routed: RouterRouted) {
   results += '```'
 
   await routed.message.reply(results)
+  return true
+}
+
+export async function roleCounts(routed: RouterRouted) {
+  var largestNumberString = 1
+
+  const counts = {
+    locked: 0,
+    unlocked: 0,
+    locktober: 0,
+    noviceKeyholder: 0,
+    keyholder: 0,
+    renownedKeyholder: 0,
+    establishedKeyholder: 0,
+    devotedLockee: 0,
+    experiencedLockee: 0,
+    intermediateLockee: 0,
+    noviceLockee: 0
+  }
+
+  routed.message.guild.roles.forEach(r => {
+    // Special states
+    if (r.name.toLowerCase() === 'locked') counts.locked = r.members.size
+    if (r.name.toLowerCase() === 'unlocked') counts.unlocked = r.members.size
+    if (r.name.toLowerCase() === 'locktober 2019') counts.locktober = r.members.size
+    // Keyholders
+    if (r.name.toLowerCase() === 'keyholder') counts.keyholder = r.members.size
+    if (r.name.toLowerCase() === 'renowned keyholder') counts.renownedKeyholder = r.members.size
+    if (r.name.toLowerCase() === 'established keyholder') counts.establishedKeyholder = r.members.size
+    if (r.name.toLowerCase() === 'novice keyholder') counts.noviceKeyholder = r.members.size
+    // Lockees
+    if (r.name.toLowerCase() === 'devoted lockee') counts.devotedLockee = counts.devotedLockee + r.members.size
+    if (r.name.toLowerCase() === 'experienced lockee') counts.experiencedLockee = counts.experiencedLockee + r.members.size
+    if (r.name.toLowerCase() === 'intermediate lockee') counts.intermediateLockee = counts.intermediateLockee + r.members.size
+    if (r.name.toLowerCase() === 'novice lockee') counts.noviceLockee = counts.noviceLockee + r.members.size
+  })
+
+  // Find largest number in string format
+  Object.keys(counts).forEach(key => {
+    // Track which category name is the longest
+    if (largestNumberString < String(counts[key]).length) largestNumberString = String(counts[key]).length
+  })
+
+  var response = `:bar_chart: **Server Role Statistics**\n`
+
+  response += `\`\`\``
+  response += `Everyone               # ${routed.message.guild.members.size}\n`
+  response += `====================================\n`
+  response += `Locked                 # ${counts.locked} ${Array.from(Array((largestNumberString + 3) - String(counts.locked).length)).join(' ')} ${Math.round((counts.locked / routed.message.guild.members.size) * 100)}%\n`
+  response += `Unlocked               # ${counts.unlocked} ${Array.from(Array((largestNumberString + 3) - String(counts.unlocked).length)).join(' ')} ${Math.round((counts.unlocked / routed.message.guild.members.size) * 100)}%\n`
+  response += `Locktober 2019         # ${counts.locktober} ${Array.from(Array((largestNumberString + 3) - String(counts.locktober).length)).join(' ')} ${Math.round((counts.locktober / routed.message.guild.members.size) * 100)}%\n`
+  response += `====================================\n`
+  response += `Renowned Keyholder     # ${counts.renownedKeyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.renownedKeyholder).length)).join(' ')} ${Math.round((counts.renownedKeyholder / routed.message.guild.members.size) * 100)}%\n`
+  response += `Established Keyholder  # ${counts.establishedKeyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.establishedKeyholder).length)).join(' ')} ${Math.round((counts.establishedKeyholder / routed.message.guild.members.size) * 100)}%\n`
+  response += `Keyholder              # ${counts.keyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.keyholder).length)).join(' ')} ${Math.round((counts.keyholder / routed.message.guild.members.size) * 100)}%\n`
+  response += `Novice Keyholder       # ${counts.noviceKeyholder} ${Array.from(Array((largestNumberString + 3) - String(counts.noviceKeyholder).length)).join(' ')} ${Math.round((counts.noviceKeyholder / routed.message.guild.members.size) * 100)}%\n`
+  response += `====================================\n`
+  response += `Devoted Lockee         # ${counts.devotedLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.devotedLockee).length)).join(' ')} ${Math.round((counts.devotedLockee / routed.message.guild.members.size) * 100)}%\n`
+  response += `Experienced Lockee     # ${counts.experiencedLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.experiencedLockee).length)).join(' ')} ${Math.round((counts.experiencedLockee / routed.message.guild.members.size) * 100)}%\n`
+  response += `Intermediate Lockee    # ${counts.intermediateLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.intermediateLockee).length)).join(' ')} ${Math.round((counts.intermediateLockee / routed.message.guild.members.size) * 100)}%\n`
+  response += `Novice Lockee          # ${counts.noviceLockee} ${Array.from(Array((largestNumberString + 3) - String(counts.noviceLockee).length)).join(' ')} ${Math.round((counts.noviceLockee / routed.message.guild.members.size) * 100)}%\n`
+  response += `\`\`\``
+
+  await routed.message.channel.send(response)
   return true
 }
