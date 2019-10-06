@@ -1,5 +1,6 @@
 4.5.0
 - Added: All CK commands (except: Verify) will require verification but now will also update a user's verified status & username with kiera automagically.
+- Added: Moderator command set for managing user mute functionality.
 - Updated: All CK API Endpoint paths.
 - Updated: ChastiKey Object definitions.
 - Re-enabled: CK set username with Command Deprecated message.

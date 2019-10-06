@@ -56,3 +56,22 @@ export interface TrackedUserGuild {
   name: string
   fetchedAt: string
 }
+
+export class TrackedMutedUser {
+  public _id: ObjectId
+  public id: string
+  public username: string
+  public discriminator: string
+  public nickname: string
+  public serverID: string
+  public timestamp: number = Date.now()
+  public reason: string
+  public removeAt: number = 0
+  public removedAt: number
+  public roles: Array<{ id: string, name: string }> = []
+  public active: boolean = true
+
+  constructor(init: Partial<TrackedMutedUser>) {
+    Object.assign(this, init)
+  }
+}

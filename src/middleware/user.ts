@@ -11,3 +11,11 @@ export async function isUserRegistered(routed: RouterRouted) {
   )
   return // Returns nothing which halts going any further
 }
+
+export async function isModerator(routed: RouterRouted) {
+  // Restrict Update upon other users to Keyholder or above
+  const modRole = routed.message.guild.roles.find(r => r.name.toLowerCase() === 'moderator')
+  // User calling this command must be higher than the khRole to call update upon another user than themself
+  if (routed.message.member.highestRole.position >= modRole.position) return routed // No need to hault if this passes
+  return // Returns nothing which halts going any further
+}
