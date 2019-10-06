@@ -5,6 +5,7 @@
 - Updated: ChastiKey Object definitions.
 - Re-enabled: CK set username with Command Deprecated message.
 - Fixed: CK Stats Lockee -or- KH condition where right after verify error is saying to verify, better instructions and a temp way around.
+- Fixed: CK Stats Keyholder query to exclude fakes from totals and calculations.
 
 4.4.0
 - Updated: CK recover combos command to work only when Verified.
