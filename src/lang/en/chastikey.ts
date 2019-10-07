@@ -21,7 +21,8 @@ export const lockeeOrKeyholderRequired = `You'll need to supply a type with that
 export const keyholderNoLocks = `The requested user seems to not have any active locks or past lockees, there will be no stats to display`
 export const userRequestedNoStats = `This user has requested their stats remain private`
 export const lockeeStatsMissing = `There seems to be an error finding this user's stats (\`{{user}}\`), here are some common issues:
-  - Has not opened (ChastiKey) the App in >=2 week, if this is the case the app will need to be opened & wait ~15-30 minutes for the stats to refresh.`
+  - Has not opened (ChastiKey) the App in >=2 week, if this is the case the app will need to be opened & wait ~15-30 minutes for the stats to refresh.
+  - The user does not participate in locking.`
 
 // Verify
 export const verifyNotSuccessfulUsingReason = `{{reason}}`

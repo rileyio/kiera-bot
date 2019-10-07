@@ -1,7 +1,7 @@
 import { TrackedMessage } from '../objects/message';
 import { Bot } from '..';
 import { TextChannel, Message } from 'discord.js';
-import { Logging } from '../utils/';
+import { Logging } from '../utils';
 
 export class MsgTracker {
   private Bot: Bot

@@ -67,7 +67,7 @@ export class TrackedChastiKeyUser {
   public _noData: boolean = true
   public userID: number
   public username: number | string
-  public discordID: number = null
+  public discordID: string = null
   public displayInStats: number
   public joined: string
   public keyholderLevel: number
@@ -108,7 +108,7 @@ export class TrackedChastiKeyLockee {
   public totalNoOfCompletedLocks: number
   public averageRating: number
   public noOfRatings: number
-  public discordID: number
+  public discordID: string
 
   constructor(init: Partial<TrackedChastiKeyLockee>) {
     this._hasDBData = init === null ? false : true
@@ -121,8 +121,8 @@ export class TrackedChastiKeyLockee {
    * @returns
    * @memberof TrackedChastiKeyLockee
    */
-  public isVerified(knownID: number) {
-    return this.discordID === knownID
+  public isVerified() {
+    return this.discordID !== null
   }
 }
 
@@ -156,7 +156,7 @@ export class TrackedChastiKeyLock {
    * @type {number}
    * @memberof TrackedChastiKeyKeyholderStatistics
    */
-  public discordID: number
+  public discordID: string
   /**
    * Date Joined ChastiKey App
    * @type {string}
@@ -189,7 +189,7 @@ export class TrackedChastiKeyLock {
 }
 
 export class ProposedChastiKeyUserResponse {
-  public discordID: number           // Discord ID
+  public discordID: string           // Discord ID
   // Would like to get this if possible when the lookup by discordID 
   // happens, would help with eliminating the need for setting a username
   public username: string            // ChastiKey Username
@@ -214,16 +214,16 @@ export class ProposedChastiKeyUserResponse {
  * @class TrackedChastiKeyCombinationsAPIFetch
  */
 export class TrackedChastiKeyCombinationsAPIFetch {
-  public discordID: number
+  public discordID: string
   public status: number
   public message: string
   public timestampGenerated: number
   // Different from TrackedChastiKeyUserAPIFetchLock
   public locks: Array<{
     combination: number
-    lock_id: number
-    lock_name: number | string
-    timestamp_unlocked: number
+    lockID: number
+    lockName: number | string
+    timestampUnlocked: number
   }>
 }
 
@@ -238,7 +238,7 @@ export class TrackedChastiKeyUserAPIFetch {
   public status: 200 | 400
   public message: 'Success' | 'Discord ID or username not recognised'
   public timestampGenerated: number
-  public discordID: number
+  public discordID: string
   public username: string
   public locks: Array<TrackedChastiKeyUserAPIFetchLock>
 }
@@ -281,7 +281,7 @@ export class TrackedChastiKeyKeyholderStatistics {
    * @type {number}
    * @memberof TrackedChastiKeyKeyholderStatistics
    */
-  public discordID: number
+  public discordID: string
   /**
    * Date Joined ChastiKey App
    * @type {string}
@@ -349,8 +349,8 @@ export class TrackedChastiKeyKeyholderStatistics {
    * @returns
    * @memberof TrackedChastiKeyLockee
    */
-  public isVerified(knownID: number) {
-    return this.discordID === knownID
+  public isVerified() {
+    return this.discordID !== null
   }
 }
 
@@ -385,7 +385,7 @@ export class ChastiKeyVerifyDiscordID {
   public status: 200 | 400
   public message: string
   public timestampGenerated: number
-  public discordID: number = 0
+  public discordID: string = null
   public username: string = ''
   public verified: boolean = false
 

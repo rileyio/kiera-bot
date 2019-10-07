@@ -2,7 +2,7 @@ import { MongoClient, MongoClientOptions, Cursor, Db, MongoError, CollectionInse
 import { Logging } from '../utils/';
 
 export * from './promise'
-export * from './messages'
+export * from './message-tracker'
 
 export type Collections = 'audit-log'
   | 'authkeys'
@@ -21,7 +21,6 @@ export type Collections = 'audit-log'
   | 'polls'
   | 'server-settings'
   | 'servers'
-  | 'sessions'
   | 'settings'
   | 'stats-bot'
   | 'users'

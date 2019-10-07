@@ -1,5 +1,5 @@
 import * as Middleware from '../../middleware';
-import * as Utils from '../../utils/';
+import * as Utils from '../../utils';
 import { RouterRouted } from '../../router/router';
 import { TrackedUser } from '../../objects/user';
 import { ExportRoutes } from '../../router/routes-exporter';
@@ -13,12 +13,13 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}admin user delete @user#0000',
     name: 'admin-user-delete',
     permissions: {
-      restricted: true
+      restricted: true,
+      restrictedTo: [
+        '473856245166506014', // KevinCross#0001
+        '146439529824256000'  // Emma#1366
+      ]
     },
-    validate: '/admin:string/user:string/delete:string/user=user',
-    middleware: [
-      Middleware.hasRole('developer')
-    ]
+    validate: '/admin:string/user:string/delete:string/user=user'
   }
 )
 

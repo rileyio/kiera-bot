@@ -22,7 +22,7 @@ export class ChastiKeyEventRoleMonitor extends Task {
 
     try {
       // Get users who are eligible from the db, but only users who have verified their discord ID
-      const stored = await this.Bot.DB.getMultiple<{ username: string, discordID: number }>('ck-locktober', { discordID: { $ne: null } })
+      const stored = await this.Bot.DB.getMultiple<{ username: string, discordID: string }>('ck-locktober', { discordID: { $ne: null } })
       const guilds = this.Bot.client.guilds.filter((g) => g.id === '473856867768991744' || g.id === '389204362959781899').array()
       const auditLogChannel = (<TextChannel>this.Bot.client.channels.find(c => c.id === this.Bot.auditLogChannel))
 
@@ -41,7 +41,7 @@ export class ChastiKeyEventRoleMonitor extends Task {
         for (let memberIndex = 0; memberIndex < guildMembers.length; memberIndex++) {
           const member = guildMembers[memberIndex]
           // Are they in the stored collection? Yes:
-          if (stored.findIndex(sm => sm.discordID === Number(member.id)) > -1) {
+          if (stored.findIndex(sm => sm.discordID === member.id) > -1) {
             // Do they NOT already have the role? If this is the case, add it
             if (!member.roles.has(role.id)) {
               console.log(`Event Role Monitor::Giving event role = ${role.name}, To = @${member.user.username}#${member.user.discriminator}`)

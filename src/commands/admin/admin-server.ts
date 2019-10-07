@@ -26,21 +26,25 @@ export const Routes = ExportRoutes(
     validate: '/ping:string',
     permissions: { serverOnly: false }
   },
-  // {
-  //   type: 'message',
-  //   category: 'Admin',
-  //   commandTarget: 'none',
-  //   controller: forceRestart,
-  //   example: '{{prefix}}restart bot',
-  //   name: 'root-restart-bot',
-  //   permissions: {
-  //     restricted: true
-  //   },
-  //   validate: '/admin:string/restart:string/bot:string/seconds?=number',
-  //   middleware: [
-  //     Middleware.hasRole('developer')
-  //   ]
-  // }
+  {
+    type: 'message',
+    category: 'Admin',
+    commandTarget: 'none',
+    controller: forceRestart,
+    example: '{{prefix}}restart bot',
+    name: 'root-restart-bot',
+    permissions: {
+      restricted: true,
+      restrictedTo: [
+        '473856245166506014', // KevinCross#0001
+        '146439529824256000'  // Emma#1366
+      ]
+    },
+    validate: '/admin:string/restart:string/bot:string/seconds?=number',
+    middleware: [
+      Middleware.hasRole('developer')
+    ]
+  }
 )
 
 export async function pingPong(routed: RouterRouted) {
@@ -86,19 +90,19 @@ export async function pingPong(routed: RouterRouted) {
  * @param {RouterRouted} routed
  */
 export async function versionCheck(routed: RouterRouted) {
-  await routed.message.channel.send(`Running on version \`${routed.bot.version}\``)
+  routed.message.channel.send(`Running on version \`${routed.bot.version}\``)
   return true
 }
 
-// export async function forceRestart(routed: RouterRouted) {
-//   await routed.message.channel.send(Utils.sb(Utils.en.admin.botManualRestart, {
-//     seconds: ((routed.v.o.seconds || 5000) / 1000)
-//   }))
+export async function forceRestart(routed: RouterRouted) {
+  await routed.message.channel.send(Utils.sb(Utils.en.admin.botManualRestart, {
+    seconds: ((routed.v.o.seconds || 5000) / 1000)
+  }))
 
-//   setTimeout(() => {
-//     process.exit(0)
-//   }, routed.v.o.seconds || 5000)
+  setTimeout(() => {
+    process.exit(0)
+  }, routed.v.o.seconds || 5000)
 
-//   // Successful end
-//   return true
-// }
+  // Successful end
+  return true
+}

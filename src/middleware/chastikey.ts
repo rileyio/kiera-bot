@@ -3,7 +3,7 @@ import { TrackedChastiKeyUser } from '../objects/chastikey';
 import { TrackedUser } from '../objects/user';
 
 export async function isCKVerified(routed: RouterRouted) {
-  const ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
+  const ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: routed.user.id }))
   // Check kiera's as well, override where special conditions apply
   const kieraUser = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: routed.user.id }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] }))
 

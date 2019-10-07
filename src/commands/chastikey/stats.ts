@@ -104,8 +104,8 @@ export async function getLockeeStats(routed: RouterRouted) {
 
   // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
   var ckUser = (routed.v.o.user)
-    ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: routed.v.o.user }))
-    : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
+    ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: new RegExp(`^${routed.v.o.user}$`, 'i') }))
+    : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: routed.user.id }))
 
   // If the lookup is upon someone else with no data, return the standard response
   if (ckUser._noData === true && routed.v.o.user) {
@@ -298,7 +298,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
   // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
   var ckUser = (routed.v.o.user)
     ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: new RegExp(`^${routed.v.o.user}`) }))
-    : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: Number(routed.user.id) }))
+    : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: routed.user.id }))
 
   // If the lookup is upon someone else with no data, return the standard response
   if (ckUser._noData === true && routed.v.o.user) {

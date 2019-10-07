@@ -121,8 +121,8 @@ export async function recoverCombos(routed: RouterRouted) {
 
   // Sort locks to display an accurate account of past locks
   const sortedLocks = body.locks.sort((lA, lB) => {
-    var x = lA.timestamp_unlocked;
-    var y = lB.timestamp_unlocked;
+    var x = lA.timestampUnlocked;
+    var y = lB.timestampUnlocked;
     if (x > y) { return -1; }
     if (x < y) { return 1; }
     return 0;
@@ -138,7 +138,8 @@ export async function recoverCombos(routed: RouterRouted) {
   selectedLocks.forEach((l, i) => {
     // message += `Was locked by   ${l.locke}\n`
     // message += `Was deleted?    ${l.lockDeleted === 1 ? 'Yes' : 'No'}\n`
-    message += `Unlocked        ${new Date(l.timestamp_unlocked * 1000)}\n`
+    message += `Unlocked        ${new Date(l.timestampUnlocked * 1000)}\n`
+    message += `Lock Name       ${l.lockName}\n`
     message += `Combination     ${l.combination}\n`
     if (i < (selectedLocks.length - 1)) message += `\n` // Add extra space between
   })
@@ -339,7 +340,7 @@ export async function update(routed: RouterRouted) {
   }
 
   // Locktober Data (DB Cached)
-  const isLocktoberParticipant = await routed.bot.DB.verify<{ username: string, discordID: number }>('ck-locktober', { discordID: Number(user.id) })
+  const isLocktoberParticipant = await routed.bot.DB.verify<{ username: string, discordID: string }>('ck-locktober', { discordID: user.id })
 
   // From API -or- Default
   const fromAPI = body.locks || []
