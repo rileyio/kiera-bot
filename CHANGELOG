@@ -1,3 +1,6 @@
+4.7.1
+Fixed: Issue with CK Stats Locktober percentage and DB query used to find post data format changes.
+
 4.7.0
 - Added: Restored select Bot admin commands.
 - Updated: Internal code to align with ChastiKey data feed changes.
