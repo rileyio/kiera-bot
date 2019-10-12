@@ -1,12 +1,11 @@
 import got = require('got');
-// import * as Middleware from '../../middleware';
 import * as APIUrls from '../../api-urls';
 import * as Middleware from '../../middleware';
 import * as Utils from '../../utils'
 import { RouterRouted } from '../../utils';
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '../../embedded/chastikey-stats';
 import { TrackedUser } from '../../objects/user';
-import { TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedChastiKeyKeyholderStatistics, TrackedChastiKey, TrackedChastiKeyUser } from '../../objects/chastikey';
+import { TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedChastiKeyKeyholderStatistics, TrackedChastiKey, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetch } from '../../objects/chastikey';
 import { performance } from 'perf_hooks';
 import { TrackedNotification } from '../../objects/notification';
 import { TextChannel, Message } from 'discord.js';
@@ -143,18 +142,10 @@ export async function getLockeeStats(routed: RouterRouted) {
     })
     : null
 
-  // Generate regex for username to ignore case
-  const usernameRegex = new RegExp(`^${ckUser.username}$`, 'i')
-
   // Get current locks by user store in the collection
-  const activeLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { username: usernameRegex })
+  const activeLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { username: ckUser.username })
   // Get user from lockee data (Total locks, raitings, averages)
-  const userInLockeeStats = new TrackedChastiKeyLockee(await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { username: usernameRegex }))
-
-  // Variables - Defaults (unless changed later)
-  var calculatedCumulative = 0
-  var calculatedTimeSinceLastLock = 0
-  var allLockeesLocks = []
+  const userInLockeeStats = new TrackedChastiKeyLockee(await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { username: ckUser.username }))
 
   // User has no data in the Lockee stats db
   // Causes
@@ -166,55 +157,15 @@ export async function getLockeeStats(routed: RouterRouted) {
     return true // Stop here
   }
 
-  try {
-    const userPastLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}&showdeleted=1&bot=Kiera`, { json: true })
-    const userCurrentLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
-    // var dates = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || [])
-    allLockeesLocks = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || [])
+  // Get all API locks
+  const apiResponse: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}`, { json: true })
+  var apiLockeeLocks = apiResponse.body.locks
 
-    // console.log(dates)
-    // console.log('userPastLocksFromAPIresp.body.locks -> undefined?', userPastLocksFromAPIresp.body.locks === undefined)
-    // console.log('userCurrentLocksFromAPIresp.body.locks -> undefined?', userCurrentLocksFromAPIresp.body.locks === undefined)
+  // Generate
+  var compiledLockeeStats = Utils.ChastiKey.compileLockeeStats(ckUser, userInLockeeStats, activeLocks, apiLockeeLocks)
 
-    // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
-    allLockeesLocks = allLockeesLocks.map(d => {
-      // Insert current date on existing locked locks that are not deleted
-      // console.log(d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0, d.timestampLocked)
-
-      // Remove unlocked time if the lock status is: Locked, Deleted and has a Completion timestamp
-      if (d.timestampUnlocked > 0 && d.status === 'Locked' && d.lockDeleted === 1) {
-        // console.log('set to:', 0)
-        d.timestampUnlocked = 0
-      }
-
-      if (d.timestampUnlocked === 0 && (d.status === 'Locked' || d.status === 'ReadyToUnlock') && d.lockDeleted === 0) {
-        // console.log('set to:', Math.round(Date.now() / 1000))
-        d.timestampUnlocked = Math.round(Date.now() / 1000)
-      }
-
-      // Find newest lock ended - only if no locks are active
-      if (activeLocks.length === 0) {
-        calculatedTimeSinceLastLock = (d.timestampUnlocked > calculatedTimeSinceLastLock)
-          ? d.timestampUnlocked
-          : calculatedTimeSinceLastLock
-      }
-
-      // Transform data a little
-      return { start: d.timestampLocked, end: d.timestampUnlocked }
-    })
-
-    // Calculate cumulative using algorithm
-    var cumulativeCalc = Utils.Date.calculateCumulativeRange(allLockeesLocks)
-    calculatedCumulative = Math.round((cumulativeCalc.cumulative / 2592000) * 100) / 100
-    // Calculate average
-    // console.log('!!! Average:', cumulativeCalc.average)
-    // console.log('!!! Average:', Utils.Date.calculateHumanTimeDDHHMM(cumulativeCalc.average))
-    userInLockeeStats.averageTimeLockedInSeconds = cumulativeCalc.average
-    // console.log('!!!!!!!!!!Got this far!')
-  } catch (error) {
-    calculatedCumulative = NaN
-    console.log('CK stats lockee Error building cumulative time')
-  }
+  // Fill in optionals
+  compiledLockeeStats._performance = _performance
 
   // If the user has display_in_stats === 2 then stop here
   if (activeLocks.length > 0 ? activeLocks[0].displayInStats === 2 : false) {
@@ -248,26 +199,7 @@ export async function getLockeeStats(routed: RouterRouted) {
     return true
   }
 
-  // console.log('activeLocks', activeLocks)
-  // console.log(userInLockeeStats)
-  // console.log(userInLockeeTotals)
-  // console.log('userFromAPIresp.body', userFromAPIresp.body)
-
-  await routed.message.channel.send(lockeeStats({
-    averageLocked: (userInLockeeStats) ? userInLockeeStats.averageTimeLockedInSeconds : 0,
-    averageRating: (userInLockeeStats) ? userInLockeeStats.averageRating : '-',
-    cacheTimestamp: (activeLocks.length > 0) ? activeLocks[0].timestampNow : '',
-    locks: activeLocks,
-    longestLock: (userInLockeeStats) ? userInLockeeStats.longestCompletedLockInSeconds : 0,
-    monthsLocked: (calculatedCumulative),
-    noOfRatings: (userInLockeeStats) ? userInLockeeStats.noOfRatings : 0,
-    totalNoOfCompletedLocks: (userInLockeeStats) ? userInLockeeStats.totalNoOfCompletedLocks : 0,
-    username: user.ChastiKey.username,
-    joined: (userInLockeeStats) ? userInLockeeStats.joined : '-',
-    _additional: { timeSinceLast: (calculatedTimeSinceLastLock > 0) ? ((Date.now() / 1000) - calculatedTimeSinceLastLock) : 0 },
-    _performance: _performance,
-    _isVerified: ckUser.isVerified()
-  }, { showRating: user.ChastiKey.ticker.showStarRatingScore }))
+  await routed.message.channel.send(lockeeStats(compiledLockeeStats, { showRating: user.ChastiKey.ticker.showStarRatingScore }))
 
   // Notify the stats owner if that's applicable
   if (userNotifyConfig !== null) {

@@ -66,9 +66,9 @@ export class TrackedChastiKeyPreferences {
 export class TrackedChastiKeyUser {
   public _noData: boolean = true
   public userID: number
-  public username: number | string
+  public username: string
   public discordID: string = null
-  public displayInStats: number
+  public displayInStats: boolean | number
   public joined: string
   public keyholderLevel: number
   public lockeeLevel: number
@@ -81,6 +81,8 @@ export class TrackedChastiKeyUser {
     this._noData = !init ? true : false
     // Transform Username if needed to a string
     this.username = String(this.username)
+    // Transform display in stats
+    this.displayInStats = this.displayInStats === 1
   }
 
   public isVerified() {
@@ -245,7 +247,10 @@ export class TrackedChastiKeyUserAPIFetch {
 
 export class TrackedChastiKeyUserAPIFetchLock {
   public lockID: number
+  public lockDeleted: boolean | number
   public lockedBy: string
+  public lockFrozen: boolean
+  public timestampDeleted: number
   public timestampLocked: number
   public timestampUnlocked: number
   public status: 'UnlockedReal' | 'Locked' | 'ReadyToUnlock'

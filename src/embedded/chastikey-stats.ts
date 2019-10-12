@@ -14,11 +14,11 @@ export interface LockeeStats {
   username: string
   joined: string
   // Custom
-  _additional: { timeSinceLast: number }
+  _additional?: { timeSinceLast: number }
   // Performance tracking
-  _performance: { start: number, end: number }
+  _performance?: { start: number, end: number }
   // For Discord/CK verified check
-  _isVerified: boolean
+  _isVerified?: boolean
 }
 
 export interface TrackedSharedKeyholderStatistics {
@@ -89,7 +89,7 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean })
 
   const messageBlock = {
     embed: {
-      title: `${data._isVerified ? '<:verified:625628727820288000> ' : ''}\`${data.username}\` - ChastiKey Lockee Statistics`,
+      title: `${data._isVerified ? '<:verified:625628727820288000> ' : ''}\`${data.username}\` - ChastiKey Lockee Statistics - Active Stats`,
       description: description,
       color: 9125611,
       timestamp: (data.cacheTimestamp) ? new Date((<number>data.cacheTimestamp) * 1000).toISOString() : '',

@@ -21,7 +21,8 @@ export const Routes = ExportRoutes(
     middleware: [],
     permissions: {
       defaultEnabled: true,
-      serverOnly: false
+      serverOnly: false,
+      restricted: true
     }
   },
   {
@@ -314,7 +315,9 @@ export async function update(routed: RouterRouted) {
     if (verifyAPIResp.body.status === 400) {
       user.ChastiKey.isVerified = false
       changesImplemented.push({ action: 'removed', type: 'status', result: 'verified' })
-      await routed.bot.DB.update('users', { id: routed.user.id }, user)
+      await routed.bot.DB.update<TrackedUser>('users', { id: routed.user.id }, {
+        $set: { 'ChastiKey.isVerified': false }
+      }, { atomic: true })
     }
   }
 
@@ -323,16 +326,19 @@ export async function update(routed: RouterRouted) {
     if (!user.ChastiKey.isVerified && parsedVerifyDiscordID.discordID !== null && parsedVerifyDiscordID.verified) changesImplemented.push({ action: 'added', type: 'status', result: 'verified' })
     if (user.ChastiKey.isVerified && parsedVerifyDiscordID.discordID === null && !parsedVerifyDiscordID.verified) changesImplemented.push({ action: 'removed', type: 'status', result: 'verified' })
     // Update that we know they're at least verified
-    user.ChastiKey.isVerified = parsedVerifyDiscordID.discordID !== null && parsedVerifyDiscordID.verified
-    user.ChastiKey.username = parsedVerifyDiscordID.username
-    await routed.bot.DB.update('users', { id: routed.user.id }, user)
+    await routed.bot.DB.update<TrackedUser>('users', { id: routed.user.id }, {
+      $set: {
+        'ChastiKey.isVerified': parsedVerifyDiscordID.discordID !== null && parsedVerifyDiscordID.verified,
+        'ChastiKey.username': parsedVerifyDiscordID.username
+      }
+    }, { atomic: true })
   }
 
   ///////////////////////////////////////
   /// Collect User Data for update    ///
   ///////////////////////////////////////
   // Get user's Current live Locks / Data
-  const { body }: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}&showdeleted=0&bot=Kiera`, { json: true })
+  const { body }: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}`, { json: true })
   // Check status code from CK server
   if (body.status === 400) {
     await routed.message.reply(Utils.sb(Utils.en.chastikey.userNotFoundRemote))
@@ -347,6 +353,8 @@ export async function update(routed: RouterRouted) {
 
   // Find if any locked locks
   const hasLockedLock = fromAPI.filter(lock => lock.status === 'Locked' || lock.status === 'ReadyToUnlock')
+
+  // console.log('hasLockedLock:', hasLockedLock)
 
   // Fetch some stuff from Discord & ChastiKey
   const discordUser =
@@ -466,6 +474,9 @@ export async function update(routed: RouterRouted) {
   ///////////////////////////////////////
   /// Role Update: Locked || Unlocked ///
   ///////////////////////////////////////
+  // console.log('userHasPref:', userHasPref)
+  // console.log('discordUserHasRole.unlocked:', discordUserHasRole.unlocked)
+  // console.log('discordUserHasRole.locked:', discordUserHasRole.locked)
   try {
     if (userHasPref || discordUserHasRole.unlocked || discordUserHasRole.locked) {
       // When there are locks Locked or not yet unlocked: set the locked role

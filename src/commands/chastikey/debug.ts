@@ -57,7 +57,7 @@ export async function debug(routed: RouterRouted) {
   if (ckUser) {
     response += `  -> discordID           = ${ckUser.discordID}\n`
     response += `  -> username            = ${ckUser.username}\n`
-    response += `  -> displayInStats      = ${ckUser.displayInStats === 1}\n`
+    response += `  -> displayInStats      = ${ckUser.displayInStats}\n`
     response += `  -> timestampLastActive = ${ckUser.timestampLastActive}\n`
   }
   response += `\nIs in ck-keyholders Data (from CK): ${ckKH ? true : false}\n`

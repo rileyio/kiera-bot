@@ -1,3 +1,10 @@
+4.8.0
+- Added: CK Search command to perform searches based on username.
+- Added: CK Lockee Historical stats command.
+- Removed: CK Username command from auto generated help menu.
+- Removed: Secondary API call previously needed to collect all data for CK stats lockee like cumulatives. Should improve performance.
+- Fixed: CK Update query internal DB query error.
+
 4.7.1
 Fixed: Issue with CK Stats Locktober percentage and DB query used to find post data format changes.
 
