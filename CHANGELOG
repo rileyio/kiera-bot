@@ -1,3 +1,6 @@
+4.8.1
+- Removing Lockee history until rework.
+
 4.8.0
 - Added: CK Search command to perform searches based on username.
 - Added: CK Lockee Historical stats command.

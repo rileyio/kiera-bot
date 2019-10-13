@@ -29,6 +29,9 @@ export const Routes = ExportRoutes(
 )
 
 export async function history(routed: RouterRouted) {
+  await routed.message.reply(`A rework of this command's output is underway. Stay tuned for updates.`)
+  return true // Stop here
+
   var _performance = {
     start: performance.now(),
     end: undefined

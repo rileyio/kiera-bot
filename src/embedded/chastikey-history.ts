@@ -5,30 +5,52 @@ import { performance } from 'perf_hooks'
 
 export function lockeeHistory(user: TrackedChastiKeyUser, options: { showRating: boolean }, lockeeStatsCompiled: LockeeStats, apiLockeeLocks: Array<TrackedChastiKeyUserAPIFetchLock>) {
   var fields: Array<{ name: string; value: string; }> = []
-  var pastKeyholders: Array<{ name: string, timeLockedWith: number, numberOfLocks: number, abandonedLocks: number }> = []
+  var pastKeyholders: Array<{ name: string, timeLockedWith: number, numberOfLocks: number, abandonedLocks: number, lastTimeLocked: number }> = []
+  var locksUnlockedGt3MonthsAgoCount = 0
+  var locksUnlockedGt3MonthsAgoCumulative = 0
+  const threeMonthAgoTimestamp = ((Date.now() / 1000) - (7890000))
 
   // Calculate past KHs first
   apiLockeeLocks.forEach(lock => {
-    const khIndex = pastKeyholders.findIndex(kh => kh.name === lock.lockedBy || kh.name === 'Unknown (KH\'s Lock has since been deleted)')
+    const khIndex = pastKeyholders.findIndex(kh => kh.name === lock.lockedBy)
     const isLockAbandoned = lock.status === 'Locked' && lock.lockDeleted === 1
-    // When KH has already been found in a previously parsed lock
-    if (khIndex > -1) {
-      // Abandoned Lock
-      if (isLockAbandoned) { pastKeyholders[khIndex].abandonedLocks += 1 }
-      // Increment total count
-      pastKeyholders[khIndex].numberOfLocks += 1
-      // Track time of locked only on unlocked locks
-      if (lock.status === 'UnlockedReal') { pastKeyholders[khIndex].timeLockedWith += (lock.timestampUnlocked - lock.timestampLocked) }
+    // if (lock.lockedBy !== '') {
+    if (lock.timestampUnlocked > threeMonthAgoTimestamp || lock.timestampDeleted > threeMonthAgoTimestamp) {
+      // When KH has already been found in a previously parsed lock
+      if (khIndex > -1) {
+        // Abandoned Lock
+        if (isLockAbandoned) { pastKeyholders[khIndex].abandonedLocks += 1 }
+        // Increment total count
+        pastKeyholders[khIndex].numberOfLocks += 1
+        // Track time of locked only on unlocked locks
+        if (lock.status === 'UnlockedReal') { pastKeyholders[khIndex].timeLockedWith += (lock.timestampUnlocked - lock.timestampLocked) }
+        // Track last locked timestamp with this kh
+        pastKeyholders[khIndex].lastTimeLocked = (pastKeyholders[khIndex].timeLockedWith < lock.timestampLocked) ? lock.timestampLocked : pastKeyholders[khIndex].timeLockedWith
+      }
+      // New KH to collection
+      else {
+        pastKeyholders.push({
+          name: lock.lockedBy === '' ? '<Self>' : lock.lockedBy,
+          timeLockedWith: (lock.status === 'UnlockedReal') ? (lock.timestampUnlocked - lock.timestampLocked) : 0,
+          numberOfLocks: 1,
+          abandonedLocks: isLockAbandoned ? 1 : 0,
+          lastTimeLocked: lock.timestampLocked
+        })
+      }
     }
-    // New KH to collection
     else {
-      pastKeyholders.push({
-        name: lock.lockedBy !== 'Shared lock no longer managed by keyholder' ? lock.lockedBy : 'Unknown (KH\'s Lock has since been deleted)',
-        timeLockedWith: (lock.status === 'UnlockedReal') ? (lock.timestampUnlocked - lock.timestampLocked) : 0,
-        numberOfLocks: 1,
-        abandonedLocks: isLockAbandoned ? 1 : 0
-      })
+      locksUnlockedGt3MonthsAgoCount += 1
+      locksUnlockedGt3MonthsAgoCumulative += (lock.timestampUnlocked - lock.timestampLocked)
     }
+  })
+
+  // Sort A < Z
+  pastKeyholders.sort((a, b) => {
+    var x = a.name;
+    var y = b.name;
+    if (x < y) { return -1; }
+    if (x > y) { return 1; }
+    return 0;
   })
 
   pastKeyholders.forEach((l, i) => {
@@ -41,6 +63,14 @@ export function lockeeHistory(user: TrackedChastiKeyUser, options: { showRating:
     fields.push({
       name: 'No past locks',
       value: `To see any additional stats a lock must have been active.`
+    })
+  }
+
+  // Add an additionl field for locksUnlockedGt3MonthsAgoCount
+  if (locksUnlockedGt3MonthsAgoCount > 0) {
+    fields.push({
+      name: '**Locks Unlocked > 3 Months ago**',
+      value: `# locks: \`${locksUnlockedGt3MonthsAgoCount}\`\n# Total time: \`${Utils.Date.calculateHumanTimeDDHHMM(locksUnlockedGt3MonthsAgoCumulative)}\``
     })
   }
 
@@ -77,14 +107,10 @@ export function lockeeHistory(user: TrackedChastiKeyUser, options: { showRating:
 function pastKHStatsEntry(index: number, kh: { name: string, timeLockedWith: number, numberOfLocks: number, abandonedLocks: number }, numberOfFields: number) {
   // Calculate human readible time for lock from seconds
   const combined = Utils.Date.calculateHumanTimeDDHHMM(kh.timeLockedWith)
-  var value = `\`\`\``
-  value += `Number of locks with:            ${kh.numberOfLocks}\n`
-  value += `Number of abandoned locks with:  ${kh.abandonedLocks}\n`
-  value += `Total time locked with*:         ${combined}`
-  value += `\`\`\``
+  var value = `# locks with: \`${kh.numberOfLocks}\`\n# abandoned with: \`${kh.abandonedLocks}\`\nTotal time*: \`${combined}\``
 
   return {
-    name: `Keyholder: \`${kh.name}\``,
+    name: `**Keyholder: \`${kh.name}\`**`,
     value: value
   }
 }
