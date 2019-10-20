@@ -1,11 +1,12 @@
 import { TrackedChastiKeyLock, TrackedChastiKeyKeyholderStatistics } from '../objects/chastikey';
 import { performance } from 'perf_hooks';
 import * as Utils from '../utils/';
+import { RouterStats } from '../utils/';
+import { options } from 'joi';
 
 export interface LockeeStats {
   averageLocked: number
   averageRating: number | string
-  cacheTimestamp: number | string
   locks: Array<TrackedChastiKeyLock>
   longestLock: number
   monthsLocked: number | string
@@ -14,11 +15,11 @@ export interface LockeeStats {
   username: string
   joined: string
   // Custom
-  _additional?: { timeSinceLast: number }
-  // Performance tracking
-  _performance?: { start: number, end: number }
+  additional?: { timeSinceLast: number }
   // For Discord/CK verified check
-  _isVerified?: boolean
+  isVerified?: boolean
+  // From router
+  routerStats: RouterStats
 }
 
 export interface TrackedSharedKeyholderStatistics {
@@ -62,7 +63,7 @@ const cardsEmoji = {
   Freeze: `<:1_:601169050294419476>`
 }
 
-export function lockeeStats(data: LockeeStats, options: { showRating: boolean }) {
+export function lockeeStats(data: LockeeStats, options: { showRating: boolean }, cachedTimestamp: number, ) {
   var fields: Array<{ name: string; value: string; }> = []
 
   data.locks.forEach((l, i) => {
@@ -74,7 +75,7 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean })
   if (fields.length === 0) {
     fields.push({
       name: 'No active locks',
-      value: `To see any additional stats a lock must be active.\n Time Since Last Lock \`${Utils.Date.calculateHumanTimeDDHHMM(data._additional.timeSinceLast)}\``
+      value: `To see any additional stats a lock must be active.\n Time Since Last Lock \`${Utils.Date.calculateHumanTimeDDHHMM(data.additional.timeSinceLast)}\``
     })
   }
 
@@ -89,13 +90,13 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean })
 
   const messageBlock = {
     embed: {
-      title: `${data._isVerified ? '<:verified:625628727820288000> ' : ''}\`${data.username}\` - ChastiKey Lockee Statistics - Active Stats`,
+      title: `${data.isVerified ? '<:verified:625628727820288000> ' : ''}\`${data.username}\` - ChastiKey Lockee Statistics - Active Stats`,
       description: description,
       color: 9125611,
-      timestamp: (data.cacheTimestamp) ? new Date((<number>data.cacheTimestamp) * 1000).toISOString() : '',
+      timestamp: cachedTimestamp,
       footer: {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: `(${Math.round(performance.now() - data._performance.start)}ms) Cached by Kiera`
+        text: `Runtime ${data.routerStats.performance}ms :: Requested By ${data.routerStats.user} :: Cached by Kiera`
       },
       // thumbnail: {
       //   url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
@@ -196,7 +197,7 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   }
 }
 
-export function keyholderStats(data: TrackedChastiKeyKeyholderStatistics, activeLocks: Array<TrackedKeyholderLockeesStatistics>, options: { showRating: boolean, showAverage: boolean, _isVerified: boolean }) {
+export function keyholderStats(data: TrackedChastiKeyKeyholderStatistics, activeLocks: Array<TrackedKeyholderLockeesStatistics>, cachedTimestamp: number, routerStats: RouterStats, options: { showRating: boolean, showAverage: boolean, isVerified: boolean }) {
   var dateJoinedDaysAgo = (data.joined !== '-')
     ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)`
     : ''
@@ -283,13 +284,13 @@ export function keyholderStats(data: TrackedChastiKeyKeyholderStatistics, active
 
   return {
     embed: {
-      title: `${options._isVerified ? '<:verified:625628727820288000> ' : ''}\`${data.username}\` - ChastiKey Keyholder Statistics`,
+      title: `${options.isVerified ? '<:verified:625628727820288000> ' : ''}\`${data.username}\` - ChastiKey Keyholder Statistics`,
       description: description,
       color: 9125611,
-      // timestamp: '',
+      timestamp: cachedTimestamp,
       footer: {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: 'Cached by Kiera'
+        text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
       },
       // thumbnail: {
       //   url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
@@ -298,7 +299,7 @@ export function keyholderStats(data: TrackedChastiKeyKeyholderStatistics, active
   }
 }
 
-export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatistics>, keyholderName: string) {
+export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatistics>, keyholderName: string, routerStats: RouterStats, cachedTimestamp: number) {
   const desc = data.length > 0
     ? `This query looks for lockees who share 1 or more keyholders with the given keyholder's name \`${keyholderName}\`. This will exclude anyone who has multiple fakes and this can be seen by the count showing differing numbers between Keyholder count and Active Locks.`
     : `This query looks for lockees who share 1 or more keyholders with the given keyholder's name \`${keyholderName}\`. This will exclude anyone who has multiple fakes and this can be seen by the count showing differing numbers between Keyholder count and Active Locks.\n\nAt present there are no lockees with other Keyholders under \`${keyholderName}\`.`
@@ -317,10 +318,10 @@ export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatisti
       title: `Lockees with Multiple Keyholders`,
       description: desc,
       color: 9125611,
-      // timestamp: (data.cacheTimestamp) ? new Date((<number>data.cacheTimestamp) * 1000).toISOString() : '',
+      timestamp: cachedTimestamp,
       footer: {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: 'Cached by Kiera'
+        text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
       },
       fields: data.map(lockee => {
         return {
@@ -332,7 +333,7 @@ export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatisti
   }
 }
 
-export function keyholderLockees(data: Array<TrackedKeyholderLockeesStatistics>, keyholderName: string) {
+export function keyholderLockees(data: Array<TrackedKeyholderLockeesStatistics>, keyholderName: string, routerStats: RouterStats, cachedTimestamp: number) {
   // Sort lockees list
   data.sort((a, b) => {
     var x = String(a._id).toLowerCase();
@@ -349,11 +350,11 @@ export function keyholderLockees(data: Array<TrackedKeyholderLockeesStatistics>,
       title: `Keyholder Lockees`,
       description: `These are all lockees \`(${lockeeNames.length})\` under keyholder \`${keyholderName}\` who are currently locked\n\`\`\`${lockeeNames.join(`, `)}\`\`\``,
       color: 9125611,
-      // timestamp: (data.cacheTimestamp) ? new Date((<number>data.cacheTimestamp) * 1000).toISOString() : '',
+      timestamp: cachedTimestamp,
       footer: {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: 'Cached by Kiera'
-      }
+        text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
+      },
     }
   }
 }

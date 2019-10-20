@@ -25,7 +25,7 @@ export class TrackedUser {
   // ChastiKey Specific //
   public ChastiKey: TrackedChastiKey
 
-  constructor(init: Partial<TrackedUser> | TrackedUser) {
+  constructor(init: Partial<TrackedUser>) {
     deepExtend(this, init);
     this.ChastiKey = new TrackedChastiKey(init !== null ? init.ChastiKey : {})
   }

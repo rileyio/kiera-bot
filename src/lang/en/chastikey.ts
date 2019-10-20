@@ -5,6 +5,7 @@ export const adminRefreshStats = `Manual stats refresh triggered..`
 // export const usernameNotSetByOwner = `The requested ChastiKey username does not exist -or- the owner of it has not set it with Kiera.`
 export const userNotFoundRemote =  `User could not be found on the ChastiKey server.`
 export const userNotFound = `User not found! The owner of the ChastiKey account must \`{{prefix}}ck verify\` in order to proceed with calling this command upon them.`
+export const userLookupErrorOrNotFound = `A ChastiKey user with that username could not be found!`
 export const keyholderOrAboveRoleRequired = `Calling this command for another user requires you hold the Keyholder or above role.`
 
 // Ticker
@@ -23,6 +24,7 @@ export const userRequestedNoStats = `This user has requested their stats remain 
 export const lockeeStatsMissing = `There seems to be an error finding this user's stats (\`{{user}}\`), here are some common issues:
   - Has not opened (ChastiKey) the App in >=2 week, if this is the case the app will need to be opened & wait ~15-30 minutes for the stats to refresh.
   - The user does not participate in locking.`
+export const lockeeStatsHistorical = `Check your DMs from Kiera for the detailed output.`
 
 // Verify
 export const verifyNotSuccessfulUsingReason = `{{reason}}`

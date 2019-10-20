@@ -2,6 +2,7 @@ import * as Middleware from '../../middleware';
 import { RouterRouted } from '../../router/router';
 import { ExportRoutes } from '../../router/routes-exporter';
 import { locktoberStats } from '../../embedded/chastikey-locktober';
+import { TrackedBotSetting } from '../../objects/setting';
 
 export const Routes = ExportRoutes(
   {
@@ -67,7 +68,11 @@ export async function statsLocktober(routed: RouterRouted) {
   // Are you (the person calling the command) apart of that list?
   const apartOfLocktober = stored.findIndex(lockee => lockee.discordID === routed.user.id) > -1
 
-  await routed.message.channel.send(locktoberStats({ participants: stored.length, verified: verifiedCount }, breakdownByKH, apartOfLocktober, true))
+  // Set cached timestamp for running locks
+  const cachedTimestampFromFetch = new TrackedBotSetting(await routed.bot.DB.get('settings', { key: 'bot.task.chastikey.api.fetch.ChastiKeyAPIRunningLocks' }))
+  const cachedTimestamp = cachedTimestampFromFetch.value
+
+  await routed.message.channel.send(locktoberStats({ participants: stored.length, verified: verifiedCount }, breakdownByKH, apartOfLocktober, true, routed.routerStats, cachedTimestamp))
   // Successful end
   return true
 }

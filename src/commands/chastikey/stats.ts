@@ -6,11 +6,11 @@ import { RouterRouted } from '../../utils';
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '../../embedded/chastikey-stats';
 import { TrackedUser } from '../../objects/user';
 import { TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyUserTotalLockedTime, TrackedChastiKeyKeyholderStatistics, TrackedChastiKey, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetch } from '../../objects/chastikey';
-import { performance } from 'perf_hooks';
 import { TrackedNotification } from '../../objects/notification';
 import { TextChannel, Message } from 'discord.js';
 import { ExportRoutes } from '../../router/routes-exporter';
 import { TrackedMessage } from '../../objects/message';
+import { TrackedBotSetting } from '../../objects/setting';
 
 export const Routes = ExportRoutes(
   {
@@ -96,11 +96,6 @@ export const Routes = ExportRoutes(
 )
 
 export async function getLockeeStats(routed: RouterRouted) {
-  var _performance = {
-    start: performance.now(),
-    end: undefined
-  }
-
   // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
   var ckUser = (routed.v.o.user)
     ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: new RegExp(`^${routed.v.o.user}$`, 'i') }))
@@ -109,7 +104,7 @@ export async function getLockeeStats(routed: RouterRouted) {
   // If the lookup is upon someone else with no data, return the standard response
   if (ckUser._noData === true && routed.v.o.user) {
     // Notify in chat what the issue could be
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeStatsMissing, { user: routed.v.o.user }))
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.userLookupErrorOrNotFound, { user: routed.v.o.user }))
     return true // Stop here
   }
 
@@ -133,42 +128,8 @@ export async function getLockeeStats(routed: RouterRouted) {
     ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: user.ChastiKey.username }))
   }
 
-  // Check to see if there are any notifications programmed for this user in the db
-  const userNotifyConfig = (routed.v.o.user && user._id && user.__notStored === undefined)
-    ? await routed.bot.DB.get<TrackedNotification>('notifications', {
-      authorID: routed.user.id,
-      serverID: routed.message.guild.id,
-      name: 'notify-ck-stats-lockee'
-    })
-    : null
-
-  // Get current locks by user store in the collection
-  const activeLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { username: ckUser.username })
-  // Get user from lockee data (Total locks, raitings, averages)
-  const userInLockeeStats = new TrackedChastiKeyLockee(await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { username: ckUser.username }))
-
-  // User has no data in the Lockee stats db
-  // Causes
-  //  - Have not opened the App in >=2 week
-  //  - Wrong Username set with Kiera
-  if (!userInLockeeStats._hasDBData) {
-    // Notify in chat what the issue could be
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeStatsMissing, { user: routed.v.o.user }))
-    return true // Stop here
-  }
-
-  // Get all API locks
-  const apiResponse: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}`, { json: true })
-  var apiLockeeLocks = apiResponse.body.locks
-
-  // Generate
-  var compiledLockeeStats = Utils.ChastiKey.compileLockeeStats(ckUser, userInLockeeStats, activeLocks, apiLockeeLocks)
-
-  // Fill in optionals
-  compiledLockeeStats._performance = _performance
-
   // If the user has display_in_stats === 2 then stop here
-  if (activeLocks.length > 0 ? activeLocks[0].displayInStats === 2 : false) {
+  if (!ckUser.displayInStats) {
     // Track incoming message and delete for the target user's privacy
     await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
       authorID: routed.message.author.id,
@@ -199,7 +160,42 @@ export async function getLockeeStats(routed: RouterRouted) {
     return true
   }
 
-  await routed.message.channel.send(lockeeStats(compiledLockeeStats, { showRating: user.ChastiKey.ticker.showStarRatingScore }))
+  // Check to see if there are any notifications programmed for this user in the db
+  const userNotifyConfig = (routed.v.o.user && user._id && user.__notStored === undefined)
+    ? await routed.bot.DB.get<TrackedNotification>('notifications', {
+      authorID: routed.user.id,
+      serverID: routed.message.guild.id,
+      name: 'notify-ck-stats-lockee'
+    })
+    : null
+
+  // Get current locks by user store in the collection
+  const cachedRunningLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { username: ckUser.username })
+  // Get user from lockee data (Total locks, raitings, averages)
+  const userInLockeeStats = new TrackedChastiKeyLockee(await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { username: ckUser.username }))
+
+  // User has no data in the Lockee stats db
+  // Causes
+  //  - Have not opened the App in >=2 week
+  //  - Wrong Username set with Kiera
+  if (!userInLockeeStats._hasDBData) {
+    // Notify in chat what the issue could be
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeStatsMissing, { user: routed.v.o.user }))
+    return true // Stop here
+  }
+
+  // Get all API locks
+  const apiResponse: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}`, { json: true })
+  var apiLockeeLocks = apiResponse.body.locks
+
+  // Generate
+  var compiledLockeeStats = Utils.ChastiKey.compileLockeeStats(ckUser, userInLockeeStats, cachedRunningLocks, apiLockeeLocks, routed.routerStats)
+
+  // Set cached timestamp for running locks
+  const cachedTimestampFromFetch = new TrackedBotSetting(await routed.bot.DB.get('settings', { key: 'bot.task.chastikey.api.fetch.ChastiKeyAPIRunningLocks' }))
+  const cachedTimestamp = cachedTimestampFromFetch.value
+
+  await routed.message.channel.send(lockeeStats(compiledLockeeStats, { showRating: user.ChastiKey.ticker.showStarRatingScore }, cachedTimestamp))
 
   // Notify the stats owner if that's applicable
   if (userNotifyConfig !== null) {
@@ -235,15 +231,47 @@ export async function getKeyholderStats(routed: RouterRouted) {
   // If the lookup is upon someone else with no data, return the standard response
   if (ckUser._noData === true && routed.v.o.user) {
     // Notify in chat what the issue could be
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.keyholderNoLocks))
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.userLookupErrorOrNotFound))
     return true // Stop here
+  }
+
+  // If the user has display_in_stats === 2 then stop here
+  if (!ckUser.displayInStats) {
+    // Track incoming message and delete for the target user's privacy
+    await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
+      authorID: routed.message.author.id,
+      id: routed.message.id,
+      messageCreatedAt: routed.message.createdAt.getTime(),
+      channelId: routed.message.channel.id,
+      // Flags
+      flagAutoDelete: true,
+      flagTrack: true,
+      // Deletion settings
+      storageKeepInChatFor: 5000
+    }))
+    // Notify in chat that the user has requested their stats not be public
+    const response = await routed.message.reply(Utils.sb(Utils.en.chastikey.userRequestedNoStats)) as Message
+    // Track incoming message and delete for the target user's privacy
+    await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
+      authorID: response.author.id,
+      id: response.id,
+      messageCreatedAt: response.createdAt.getTime(),
+      channelId: response.channel.id,
+      // Flags
+      flagAutoDelete: true,
+      flagTrack: true,
+      // Deletion settings
+      storageKeepInChatFor: 15000
+    }))
+    // Stop here
+    return true
   }
 
   // Get user's current ChastiKey username from users collection or by the override
   var user = (routed.v.o.user)
-    ? await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) || 123 }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] })
+    ? new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) || 123 }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] }))
     // Fallback: Create a mock record
-    || (<TrackedUser>{
+    || new TrackedUser(<any>{
       __notStored: true,
       ChastiKey: {
         username: ckUser.username,
@@ -254,9 +282,6 @@ export async function getKeyholderStats(routed: RouterRouted) {
       }
     })
     : await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
-
-  // Construct user
-  user = new TrackedUser(user)
 
   // If the lookup is not upon someone else & the requestor's account is not yet verified: stop and inform
   if (ckUser._noData && !routed.v.o.user && !user.ChastiKey.isVerified) {
@@ -292,7 +317,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
   }
 
   // Get lockees under a KH
-  const activeLocks = await routed.bot.DB.aggregate<{ _id: string, locks: Array<any>, count: number, uniqueCount: number }>('ck-running-locks', [
+  const cachedRunningLocks = await routed.bot.DB.aggregate<{ _id: string, locks: Array<any>, count: number, uniqueCount: number }>('ck-running-locks', [
     {
       $match: { lockedBy: ckUser.username }
     },
@@ -303,9 +328,9 @@ export async function getKeyholderStats(routed: RouterRouted) {
         locks: {
           $push: {
             fixed: { $toBool: '$fixed' },
-            timer_hidden: { $toBool: '$timer_hidden' },
-            lock_frozen_by_keyholder: { $toBool: '$lock_frozen_by_keyholder' },
-            lock_frozen_by_card: { $toBool: '$lock_frozen_by_card' },
+            timerHidden: { $toBool: '$timerHidden' },
+            lockFrozenByKeyholder: { $toBool: '$lockFrozenByKeyholder' },
+            lockFrozenByCard: { $toBool: '$lockFrozenByCard' },
             keyholder: '$lockedBy',
             noOfTurns: '$noOfTurns',
             secondsLocked: '$secondsLocked',
@@ -330,11 +355,15 @@ export async function getKeyholderStats(routed: RouterRouted) {
   // Init TrackedKeyholder
   keyholder = new TrackedChastiKeyKeyholderStatistics(keyholder)
 
+  // Set cached timestamp for running locks - this SHOULD be close or the same as the KH re-cached time
+  const cachedTimestampFromFetch = new TrackedBotSetting(await routed.bot.DB.get('settings', { key: 'bot.task.chastikey.api.fetch.ChastiKeyAPIRunningLocks' }))
+  const cachedTimestamp = cachedTimestampFromFetch.value
+
   // Send stats
-  await routed.message.channel.send(keyholderStats(keyholder, activeLocks, {
+  await routed.message.channel.send(keyholderStats(keyholder, cachedRunningLocks, cachedTimestamp, routed.routerStats, {
     showRating: user.ChastiKey.ticker.showStarRatingScore,
     showAverage: user.ChastiKey.preferences.keyholder.showAverage,
-    _isVerified: ckUser.isVerified()
+    isVerified: ckUser.isVerified()
   }))
 
   // Notify the stats owner if that's applicable
@@ -391,7 +420,11 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
     { $sort: { count: -1 } }
   ])
 
-  await routed.message.reply(sharedKeyholdersStats(activeLocks, routed.v.o.user))
+  // Set cached timestamp for running locks
+  const cachedTimestampFromFetch = new TrackedBotSetting(await routed.bot.DB.get('settings', { key: 'bot.task.chastikey.api.fetch.ChastiKeyAPIRunningLocks' }))
+  const cachedTimestamp = cachedTimestampFromFetch.value
+
+  await routed.message.reply(sharedKeyholdersStats(activeLocks, routed.v.o.user, routed.routerStats, cachedTimestamp))
 
   // Successful end
   return true
@@ -414,9 +447,9 @@ export async function getKeyholderLockees(routed: RouterRouted) {
         locks: {
           $push: {
             fixed: { $toBool: '$fixed' },
-            timer_hidden: { $toBool: '$timer_hidden' },
-            lock_frozen_by_keyholder: { $toBool: '$lock_frozen_by_keyholder' },
-            lock_frozen_by_card: { $toBool: '$lock_frozen_by_card' },
+            timerHidden: { $toBool: '$timerHidden' },
+            lockFrozenByKeyholder: { $toBool: '$lockFrozenByKeyholder' },
+            lockFrozenByCard: { $toBool: '$lockFrozenByCard' },
             keyholder: '$lockedBy',
           }
         },
@@ -426,7 +459,12 @@ export async function getKeyholderLockees(routed: RouterRouted) {
     { $sort: { count: -1 } }
   ])
 
-  await routed.message.reply(keyholderLockees(activeLocks, routed.v.o.user))
+  // Set cached timestamp for running locks
+  const cachedTimestampFromFetch = new TrackedBotSetting(await routed.bot.DB.get('settings', { key: 'bot.task.chastikey.api.fetch.ChastiKeyAPIRunningLocks' }))
+  const cachedTimestamp = cachedTimestampFromFetch.value
+
+
+  await routed.message.reply(keyholderLockees(activeLocks, routed.v.o.user, routed.routerStats, cachedTimestamp))
 
   // Successful end
   return true

@@ -1,4 +1,6 @@
-export function locktoberStats(participation: { participants: number, verified: number }, khBreakdown: Array<{ _id: string, count: number, uniqueCount: number }>, isUserApart: boolean, isUserVerified: boolean) {
+import { RouterStats } from '../utils'
+
+export function locktoberStats(participation: { participants: number, verified: number }, khBreakdown: Array<{ _id: string, count: number, uniqueCount: number }>, isUserApart: boolean, isUserVerified: boolean, routerStats: RouterStats, cachedTimestamp: number) {
   // Variables for later
   var longestKHName = 9
   var largestCount = 5
@@ -30,7 +32,12 @@ export function locktoberStats(participation: { participants: number, verified: 
     embed: {
       title: `Locktober Stats`,
       description: description,
-      color: 14553782
+      color: 14553782,
+      timestamp: cachedTimestamp,
+      footer: {
+        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+        text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
+      },
     }
   }
 }

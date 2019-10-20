@@ -20,6 +20,7 @@ export class TrackedChastiKey {
   public isVerifiedInData: boolean = false
   public verificationCode: string = ''
   public verificationCodeRequestedAt: number = 0
+  public displayInStats: boolean = false
 
   constructor(init: Partial<TrackedChastiKey>) {
     Object.assign(this, init);
@@ -45,8 +46,12 @@ export class TrackedChastiKeyTicker {
 }
 
 export class TrackedChastiKeyPreferences {
-  keyholder: { showAverage: boolean } = {
+  public keyholder: { showAverage: boolean } = {
     showAverage: false
+  }
+  public lockee: { allowPublicHistory: boolean, limitMonths: 3 | 6 | 12 } = {
+    allowPublicHistory: false,
+    limitMonths: 3
   }
 
   constructor(init: Partial<TrackedChastiKeyPreferences>) {
@@ -168,7 +173,6 @@ export class TrackedChastiKeyLock {
   public regularity: number
   public multipleGreensRequired: number
   public timestampLocked: number
-  public timestampNow: number
   public secondsLocked: number
   public fixed: number
   public cumulative: number
@@ -188,24 +192,6 @@ export class TrackedChastiKeyLock {
   public redCards: number
   public resetCards: number
   public yellowCards: number
-}
-
-export class ProposedChastiKeyUserResponse {
-  public discordID: string           // Discord ID
-  // Would like to get this if possible when the lookup by discordID 
-  // happens, would help with eliminating the need for setting a username
-  public username: string            // ChastiKey Username
-  public status: number              // Status code (200, 400)
-  public message: string             // Status message (Success, $error)
-  public timestampGenerated: number
-  public locks: Array<{            /* Array Keys: */
-    lockedBy: string                 // Keyholder
-    combination: number              // Combination
-    lockID: number                   // Lock ID
-    lockName: number | string        // Lock Name
-    timestampLocked: number          // When the lock started
-    timestampUnlocked: number        // When the lock unlocked
-  }>
 }
 
 /**

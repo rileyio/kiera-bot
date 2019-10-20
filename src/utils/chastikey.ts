@@ -4,6 +4,7 @@ import * as Utils from '.'
 import { Transform, Stream } from 'stream';
 import { TrackedChastiKey, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetchLock, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '../objects/chastikey';
 import { LockeeStats } from '../embedded/chastikey-stats';
+import { RouterStats } from '../router/router';
 
 export namespace ChastiKey {
   export function generateTickerURL(ck: TrackedChastiKey, overrideType?: number) {
@@ -30,7 +31,7 @@ export namespace ChastiKey {
     return stream
   }
 
-  export function compileLockeeStats(ckUser: TrackedChastiKeyUser, userInLockeeStats: TrackedChastiKeyLockee, cachedActiveLocks: Array<TrackedChastiKeyLock>, locks: Array<TrackedChastiKeyUserAPIFetchLock>): LockeeStats {
+  export function compileLockeeStats(ckUser: TrackedChastiKeyUser, userInLockeeStats: TrackedChastiKeyLockee, cachedActiveLocks: Array<TrackedChastiKeyLock>, locks: Array<TrackedChastiKeyUserAPIFetchLock>, routerStats: RouterStats): LockeeStats {
     // Variables - Defaults (unless changed later)
     var calculatedCumulative = 0
     var calculatedTimeSinceLastLock = 0
@@ -39,7 +40,8 @@ export namespace ChastiKey {
 
     try {
       // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
-      allLockeesLocksTransformed = allLockeesLocks.map(d => {
+      allLockeesLocks.map(d => {
+        const lockIsAbandoned = d.lockDeleted === 1 && d.timestampUnlocked === 0
         // Remove unlocked time if the lock status is: Locked, Deleted and has a Completion timestamp
         if (d.timestampUnlocked > 0 && d.status === 'Locked' && d.lockDeleted === 1) {
           // console.log('set to:', 0)
@@ -58,8 +60,11 @@ export namespace ChastiKey {
             : calculatedTimeSinceLastLock
         }
 
-        // Transform data a little
-        return { start: d.timestampLocked, end: d.timestampUnlocked }
+        // Only include Non-Abandoned locks in the calculation
+        if (!lockIsAbandoned) {
+          // Transform data a little
+          allLockeesLocksTransformed.push({ start: d.timestampLocked, end: d.timestampUnlocked })
+        }
       })
 
       // Calculate cumulative using algorithm
@@ -79,7 +84,6 @@ export namespace ChastiKey {
     return {
       averageLocked: (userInLockeeStats) ? userInLockeeStats.averageTimeLockedInSeconds : 0,
       averageRating: (userInLockeeStats) ? userInLockeeStats.averageRating : '-',
-      cacheTimestamp: (cachedActiveLocks.length > 0) ? cachedActiveLocks[0].timestampNow : '',
       locks: cachedActiveLocks,
       longestLock: (userInLockeeStats) ? userInLockeeStats.longestCompletedLockInSeconds : 0,
       monthsLocked: (calculatedCumulative),
@@ -87,8 +91,9 @@ export namespace ChastiKey {
       totalNoOfCompletedLocks: (userInLockeeStats) ? userInLockeeStats.totalNoOfCompletedLocks : 0,
       username: ckUser.username,
       joined: (userInLockeeStats) ? userInLockeeStats.joined : '-',
-      _additional: { timeSinceLast: (calculatedTimeSinceLastLock > 0) ? ((Date.now() / 1000) - calculatedTimeSinceLastLock) : 0 },
-      _isVerified: ckUser.isVerified()
+      additional: { timeSinceLast: (calculatedTimeSinceLastLock > 0) ? ((Date.now() / 1000) - calculatedTimeSinceLastLock) : 0 },
+      isVerified: ckUser.isVerified(),
+      routerStats: routerStats
     }
   }
 }

@@ -5,13 +5,35 @@ import { Message, User, TextChannel, DMChannel } from 'discord.js';
 import { Bot } from '..';
 import { TrackedMessage } from '../objects/message';
 import { CommandPermission } from '../objects/permission';
-import { TrackedAvailableObject } from '../objects/available-objects';
 import { performance } from 'perf_hooks';
 import { fallbackHelp } from '../embedded/fallback-help';
 import { RouteConfigurationCategory } from './route-categories';
 import { RouteActionUserTarget, ProcessedPermissions } from './route-permissions';
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
+
+export class RouterStats {
+  private _performanceStart: number = performance.now()
+  private _discordUser: User
+
+  public get performance(): number {
+    return Math.round(performance.now() - this._performanceStart)
+  }
+
+  /**
+   * Example: Emma#1366
+   * @readonly
+   * @type {string}
+   * @memberof RouterStats
+   */
+  public get user() : string {
+    return `${this._discordUser.username}#${this._discordUser.discriminator}`
+  }
+
+  constructor(author: User) {
+    this._discordUser = author
+  }
+}
 
 /**
  * Discord Command Route
@@ -152,7 +174,6 @@ export class Router {
       return; // Hard block
     }
 
-
     // Lookup tracked message in db
     var storedMessage = await this.bot.DB.get<TrackedMessage>('messages', { id: message.id })
 
@@ -225,7 +246,8 @@ export class Router {
    * @memberof Router
    */
   public async routeMessage(message: Message) {
-    const runtimeStart = performance.now()
+    // const runtimeStart = performance.now()
+    const routerStats = new RouterStats(message.author)
     // Block my own messages
     if (message.author.id === this.bot.client.user.id) {
       // Track my own messages when they are seen
@@ -240,10 +262,6 @@ export class Router {
     // Messages incoming as DMs
     if (message.channel.type === 'dm') {
       this.bot.BotMonitor.Stats.increment('dms-received')
-
-      // (as of 2.9.0) Hard Stop
-      // message.reply('As of `2.9.0` commands are restricted to servers where Kiera is present!')
-      // return;
     }
 
     const containsPrefix = message.content.startsWith(prefix)
@@ -296,7 +314,7 @@ export class Router {
           details: message.content,
           guild: { id: message.guild.id, name: message.guild.name, channel: (<TextChannel>message.channel).name },
           error: 'Failed to process command',
-          runtime: Math.round(performance.now() - runtimeStart),
+          runtime: routerStats.performance,
           owner: message.author.id,
           successful: false,
           type: 'bot.command',
@@ -318,12 +336,11 @@ export class Router {
         route: route,
         type: 'message',
         user: message.author,
-        runtimeStart: runtimeStart
+        routerStats: routerStats
       })
 
       // Process Permissions
       routed.permissions = await this.processPermissions(routed)
-
       this.bot.DEBUG_MSG_COMMAND.log('Router -> Permissions Check Results:', routed.permissions)
 
       if (!routed.permissions.pass) {
@@ -339,7 +356,7 @@ export class Router {
             details: routed.message.content,
             guild: { id: 'DM', name: 'DM', channel: 'DM' },
             error: 'Command disabled by permission in this channel',
-            runtime: Math.round(performance.now() - runtimeStart),
+            runtime: routerStats.performance,
             owner: routed.message.author.id,
             successful: false,
             type: 'bot.command',
@@ -353,7 +370,7 @@ export class Router {
             details: routed.message.content,
             guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
             error: 'Command disabled by permissions',
-            runtime: Math.round(performance.now() - runtimeStart),
+            runtime: routerStats.performance,
             owner: routed.message.author.id,
             successful: false,
             type: 'bot.command',
@@ -398,7 +415,7 @@ export class Router {
               ? { id: 'dm', name: 'dm', channel: 'dm' }
               : { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
             owner: routed.message.author.id,
-            runtime: Math.round(performance.now() - runtimeStart),
+            runtime: routerStats.performance,
             successful: true,
             type: 'bot.command',
             where: 'Discord'
@@ -413,7 +430,7 @@ export class Router {
             details: routed.message.content,
             guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
             error: 'Command failed or returned false inside controller',
-            runtime: Math.round(performance.now() - runtimeStart),
+            runtime: routerStats.performance,
             owner: routed.message.author.id,
             successful: false,
             type: 'bot.command',
@@ -525,7 +542,7 @@ export class RouterRouted {
     reaction: string
   }
   public route: MessageRoute
-  public runtimeStart: number
+  public routerStats: RouterStats
   public state: 'added' | 'removed'
   public trackedMessage: TrackedMessage
   public type: 'message' | 'reaction'
@@ -550,6 +567,7 @@ export class RouterRouted {
       }
       : undefined
     this.route = init.route
+    this.routerStats = init.routerStats
     this.state = init.state
     this.trackedMessage = init.trackedMessage
     this.type = init.type
