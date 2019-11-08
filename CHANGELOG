@@ -1,3 +1,6 @@
+4.9.1
+- Fixed: CK KH lookup case sensitivity issue in name supplied.
+
 4.9.0
 - Re-Enabling: Lockee history commands but only in DMs for now.
 - Fixed/Added: More detail to ChastiKey command outputs with regards to requestor & cached timestamp of data.

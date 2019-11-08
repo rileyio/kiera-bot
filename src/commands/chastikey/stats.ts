@@ -225,7 +225,7 @@ export async function getLockeeStats(routed: RouterRouted) {
 export async function getKeyholderStats(routed: RouterRouted) {
   // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
   var ckUser = (routed.v.o.user)
-    ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: new RegExp(`^${routed.v.o.user}`) }))
+    ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: new RegExp(`^${routed.v.o.user}$`, 'i') }))
     : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: routed.user.id }))
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -462,7 +462,6 @@ export async function getKeyholderLockees(routed: RouterRouted) {
   // Set cached timestamp for running locks
   const cachedTimestampFromFetch = new TrackedBotSetting(await routed.bot.DB.get('settings', { key: 'bot.task.chastikey.api.fetch.ChastiKeyAPIRunningLocks' }))
   const cachedTimestamp = cachedTimestampFromFetch.value
-
 
   await routed.message.reply(keyholderLockees(activeLocks, routed.v.o.user, routed.routerStats, cachedTimestamp))
 
