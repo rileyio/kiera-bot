@@ -1,6 +1,6 @@
-import { WebRoute } from './web-router';
-import * as WebController from './controllers';
-import * as Middleware from './middleware/web-middleware';
+import { WebRoute } from './web-router'
+import * as WebController from './controllers'
+import * as Middleware from './middleware/web-middleware'
 
 export const routes: Array<WebRoute> = [
   /*
@@ -11,10 +11,8 @@ export const routes: Array<WebRoute> = [
     method: 'post',
     name: 'audit-log',
     path: '/api/audit',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
-  },  
+    middleware: [Middleware.isAuthenticated]
+  },
   /*
    * Available
    */
@@ -23,27 +21,21 @@ export const routes: Array<WebRoute> = [
     method: 'post',
     name: 'available-notifications',
     path: '/api/available/notifications',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
   {
     controller: WebController.Available.settings,
     method: 'post',
     name: 'available-settings',
     path: '/api/available/settings',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
   {
     controller: WebController.Available.userGeneric,
     method: 'post',
     name: 'available-user',
     path: '/api/available/user',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
   /*
    * Decisions
@@ -53,45 +45,35 @@ export const routes: Array<WebRoute> = [
     method: 'post',
     name: 'decisions-get-all',
     path: '/api/decisions',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
   {
     controller: WebController.Decisions.deleteOne,
     method: 'delete',
     name: 'decision-delete',
     path: '/api/decision/delete',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
   {
     controller: WebController.Decisions.decisionOutcomeUpdate,
     method: 'post',
     name: 'decision-outcome-update',
     path: '/api/decision/outcome/update',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
   {
     controller: WebController.Decisions.deleteDecisionOutcome,
     method: 'delete',
     name: 'decision-outcome-delete',
     path: '/api/decision/outcome/delete',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
   {
     controller: WebController.Decisions.addDecisionOutcome,
     method: 'post',
     name: 'decision-outcome-add',
     path: '/api/decision/outcome/add',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
   /*
    * Lists
@@ -110,18 +92,14 @@ export const routes: Array<WebRoute> = [
     method: 'post',
     name: 'notifications-get',
     path: '/api/notifications',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
   {
     controller: WebController.Notifications.updateNotification,
     method: 'post',
     name: 'notifications-update',
     path: '/api/notification/update',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
   /*
    * Permissions
@@ -131,36 +109,28 @@ export const routes: Array<WebRoute> = [
     method: 'post',
     name: 'permissions-get-all',
     path: '/api/permissions',
-    middleware: [
-      Middleware.isAuthenticatedOwner
-    ]
+    middleware: [Middleware.isAuthenticatedOwner]
   },
   {
     controller: WebController.Permissions.updateGlobal,
     method: 'post',
     name: 'permission-update-global',
     path: '/api/permission/global/update',
-    middleware: [
-      Middleware.isAuthenticatedOwner
-    ]
+    middleware: [Middleware.isAuthenticatedOwner]
   },
   {
     controller: WebController.Permissions.deleteGlobal,
     method: 'delete',
     name: 'permission-delete-global',
     path: '/api/permission/global/delete',
-    middleware: [
-      Middleware.isAuthenticatedOwner
-    ]
+    middleware: [Middleware.isAuthenticatedOwner]
   },
   {
     controller: WebController.Permissions.updateAllowed,
     method: 'post',
     name: 'permission-update-allowed',
     path: '/api/permission/allowed/update',
-    middleware: [
-      Middleware.isAuthenticatedOwner
-    ]
+    middleware: [Middleware.isAuthenticatedOwner]
   },
   /*
    * Server Settings
@@ -170,18 +140,14 @@ export const routes: Array<WebRoute> = [
     method: 'post',
     name: 'server-get-settings',
     path: '/api/server/settings',
-    middleware: [
-      Middleware.isAuthenticatedOwner
-    ]
+    middleware: [Middleware.isAuthenticatedOwner]
   },
   {
     controller: WebController.Server.updateSettings,
     method: 'post',
     name: 'server-update-setting',
     path: '/api/server/setting/update',
-    middleware: [
-      Middleware.isAuthenticatedOwner
-    ]
+    middleware: [Middleware.isAuthenticatedOwner]
   },
   /*
    * Stats
@@ -200,26 +166,43 @@ export const routes: Array<WebRoute> = [
     method: 'post',
     name: 'user-get',
     path: '/api/user',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
   {
     controller: WebController.User.oauth,
     method: 'post',
     name: 'user-oauth',
     path: '/api/oauth',
-    middleware: [
-      Middleware.validAuthKey
-    ]
+    middleware: [Middleware.validAuthKey]
   },
   {
     controller: WebController.User.update,
     method: 'post',
     name: 'user-update',
     path: '/api/user/update',
-    middleware: [
-      Middleware.isAuthenticated
-    ]
+    middleware: [Middleware.isAuthenticated]
   },
+  /*
+   * CK Specific
+   */
+  {
+    controller: WebController.ChastiKey.authTest,
+    method: 'post',
+    name: 'ck-3rd-auth-test',
+    path: '/api/ck/auth',
+  },
+  {
+    controller: WebController.ChastiKey.khData,
+    method: 'get',
+    name: 'ck-3rd-kh-view',
+    path: '/api/ck/keyholder',
+    middleware: [Middleware.validCKAuth]
+  },
+  {
+    controller: WebController.ChastiKey.lockeeData,
+    method: 'get',
+    name: 'ck-3rd-lockee-view',
+    path: '/api/ck/lockee',
+    middleware: [Middleware.validCKAuth]
+  }
 ]

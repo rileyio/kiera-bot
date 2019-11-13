@@ -1,6 +1,6 @@
 {
   "name": "kiera-bot",
-  "version": "4.9.1",
+  "version": "4.10.0",
   "main": "app/index.js",
   "repository": "https://github.com/rileyio/kiera-bot.git",
   "author": "Emma (RileyIO)",
@@ -31,7 +31,8 @@
     ]
   },
   "prettier": {
-    "singleQuote": true
+    "singleQuote": true,
+    "semi": false
   },
   "dependencies": {
     "@hapi/joi": "^15.0.3",

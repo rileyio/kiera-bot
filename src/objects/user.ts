@@ -1,7 +1,7 @@
-import { TrackedChastiKey } from './chastikey';
 import * as deepExtend from 'deep-extend';
 import * as jwt from 'jsonwebtoken';
 import { ObjectId } from 'bson';
+import { TrackedChastiKey } from './chastikey';
 import { TrackedServer } from './server';
 
 export class TrackedUser {

@@ -1,4 +1,5 @@
-import { ObjectID } from 'bson';
+import * as jwt from 'jsonwebtoken'
+import { ObjectID } from 'bson'
 
 export enum ChastiKeyTickerType {
   None,
@@ -21,17 +22,24 @@ export class TrackedChastiKey {
   public verificationCode: string = ''
   public verificationCodeRequestedAt: number = 0
   public displayInStats: boolean = false
+  // For API Auth on other projects
+  public extSession: string = ''
 
   constructor(init: Partial<TrackedChastiKey>) {
-    Object.assign(this, init);
+    Object.assign(this, init)
+  }
+
+  public extSessionCreate(id: string, username: string) {
+    // If valid & updated, generate a token for use with Kiera
+    this.extSession = jwt.sign({ id: id, username: username }, process.env.BOT_SECRET)
   }
 }
 
 /**
  * Data specific to the KeyTicker
- * 
+ *
  * Username should be fetched from the User's TrackedChastiKey data
- * 
+ *
  * @export
  * @class TrackedChastiKeyTicker
  */
@@ -41,7 +49,7 @@ export class TrackedChastiKeyTicker {
   public date: string
 
   constructor(init: Partial<TrackedChastiKey>) {
-    Object.assign(this, init);
+    Object.assign(this, init)
   }
 }
 
@@ -49,19 +57,19 @@ export class TrackedChastiKeyPreferences {
   public keyholder: { showAverage: boolean } = {
     showAverage: false
   }
-  public lockee: { allowPublicHistory: boolean, limitMonths: 3 | 6 | 12 } = {
+  public lockee: { allowPublicHistory: boolean; limitMonths: 3 | 6 | 12 } = {
     allowPublicHistory: false,
     limitMonths: 3
   }
 
   constructor(init: Partial<TrackedChastiKeyPreferences>) {
-    Object.assign(this, init);
+    Object.assign(this, init)
   }
 }
 
 /**
  * ChastiKey User Record Data
- * 
+ *
  * Stored In DB Collection: `ck-users`
  *
  * Found at: https://chastikey.com/json/v1.0/kiera_user_data.json
@@ -82,7 +90,7 @@ export class TrackedChastiKeyUser {
   public timestampLastActive: number
 
   constructor(init: Partial<TrackedChastiKeyUser>) {
-    Object.assign(this, init);
+    Object.assign(this, init)
     this._noData = !init ? true : false
     // Transform Username if needed to a string
     this.username = String(this.username)
@@ -97,9 +105,9 @@ export class TrackedChastiKeyUser {
 
 /**
  * ChastiKey cached user stats
- * 
+ *
  * Stored In DB Collection: `ck-lockees`
- * 
+ *
  * Found at: https://chastikey.com/api/kiera/lockees_data.json
  * @export
  * @class TrackedChastiKeyLockee
@@ -119,7 +127,7 @@ export class TrackedChastiKeyLockee {
 
   constructor(init: Partial<TrackedChastiKeyLockee>) {
     this._hasDBData = init === null ? false : true
-    Object.assign(this, init !== null ? init : {});
+    Object.assign(this, init !== null ? init : {})
   }
 
   /**
@@ -135,9 +143,9 @@ export class TrackedChastiKeyLockee {
 
 /**
  * ChastiKey cached running lock
- * 
+ *
  * Stored In DB Collection: `ck-running-locks`
- * 
+ *
  * Found at: https://chastikey.com/api/kiera/running_locks.json
  * @export
  * @class TrackedChastiKeyLockee
@@ -196,7 +204,7 @@ export class TrackedChastiKeyLock {
 
 /**
  * Lookup for basic past lock details & combinations
- * 
+ *
  * Found at: http://chastikey.com/api/kiera/combinations.php?discord_id=146439529824256000
  * @export
  * @class TrackedChastiKeyCombinationsAPIFetch
@@ -217,7 +225,7 @@ export class TrackedChastiKeyCombinationsAPIFetch {
 
 /**
  * Standard Realtime User lookup
- * 
+ *
  * Found at: https://chastikey.com/api/v0.3/listlocks2.php?username=Emma&showdeleted=0&bot=Kiera
  * @export
  * @class TrackedChastiKeyUserAPIFetch
@@ -329,7 +337,6 @@ export class TrackedChastiKeyKeyholderStatistics {
    */
   public dateFirstKeyheld: string
 
-
   constructor(init: Partial<TrackedChastiKeyKeyholderStatistics>) {
     Object.assign(this, init)
   }
@@ -368,7 +375,7 @@ export class ChastiKeyVerifyResponse {
   public isVerified: boolean = false
 
   constructor(init: Partial<ChastiKeyVerifyResponse>) {
-    Object.assign(this, init);
+    Object.assign(this, init)
   }
 }
 
@@ -381,6 +388,6 @@ export class ChastiKeyVerifyDiscordID {
   public verified: boolean = false
 
   constructor(init: Partial<ChastiKeyVerifyDiscordID>) {
-    Object.assign(this, init);
+    Object.assign(this, init)
   }
 }

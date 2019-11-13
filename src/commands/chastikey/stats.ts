@@ -307,7 +307,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
   // Generate regex for username to ignore case
   const usernameRegex = new RegExp(`^${ckUser.username}$`, 'i')
 
-  // Get current locks by user store in the collection
+  // Get KH from KH data
   var keyholder = await routed.bot.DB.get<TrackedChastiKeyKeyholderStatistics>('ck-keyholders', { username: usernameRegex })
 
   // If there is no data in the kh dataset inform the user

@@ -1,3 +1,6 @@
+4.10.0
+- Added: CK Ext code - used for the ChastiKey-Web app project.
+
 4.9.1
 - Fixed: CK KH lookup case sensitivity issue in name supplied.
 
