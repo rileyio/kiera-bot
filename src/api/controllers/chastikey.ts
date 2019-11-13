@@ -76,7 +76,7 @@ export namespace ChastiKey {
     // Get lockees under a KH
     const cachedRunningLocks = await routed.Bot.DB.aggregate<{ _id: string; locks: Array<any>; count: number; uniqueCount: number }>('ck-running-locks', [
       {
-        $match: { lockedBy: 'MistressAlyona' }
+        $match: { lockedBy: usernameRegex }
       },
       {
         $group: {
@@ -117,7 +117,5 @@ export namespace ChastiKey {
    * @param {WebRouted} routed
    * @returns
    */
-  export async function lockeeData(routed: WebRouted) {
-    
-  }
+  export async function lockeeData(routed: WebRouted) {}
 }
