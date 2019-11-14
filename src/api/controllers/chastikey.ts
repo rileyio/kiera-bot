@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken'
 import * as errors from 'restify-errors'
 import { WebRouted } from '../web-router'
-import { TrackedChastiKeyUser, TrackedChastiKeyKeyholderStatistics } from '../../objects/chastikey'
+import { TrackedChastiKeyUser, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '../../objects/chastikey'
 import { TrackedUser } from '../../objects/user'
 
 export namespace ChastiKey {
@@ -117,5 +117,84 @@ export namespace ChastiKey {
    * @param {WebRouted} routed
    * @returns
    */
-  export async function lockeeData(routed: WebRouted) {}
+  export async function lockeeData(routed: WebRouted) {
+    const session = routed.req.header('session')
+
+    // Get user's current ChastiKey username from users collection or by the override
+    var user = new TrackedUser(await routed.Bot.DB.get<TrackedUser>('users', { 'ChastiKey.extSession': session }))
+
+    // If user does not exist, fail
+    if (!user) {
+      return routed.next(new errors.BadRequestError())
+    }
+
+    // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
+    var ckUser = new TrackedChastiKeyUser(await routed.Bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: user.id }))
+
+    // If the lookup is upon someone else with no data, return the standard response
+    if (ckUser._noData === true) {
+      return routed.next(new errors.BadRequestError())
+    }
+
+    // If the user has display_in_stats === 2 then stop here
+    if (!ckUser.displayInStats) {
+      return routed.next(new errors.BadRequestError())
+    }
+
+    // Get Lockee data
+    const ckLockee = await routed.Bot.DB.get<TrackedChastiKeyLockee>(
+      'ck-lockees',
+      { discordID: ckUser.discordID },
+      {
+        _id: 0,
+        username: 1,
+        joined: 1,
+        timestampLastActive: 1,
+        secondsLockedInCurrentLock: 1,
+        averageTimeLockedInSeconds: 1,
+        longestCompletedLockInSeconds: 1,
+        totalNoOfCompletedLocks: 1,
+        averageRating: 1,
+        noOfRatings: 1,
+        discordID: 1
+      }
+    )
+    const ckRunningLocks = await routed.Bot.DB.getMultiple<TrackedChastiKeyLock>(
+      'ck-running-locks',
+      { discordID: ckUser.discordID },
+      {
+        _id: 0,
+        sharedLockID: 1,
+        username: 1,
+        discordID: 1,
+        regularity: 1,
+        multipleGreensRequired: 1,
+        timestampLocked: 1,
+        secondsLocked: 1,
+        fixed: 1,
+        cumulative: 1,
+        cardInfoHidden: 1,
+        timerHidden: 1,
+        noOfTurns: 1,
+        lockFrozenByCard: 1,
+        lockFrozenByKeyholder: 1,
+        discardPile: 1,
+        lockedBy: 1,
+        displayInStats: 1,
+        sharedLockName: 1,
+        doubleUpCards: 1,
+        freezeCards: 1,
+        greenCards: 1,
+        redCards: 1,
+        resetCards: 1,
+        yellowCards: 1
+      }
+    )
+
+    return routed.res.send({
+      user: ckUser,
+      lockee: ckLockee,
+      locks: ckRunningLocks
+    })
+  }
 }
