@@ -1,3 +1,8 @@
+4.10.2
+- Updated: Kiera+ChastiKey data
+- Updated: `!ck ext session` command to `!ck web`
+- Updated: `!ck update` to improve performance
+
 4.10.1
 - Added: CK Ext Lockee endpoint.
 

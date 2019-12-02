@@ -189,7 +189,7 @@ export const routes: Array<WebRoute> = [
     controller: WebController.ChastiKey.authTest,
     method: 'post',
     name: 'ck-3rd-auth-test',
-    path: '/api/ck/auth',
+    path: '/api/ck/auth'
   },
   {
     controller: WebController.ChastiKey.khData,
@@ -204,5 +204,11 @@ export const routes: Array<WebRoute> = [
     name: 'ck-3rd-lockee-view',
     path: '/api/ck/lockee',
     middleware: [Middleware.validCKAuth]
+  },
+  {
+    controller: WebController.ChastiKeyWebStats.locks,
+    method: 'get',
+    name: 'ck-stats-locks',
+    path: '/api/ck/stats/locks'
   }
 ]

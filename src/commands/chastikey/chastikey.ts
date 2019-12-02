@@ -85,10 +85,25 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'ChastiKey',
     commandTarget: 'none',
-    controller: extSession,
+    controller: extSessionOld,
     example: '{{prefix}}ck ext session',
     name: 'ck-ext-session',
     validate: '/ck:string/ext:string/session:string',
+    middleware: [Middleware.isCKVerified],
+    permissions: {
+      defaultEnabled: true,
+      serverOnly: false,
+      restricted: true
+    }
+  },
+  {
+    type: 'message',
+    category: 'ChastiKey',
+    commandTarget: 'none',
+    controller: extSession,
+    example: '{{prefix}}ck web',
+    name: 'ck-ext-session',
+    validate: '/ck:string/web:string',
     middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: true,
@@ -465,10 +480,10 @@ export async function update(routed: RouterRouted) {
 
   // Calculate cumulative time locked
   try {
-    const userPastLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?discord_id=${user.id}&showdeleted=1&bot=Kiera`, { json: true })
-    const userCurrentLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?discord_id=${user.id}&showdeleted=0&bot=Kiera`, { json: true })
+    // const userPastLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?discord_id=${user.id}bot=Kiera`, { json: true })
+    // const userCurrentLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?discord_id=${user.id}&showdeleted=0&bot=Kiera`, { json: true })
     // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
-    const allLockeesLocks = [].concat(userPastLocksFromAPIresp.body.locks || [], userCurrentLocksFromAPIresp.body.locks || []).map(d => {
+    const allLockeesLocks = [].concat(fromAPI || []).map(d => {
       // Insert current date on existing locked locks that are not deleted
       // console.log(d.timestampUnlocked === 0 && d.status === 'Locked' && d.lockDeleted === 0, d.timestampLocked)
 
@@ -822,6 +837,10 @@ function roundedDisplay(perc: number) {
   // When less than 10 add leading 0 before returning
   if (Number(moddedPerc) < 10) moddedPerc = `0${moddedPerc}`
   return moddedPerc
+}
+
+export async function extSessionOld(routed: RouterRouted) {
+  await routed.message.reply(`:information_source: Deprecated command (\`${routed.message.content}\`), please use \`!ck web\``)
 }
 
 export async function extSession(routed: RouterRouted) {

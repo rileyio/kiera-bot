@@ -19,7 +19,6 @@ src/                 - All project code
 └── utils/           - Bot utility methods/helpers
 ```
 
-
 ## Commands for working on integration
 
 To build (compile only):
@@ -36,11 +35,9 @@ To start the application
 
 Additional `terminal` and `powershell` debugging start scripts available!
 
-
 ## Env template
 
 See .env-template at the root of the project directory
-
 
 ## Web Portal
 
@@ -48,51 +45,49 @@ All code for https://kierabot.xyz will be in https://github.com/rileyio/kiera-we
 
 `kiera-web` makes use of the `kiera-bot` api for everything.
 
-
 ## API
 
-```Further documentation coming soon.```
+`Further documentation coming soon.`
 
 API Endpoint:
-> URL:  https://kierabot.xyz/api/
+
+> URL: https://kierabot.xyz/api/
 
 > Requires: AuthKey as header to authenticate
 
 > Return Type: JSON
 
-### Available:
-- method: `post`  `/available/notifications`
-- method: `post`  `/available/settings`
-- method: `post`  `/available/user`
-- method: `post`  `/decisions`
-- method: `delete``/decision/delete`
-- method: `post`  `/decision/outcome/update`
-- method: `delete``/decision/outcome/delete`
-- method: `post`  `/decision/outcome/add`
-- method: `post`  `/lists`
-- method: `post`  `/notifications`
-- method: `post`  `/notification/update`
-- method: `post`  `/oauth`
-- method: `post`  `/permissions`
-- method: `post`  `/permissions/global/update`
-- method: `post`  `/permissions/allowed/update`
-- method: `post`  `/sessions`  - Returns a list (array) of device sessions,  **Requires:** Server & User ID as post parameters  
-`{  "sid": "5c24c5b97cebe921a36e8336", "uid": "5c26c497d99a4172787131be" }`
-- method: `post`  `/session` - Returns the requested session (Object),  **Requires:** Session ID as post parameter : 
-`{  "id": "5c436b7ec050231749afe832"  }`
-- method: `post`  `/server/settings`
-- method: `post`  `/server/setting/update`
-- method: `get`   `/stats`  - Returns (Object) all bot statistics
-- method: `post`  `/user`
+### Available
 
+- method: `post` `/available/notifications`
+- method: `post` `/available/settings`
+- method: `post` `/available/user`
+- method: `post` `/decisions`
+- method: `delete` `/decision/delete`
+- method: `post` `/decision/outcome/update`
+- method: `delete` `/decision/outcome/delete`
+- method: `post` `/decision/outcome/add`
+- method: `post` `/lists`
+- method: `post` `/notifications`
+- method: `post` `/notification/update`
+- method: `post` `/oauth`
+- method: `post` `/permissions`
+- method: `post` `/permissions/global/update`
+- method: `post` `/permissions/allowed/update`
+- method: `post` `/server/settings`
+- method: `post` `/server/setting/update`
+- method: `get` `/stats` - Returns (Object) all bot statistics
+- method: `post` `/user`
 
 ## Commands
 
 - BNet
+
   - `wow character us Stormreaver Jaydox` - Lookup WoW Character
 
 - ChastiKey Specific
-  - `ck username YourUsername` - Configures ChastiKey App username for defaults
+
+  - `ck verify` - Register/Verify account
   - `ck ticker` - Returns your ticker
   - `ck ticker #` - Returns a specific ticker type (replace #)
   - `ck ticker set type 2` - Set default ticker
@@ -101,17 +96,31 @@ API Endpoint:
   - `ck stats lockee` - Get your lockee stats (by saved username)
   - `ck stats keyholder` - Get your keyholder stats (by saved username)
   - `ck stats lockee "Username"` - Get stats for defined username
+  - `!ck recover combos 5` - Returns past unlocked lock combinations
+  - `!ck update` - Performs a series of checks on the user's account and updates any discord roles
+  - `!ck role counts` - Stats to show distribution by roles
+  - `!ck debug UsernameHere` - Debugging tool for ChastiKey / Kiera accounts
+  - `!ck lockee history` - Returns Lockee History
+  - `!ck lockee history personal` - Returns a more detailed Lockee History
+  - `!ck stats locktober` - Show status of Locktober
+  - `!ck search UsernameHere` - Search usernames by string
+  - `!ck check multilocked KeyHolderName` - Check if any users are multilocked
+  - `!ck keyholder lockees KeyHolderName` - Prints a list of Lockees under you
+  - `!ck keyholder set average show` - Toggle your KH average in stats
 
 - Decision Rollers
+
   - `decision "Question here!" "Answers" "here"` - Run a random decision (without saving)
   - `decision new "Your decision question here"` - Create a new saved decision (reusable)
   - `decision "DecisionID" add "New outcome here"` - Add options to saved decision
   - `decision roll 'DecisionID'` - Roll for a result from a saved decision
 
 - General
-  - `register` Registers the user with the bot (*Required before access to most commands becomes available*)
+
+  - `register` Registers the user with the bot
 
 - Roll
+
   - `roll` - Roll a single die
   - `roll 20` - Roll a single die with 20 sides
   - `roll 10 6` - Roll multiple (10) dice with given number of sides (6)

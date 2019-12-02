@@ -1,8 +1,8 @@
 import * as jwt from 'jsonwebtoken'
 import * as errors from 'restify-errors'
-import { WebRouted } from '../web-router'
-import { TrackedChastiKeyUser, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '../../objects/chastikey'
-import { TrackedUser } from '../../objects/user'
+import { WebRouted } from '../../web-router'
+import { TrackedChastiKeyUser, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '../../../objects/chastikey'
+import { TrackedUser } from '../../../objects/user'
 
 export namespace ChastiKey {
   export async function authTest(routed: WebRouted) {
@@ -56,6 +56,7 @@ export namespace ChastiKey {
     }
 
     // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
+    // var ckUser = new TrackedChastiKeyUser(await routed.Bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: /Emma/i }))
     var ckUser = new TrackedChastiKeyUser(await routed.Bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: user.id }))
 
     // If the lookup is upon someone else with no data, return the standard response
@@ -107,6 +108,7 @@ export namespace ChastiKey {
     }
 
     return routed.res.send({
+      keyholder,
       locks: cachedRunningLocks
     })
   }
@@ -129,6 +131,7 @@ export namespace ChastiKey {
     }
 
     // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
+    // var ckUser = new TrackedChastiKeyUser(await routed.Bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: /Emma/i }))
     var ckUser = new TrackedChastiKeyUser(await routed.Bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: user.id }))
 
     // If the lookup is upon someone else with no data, return the standard response

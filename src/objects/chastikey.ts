@@ -157,25 +157,25 @@ export class TrackedChastiKeyLock {
   /**
    * ChastiKey user unique ID
    * @type {number}
-   * @memberof TrackedChastiKeyKeyholderStatistics
+   * @memberof TrackedChastiKeyLock
    */
   public userID: number
   /**
    * ChastiKey Username
    * @type {string}
-   * @memberof TrackedChastiKeyKeyholderStatistics
+   * @memberof TrackedChastiKeyLock
    */
   public username: string
   /**
    * Discord Showflake
    * @type {number}
-   * @memberof TrackedChastiKeyKeyholderStatistics
+   * @memberof TrackedChastiKeyLock
    */
   public discordID: string
   /**
    * Date Joined ChastiKey App
    * @type {string}
-   * @memberof TrackedChastiKeyKeyholderStatistics
+   * @memberof TrackedChastiKeyLock
    */
   public sharedLockID: string
   public regularity: number
@@ -193,6 +193,7 @@ export class TrackedChastiKeyLock {
   public lockedBy: string
   public displayInStats: number
   public sharedLockName: string
+  public trustKeyholder: number
   /// Cards ///
   public doubleUpCards: number
   public freezeCards: number
@@ -345,7 +346,7 @@ export class TrackedChastiKeyKeyholderStatistics {
    * Compares what's in Kiera's DB for known Discord ID's and compares against what ChastiKey knows as verified
    * @param {number} knownID
    * @returns
-   * @memberof TrackedChastiKeyLockee
+   * @memberof TrackedChastiKeyKeyholderStatistics
    */
   public isVerified() {
     return this.discordID !== null
