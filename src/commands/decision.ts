@@ -1,12 +1,12 @@
-import * as Middleware from '../middleware';
-import * as Utils from '../utils/';
-import { RouterRouted } from '../router/router';
-import { TrackedUser } from '../objects/user';
-import { TrackedDecision, TrackedDecisionOption } from '../objects/decision';
-import { ObjectID } from 'bson';
-import { decisionFromSaved, decisionRealtime } from '../embedded/decision-embed';
-import { sb, en } from '../utils/';
-import { ExportRoutes } from '../router/routes-exporter';
+import * as Middleware from '../middleware'
+import * as Utils from '../utils/'
+import { RouterRouted } from '../router/router'
+import { TrackedUser } from '../objects/user'
+import { TrackedDecision, TrackedDecisionOption } from '../objects/decision'
+import { ObjectID } from 'bson'
+import { decisionFromSaved, decisionRealtime } from '../embedded/decision-embed'
+import { sb, en } from '../utils/'
+import { ExportRoutes } from '../router/routes-exporter'
 
 export const Routes = ExportRoutes(
   {
@@ -17,9 +17,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision new "name"',
     name: 'decision-new',
     validate: '/decision:string/new:string/name=string',
-    middleware: [
-      Middleware.isUserRegistered
-    ]
+    middleware: [Middleware.isUserRegistered]
   },
   {
     type: 'message',
@@ -29,9 +27,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "id" add "Your decision entry here"',
     name: 'decision-new-option',
     validate: '/decision:string/id=string/add:string/text=string',
-    middleware: [
-      Middleware.isUserRegistered
-    ]
+    middleware: [Middleware.isUserRegistered]
   },
   {
     type: 'message',
@@ -41,9 +37,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision roll "id"',
     name: 'decision-run-saved',
     validate: '/decision:string/roll:string/id=string',
-    middleware: [
-      Middleware.isUserRegistered
-    ]
+    middleware: [Middleware.isUserRegistered]
   },
   {
     type: 'message',
@@ -53,9 +47,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "Question here" "Option 1" "Option 2" "etc.."',
     name: 'decision-realtime',
     validate: '/decision:string/question=string/args...string',
-    middleware: [
-      Middleware.isUserRegistered
-    ]
+    middleware: [Middleware.isUserRegistered]
   }
 )
 
@@ -70,7 +62,7 @@ export async function newDecision(routed: RouterRouted) {
 
   // Get the user from the db
   const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
-  // Create a new question & 
+  // Create a new question &
   const nd = new TrackedDecision({
     name: routed.v.o.name,
     owner: user._id,
@@ -82,7 +74,6 @@ export async function newDecision(routed: RouterRouted) {
   if (updated) {
     await routed.message.reply(sb(en.decision.newQuestionAdded, { id: nd._id }))
     return true
-
   }
   return false
 }
@@ -113,7 +104,13 @@ export async function runSavedDecision(routed: RouterRouted) {
   const decision = await routed.bot.DB.get('decision', { _id: new ObjectID(routed.v.o.id) })
   if (decision) {
     const sd = new TrackedDecision(decision)
-    const random = Math.floor((Math.random() * sd.options.length));
+    // Halt if decision is disabled
+    if (sd.enabled === false) {
+      await routed.message.reply(`Decision not enabled!`)
+      return true
+    }
+
+    const random = Math.floor(Math.random() * sd.options.length)
     await routed.message.reply(decisionFromSaved(sd, sd.options[random]))
     return true
   }
@@ -121,7 +118,7 @@ export async function runSavedDecision(routed: RouterRouted) {
 }
 
 export async function runRealtimeDecision(routed: RouterRouted) {
-  const random = Math.floor((Math.random() * routed.v.o.args.length));
+  const random = Math.floor(Math.random() * routed.v.o.args.length)
   await routed.message.reply(decisionRealtime(routed.v.o.question, routed.v.o.args[random]))
   return true
 }

@@ -1,3 +1,7 @@
+4.11.0
+- Updated: API Decisions
+- Added: Flags for disabling Decisions & their Outcomes (only the former setup presently)
+
 4.10.2
 - Updated: Kiera+ChastiKey data
 - Updated: `!ck ext session` command to `!ck web`

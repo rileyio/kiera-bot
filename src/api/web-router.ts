@@ -1,10 +1,10 @@
-import * as restify from 'restify';
-import { Bot } from '..';
-import { Request, Response, Next } from 'restify';
+import * as restify from 'restify'
+import { Bot } from '..'
+import { Request, Response, Next } from 'restify'
 
 export interface WebRoute {
   controller: Function | void
-  method: 'get' | 'post' | 'delete'
+  method: 'get' | 'post' | 'delete' | 'put' | 'patch'
   middleware?: Array<(routed: WebRouted) => Promise<WebRouted | void>>
   name: string
   path: string
@@ -35,36 +35,71 @@ export class WebRouter {
     this.routes = routes
 
     for (let index = 0; index < this.routes.length; index++) {
-      const route = this.routes[index];
+      const route = this.routes[index]
       if (route.method === 'get') {
-        this.server.get(route.path, async (req, res, next) => middlewareHandler(
-          new WebRouted({
-            Bot: this.Bot,
-            route: route,
-            req: req,
-            res: res,
-            next: next
-          })))
+        this.server.get(route.path, async (req, res, next) =>
+          middlewareHandler(
+            new WebRouted({
+              Bot: this.Bot,
+              route: route,
+              req: req,
+              res: res,
+              next: next
+            })
+          )
+        )
       }
       if (route.method === 'post') {
-        this.server.post(route.path, async (req, res, next) => middlewareHandler(
-          new WebRouted({
-            Bot: this.Bot,
-            route: route,
-            req: req,
-            res: res,
-            next: next
-          })))
+        this.server.post(route.path, async (req, res, next) =>
+          middlewareHandler(
+            new WebRouted({
+              Bot: this.Bot,
+              route: route,
+              req: req,
+              res: res,
+              next: next
+            })
+          )
+        )
       }
       if (route.method === 'delete') {
-        this.server.del(route.path, async (req, res, next) => middlewareHandler(
-          new WebRouted({
-            Bot: this.Bot,
-            route: route,
-            req: req,
-            res: res,
-            next: next
-          })))
+        this.server.del(route.path, async (req, res, next) =>
+          middlewareHandler(
+            new WebRouted({
+              Bot: this.Bot,
+              route: route,
+              req: req,
+              res: res,
+              next: next
+            })
+          )
+        )
+      }
+      if (route.method === 'patch') {
+        this.server.patch(route.path, async (req, res, next) =>
+          middlewareHandler(
+            new WebRouted({
+              Bot: this.Bot,
+              route: route,
+              req: req,
+              res: res,
+              next: next
+            })
+          )
+        )
+      }
+      if (route.method === 'put') {
+        this.server.put(route.path, async (req, res, next) =>
+          middlewareHandler(
+            new WebRouted({
+              Bot: this.Bot,
+              route: route,
+              req: req,
+              res: res,
+              next: next
+            })
+          )
+        )
       }
     }
   }
@@ -80,7 +115,7 @@ export async function middlewareHandler(routed: WebRouted) {
     const fromMiddleware = await middleware(routed)
     // If the returned item is empty stop here
     if (!fromMiddleware) {
-      break;
+      break
     }
     // When everything is ok, continue
     mwareProcessed += 1
@@ -94,5 +129,4 @@ export async function middlewareHandler(routed: WebRouted) {
     await (<any>routed.route).controller(routed)
     return // End routing here
   }
-
 }

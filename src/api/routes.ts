@@ -38,44 +38,6 @@ export const routes: Array<WebRoute> = [
     middleware: [Middleware.isAuthenticated]
   },
   /*
-   * Decisions
-   */
-  {
-    controller: WebController.Decisions.getDecisions,
-    method: 'post',
-    name: 'decisions-get-all',
-    path: '/api/decisions',
-    middleware: [Middleware.isAuthenticated]
-  },
-  {
-    controller: WebController.Decisions.deleteOne,
-    method: 'delete',
-    name: 'decision-delete',
-    path: '/api/decision/delete',
-    middleware: [Middleware.isAuthenticated]
-  },
-  {
-    controller: WebController.Decisions.decisionOutcomeUpdate,
-    method: 'post',
-    name: 'decision-outcome-update',
-    path: '/api/decision/outcome/update',
-    middleware: [Middleware.isAuthenticated]
-  },
-  {
-    controller: WebController.Decisions.deleteDecisionOutcome,
-    method: 'delete',
-    name: 'decision-outcome-delete',
-    path: '/api/decision/outcome/delete',
-    middleware: [Middleware.isAuthenticated]
-  },
-  {
-    controller: WebController.Decisions.addDecisionOutcome,
-    method: 'post',
-    name: 'decision-outcome-add',
-    path: '/api/decision/outcome/add',
-    middleware: [Middleware.isAuthenticated]
-  },
-  /*
    * Lists
    */
   {
@@ -183,7 +145,7 @@ export const routes: Array<WebRoute> = [
     middleware: [Middleware.isAuthenticated]
   },
   /*
-   * CK Specific
+   * Kiera + CK Specific
    */
   {
     controller: WebController.ChastiKey.authTest,
@@ -191,6 +153,7 @@ export const routes: Array<WebRoute> = [
     name: 'ck-3rd-auth-test',
     path: '/api/ck/auth'
   },
+  // * Kiera+CK Keyholder * //
   {
     controller: WebController.ChastiKey.khData,
     method: 'get',
@@ -198,6 +161,7 @@ export const routes: Array<WebRoute> = [
     path: '/api/ck/keyholder',
     middleware: [Middleware.validCKAuth]
   },
+  // * Kiera+CK Lockee * //
   {
     controller: WebController.ChastiKey.lockeeData,
     method: 'get',
@@ -205,10 +169,70 @@ export const routes: Array<WebRoute> = [
     path: '/api/ck/lockee',
     middleware: [Middleware.validCKAuth]
   },
+  // * Kiera+CK Stats * //
   {
     controller: WebController.ChastiKeyWebStats.locks,
     method: 'get',
     name: 'ck-stats-locks',
     path: '/api/ck/stats/locks'
+  },
+  /*
+   * Decisions
+   */
+  {
+    controller: WebController.Decisions.getDecisions,
+    method: 'get',
+    name: 'web-decision-as-owner',
+    path: '/api/decisions',
+    middleware: [Middleware.validCKAuth]
+  },
+  {
+    controller: WebController.Decisions.updateDecisionName,
+    method: 'patch',
+    name: 'web-decision-update-name',
+    path: '/api/decision/name',
+    middleware: [Middleware.validCKAuth]
+  },
+  {
+    controller: WebController.Decisions.enableDecision,
+    method: 'patch',
+    name: 'web-decision-update-enabled',
+    path: '/api/decision/enabled',
+    middleware: [Middleware.validCKAuth]
+  },
+  {
+    controller: WebController.Decisions.addDecisionOutcome,
+    method: 'put',
+    name: 'web-decision-new-outcome',
+    path: '/api/decision/outcome',
+    middleware: [Middleware.validCKAuth]
+  },
+  {
+    controller: WebController.Decisions.updateDecisionOutcome,
+    method: 'patch',
+    name: 'web-decision-update-outcome',
+    path: '/api/decision/outcome',
+    middleware: [Middleware.validCKAuth]
+  },
+  {
+    controller: WebController.Decisions.deleteDecisionOutcome,
+    method: 'delete',
+    name: 'web-decision-new-outcome',
+    path: '/api/decision/outcome',
+    middleware: [Middleware.validCKAuth]
+  },
+  {
+    controller: WebController.Decisions.addDecision,
+    method: 'put',
+    name: 'web-decision-new',
+    path: '/api/decision',
+    middleware: [Middleware.validCKAuth]
+  },
+  {
+    controller: WebController.Decisions.deleteDecision,
+    method: 'delete',
+    name: 'web-decision-delete',
+    path: '/api/decision',
+    middleware: [Middleware.validCKAuth]
   }
 ]
