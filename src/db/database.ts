@@ -1,10 +1,11 @@
-import { MongoClient, MongoClientOptions, Cursor, Db, MongoError, CollectionInsertManyOptions } from 'mongodb';
-import { Logging } from '../utils/';
+import { MongoClient, MongoClientOptions, Cursor, Db, MongoError, CollectionInsertManyOptions } from 'mongodb'
+import { Logging } from '../utils/'
 
 export * from './promise'
 export * from './message-tracker'
 
-export type Collections = 'audit-log'
+export type Collections =
+  | 'audit-log'
   | 'authkeys'
   | 'available-server-notifications'
   | 'available-server-settings'
@@ -26,17 +27,17 @@ export type Collections = 'audit-log'
   | 'users'
 
 export async function MongoDBLoader() {
-  return new Promise<MongoDB>(async (ret) => {
-    var db = new MongoDB();
+  return new Promise<MongoDB>(async ret => {
+    var db = new MongoDB()
     return ret(db)
   })
 }
 
 export class MongoDB {
   public connection: {
-    db: Db;
-    client: MongoClient;
-    error: MongoError;
+    db: Db
+    client: MongoClient
+    error: MongoError
   } = { db: undefined, client: undefined, error: undefined }
   public DEBUG_DB: Logging.Debug
   public dbName = `${process.env.DB_NAME}`
@@ -45,8 +46,9 @@ export class MongoDB {
     useNewUrlParser: true,
     auth: {
       user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-    }
+      password: process.env.DB_PASS
+    },
+    useUnifiedTopology: true
   }
 
   constructor() {
@@ -62,8 +64,7 @@ export class MongoDB {
         // Else reuse current connection
         // tslint:disable-next-line:no-console
         // console.log('reuse db connection on', targetCollection)
-      }
-      else {
+      } else {
         // tslint:disable-next-line:no-console
         // console.log('new db connection on', targetCollection)
         await this.newConnection()
@@ -77,7 +78,7 @@ export class MongoDB {
 
   private async newConnection() {
     await MongoClient.connect(this.dbUrl, this.dbOpts)
-      .then((_client) => {
+      .then(_client => {
         this.connection = { db: _client.db(this.dbName), client: _client, error: undefined }
       })
       .catch(_error => {
@@ -88,7 +89,7 @@ export class MongoDB {
   }
 
   public async ping() {
-    var status: boolean;
+    var status: boolean
     try {
       const connection = await this.connect()
       // tslint:disable-next-line:no-console
@@ -146,7 +147,7 @@ export class MongoDB {
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const results = await collection.find<T>(typeof query === 'string' ? { id: query } : query)
-    return await results.count() > 0
+    return (await results.count()) > 0
   }
 
   /**
@@ -174,7 +175,7 @@ export class MongoDB {
    * @returns
    * @memberof DB
    */
-  public async update<T>(targetCollection: Collections, query: Partial<T>, update: any, opts?: { upsert?: boolean, updateOne?: boolean, atomic?: boolean }) {
+  public async update<T>(targetCollection: Collections, query: Partial<T>, update: any, opts?: { upsert?: boolean; updateOne?: boolean; atomic?: boolean }) {
     // this.DEBUG_DB.log(`.update =>`, query, update)
     const uopts = Object.assign({ atomic: false, upsert: false, updateOne: true }, opts)
     const connection = await this.connect()
@@ -189,10 +190,10 @@ export class MongoDB {
 
   /**
    * Fetch a record from the db
-   * 
+   *
    * This can accept one of the following formats in q:
    * - `object` `{ id: '146439529824256000', username: 'emma', discriminator: '1336' }`
-   * 
+   *
    * @param {Q} q
    * @returns
    * @memberof DB
@@ -202,17 +203,17 @@ export class MongoDB {
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const result = await collection.findOne<T>(query, returnFields ? { projection: returnFields } : undefined)
-    this.DEBUG_DB.log(`.get results [${targetCollection}] =>`, (result) ? true : false)
+    this.DEBUG_DB.log(`.get results [${targetCollection}] =>`, result ? true : false)
     // connection.client.close()
-    return (<T>result)
+    return <T>result
   }
 
   /**
    * Fetch records from the db
-   * 
+   *
    * This can accept one of the following formats in q:
    * - `object` `{ id: '146439529824256000', username: 'emma', discriminator: '1336' }`
-   * 
+   *
    * @param {Q} q
    * @returns
    * @memberof DB
@@ -230,22 +231,21 @@ export class MongoDB {
   public async count(targetCollection: Collections, query: any, options?: any) {
     this.DEBUG_DB.log(`.count => ${targetCollection}`)
     const connection = await this.connect()
-    const collection = (<any>connection.db.collection(targetCollection, options))
+    const collection = <any>connection.db.collection(targetCollection, options)
     const result = await collection.countDocuments(query)
     this.DEBUG_DB.log(`.count results [${targetCollection}] =>`, result)
     // connection.client.close()
-    return (<number>result)
+    return <number>result
   }
-
 
   public async aggregate<T>(targetCollection: Collections, query: any) {
     this.DEBUG_DB.log(`.aggregate => ${targetCollection}`)
     const connection = await this.connect()
-    const collection = (connection.db.collection(targetCollection))
+    const collection = connection.db.collection(targetCollection)
     const result = await collection.aggregate(query)
     // this.DEBUG_DB.log(`.aggregate results [${targetCollection}] =>`, result)
     // connection.client.close()
-    return (await result.toArray() as Array<T>)
+    return (await result.toArray()) as Array<T>
   }
 
   // public get<Q, T>(query: Q, discriminator?: string) {
