@@ -87,7 +87,7 @@ export const Routes = ExportRoutes(
     commandTarget: 'none',
     controller: extSessionOld,
     example: '{{prefix}}ck ext session',
-    name: 'ck-ext-session',
+    name: 'ck-ext-session-OLD',
     validate: '/ck:string/ext:string/session:string',
     middleware: [Middleware.isCKVerified],
     permissions: {
