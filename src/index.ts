@@ -10,7 +10,7 @@ import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler'
 import { BotMonitor } from './monitor'
 import { routeLoader } from './router/route-loader'
 import { Audit } from './objects/audit'
-import { BattleNet } from './BNet'
+import { BattleNet } from './integrations/BNet'
 
 export class Bot {
   public client = new Discord.Client()

@@ -12,15 +12,9 @@
     "rootDir": "./src",
     "inlineSourceMap": true,
     "skipLibCheck": true,
-    "lib": [
-      "es6",
-      "es2016"
-    ]
+    "typeRoots": ["src/typings", "./node_modules/@types/"],
+    "lib": ["es6", "es2016"]
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

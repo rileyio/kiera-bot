@@ -1,8 +1,6 @@
-import * as Middleware from '../../middleware';
-import { RouterRouted } from '../../router/router';
-import { ExportRoutes } from '../../router/routes-exporter';
-import { BattleNet } from '../../typings/BattleNet';
-import { sb, en } from '../../utils/';
+import { RouterRouted } from '../../router/router'
+import { ExportRoutes } from '../../router/routes-exporter'
+import { sb, en } from '../../utils/'
 
 const BlizzardWoWClassID = {
   1: 'Warrior',
@@ -55,7 +53,7 @@ const BlizzardWoWClassRace = {
   33: 'Human',
   34: 'Dark Iron Dwarf',
   35: 'Vulpera',
-  36: 'Mag\'har Orc',
+  36: `Mag'har Orc`,
   37: 'Mechagnome'
 }
 
@@ -69,17 +67,15 @@ const BlizzardWoWClassFaction = {
   1: 'Horde'
 }
 
-export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'BNet',
-    commandTarget: 'argument',
-    controller: wowCharacterProfile,
-    example: '{{prefix}}wow character us stormreaver thejaydox',
-    name: 'bnet-wow-character',
-    validate: '/wow:string/character:string/region=string/server=string/name=string'
-  }
-)
+export const Routes = ExportRoutes({
+  type: 'message',
+  category: 'BNet',
+  commandTarget: 'argument',
+  controller: wowCharacterProfile,
+  example: '{{prefix}}wow character us stormreaver thejaydox',
+  name: 'bnet-wow-character',
+  validate: '/wow:string/character:string/region=string/server=string/name=string'
+})
 
 /**
  * Blizzard WoW Character Lookup
@@ -88,75 +84,68 @@ export const Routes = ExportRoutes(
  */
 export async function wowCharacterProfile(routed: RouterRouted) {
   try {
-    const resp: { data?: BattleNet.WoW.CharacterProfile } = await routed.bot.Service.BattleNet.Client.wow.character(['profile', 'items'], {
+    console.log(routed.bot.Service.BattleNet.Client)
+    const { data } = await routed.bot.Service.BattleNet.Client.wow.character(['profile', 'items'], {
       origin: routed.v.o.region,
       realm: routed.v.o.server,
       name: routed.v.o.name
     })
+    console.log(data)
 
     routed.bot.Service.BattleNet.DEBUG_BNET.log('BattleNet -> Request successful!,', `/${routed.v.o.region}/${routed.v.o.server}/${routed.v.o.name}/`)
 
-    // await routed.message.reply(
-    //   '```json\n' +
-    //   JSON.stringify(
-    //     resp.data
-    //     , null, 2)
-    //   + '```'
-    // )
-
     await routed.message.channel.send({
       embed: {
-        'title': resp.data.name,
-        'description': `${BlizzardWoWClassRace[resp.data.race]} ${BlizzardWoWClassID[resp.data.class]}\n${BlizzardWoWClassFaction[resp.data.faction]}`,
-        'url': `https://worldofwarcraft.com/en-us/character/${routed.v.o.region}/${resp.data.realm}/${resp.data.name}`,
-        'color': 12457659,
-        'timestamp': new Date(resp.data.lastModified),
-        'footer': {
-          'text': 'Last Updated'
+        title: data.name,
+        description: `${BlizzardWoWClassRace[data.race]} ${BlizzardWoWClassID[data.class]}\n${BlizzardWoWClassFaction[data.faction]}`,
+        url: `https://worldofwarcraft.com/en-us/character/${routed.v.o.region}/${data.realm}/${data.name}`,
+        color: 12457659,
+        timestamp: new Date(data.lastModified),
+        footer: {
+          text: 'Last Updated'
         },
-        'thumbnail': {
-          'url': `http://render-${routed.v.o.region}.worldofwarcraft.com/character/${resp.data.thumbnail}`
+        thumbnail: {
+          url: `http://render-${routed.v.o.region}.worldofwarcraft.com/character/${data.thumbnail}`
         },
-        'image': {
-          'url': `http://render-${routed.v.o.region}.worldofwarcraft.com/character/${resp.data.thumbnail.replace('avatar', 'main')}`
+        image: {
+          url: `http://render-${routed.v.o.region}.worldofwarcraft.com/character/${data.thumbnail.replace('avatar', 'main')}`
         },
 
-        'fields': [
+        fields: [
           {
-            'name': 'Region-Realm',
-            'value': `${routed.v.o.region.toString().toUpperCase()}-${resp.data.realm}`,
-            'inline': true
+            name: 'Region-Realm',
+            value: `${routed.v.o.region.toString().toUpperCase()}-${data.realm}`,
+            inline: true
           },
           {
-            'name': 'Level',
-            'value': resp.data.level.toString(),
-            'inline': true
+            name: 'Level',
+            value: data.level.toString(),
+            inline: true
           },
           {
-            'name': 'Achievement Points',
-            'value': resp.data.achievementPoints.toString(),
-            'inline': false
+            name: 'Achievement Points',
+            value: data.achievementPoints.toString(),
+            inline: false
           },
           {
-            'name': 'Total Honorable Kills',
-            'value': resp.data.totalHonorableKills.toString(),
-            'inline': false
+            name: 'Total Honorable Kills',
+            value: data.totalHonorableKills.toString(),
+            inline: false
           },
 
           {
-            'name': 'Average Item Level',
-            'value': resp.data.items.averageItemLevel.toString(),
-            'inline': true
+            name: 'Average Item Level',
+            value: data.items.averageItemLevel.toString(),
+            inline: true
           },
           {
-            'name': '(Equipped)',
-            'value': resp.data.items.averageItemLevelEquipped.toString(),
-            'inline': true
+            name: '(Equipped)',
+            value: data.items.averageItemLevelEquipped.toString(),
+            inline: true
           }
         ]
       }
     })
-
   } catch (error) {
     routed.bot.Service.BattleNet.DEBUG_BNET.log('BattleNet -> Error:', error.message)
     if (error.response.data.status === 'nok') await routed.message.reply(sb(en.bnet.bnetCharacterNotFound))
