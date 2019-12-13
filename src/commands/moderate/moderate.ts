@@ -1,8 +1,9 @@
 import * as Middleware from '../../middleware'
 import * as XRegex from 'xregexp'
+import * as Utils from '../../utils/'
 import { ExportRoutes } from '../../router/routes-exporter'
 import { RouterRouted } from '../../router/router'
-import { TrackedMutedUser } from '../../objects/user'
+import { TrackedMutedUser, TrackedUser } from '../../objects/user'
 
 export const Routes = ExportRoutes(
   {
@@ -69,30 +70,42 @@ export async function mute(routed: RouterRouted) {
   // Error in username passed
   if (!username || !discriminator) {
     await routed.message.reply('This command requires a Username & Discriminator, like this (__But with no @__) `emma#1366`')
-    return false
+    return true
   }
 
   const targetUser = routed.message.guild.members.find(m => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
 
   // Could not find user
   if (!targetUser) {
-    await routed.message.reply("Could not find the requested user, make sure you're searching based off their username and not nickname.")
-    return false
+    await routed.message.reply(`Could not find the requested user, make sure you're searching based off their username and not nickname.`)
+    return true
   }
 
   // Block trying to call upon yourself
   if (targetUser.id === routed.user.id) {
     await routed.message.reply('Cannot call the command upon yourself!')
-    return false
+    return true
+  }
+
+  // See if one is already active and stored for this user
+  const hasActiveMuteAlready = await routed.bot.DB.verify<TrackedMutedUser>('muted-users', { id: targetUser.id, active: true })
+
+  // If they already have one active, let the caller of this command know
+  if (hasActiveMuteAlready) {
+    await routed.message.reply('This user already has an active mute being tracked!')
+    return true
   }
 
   const mutedUserRecord = new TrackedMutedUser({
     id: targetUser.id,
     username: targetUser.user.username,
-    discriminator: targetUser.user.username,
+    discriminator: targetUser.user.discriminator,
     nickname: targetUser.nickname,
     serverID: routed.message.guild.id,
     reason: routed.v.o.reason || '<blank>',
+    mutedById: routed.user.id,
+    mutedByUsername: routed.user.username,
+    mutedByDiscriminator: routed.user.discriminator,
     roles: targetUser.roles.map(r => {
       return { id: r.id, name: r.name }
     })
@@ -121,21 +134,21 @@ export async function unMute(routed: RouterRouted) {
   // Error in username passed
   if (!username || !discriminator) {
     await routed.message.reply('This command requires a Username & Discriminator, like this (__But with no @__) `emma#1366`')
-    return false
+    return true
   }
 
   const targetUser = routed.message.guild.members.find(m => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
 
   // Could not find user
   if (!targetUser) {
-    await routed.message.reply("Could not find the requested user, make sure you're searching based off their username and not nickname.")
-    return false
+    await routed.message.reply(`Could not find the requested user, make sure you're searching based off their username and not nickname.`)
+    return true
   }
 
   // Block trying to call upon yourself
   if (targetUser.id === routed.user.id) {
     await routed.message.reply('Cannot call the command upon yourself!')
-    return false
+    return true
   }
 
   // Query user's Mute record in Kiera's DB
@@ -143,18 +156,29 @@ export async function unMute(routed: RouterRouted) {
 
   if (!mutedUserRecord._id) {
     await routed.message.reply('Could not find an active mute record for this user!')
-    return false
+    return true
   }
 
   // Update Mute record
-  await routed.bot.DB.update<TrackedMutedUser>('muted-users', { id: mutedUserRecord.id }, { $set: { active: false, removedAt: Date.now() } }, { atomic: true })
+  await routed.bot.DB.update<TrackedMutedUser>(
+    'muted-users',
+    { id: mutedUserRecord.id, active: true },
+    {
+      $set: {
+        active: false,
+        removedBy: routed.user.id,
+        removedAt: Date.now()
+      }
+    },
+    { atomic: true }
+  )
 
   // Now remove the user's mute role adding back all previous roles
   await targetUser.removeRole(muteRole)
   await targetUser.addRoles(mutedUserRecord.roles.map(r => r.id))
 
   await routed.message.channel.send(
-    `:mute: **UnMuted User**\nUser = \`${routed.v.o.user}\`\nReason = \`${mutedUserRecord.reason}\`\nRoles Preserved = \`${mutedUserRecord.roles.map(r => r.name).join(' ')}\``
+    `:mute: **UnMuted User**\nUser = \`${routed.v.o.user}\`\nReason = \`${mutedUserRecord.reason}\`\nRoles Restored = \`${mutedUserRecord.roles.map(r => r.name).join(' ')}\``
   )
   return true
 }
@@ -169,8 +193,22 @@ export async function activeMutes(routed: RouterRouted) {
     const userOnServer = routed.message.guild.members.find(u => u.id === m.id)
     const dateFormatted = new Date(m.timestamp)
     // If still on the server
-    if (userOnServer) response += `${userOnServer.user.username}#${userOnServer.user.discriminator}\n  ## Muted: ${dateFormatted.toUTCString()}\n  ## Reason: ${m.reason}\n\n`
-    else response += `${m.username}#${m.discriminator} __(user left the server)__\n  ## Muted: ${dateFormatted.toUTCString()}\n  ## Reason: ${m.reason}\n\n`
+    if (userOnServer)
+      response += Utils.sb(Utils.en.mod.mutedListEntryUser, {
+        username: userOnServer.user.username,
+        discriminator: userOnServer.user.discriminator,
+        dateFormatted: dateFormatted.toUTCString(),
+        reason: m.reason,
+        mutedBy: Utils.User.buildUserChatAt(new TrackedUser({ username: m.mutedByUsername, discriminator: m.mutedByDiscriminator }), Utils.User.UserRefType.usernameFull)
+      })
+    else
+      response += Utils.sb(Utils.en.mod.mutedListEntryUser, {
+        username: m.username,
+        discriminator: m.discriminator,
+        dateFormatted: dateFormatted.toUTCString(),
+        reason: m.reason,
+        mutedBy: Utils.User.buildUserChatAt(new TrackedUser({ username: m.mutedByUsername, discriminator: m.mutedByDiscriminator }), Utils.User.UserRefType.usernameFull)
+      })
   })
   response += '```'
 
@@ -186,7 +224,7 @@ export async function lookupMutes(routed: RouterRouted) {
   // Error in username passed
   if (!username || !discriminator) {
     await routed.message.reply('This command requires a Username & Discriminator, like this (__But with no @__) `emma#1366`')
-    return false
+    return true
   }
 
   const targetUser = routed.message.guild.members.find(m => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
@@ -194,14 +232,14 @@ export async function lookupMutes(routed: RouterRouted) {
 
   // Could not find user
   if (!mutedRecordsRaw) {
-    await routed.message.reply("Could not find the requested user, make sure you're searching based off their username and not nickname.")
-    return false
+    await routed.message.reply(`Could not find the requested user, make sure you're searching based off their username and not nickname.`)
+    return true
   }
 
   // Block trying to call upon yourself
   if (targetUser.id === routed.user.id) {
     await routed.message.reply('Cannot call the command upon yourself!')
-    return false
+    return true
   }
 
   const mutedRecords = mutedRecordsRaw.map(m => new TrackedMutedUser(m))

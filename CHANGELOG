@@ -1,5 +1,10 @@
 4.12.0
 - Fixed: Text on CK Lockee stats saying: (not greens)
+- Fixed: Moderator Mute to not allow a mute on a user with one already tracked
+- Fixed: Moderator Unmute will now find the appropriate record if there are multiple for one user
+- Fixing/Improving: BNet service for token caching
+- Updated: WoW Character command for changes to BNet Service
+- Added: Moderator Mute will now better track for later listing who muted someone
 
 4.11.0
 - Updated: API Decisions

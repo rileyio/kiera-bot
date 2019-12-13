@@ -66,8 +66,12 @@ export class TrackedMutedUser {
   public serverID: string
   public timestamp: number = Date.now()
   public reason: string
+  public mutedById: string
+  public mutedByUsername: string
+  public mutedByDiscriminator: string
   public removeAt: number = 0
   public removedAt: number
+  public removedBy: string
   public roles: Array<{ id: string, name: string }> = []
   public active: boolean = true
 
