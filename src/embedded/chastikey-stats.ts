@@ -166,7 +166,7 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   // When its a variable lock
   if (lock.fixed === 0) {
     value += `\nDetails \`${cumulative}\` regularity \`${regularity}\` with \`${lock.noOfTurns}\` turns made.`
-    if (totalExpected < 6) value += `\nThe last (${discardPile.length}) cards discarded (not greens):\n${discardPileStr}`
+    if (totalExpected < 6) value += `\nThe last (${discardPile.length}) cards discarded:\n${discardPileStr}`
     else value += `\n${discardPileStr}`
 
     if (lock.cardInfoHidden === 0) {
