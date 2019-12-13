@@ -1,6 +1,5 @@
 declare module 'blizzard.js' {
   export function initialize(options: BlizzardJSInitializeOptions): Blizzard
-
   interface BlizzardJSInitializeOptions {
     key: string
     secret: string
@@ -21,7 +20,24 @@ declare module 'blizzard.js' {
     boss({ id: string, ...args }): Promise<any>
     challenge({ realm: string, ...args }): Promise<any>
     character(keys: Array<string>, params: BlizzardJSWoWCharacterParams): Promise<{ data: BattleNet.WoW.CharacterProfile }>
-    data(key: string, ...args): Promise<any>
+  }
+
+  interface d3 {
+    act(): Promise<any>
+    artisan(): Promise<any>
+    recipe(): Promise<any>
+    follower(): Promise<any>
+    characterClass(): Promise<any>
+    characterSkill(): Promise<any>
+    item(): Promise<any>
+    itemType(): Promise<any>
+    era(): Promise<any>
+    profile({ tag: string }): Promise<{ data: BattleNet.D3.Profile }>
+    profile({ tag: string, hero: number }): Promise<any>
+    profile({ tag: string, hero: number, itemTypes: string }): Promise<any>
+    season(): Promise<{ data: BattleNet.D3.SeasonIndex }>
+    season({ id: number }): Promise<{ data: BattleNet.D3.SeasonIndex }>
+    season({ id: number, leaderboard: string }): Promise<{ data: BattleNet.D3.SeasonIndex }>
   }
 
   export class Blizzard {
@@ -30,6 +46,7 @@ declare module 'blizzard.js' {
       userInfo: () => Promise<any>
     }
     wow: wow
+    d3: d3
     getApplicationToken()
     // wow: {
 
@@ -79,6 +96,43 @@ declare module 'blizzard.js' {
 }
 
 namespace BattleNet {
+  namespace D3 {
+    export interface SeasonIndex {
+      current_season: number
+      service_current_season: number
+      service_season_state: 'active' | 'inactive'
+      last_update_time: string
+      generated_by: string
+    }
+
+    export interface Profile {
+      battleTag: string
+      paragonLevel: number
+      paragonLevelHardcore: number
+      paragonLevelSeason: number
+      paragonLevelSeasonHardcore: number
+      guildName: string
+      heroes: Array<ProfileHero>
+    }
+
+    export interface ProfileHero {
+      id: number
+      name: string
+      class: string
+      classSlug: string
+      gender: number
+      level: number
+      kills: {
+        elites: number
+      }
+      paragonLevel: number
+      hardcore: boolean
+      seasonal: boolean
+      dead: boolean
+      'last-updated': number
+    }
+  }
+
   namespace WoW {
     export type ProfileGender = 0 | 1
     export type ProfileFaction = 0 | 1
