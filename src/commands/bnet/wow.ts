@@ -84,13 +84,11 @@ export const Routes = ExportRoutes({
  */
 export async function wowCharacterProfile(routed: RouterRouted) {
   try {
-    console.log(routed.bot.Service.BattleNet.Client)
     const { data } = await routed.bot.Service.BattleNet.Client.wow.character(['profile', 'items'], {
       origin: routed.v.o.region,
       realm: routed.v.o.server,
       name: routed.v.o.name
     })
-    console.log(data)
 
     routed.bot.Service.BattleNet.DEBUG_BNET.log('BattleNet -> Request successful!,', `/${routed.v.o.region}/${routed.v.o.server}/${routed.v.o.name}/`)
 
