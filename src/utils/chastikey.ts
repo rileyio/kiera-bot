@@ -38,7 +38,6 @@ export namespace ChastiKey {
     locks: Array<TrackedChastiKeyUserAPIFetchLock>,
     routerStats: RouterStats
   ): LockeeStats {
-    console.log('!!!!@@@@@', ckUser.timestampLastActive)
     // Variables - Defaults (unless changed later)
     var calculatedCumulative = 0
     var calculatedTimeSinceLastLock = 0
@@ -95,7 +94,8 @@ export namespace ChastiKey {
       totalNoOfCompletedLocks: userInLockeeStats ? userInLockeeStats.totalNoOfCompletedLocks : 0,
       username: ckUser.username,
       joined: userInLockeeStats ? userInLockeeStats.joined : '-',
-      timestampLastActive: ckUser.timestampLastActive,
+      timestampLastActive: Date.now() / 1000 - ckUser.timestampLastActive,
+      verifiedTo: Utils.User.buildUserChatAt(ckUser.discordID, Utils.User.UserRefType.snowflake),
       additional: { timeSinceLast: calculatedTimeSinceLastLock > 0 ? Date.now() / 1000 - calculatedTimeSinceLastLock : 0 },
       isVerified: ckUser.isVerified(),
       routerStats: routerStats

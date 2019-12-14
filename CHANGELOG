@@ -5,9 +5,11 @@
 - Fixing/Improving: BNet service for token caching
 - Updated: WoW Character command for changes to BNet Service
 - Updated: Look of !ck update command summary
+- Updated: Increasing margin in CK Verify QR image after seeing an issue
 - Added: Moderator Mute will now better track for later listing who muted someone
 - Added: D3 Current Season and Profile commands
 - Added: CK Established and Renowned KH upgrade checks to !ck update command
+- Added: CK Verified to text line into Lockee and KH stats blocks
 
 4.11.0
 - Updated: API Decisions

@@ -7,7 +7,7 @@ import * as Discord from 'discord.js'
 import { TrackedUser } from '../../objects/user'
 import { RouterRouted } from '../../router/router'
 import { ExportRoutes } from '../../router/routes-exporter'
-import { ChastiKeyVerifyResponse, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyCombinationsAPIFetch, ChastiKeyVerifyDiscordID } from '../../objects/chastikey'
+import { ChastiKeyVerifyResponse, TrackedChastiKeyCombinationsAPIFetch, ChastiKeyVerifyDiscordID } from '../../objects/chastikey'
 
 export const Routes = ExportRoutes(
   {

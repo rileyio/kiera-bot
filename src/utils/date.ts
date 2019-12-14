@@ -1,22 +1,26 @@
 export namespace Date {
-  export function calculateCumulativeRange(dates: Array<{ start: number, end: number }>) {
+  export function calculateCumulativeRange(dates: Array<{ start: number; end: number }>) {
     // console.log('>>>>>>>>>>>>>>>TEST<<<<<<<<<<<<<<<<')
     // Ensure they are sorted by start times
     dates.sort((a, b) => {
-      var x = a.start;
-      var y = b.start;
-      if (x < y) { return -1; }
-      if (x > y) { return 1; }
-      return 0;
+      var x = a.start
+      var y = b.start
+      if (x < y) {
+        return -1
+      }
+      if (x > y) {
+        return 1
+      }
+      return 0
     })
-    // Sanity check on dates array (negatives) 
+    // Sanity check on dates array (negatives)
     // console.log('=========================')
-    var negatives = dates.filter(d => (d.end - d.start) < 0)
+    var negatives = dates.filter(d => d.end - d.start < 0)
     // console.log(`Found (${negatives.length}) that are negatives (excluding active dates)`)
     // console.log(negatives)
     // Remove it/them
     for (let index = 0; index < negatives.length; index++) {
-      const negativeRange = negatives[index];
+      const negativeRange = negatives[index]
       const negativeIndex = dates.findIndex(dd => dd.start === negativeRange.start && dd.end === negativeRange.end)
       // console.log('negative index being removed:', negativeRange)
       // Remove
@@ -28,40 +32,34 @@ export namespace Date {
     //////////////////////
     ///  Actual Code
     ///////////////////
-    var cumulative = [];
-    var cIndex = 0;
+    var cumulative = []
+    var cIndex = 0
     var cTime = 0
     var aTime = 0
 
     // Use the first pair in the index as the starting point
-    cumulative.push(dates[0]);
+    cumulative.push(dates[0])
 
     for (var i = 1; i < dates.length; i++) {
       // Complete overlap, remove from consideration
-      if (
-        dates[i].start >= cumulative[cIndex].start &&
-        dates[i].end <= cumulative[cIndex].end
-      ) {
+      if (dates[i].start >= cumulative[cIndex].start && dates[i].end <= cumulative[cIndex].end) {
         // console.log(`index: ${i}, Condition 1 Met (Skip)`, dates[i]);
-        continue; // Stop here
+        continue // Stop here
       }
 
       // New range beyond current range - set new range
       if (dates[i].start >= cumulative[cIndex].end) {
         // console.log(`index: ${i}, Condition 3 Met (New)`, dates[i]);
-        cIndex++;
-        cumulative.push(dates[i]);
-        continue; // Stop here
+        cIndex++
+        cumulative.push(dates[i])
+        continue // Stop here
       }
 
       // Extend the current range
-      if (
-        dates[i].start >= cumulative[cIndex].start &&
-        dates[i].end > cumulative[cIndex].end
-      ) {
+      if (dates[i].start >= cumulative[cIndex].start && dates[i].end > cumulative[cIndex].end) {
         // console.log(`index: ${i}, Condition 2 Met (Extend)`, dates[i]);
-        cumulative[cIndex].end = dates[i].end;
-        continue; // Stop here
+        cumulative[cIndex].end = dates[i].end
+        continue // Stop here
       }
 
       // All unmatched
@@ -69,7 +67,7 @@ export namespace Date {
     }
 
     // Calculate sums
-    cTime = cumulative.reduce((s, c) => s += c.end - c.start, 0)
+    cTime = cumulative.reduce((s, c) => (s += c.end - c.start), 0)
 
     // Calculate averge
     aTime = cTime / (cIndex + 1)
@@ -97,10 +95,28 @@ export namespace Date {
     var days = Math.floor(hrs / 24)
     hrs = hrs % 24
 
-    const timeToShowDays = `${days > 9 ? + days : '0' + days}d`
-    const timeToShowHours = `${hrs > 9 ? + hrs : '0' + hrs}h`
-    const timeToShowMins = `${min > 9 ? + min : '0' + min}m`
+    const timeToShowDays = `${days > 9 ? +days : '0' + days}d`
+    const timeToShowHours = `${hrs > 9 ? +hrs : '0' + hrs}h`
+    const timeToShowMins = `${min > 9 ? +min : '0' + min}m`
 
     return `${timeToShowDays} ${timeToShowHours} ${timeToShowMins}`
+  }
+
+  export function calculateHumanTimeDDHHMMSS(seconds: number) {
+    // Calculate human readible time for lock from seconds
+    const timelocked = seconds
+    var secs = parseInt((timelocked % 60) as any)
+    var min = Math.floor(timelocked / 60)
+    var hrs = Math.floor(min / 60)
+    var days = Math.floor(hrs / 24)
+    min = min % 60
+    hrs = hrs % 24
+
+    const timeToShowDays = `${days > 9 ? +days : '0' + days}d`
+    const timeToShowHours = `${hrs > 9 ? +hrs : '0' + hrs}h`
+    const timeToShowMins = `${min > 9 ? +min : '0' + min}m`
+    const timeToShowSecs = `${secs > 9 ? +secs : '0' + secs}s`
+
+    return `${timeToShowDays} ${timeToShowHours} ${timeToShowMins} ${timeToShowSecs}`
   }
 }
