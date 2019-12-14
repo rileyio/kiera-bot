@@ -337,6 +337,7 @@ export class TrackedChastiKeyKeyholderStatistics {
    * @memberof TrackedChastiKeyKeyholderStatistics
    */
   public dateFirstKeyheld: string
+  public timestampFirstKeyheld: number
 
   constructor(init: Partial<TrackedChastiKeyKeyholderStatistics>) {
     Object.assign(this, init)

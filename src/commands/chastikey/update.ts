@@ -1,13 +1,13 @@
 import got = require('got')
 import * as APIUrls from '../../api-urls'
-import * as FormData from 'form-data'
 import * as Middleware from '../../middleware'
 import * as Utils from '../../utils'
 import * as Discord from 'discord.js'
 import { TrackedUser } from '../../objects/user'
 import { RouterRouted } from '../../router/router'
 import { ExportRoutes } from '../../router/routes-exporter'
-import { ChastiKeyVerifyResponse, TrackedChastiKeyUserAPIFetch, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyCombinationsAPIFetch, ChastiKeyVerifyDiscordID } from '../../objects/chastikey'
+import { TrackedChastiKeyUserAPIFetch, TrackedChastiKeyKeyholderStatistics, ChastiKeyVerifyDiscordID } from '../../objects/chastikey'
+import { performance } from 'perf_hooks'
 
 export const Routes = ExportRoutes({
   type: 'message',
@@ -30,6 +30,14 @@ export const Routes = ExportRoutes({
  * @param {RouterRouted} routed
  */
 export async function update(routed: RouterRouted) {
+  const updatePerformance = {
+    full: { start: performance.now(), end: 0 },
+    verify: { start: 0, end: 0 },
+    lockee: { start: 0, end: 0 },
+    locktober: { start: 0, end: 0 },
+    keyholder: { start: 0, end: 0 }
+  }
+
   // Check if user calling this command is targeting a different user
   if (routed.v.o.user !== undefined) {
     // Restrict Update upon other users to Keyholder or above
@@ -45,7 +53,12 @@ export async function update(routed: RouterRouted) {
   const targetUserType: 'Self' | 'Snowflake' | 'CKUsername' = routed.v.o.user === undefined ? 'Self' : routed.message.mentions.members.first() ? 'Snowflake' : 'CKUsername'
 
   // Track changes made later - if any
-  var changesImplemented: Array<{ action: 'changed' | 'added' | 'removed'; type: 'role' | 'status'; result: string }> = []
+  var changesImplemented: Array<{
+    action: 'changed' | 'added' | 'removed' | 'header' | 'performance'
+    category: 'n/a' | 'verify' | 'lockee' | 'locktober' | 'keyholder'
+    type: 'role' | 'status'
+    result: number | string
+  }> = []
 
   // Get user's current ChastiKey username from users collection or by the override
   const user =
@@ -57,6 +70,13 @@ export async function update(routed: RouterRouted) {
           await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
       : // When: Self
         await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
+
+  ///////////////////////////////////////
+  /// ChastiKey + Discord  Verify     ///
+  ///////////////////////////////////////
+  // * Performance Start: Verify * //
+  updatePerformance.verify.start = performance.now()
+  changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'ChastiKey + Discord Verify' })
 
   const verifyURI =
     routed.v.o.user !== undefined
@@ -85,7 +105,7 @@ export async function update(routed: RouterRouted) {
     // If its still showing status === 400, then update the record
     if (verifyAPIResp.body.status === 400) {
       user.ChastiKey.isVerified = false
-      changesImplemented.push({ action: 'removed', type: 'status', result: 'verified' })
+      changesImplemented.push({ action: 'removed', category: 'verify', type: 'status', result: 'verified' })
       await routed.bot.DB.update<TrackedUser>(
         'users',
         { id: routed.user.id },
@@ -99,8 +119,10 @@ export async function update(routed: RouterRouted) {
 
   // Update user's record in Kiera's DB if any changes
   if (parsedVerifyDiscordID.status === 200) {
-    if (!user.ChastiKey.isVerified && parsedVerifyDiscordID.discordID !== null && parsedVerifyDiscordID.verified) changesImplemented.push({ action: 'added', type: 'status', result: 'verified' })
-    if (user.ChastiKey.isVerified && parsedVerifyDiscordID.discordID === null && !parsedVerifyDiscordID.verified) changesImplemented.push({ action: 'removed', type: 'status', result: 'verified' })
+    if (!user.ChastiKey.isVerified && parsedVerifyDiscordID.discordID !== null && parsedVerifyDiscordID.verified)
+      changesImplemented.push({ action: 'added', category: 'verify', type: 'status', result: 'verified' })
+    if (user.ChastiKey.isVerified && parsedVerifyDiscordID.discordID === null && !parsedVerifyDiscordID.verified)
+      changesImplemented.push({ action: 'removed', category: 'verify', type: 'status', result: 'verified' })
     // Update that we know they're at least verified
     await routed.bot.DB.update<TrackedUser>(
       'users',
@@ -114,10 +136,17 @@ export async function update(routed: RouterRouted) {
       { atomic: true }
     )
   }
+  // * Performance End: Verify * //
+  updatePerformance.verify.end = performance.now()
+  changesImplemented.push({ action: 'performance', category: 'n/a', type: 'status', result: `${Math.round(updatePerformance.verify.end - updatePerformance.verify.start)}ms` })
 
   ///////////////////////////////////////
   /// Collect User Data for update    ///
   ///////////////////////////////////////
+  // * Performance Start: Lockee * //
+  updatePerformance.lockee.start = performance.now()
+  changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Lockee' })
+
   // Get user's Current live Locks / Data
   const { body }: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}`, { json: true })
   // Check status code from CK server
@@ -125,9 +154,6 @@ export async function update(routed: RouterRouted) {
     await routed.message.reply(Utils.sb(Utils.en.chastikey.userNotFoundRemote))
     return false // Stop here
   }
-
-  // Locktober Data (DB Cached)
-  const isLocktoberParticipant = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober', { discordID: user.id })
 
   // From API -or- Default
   const fromAPI = body.locks || []
@@ -153,6 +179,8 @@ export async function update(routed: RouterRouted) {
     locked: undefined,
     unlocked: undefined,
     locktober: undefined,
+    renownedKeyholder: undefined,
+    establishedKeyholder: undefined,
     keyholder: undefined,
     noviceKeyholder: undefined,
     devotedLockeePink: undefined,
@@ -169,6 +197,8 @@ export async function update(routed: RouterRouted) {
     locked: false,
     unlocked: false,
     locktober: false,
+    renownedKeyholder: false,
+    establishedKeyholder: false,
     keyholder: false,
     noviceKeyholder: false,
     devotedLockeePink: false,
@@ -186,6 +216,8 @@ export async function update(routed: RouterRouted) {
     if (r.name.toLowerCase() === 'locked') role.locked = r
     if (r.name.toLowerCase() === 'unlocked') role.unlocked = r
     if (r.name.toLowerCase() === 'locktober 2019') role.locktober = r
+    if (r.name.toLowerCase() === 'renowned keyholder') role.renownedKeyholder = r
+    if (r.name.toLowerCase() === 'established keyholder') role.establishedKeyholder = r
     if (r.name.toLowerCase() === 'keyholder') role.keyholder = r
     if (r.name.toLowerCase() === 'novice keyholder') role.noviceKeyholder = r
     if (r.id === '535495268578361345' || r.id === '627557066382245888') role.devotedLockeePink = r
@@ -201,6 +233,8 @@ export async function update(routed: RouterRouted) {
     if (r.name.toLowerCase() === 'locked') discordUserHasRole.locked = true
     if (r.name.toLowerCase() === 'unlocked') discordUserHasRole.unlocked = true
     if (r.name.toLowerCase() === 'locktober 2019') discordUserHasRole.locktober = true
+    if (r.name.toLowerCase() === 'renowned keyholder') discordUserHasRole.renownedKeyholder = true
+    if (r.name.toLowerCase() === 'established keyholder') discordUserHasRole.establishedKeyholder = true
     if (r.name.toLowerCase() === 'keyholder') discordUserHasRole.keyholder = true
     if (r.name.toLowerCase() === 'novice keyholder') discordUserHasRole.noviceKeyholder = true
     if (r.id === '535495268578361345' || r.id === '627557066382245888') discordUserHasRole.devotedLockeePink = true
@@ -215,7 +249,7 @@ export async function update(routed: RouterRouted) {
 
   // Determine which color the user prefers, blue or pink
   var userHasPref = false
-  var isChanging = false
+  var isChangingLockeeExpRole = false
   const prefPink = discordUserHasRole.devotedLockeePink || discordUserHasRole.experiencedLockeePink || discordUserHasRole.intermediateLockeePink || discordUserHasRole.noviceLockeePink
   const prefBlue = discordUserHasRole.devotedLockeeBlue || discordUserHasRole.experiencedLockeeBlue || discordUserHasRole.intermediateLockeeBlue || discordUserHasRole.noviceLockeeBlue
 
@@ -224,8 +258,6 @@ export async function update(routed: RouterRouted) {
 
   // Calculate cumulative time locked
   try {
-    // const userPastLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?discord_id=${user.id}bot=Kiera`, { json: true })
-    // const userCurrentLocksFromAPIresp = await got(`${APIUrls.ChastiKey.ListLocks}?discord_id=${user.id}&showdeleted=0&bot=Kiera`, { json: true })
     // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
     const allLockeesLocks = [].concat(fromAPI || []).map(d => {
       // Insert current date on existing locked locks that are not deleted
@@ -265,12 +297,12 @@ export async function update(routed: RouterRouted) {
         // Remove any unlocked role if user has it
         if (discordUserHasRole.unlocked) {
           await discordUser.removeRole(role.unlocked)
-          changesImplemented.push({ action: 'removed', type: 'role', result: 'Unlocked' })
+          changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: 'Unlocked' })
         }
         // Add locked role (If not already set)
         if (!discordUserHasRole.locked) {
           await discordUser.addRole(role.locked)
-          changesImplemented.push({ action: 'added', type: 'role', result: 'Locked' })
+          changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: 'Locked' })
         }
       }
       // Else: Set unlocked role & remove any locked role if they have
@@ -278,12 +310,12 @@ export async function update(routed: RouterRouted) {
         // Remove any locked role if user has it
         if (discordUserHasRole.locked) {
           await discordUser.removeRole(role.locked)
-          changesImplemented.push({ action: 'removed', type: 'role', result: 'Locked' })
+          changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: 'Locked' })
         }
         // Add unlocked role (If not already set)
         if (!discordUserHasRole.unlocked) {
           await discordUser.addRole(role.unlocked)
-          changesImplemented.push({ action: 'added', type: 'role', result: 'Unlocked' })
+          changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: 'Unlocked' })
         }
       }
     }
@@ -304,41 +336,41 @@ export async function update(routed: RouterRouted) {
       if (calculatedCumulative >= 12 && userHasPref) {
         // Add Proper Devoted role
         if (!discordUserHasRole.devotedLockeePink && prefPink) {
-          isChanging = true
+          isChangingLockeeExpRole = true
           await discordUser.addRole(role.devotedLockeePink)
-          changesImplemented.push({ action: 'added', type: 'role', result: '(Pink) Devoted Lockee' })
+          changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: '(Pink) Devoted Lockee' })
         }
         if (!discordUserHasRole.devotedLockeeBlue && prefBlue) {
-          isChanging = true
+          isChangingLockeeExpRole = true
           await discordUser.addRole(role.devotedLockeeBlue)
-          changesImplemented.push({ action: 'added', type: 'role', result: '(Blue) Devoted Lockee' })
+          changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: '(Blue) Devoted Lockee' })
         }
 
         // Remove other roles
-        if (isChanging) {
+        if (isChangingLockeeExpRole) {
           if (discordUserHasRole.experiencedLockeePink) {
             await discordUser.removeRole(role.experiencedLockeePink)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Experienced Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Pink) Experienced Lockee' })
           }
           if (discordUserHasRole.experiencedLockeeBlue) {
             await discordUser.removeRole(role.experiencedLockeeBlue)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Experienced Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Blue) Experienced Lockee' })
           }
           if (discordUserHasRole.intermediateLockeePink) {
             await discordUser.removeRole(role.intermediateLockeePink)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Intermediate Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Pink) Intermediate Lockee' })
           }
           if (discordUserHasRole.intermediateLockeeBlue) {
             await discordUser.removeRole(role.intermediateLockeeBlue)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Intermediate Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Blue) Intermediate Lockee' })
           }
           if (discordUserHasRole.noviceLockeePink) {
             await discordUser.removeRole(role.noviceLockeePink)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Novice Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Pink) Novice Lockee' })
           }
           if (discordUserHasRole.noviceLockeeBlue) {
             await discordUser.removeRole(role.noviceLockeeBlue)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Novice Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Blue) Novice Lockee' })
           }
         }
       }
@@ -347,41 +379,41 @@ export async function update(routed: RouterRouted) {
       if (calculatedCumulative >= 6 && calculatedCumulative < 12 && userHasPref) {
         // Add Proper Experienced role
         if (!discordUserHasRole.experiencedLockeePink && prefPink) {
-          isChanging = true
+          isChangingLockeeExpRole = true
           await discordUser.addRole(role.experiencedLockeePink)
-          changesImplemented.push({ action: 'added', type: 'role', result: '(Pink) Experienced Lockee' })
+          changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: '(Pink) Experienced Lockee' })
         }
         if (!discordUserHasRole.experiencedLockeeBlue && prefBlue) {
-          isChanging = true
+          isChangingLockeeExpRole = true
           await discordUser.addRole(role.experiencedLockeeBlue)
-          changesImplemented.push({ action: 'added', type: 'role', result: '(Blue) Experienced Lockee' })
+          changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: '(Blue) Experienced Lockee' })
         }
 
         // Remove other roles
-        if (isChanging) {
+        if (isChangingLockeeExpRole) {
           if (discordUserHasRole.devotedLockeePink) {
             await discordUser.removeRole(role.devotedLockeePink)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Devoted Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Pink) Devoted Lockee' })
           }
           if (discordUserHasRole.devotedLockeeBlue) {
             await discordUser.removeRole(role.devotedLockeeBlue)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Devoted Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Blue) Devoted Lockee' })
           }
           if (discordUserHasRole.intermediateLockeePink) {
             await discordUser.removeRole(role.intermediateLockeePink)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Intermediate Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Pink) Intermediate Lockee' })
           }
           if (discordUserHasRole.intermediateLockeeBlue) {
             await discordUser.removeRole(role.intermediateLockeeBlue)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Intermediate Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Blue) Intermediate Lockee' })
           }
           if (discordUserHasRole.noviceLockeePink) {
             await discordUser.removeRole(role.noviceLockeePink)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Novice Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Pink) Novice Lockee' })
           }
           if (discordUserHasRole.noviceLockeeBlue) {
             await discordUser.removeRole(role.noviceLockeeBlue)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Novice Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Blue) Novice Lockee' })
           }
         }
       }
@@ -390,41 +422,41 @@ export async function update(routed: RouterRouted) {
       if (calculatedCumulative >= 2 && calculatedCumulative < 6 && userHasPref) {
         // Add Proper Intermediate role
         if (!discordUserHasRole.intermediateLockeePink && prefPink) {
-          isChanging = true
+          isChangingLockeeExpRole = true
           await discordUser.addRole(role.intermediateLockeePink)
-          changesImplemented.push({ action: 'added', type: 'role', result: '(Pink) Intermediate Lockee' })
+          changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: '(Pink) Intermediate Lockee' })
         }
         if (!discordUserHasRole.intermediateLockeeBlue && prefBlue) {
-          isChanging = true
+          isChangingLockeeExpRole = true
           await discordUser.addRole(role.intermediateLockeeBlue)
-          changesImplemented.push({ action: 'added', type: 'role', result: '(Blue) Intermediate Lockee' })
+          changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: '(Blue) Intermediate Lockee' })
         }
 
         // Remove other roles
-        if (isChanging) {
+        if (isChangingLockeeExpRole) {
           if (discordUserHasRole.devotedLockeePink) {
             await discordUser.removeRole(role.devotedLockeePink)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Devoted Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Pink) Devoted Lockee' })
           }
           if (discordUserHasRole.devotedLockeeBlue) {
             await discordUser.removeRole(role.devotedLockeeBlue)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Devoted Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Blue) Devoted Lockee' })
           }
           if (discordUserHasRole.experiencedLockeePink) {
             await discordUser.removeRole(role.experiencedLockeePink)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Experienced Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Pink) Experienced Lockee' })
           }
           if (discordUserHasRole.experiencedLockeeBlue) {
             await discordUser.removeRole(role.experiencedLockeeBlue)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Experienced Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Blue) Experienced Lockee' })
           }
           if (discordUserHasRole.noviceLockeePink) {
             await discordUser.removeRole(role.noviceLockeePink)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Pink) Novice Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Pink) Novice Lockee' })
           }
           if (discordUserHasRole.noviceLockeeBlue) {
             await discordUser.removeRole(role.noviceLockeeBlue)
-            changesImplemented.push({ action: 'removed', type: 'role', result: '(Blue) Novice Lockee' })
+            changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: '(Blue) Novice Lockee' })
           }
         }
       }
@@ -432,16 +464,26 @@ export async function update(routed: RouterRouted) {
   } catch (e) {
     console.log('CK Update Error updating Experience role')
   }
+  // * Performance End: Lockee * //
+  updatePerformance.lockee.end = performance.now()
+  changesImplemented.push({ action: 'performance', category: 'n/a', type: 'status', result: `${Math.round(updatePerformance.lockee.end - updatePerformance.lockee.start)}ms` })
 
   ///////////////////////////////////////
   /// Role Update: Locktober          ///
   ///////////////////////////////////////
+  // * Performance Start: Locktober * //
+  updatePerformance.locktober.start = performance.now()
+  changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Locktober' })
+
   try {
+    // Locktober Data (DB Cached)
+    const isLocktoberParticipant = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober', { discordID: user.id })
+
     if (isLocktoberParticipant) {
       // User is found in participants list, is missing the role, add the role
       if (!discordUserHasRole.locktober) {
         await discordUser.addRole(role.locktober)
-        changesImplemented.push({ action: 'added', type: 'role', result: 'Locktober 2019' })
+        changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: 'Locktober 2019' })
       }
     }
     // Else: User is not longer in the participants list
@@ -449,38 +491,147 @@ export async function update(routed: RouterRouted) {
       // User is NOT found in participants list, remove the role
       if (discordUserHasRole.locktober) {
         await discordUser.removeRole(role.locktober)
-        changesImplemented.push({ action: 'removed', type: 'role', result: 'Locktober 2019' })
+        changesImplemented.push({ action: 'removed', category: 'locktober', type: 'role', result: 'Locktober 2019' })
       }
     }
   } catch (e) {
     console.log('CK Update Error updating Locktober 2019 role')
   }
+  // * Performance End: Locktober * //
+  updatePerformance.locktober.end = performance.now()
+  changesImplemented.push({ action: 'performance', category: 'n/a', type: 'status', result: `${Math.round(updatePerformance.locktober.end - updatePerformance.locktober.start)}ms` })
 
   ///////////////////////////////////////
   /// Role Update: Keyholder Exp      ///
   ///////////////////////////////////////
-  try {
-    if (discordUserHasRole.noviceKeyholder) {
-      // Check their KH stats to see if eligible for a Role upgrade
-      const khData = await routed.bot.DB.get<TrackedChastiKeyKeyholderStatistics>('ck-keyholders', { username: user.ChastiKey.username })
-      const eligibleForUpgrade = khData.totalLocksManaged >= 10
+  // * Performance Start: Keyholder * //
+  updatePerformance.keyholder.start = performance.now()
+  changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Keyholder' })
 
-      // Assign Keyholder role
-      if (eligibleForUpgrade) {
+  try {
+    if (discordUserHasRole.noviceKeyholder || discordUserHasRole.keyholder || discordUserHasRole.establishedKeyholder || discordUserHasRole.renownedKeyholder) {
+      // Check their KH stats to see if eligible for a Role upgrade
+      const khData = new TrackedChastiKeyKeyholderStatistics(await routed.bot.DB.get<TrackedChastiKeyKeyholderStatistics>('ck-keyholders', { username: user.ChastiKey.username }))
+      const eligibleUpgradeEstablishedKeyholderToRenownedKeyholder =
+        khData.totalLocksManaged >= 1500 && !discordUserHasRole.renownedKeyholder && Date.now() / 1000 - khData.timestampFirstKeyheld >= 86400 * 182
+      const eligibleUpgradeKeyholderToEstablishedKeyholder =
+        khData.totalLocksManaged >= 100 && khData.totalLocksManaged < 1500 && !discordUserHasRole.establishedKeyholder && Date.now() / 1000 - khData.timestampFirstKeyheld >= 86400 * 60
+      const eligibleUpgradeNoviceToKeyholder = khData.totalLocksManaged >= 10 && khData.totalLocksManaged < 100 && !discordUserHasRole.keyholder
+
+      // Established Keyholder -> Renowned Keyholder role
+      if (eligibleUpgradeEstablishedKeyholderToRenownedKeyholder) {
+        await discordUser.addRole(role.renownedKeyholder)
+        changesImplemented.push({ action: 'added', category: 'keyholder', type: 'role', result: 'Renowned Keyholder' })
+
+        // Print in Audit log
+        await routed.bot.auditLogChannel.send(
+          `:robot: **ChastiKey Keyholder Level Up**\nUpgraded to = \`Renowned Keyholder\`\nServer = \`${discordUser.guild.name}\`\nTo = \`@${discordUser.nickname || discordUser.user.username}#${
+            discordUser.user.discriminator
+          }\``
+        )
+
+        // Remove other roles
+        if (discordUserHasRole.establishedKeyholder) {
+          await discordUser.removeRole(role.establishedKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Established Keyholder' })
+        }
+        if (discordUserHasRole.keyholder) {
+          await discordUser.removeRole(role.keyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Keyholder' })
+        }
+        if (discordUserHasRole.noviceKeyholder) {
+          await discordUser.removeRole(role.noviceKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Novice Keyholder' })
+        }
+      }
+
+      // Keyholder -> Established Keyholder role
+      if (eligibleUpgradeKeyholderToEstablishedKeyholder) {
+        await discordUser.addRole(role.establishedKeyholder)
+        changesImplemented.push({ action: 'added', category: 'keyholder', type: 'role', result: 'Established Keyholder' })
+
+        // Print in Audit log
+        await routed.bot.auditLogChannel.send(
+          `:robot: **ChastiKey Keyholder Level Up**\nUpgraded to = \`Established Keyholder\`\nServer = \`${discordUser.guild.name}\`\nTo = \`@${discordUser.nickname || discordUser.user.username}#${
+            discordUser.user.discriminator
+          }\``
+        )
+
+        // Remove other roles
+        if (discordUserHasRole.renownedKeyholder) {
+          await discordUser.removeRole(role.renownedKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Renowned Keyholder' })
+        }
+        if (discordUserHasRole.keyholder) {
+          await discordUser.removeRole(role.keyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Keyholder' })
+        }
+        if (discordUserHasRole.noviceKeyholder) {
+          await discordUser.removeRole(role.noviceKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Novice Keyholder' })
+        }
+      }
+
+      // Novice -> Keyholder role
+      if (eligibleUpgradeNoviceToKeyholder) {
         await discordUser.addRole(role.keyholder)
-        changesImplemented.push({ action: 'added', type: 'role', result: 'Keyholder' })
-        await discordUser.removeRole(role.noviceKeyholder)
-        changesImplemented.push({ action: 'removed', type: 'role', result: 'Novice Keyholder' })
+        changesImplemented.push({ action: 'added', category: 'keyholder', type: 'role', result: 'Keyholder' })
+
+        // Print in Audit log
+        await routed.bot.auditLogChannel.send(
+          `:robot: **ChastiKey Keyholder Level Up**\nUpgraded to = \`Keyholder\`\nServer = \`${discordUser.guild.name}\`\nTo = \`@${discordUser.nickname || discordUser.user.username}#${
+            discordUser.user.discriminator
+          }\``
+        )
+
+        // Remove other roles
+        if (discordUserHasRole.renownedKeyholder) {
+          await discordUser.removeRole(role.renownedKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Renowned Keyholder' })
+        }
+        if (discordUserHasRole.establishedKeyholder) {
+          await discordUser.removeRole(role.establishedKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Established Keyholder' })
+        }
+        if (discordUserHasRole.noviceKeyholder) {
+          await discordUser.removeRole(role.noviceKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Novice Keyholder' })
+        }
       }
     }
   } catch (e) {
     console.log('CK Update Error updating Keyholder Exp role(s)')
   }
+  // * Performance End: Keyholder * //
+  updatePerformance.keyholder.end = performance.now()
+  changesImplemented.push({ action: 'performance', category: 'n/a', type: 'status', result: `${Math.round(updatePerformance.keyholder.end - updatePerformance.keyholder.start)}ms` })
+  // * Performance End: Full * //
+  updatePerformance.full.end = performance.now()
+  changesImplemented.push({ action: 'performance', category: 'n/a', type: 'status', result: `${Math.round(updatePerformance.full.end - updatePerformance.full.start)}ms` })
 
   // Print results in chat of changes
-  var results: string = `Summary of changes to \`${discordUser.nickname || discordUser.user.username}#${discordUser.user.discriminator}\`\n\`\`\``
-  if (changesImplemented.length > 0) changesImplemented.forEach(change => (results += `${change.action} ${change.type}: ${change.result}\n`))
-  else results += 'No changes to be made!'
+  var results: string = `Summary of changes to \`${discordUser.nickname || discordUser.user.username}#${discordUser.user.discriminator}\`\n\`\`\`diff\n`
+  var currentCategoryInPrintHasItems = false
+
+  changesImplemented.forEach((change, i) => {
+    // Print Header
+    if (change.action === 'header') {
+      results += `## [ ${change.result} ] ##\n`
+      currentCategoryInPrintHasItems = false
+    }
+    // Print + or - changes
+    if (change.action !== 'header' && change.action !== 'performance') {
+      results += `${change.action === 'added' || change.action === 'changed' ? '+' : '-'} ${change.action} ${change.type}: ${change.result}\n`
+      currentCategoryInPrintHasItems = true
+    }
+    // Print Performance
+    if (change.action === 'performance' && i < changesImplemented.length - 1) {
+      // If there's no changes in this section display a message saying so
+      if (!currentCategoryInPrintHasItems) results += '\nNo changes\n'
+      results += `\n===========================\n--- Time taken: ${change.result}\n\n`
+    }
+  })
+
   results += '```'
 
   await routed.message.reply(results)

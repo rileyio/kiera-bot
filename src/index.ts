@@ -22,7 +22,7 @@ export class Bot {
   public MsgTracker: MsgTracker
   public version: string
   public tokens: { bnet: string }
-  public auditLogChannel: string = process.env.DISCORD_AUDITLOG_CHANNEL
+  public auditLogChannel: Discord.TextChannel
 
   // Audit Manager
   public Audit: Audit = new Audit(this)
@@ -119,9 +119,12 @@ export class Bot {
     if (this.BotMonitor.status.db) {
       for (let index = 0; index < guilds.length; index++) {
         const guild = guilds[index]
-        this.DEBUG.log(`===> connecting to server => ${guild.name}`)
+        // this.DEBUG.log(`===> connecting to server => ${guild.name}`)
         await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
       }
+
+      // Setup Audit Log Channel
+      this.auditLogChannel = this.client.channels.find(c => c.id === process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
     }
   }
 

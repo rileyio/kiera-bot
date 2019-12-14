@@ -1,6 +1,6 @@
-import { Task } from '../task';
-import { Collections } from '../../db/database';
-import { TextChannel } from 'discord.js';
+import { Task } from '../task'
+import { Collections } from '../../db/database'
+import { TextChannel } from 'discord.js'
 
 export class ChastiKeyEventRoleMonitor extends Task {
   public dbCollection: Collections
@@ -11,7 +11,7 @@ export class ChastiKeyEventRoleMonitor extends Task {
   isAsync = true
 
   protected async process() {
-    if ((Date.now() - this.previousRefresh) < this.frequency) return // Stop here
+    if (Date.now() - this.previousRefresh < this.frequency) return // Stop here
 
     // If Debug block is in place, stop here
     if (process.env.BOT_BLOCK_EVENT) {
@@ -22,15 +22,14 @@ export class ChastiKeyEventRoleMonitor extends Task {
 
     try {
       // Get users who are eligible from the db, but only users who have verified their discord ID
-      const stored = await this.Bot.DB.getMultiple<{ username: string, discordID: string }>('ck-locktober', { discordID: { $ne: null } })
-      const guilds = this.Bot.client.guilds.filter((g) => g.id === '473856867768991744' || g.id === '389204362959781899').array()
-      const auditLogChannel = (<TextChannel>this.Bot.client.channels.find(c => c.id === this.Bot.auditLogChannel))
+      const stored = await this.Bot.DB.getMultiple<{ username: string; discordID: string }>('ck-locktober', { discordID: { $ne: null } })
+      const guilds = this.Bot.client.guilds.filter(g => g.id === '473856867768991744' || g.id === '389204362959781899').array()
 
       console.log(`Event Role Monitor::Users Eligible = ${stored.length}`)
 
       // Loop through guilds
       for (let guildIndex = 0; guildIndex < guilds.length; guildIndex++) {
-        const guild = guilds[guildIndex];
+        const guild = guilds[guildIndex]
         const guildMembers = guild.members.array()
         const role = guild.roles.find(r => r.name === this.eventRole)
         const usersWithRoleAlready = role.members.filter(m => m.roles.find(r => r.name === this.eventRole) !== undefined).array()
@@ -49,7 +48,9 @@ export class ChastiKeyEventRoleMonitor extends Task {
               await member.addRole(role)
               await this.sleep(250)
               // Print in Audit log
-              await auditLogChannel.send(`:robot: **Event Role Monitor**\nGiving event role = \`${role.name}\`\nServer = \`${guild.name}\`\nTo = \`@${member.nickname || member.user.username}#${member.user.discriminator}\``)
+              await this.Bot.auditLogChannel.send(
+                `:robot: **Event Role Monitor**\nGiving event role = \`${role.name}\`\nServer = \`${guild.name}\`\nTo = \`@${member.nickname || member.user.username}#${member.user.discriminator}\``
+              )
               await this.sleep(250)
             }
           }
@@ -62,7 +63,11 @@ export class ChastiKeyEventRoleMonitor extends Task {
               await member.removeRole(role)
               await this.sleep(250)
               //Print in Audit log
-              await auditLogChannel.send(`:robot: **Event Role Monitor**\nRemoving event role = \`${role.name}\`\nServer = \`${guild.name}\`\nFrom = \`@${member.nickname || member.user.username}#${member.user.discriminator}\``)
+              await this.Bot.auditLogChannel.send(
+                `:robot: **Event Role Monitor**\nRemoving event role = \`${role.name}\`\nServer = \`${guild.name}\`\nFrom = \`@${member.nickname || member.user.username}#${
+                  member.user.discriminator
+                }\``
+              )
               await this.sleep(250)
             }
           }
@@ -79,6 +84,6 @@ export class ChastiKeyEventRoleMonitor extends Task {
   }
 
   private sleep(time: number) {
-    return new Promise((resolve) => setTimeout(resolve, time));
+    return new Promise(resolve => setTimeout(resolve, time))
   }
 }
