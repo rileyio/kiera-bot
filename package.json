@@ -5,7 +5,7 @@
   "repository": "https://github.com/rileyio/kiera-bot.git",
   "author": "Emma (RileyIO)",
   "contributors": [],
-  "license": "closed",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "build": "tsc",
