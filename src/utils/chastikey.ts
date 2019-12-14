@@ -1,10 +1,10 @@
-import * as APIUrls from '../api-urls';
-import * as QRCode from 'qrcode';
+import * as APIUrls from '../api-urls'
+import * as QRCode from 'qrcode'
 import * as Utils from '.'
-import { Transform, Stream } from 'stream';
-import { TrackedChastiKey, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetchLock, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '../objects/chastikey';
-import { LockeeStats } from '../embedded/chastikey-stats';
-import { RouterStats } from '../router/router';
+import { Transform, Stream } from 'stream'
+import { TrackedChastiKey, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetchLock, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '../objects/chastikey'
+import { LockeeStats } from '../embedded/chastikey-stats'
+import { RouterStats } from '../router/router'
 
 export namespace ChastiKey {
   export function generateTickerURL(ck: TrackedChastiKey, overrideType?: number) {
@@ -24,19 +24,26 @@ export namespace ChastiKey {
       transform(chunk, encoding, callback) {
         this.push(chunk)
         callback()
-      },
+      }
     })
 
-    QRCode.toFileStream(stream, `ChastiKey-Shareable-Lock-!A${code}`, { errorCorrectionLevel: 'high', scale: 5, margin: 2 })
+    QRCode.toFileStream(stream, `ChastiKey-Shareable-Lock-!A${code}`, { errorCorrectionLevel: 'high', scale: 5, margin: 3 })
     return stream
   }
 
-  export function compileLockeeStats(ckUser: TrackedChastiKeyUser, userInLockeeStats: TrackedChastiKeyLockee, cachedActiveLocks: Array<TrackedChastiKeyLock>, locks: Array<TrackedChastiKeyUserAPIFetchLock>, routerStats: RouterStats): LockeeStats {
+  export function compileLockeeStats(
+    ckUser: TrackedChastiKeyUser,
+    userInLockeeStats: TrackedChastiKeyLockee,
+    cachedActiveLocks: Array<TrackedChastiKeyLock>,
+    locks: Array<TrackedChastiKeyUserAPIFetchLock>,
+    routerStats: RouterStats
+  ): LockeeStats {
+    console.log('!!!!@@@@@', ckUser.timestampLastActive)
     // Variables - Defaults (unless changed later)
     var calculatedCumulative = 0
     var calculatedTimeSinceLastLock = 0
     var allLockeesLocks = locks
-    var allLockeesLocksTransformed: Array<{ start: number, end: number }> = []
+    var allLockeesLocksTransformed: Array<{ start: number; end: number }> = []
 
     try {
       // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
@@ -55,9 +62,7 @@ export namespace ChastiKey {
 
         // Find newest lock ended - only if no locks are active
         if (cachedActiveLocks.length === 0) {
-          calculatedTimeSinceLastLock = (d.timestampUnlocked > calculatedTimeSinceLastLock)
-            ? d.timestampUnlocked
-            : calculatedTimeSinceLastLock
+          calculatedTimeSinceLastLock = d.timestampUnlocked > calculatedTimeSinceLastLock ? d.timestampUnlocked : calculatedTimeSinceLastLock
         }
 
         // Only include Non-Abandoned locks in the calculation
@@ -75,23 +80,23 @@ export namespace ChastiKey {
       // console.log('!!! Average:', Utils.Date.calculateHumanTimeDDHHMM(cumulativeCalc.average))
       userInLockeeStats.averageTimeLockedInSeconds = cumulativeCalc.average
       // console.log('!!!!!!!!!!Got this far!')
-
     } catch (error) {
       calculatedCumulative = NaN
       console.log('CK stats lockee Error building cumulative time')
     }
 
     return {
-      averageLocked: (userInLockeeStats) ? userInLockeeStats.averageTimeLockedInSeconds : 0,
-      averageRating: (userInLockeeStats) ? userInLockeeStats.averageRating : '-',
+      averageLocked: userInLockeeStats ? userInLockeeStats.averageTimeLockedInSeconds : 0,
+      averageRating: userInLockeeStats ? userInLockeeStats.averageRating : '-',
       locks: cachedActiveLocks,
-      longestLock: (userInLockeeStats) ? userInLockeeStats.longestCompletedLockInSeconds : 0,
-      monthsLocked: (calculatedCumulative),
-      noOfRatings: (userInLockeeStats) ? userInLockeeStats.noOfRatings : 0,
-      totalNoOfCompletedLocks: (userInLockeeStats) ? userInLockeeStats.totalNoOfCompletedLocks : 0,
+      longestLock: userInLockeeStats ? userInLockeeStats.longestCompletedLockInSeconds : 0,
+      monthsLocked: calculatedCumulative,
+      noOfRatings: userInLockeeStats ? userInLockeeStats.noOfRatings : 0,
+      totalNoOfCompletedLocks: userInLockeeStats ? userInLockeeStats.totalNoOfCompletedLocks : 0,
       username: ckUser.username,
-      joined: (userInLockeeStats) ? userInLockeeStats.joined : '-',
-      additional: { timeSinceLast: (calculatedTimeSinceLastLock > 0) ? ((Date.now() / 1000) - calculatedTimeSinceLastLock) : 0 },
+      joined: userInLockeeStats ? userInLockeeStats.joined : '-',
+      timestampLastActive: ckUser.timestampLastActive,
+      additional: { timeSinceLast: calculatedTimeSinceLastLock > 0 ? Date.now() / 1000 - calculatedTimeSinceLastLock : 0 },
       isVerified: ckUser.isVerified(),
       routerStats: routerStats
     }
