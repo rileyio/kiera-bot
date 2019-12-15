@@ -1,6 +1,7 @@
-import { ObjectID } from 'bson';
+import { ObjectID } from 'bson'
 
-export type Statistic = 'discord-api-calls'
+export type BotStatistic =
+  | 'discord-api-calls'
   | 'messages-seen'
   | 'messages-sent'
   | 'messages-tracked'
@@ -45,7 +46,6 @@ export class BotStatistics {
   }
   public discordAPICalls: number = 0
 
-
   public startup(init: BotStatistics) {
     // Strip certain values that would reset each bot restart
     delete init.uptime
@@ -56,27 +56,41 @@ export class BotStatistics {
   }
 }
 
-export class ServerStatistics {
-  public _id: ObjectID
-  public serverID: string
-  public timestamp: number
-
+export enum UserStatisticsType {
+  Message,
+  Reaction
 }
 
 export class UserStatistics {
   public _id: ObjectID
-  /**
-   * Discord Guild ID
-   * @type {string}
-   * @memberof UserStatistics
-   */
   public serverID: string
-  /**
-   * Discord Snowflake ID
-   * @type {string}
-   * @memberof UserStatistics
-   */
-  public owner: string
-  public tr: number
-  public 
+  public userID: string
+  public channelID: string
+  public type: UserStatisticsType
+
+  constructor(init: Partial<UserStatistics>) {
+    Object.assign(this, init)
+  }
+}
+
+export class ServerStatistics {
+  public _id: ObjectID
+  public serverID: string
+  public serverName: string
+  public date: string
+
+  public usersJoined: number = 0
+  public usersLeft: number = 0
+
+  constructor(init: Partial<ServerStatistics>) {
+    if (init) {
+      Object.assign(this, init)
+    } else {
+      // Current Date
+      const cd = new Date()
+      cd.setHours(0, 0, 0, 0)
+
+      this.date = cd.toISOString()
+    }
+  }
 }

@@ -1,14 +1,15 @@
-import * as XRegex from 'xregexp';
-import * as Utils from '../utils/';
-import { Validate, ValidationType } from './validate';
-import { Message, User, TextChannel, DMChannel } from 'discord.js';
-import { Bot } from '..';
-import { TrackedMessage } from '../objects/message';
-import { CommandPermission } from '../objects/permission';
-import { performance } from 'perf_hooks';
-import { fallbackHelp } from '../embedded/fallback-help';
-import { RouteConfigurationCategory } from './route-categories';
-import { RouteActionUserTarget, ProcessedPermissions } from './route-permissions';
+import * as XRegex from 'xregexp'
+import * as Utils from '../utils/'
+import { Validate, ValidationType } from './validate'
+import { Message, User, TextChannel, DMChannel } from 'discord.js'
+import { Bot } from '..'
+import { TrackedMessage } from '../objects/message'
+import { CommandPermission } from '../objects/permission'
+import { performance } from 'perf_hooks'
+import { fallbackHelp } from '../embedded/fallback-help'
+import { RouteConfigurationCategory } from './route-categories'
+import { RouteActionUserTarget, ProcessedPermissions } from './route-permissions'
+import { UserStatistics, UserStatisticsType } from '../objects/statistics'
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
 
@@ -26,7 +27,7 @@ export class RouterStats {
    * @type {string}
    * @memberof RouterStats
    */
-  public get user() : string {
+  public get user(): string {
     return `${this._discordUser.username}#${this._discordUser.discriminator}`
   }
 
@@ -85,10 +86,10 @@ export class MessageRoute {
   public middleware: Array<(routed: RouterRouted) => Promise<RouterRouted | void>> = []
   public name: string
   public permissions: {
-    defaultEnabled: boolean,
-    restricted: boolean,
-    serverAdminOnly: boolean,
-    restrictedTo: Array<string>,
+    defaultEnabled: boolean
+    restricted: boolean
+    serverAdminOnly: boolean
+    restrictedTo: Array<string>
     serverOnly: boolean
   }
   public type: 'message' | 'reaction'
@@ -99,18 +100,15 @@ export class MessageRoute {
     // Merge props from RouteConfiguration passed
     Object.assign(this, route)
     // Set command branch for sorting - only set this if the type is a message
-    this.command = (this.type === 'message') ? this.getCommand(route.validate) : undefined
+    this.command = this.type === 'message' ? this.getCommand(route.validate) : undefined
     // Setup validation for route
     this.validation = new Validate(route.validate)
     // Ensure permissions is setup properly
     this.permissions = this._defaultPermissions
     Object.assign(this.permissions, route.permissions)
     // Restricted should override defaultEnabled
-    this.permissions.defaultEnabled = this.permissions.restricted === true
-      ? false
-      : this.permissions.defaultEnabled
+    this.permissions.defaultEnabled = this.permissions.restricted === true ? false : this.permissions.defaultEnabled
   }
-
 
   public test(message: string) {
     return this.validation.test(message)
@@ -124,7 +122,7 @@ export class MessageRoute {
 }
 
 /**
- * The almighty incoming commands router! 
+ * The almighty incoming commands router!
  *
  * @export
  * @class Router
@@ -154,7 +152,7 @@ export class Router {
    * @param {string} reaction
    * @param {User} user
    * @param {('added' | 'removed')} direction
-   * @returns 
+   * @returns
    * @memberof Router
    */
   public async routeReaction(message: Message, reaction: string, user: User, direction: 'added' | 'removed') {
@@ -166,12 +164,17 @@ export class Router {
     // Block my own messages
     if (user.id === this.bot.client.user.id) {
       // Track my own messages when they are seen
-      // this.bot.BotMonitor.Stats.increment('messages-sent')
+      // this.bot.BotMonitor.LiveStatistics.increment('messages-sent')
       // Track if its a dm as well
       if (message.channel.type === 'dm') {
-        // this.bot.BotMonitor.Stats.increment('dms-sent')
+        // this.bot.BotMonitor.LiveStatistics.increment('dms-sent')
       }
-      return; // Hard block
+      return // Hard block
+    } else {
+      if (direction === 'added') {
+        // Track stats
+        this.bot.DB.add('stats-users', new UserStatistics({ serverID: message.guild.id, channelID: message.channel.id, userID: user.id, type: UserStatisticsType.Reaction }))
+      }
     }
 
     // Lookup tracked message in db
@@ -192,7 +195,9 @@ export class Router {
     if (!storedMessage.reactionRoute) return
 
     // Find route to send this message reaction upon
-    const route = this.routes.find(r => { return r.name === storedMessage.reactionRoute && r.type === 'reaction' })
+    const route = this.routes.find(r => {
+      return r.name === storedMessage.reactionRoute && r.type === 'reaction'
+    })
     this.bot.DEBUG_MSG_COMMAND.log('Router -> Route:', route)
 
     // Stop routing if no route match
@@ -209,7 +214,7 @@ export class Router {
       state: direction,
       trackedMessage: storedMessage,
       type: 'reaction',
-      user: user,
+      user: user
     })
 
     // Process middleware
@@ -220,7 +225,7 @@ export class Router {
       const fromMiddleware = await middleware(routed)
       // If the returned item is empty stop here
       if (!fromMiddleware) {
-        break;
+        break
       }
       // When everything is ok, continue
       mwareProcessed += 1
@@ -230,10 +235,10 @@ export class Router {
 
     // Stop execution of route if middleware is halted
     if (mwareProcessed === mwareCount) {
-      // this.bot.BotMonitor.Stats.increment('commands-routed')
+      // this.bot.BotMonitor.LiveStatistics.increment('commands-routed')
       // Check status returns later for stats tracking
-      const status = await route.controller(routed)
-      // this.bot.BotMonitor.Stats.increment('commands-completed')
+      await route.controller(routed)
+      // this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
       return // End routing here
     }
   }
@@ -246,27 +251,30 @@ export class Router {
    * @memberof Router
    */
   public async routeMessage(message: Message) {
-    // const runtimeStart = performance.now()
     const routerStats = new RouterStats(message.author)
-    // Block my own messages
+    // Block my (Kiera's) own messages
     if (message.author.id === this.bot.client.user.id) {
       // Track my own messages when they are seen
-      this.bot.BotMonitor.Stats.increment('messages-sent')
+      this.bot.BotMonitor.LiveStatistics.increment('messages-sent')
       // Track if its a dm as well
       if (message.channel.type === 'dm') {
-        this.bot.BotMonitor.Stats.increment('dms-sent')
+        this.bot.BotMonitor.LiveStatistics.increment('dms-sent')
       }
-      return; // Hard block
+      return // Hard block
     }
 
     // Messages incoming as DMs
     if (message.channel.type === 'dm') {
-      this.bot.BotMonitor.Stats.increment('dms-received')
+      this.bot.BotMonitor.LiveStatistics.increment('dms-received')
+    } else {
+      // Track stats
+      this.bot.DB.add('stats-users', new UserStatistics({ serverID: message.guild.id, channelID: message.channel.id, userID: message.author.id, type: UserStatisticsType.Message }))
     }
 
     const containsPrefix = message.content.startsWith(prefix)
-    this.bot.BotMonitor.Stats.increment('messages-seen')
+    this.bot.BotMonitor.LiveStatistics.increment('messages-seen')
 
+    // When the Bot Command Prefix is present
     if (containsPrefix) {
       this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming message: '${message.content}'`)
 
@@ -278,27 +286,29 @@ export class Router {
       this.bot.DEBUG_MSG_COMMAND.log(`Router -> Routes by '${args[0]}' command: ${routes.length}`)
 
       // If no routes matched, stop here
-      if (routes.length === 0) return;
+      if (routes.length === 0) return
 
       // Try to find a route
       var examples = []
       const route = await routes.find(r => {
         // Add to examples
         if (r.permissions.restricted === false) examples.push(r.example)
-        else { this.bot.DEBUG_MSG_COMMAND.log(`Router -> Examples for command like '${args[0]}' Restricted!`) }
+        else {
+          this.bot.DEBUG_MSG_COMMAND.log(`Router -> Examples for command like '${args[0]}' Restricted!`)
+        }
         return r.test(message.content) === true
       })
 
       // Stop if there's no specific route found
       if (route === undefined) {
         this.bot.DEBUG_MSG_COMMAND.log(`Router -> Failed to match '${message.content}' to a route - ending routing`)
-        this.bot.BotMonitor.Stats.increment('commands-invalid')
+        this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
         // Provide some feedback about the failed command(s)
         var exampleUseOfCommand = Utils.sb(Utils.en.error.commandExactMatchFailedOptions, { command: args[0] })
         var examplesToAppend = ``
         for (let index = 0; index < examples.length; index++) {
-          const example = examples[index];
-          examplesToAppend += `\`${Utils.sb(example)}\`${(index < examples.length - 1) ? '\n' : ''}`
+          const example = examples[index]
+          examplesToAppend += `\`${Utils.sb(example)}\`${index < examples.length - 1 ? '\n' : ''}`
         }
 
         // Send back in chat
@@ -321,7 +331,7 @@ export class Router {
           where: 'Discord'
         })
 
-        return; // Hard Stop
+        return // Hard Stop
       } // End of no routes
 
       // Process route
@@ -344,7 +354,7 @@ export class Router {
       this.bot.DEBUG_MSG_COMMAND.log('Router -> Permissions Check Results:', routed.permissions)
 
       if (!routed.permissions.pass) {
-        this.bot.BotMonitor.Stats.increment('commands-invalid')
+        this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
 
         if (routed.permissions.outcome === 'FailedServerOnlyRestriction') {
           // Send message in response
@@ -362,8 +372,7 @@ export class Router {
             type: 'bot.command',
             where: 'Discord'
           })
-        }
-        else {
+        } else {
           // Track in an audit event
           this.bot.Audit.NewEntry({
             name: routed.route.name,
@@ -378,8 +387,7 @@ export class Router {
           })
         }
 
-
-        return; // Hard Stop
+        return // Hard Stop
       }
 
       const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
@@ -390,7 +398,7 @@ export class Router {
         const fromMiddleware = await middleware(routed)
         // If the returned item is empty stop here
         if (!fromMiddleware) {
-          break;
+          break
         }
         // When everything is ok, continue
         mwareProcessed += 1
@@ -402,18 +410,16 @@ export class Router {
 
       // Stop execution of route if middleware is completed
       if (mwareProcessed === mwareCount) {
-        this.bot.BotMonitor.Stats.increment('commands-routed')
+        this.bot.BotMonitor.LiveStatistics.increment('commands-routed')
         const status = await route.controller(routed)
         // Successful completion of command
         if (status) {
-          this.bot.BotMonitor.Stats.increment('commands-completed')
+          this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
           // Track in an audit event
           this.bot.Audit.NewEntry({
             name: routed.route.name,
             details: routed.message.content,
-            guild: (routed.isDM)
-              ? { id: 'dm', name: 'dm', channel: 'dm' }
-              : { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
+            guild: routed.isDM ? { id: 'dm', name: 'dm', channel: 'dm' } : { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
             owner: routed.message.author.id,
             runtime: routerStats.performance,
             successful: true,
@@ -423,7 +429,7 @@ export class Router {
         }
         // Command failed or returned false inside controller
         else {
-          this.bot.BotMonitor.Stats.increment('commands-invalid')
+          this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
           // Track in an audit event
           this.bot.Audit.NewEntry({
             name: routed.route.name,
@@ -440,7 +446,7 @@ export class Router {
         return // End routing here
       }
 
-      this.bot.BotMonitor.Stats.increment('commands-invalid')
+      this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       return
     }
   }
@@ -473,8 +479,7 @@ export class Router {
         checks.outcome = 'Pass'
         checks.pass = true
         return checks // stop here
-      }
-      else {
+      } else {
         checks.outcome = 'FailedIDCheck'
         checks.pass = false
         return checks // Hard stop here
@@ -493,17 +498,19 @@ export class Router {
 
     // Skip if a DM, as no one would have set a permission for a channel for this
     // Get the command permission if its in the DB
-    var commandPermission = new CommandPermission(await routed.bot.DB
-      .get<CommandPermission>('command-permissions',
-        { serverID: !routed.isDM ? routed.message.guild.id : 'DM', channelID: !routed.isDM ? routed.message.channel.id : 'DM', command: routed.route.name })
-      ||
-      // Defaults to True
-      {
+    var commandPermission = new CommandPermission(
+      (await routed.bot.DB.get<CommandPermission>('command-permissions', {
+        serverID: !routed.isDM ? routed.message.guild.id : 'DM',
+        channelID: !routed.isDM ? routed.message.channel.id : 'DM',
+        command: routed.route.name
+      })) || {
+        // Defaults to True
         serverID: !routed.isDM ? routed.message.guild.id : 'DM',
         channelID: routed.message.channel.id,
         command: routed.route.name,
         enabled: true
-      })
+      }
+    )
 
     // Some how if it gets here without a permission constructed then just block the command from running
     if (!commandPermission) {
@@ -538,7 +545,7 @@ export class RouterRouted {
   public message: Message
   public permissions: ProcessedPermissions
   public reaction: {
-    snowflake: string,
+    snowflake: string
     reaction: string
   }
   public route: MessageRoute
@@ -548,9 +555,9 @@ export class RouterRouted {
   public type: 'message' | 'reaction'
   public user: User
   public v: {
-    valid: boolean;
-    validated: ValidationType[];
-    o: { [key: string]: any };
+    valid: boolean
+    validated: ValidationType[]
+    o: { [key: string]: any }
   }
 
   constructor(init: Partial<RouterRouted>) {
@@ -562,9 +569,9 @@ export class RouterRouted {
     this.permissions = init.permissions
     this.reaction = init.reaction
       ? {
-        snowflake: init.reaction.snowflake,
-        reaction: init.reaction.reaction
-      }
+          snowflake: init.reaction.snowflake,
+          reaction: init.reaction.reaction
+        }
       : undefined
     this.route = init.route
     this.routerStats = init.routerStats

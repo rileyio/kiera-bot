@@ -23,6 +23,8 @@ export type Collections =
   | 'server-settings'
   | 'servers'
   | 'settings'
+  | 'stats-users'
+  | 'stats-servers'
   | 'stats-bot'
   | 'users'
 
@@ -242,7 +244,7 @@ export class MongoDB {
     this.DEBUG_DB.log(`.aggregate => ${targetCollection}`)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
-    const result = await collection.aggregate(query)
+    const result = collection.aggregate(query)
     // this.DEBUG_DB.log(`.aggregate results [${targetCollection}] =>`, result)
     // connection.client.close()
     return (await result.toArray()) as Array<T>

@@ -1,19 +1,19 @@
-import * as Discord from 'discord.js';
-import { Logging } from '../utils/';
+import * as Discord from 'discord.js'
+import { Logging } from '../utils/'
 
 export namespace Channel {
-  /**  
+  /**
    * Deletes all mess ages in a given channel
    * @export
    * @param {Discord.TextChannel} channel
    */
   export async function cleanTextChat(channel: Discord.TextChannel, DEBUG: Logging.Debug) {
-    var messages: Discord.Collection<string, Discord.Message>;
+    var messages: Discord.Collection<string, Discord.Message>
     do {
       messages = await channel.fetchMessages({ limit: 100 })
       DEBUG.log(`bulk channel message cleanup, deleting batch of ${messages.size} messages`)
       await channel.bulkDelete(messages)
-    } while (messages.size > 0);
+    } while (messages.size > 0)
   }
 
   /**
@@ -26,7 +26,7 @@ export namespace Channel {
    */
   export function getTextChannel(channelCollection: Discord.Collection<string, Discord.Channel>, channelId: string) {
     const channel = channelCollection.array().find(ch => ch.id === channelId)
-    return (<Discord.TextChannel>channel)
+    return <Discord.TextChannel>channel
   }
 
   /**
@@ -42,5 +42,9 @@ export namespace Channel {
     // Delete message
     await msg.delete()
     debug(`deleted message id:${id} channelId:${textChannel.id}`)
+  }
+
+  export function buildChannelChatAt(input: string | Discord.TextChannel): string {
+    return `<#${input}>`
   }
 }

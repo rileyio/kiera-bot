@@ -1,16 +1,16 @@
-import { Bot } from '.';
-import { EventEmitter } from 'events';
-import { DatabaseMonitor } from './db/monitor';
-import { Statistics } from './stats';
-import { TextChannel } from 'discord.js';
-import { WebAPI } from './api/web-api';
+import { Bot } from '.'
+import { EventEmitter } from 'events'
+import { DatabaseMonitor } from './db/monitor'
+import { LiveStatistics } from './bot-stats'
+import { TextChannel } from 'discord.js'
+import { WebAPI } from './api/web-api'
 
 export class BotMonitor extends EventEmitter {
   private announcementsChannel: string = process.env.DISCORD_ANNOUNCEMENTS_CHANNEL
   private Bot: Bot
   private DBMonitor: DatabaseMonitor
   private WebAPI: WebAPI
-  public Stats: Statistics
+  public LiveStatistics: LiveStatistics
   public status = {
     discord: false,
     db: false,
@@ -30,7 +30,7 @@ export class BotMonitor extends EventEmitter {
 
     this.Bot = bot
     this.DBMonitor = new DatabaseMonitor(this.Bot)
-    this.Stats = new Statistics(this.Bot)
+    this.LiveStatistics = new LiveStatistics(this.Bot)
     this.WebAPI = new WebAPI(this.Bot)
 
     this.setEventListeners()
@@ -39,7 +39,7 @@ export class BotMonitor extends EventEmitter {
   public async start() {
     this.status.db = await this.DBMonitor.start()
     this.status.discord = await this.discordAPIReady()
-    this.status.stats = await this.Stats.start()
+    this.status.stats = await this.LiveStatistics.start()
     this.status.api = await this.WebAPI.start()
 
     // tslint:disable-next-line:no-console
@@ -63,12 +63,15 @@ export class BotMonitor extends EventEmitter {
     // Setup Event listeners //
     this.DBMonitor.on('dbPingSuccessful', async (time, avg) => {
       const previousDBState = this.status.db
-      this.status.db = true;
+      this.status.db = true
       if (this.unhealthyStartup && !previousDBState) await this.tryUnhealthyRecovery()
     })
-    this.DBMonitor.on('dbPingFailed', async (time, avg) => { this.status.db = false; await this.checkPingThreshold() })
-    this.Stats.on('statsReady', () => this.status.stats = true)
-    this.Stats.on('statsNotReady', () => this.status.stats = false)
+    this.DBMonitor.on('dbPingFailed', async (time, avg) => {
+      this.status.db = false
+      await this.checkPingThreshold()
+    })
+    this.LiveStatistics.on('statsReady', () => (this.status.stats = true))
+    this.LiveStatistics.on('statsNotReady', () => (this.status.stats = false))
   }
 
   private async tryUnhealthyRecovery() {
@@ -92,24 +95,23 @@ export class BotMonitor extends EventEmitter {
     if (this.status.api) this.WebAPI.close()
     // Some will need to be re-initalized
     this.DBMonitor.destroy() // Destroy interval tickers
-    this.Stats.destroy() // Destroy interval tickers
+    this.LiveStatistics.destroy() // Destroy interval tickers
     this.DBMonitor = new DatabaseMonitor(this.Bot)
     this.WebAPI = new WebAPI(this.Bot)
     this.setEventListeners() // Recreate event listeners
 
     // Try again
     this.status.db = await this.DBMonitor.start()
-    this.status.stats = await this.Stats.start()
+    this.status.stats = await this.LiveStatistics.start()
     this.status.api = await this.WebAPI.start()
 
     // tslint:disable-next-line:no-console
     console.log(`@@@@@ db: ${this.status.db}, stats: ${this.status.stats}, api: ${this.status.api}`)
     if (this.status.db && this.status.stats && this.status.api) {
       this.unhealthyRecovered = true
-      const channel = (<TextChannel>this.Bot.client.channels.find(c => c.id === this.announcementsChannel))
+      const channel = <TextChannel>this.Bot.client.channels.find(c => c.id === this.announcementsChannel)
       await channel.send(`:hammer_pick: **Services Auto Restored:** I've successfully recovered myself :blush:`)
-    }
-    else {
+    } else {
       this.unhealthyRecovered = false
       // If unhealthy, alert an admin (Only if Discord was able to actually connect)
       if (this.status.discord && this.unhealthyRecovered) await this.helpMe()
@@ -125,7 +127,11 @@ export class BotMonitor extends EventEmitter {
     return new Promise<boolean>(async r => {
       /// Client ready ///
       // tslint:disable-next-line:no-console
-      this.Bot.client.on('ready', () => { console.log('+++++ on ready'); this.Bot.onReady(); r(true); })
+      this.Bot.client.on('ready', () => {
+        console.log('+++++ on ready')
+        this.Bot.onReady()
+        r(true)
+      })
       /// Connect account ///
       // tslint:disable-next-line:no-console
       await this.Bot.client.login(process.env.DISCORD_APP_TOKEN)
@@ -141,7 +147,7 @@ export class BotMonitor extends EventEmitter {
       maintainersMention += `<@${m}> `
     })
 
-    const channel = (<TextChannel>this.Bot.client.channels.find(c => c.id === this.announcementsChannel))
+    const channel = <TextChannel>this.Bot.client.channels.find(c => c.id === this.announcementsChannel)
     await channel.send(`:warning: **Critical:** Bot Maintenance Required!
 
 One of the bot maintainers: ${maintainersMention} will need to address this issue.
@@ -159,16 +165,14 @@ Stats ............. ${this.status.stats ? '✓ Started' : '✕ Down'}\`\`\``)
 
   private async checkPingThreshold() {
     // Ignore sending threshold message if startup failed
-    if (this.unhealthyStartup && !this.unhealthyRecovered) return;
+    if (this.unhealthyStartup && !this.unhealthyRecovered) return
 
     const t = Number(process.env.DB_MONITOR_PING_FAILED_THRESHOLD || 10)
     if (this.DBMonitor.pingFailedCount >= t) {
-      const channel = (<TextChannel>this.Bot.client.channels.find(c => c.id === this.announcementsChannel))
-      if (this.unhealthyRecoveryCount === 0)
-        await channel.send(`:warning: **Database Alert:** The Database has failed ${t} pings.. Will attempt to auto correct shortly..`)
+      const channel = <TextChannel>this.Bot.client.channels.find(c => c.id === this.announcementsChannel)
+      if (this.unhealthyRecoveryCount === 0) await channel.send(`:warning: **Database Alert:** The Database has failed ${t} pings.. Will attempt to auto correct shortly..`)
 
       await this.tryUnhealthyRecovery()
     }
   }
-
 }

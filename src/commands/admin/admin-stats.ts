@@ -1,25 +1,23 @@
-import * as Middleware from '../../middleware';
-import { RouterRouted } from '../../router/router';
-import { ExportRoutes } from '../../router/routes-exporter';
+import * as Middleware from '../../middleware'
+import { RouterRouted } from '../../router/router'
+import { ExportRoutes } from '../../router/routes-exporter'
 
-export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'Info',
-    commandTarget: 'argument',
-    controller: getBotStats,
-    example: '{{prefix}}admin stats',
-    name: 'admin-stats',
-    permissions: {
-      defaultEnabled: false,
-      serverAdminOnly: true
-    },
-    validate: '/admin:string/stats:string'
-  }
-)
+export const Routes = ExportRoutes({
+  type: 'message',
+  category: 'Info',
+  commandTarget: 'argument',
+  controller: getBotStats,
+  example: '{{prefix}}admin stats',
+  name: 'admin-stats',
+  permissions: {
+    defaultEnabled: false,
+    serverAdminOnly: true
+  },
+  validate: '/admin:string/stats:string'
+})
 
 export async function getBotStats(routed: RouterRouted) {
-  const stats = routed.bot.BotMonitor.Stats.Bot
+  const stats = routed.bot.BotMonitor.LiveStatistics.Bot
   var sec = Math.floor(stats.uptime / 1000)
   var min = Math.floor(sec / 60)
   sec = sec % 60
@@ -28,10 +26,10 @@ export async function getBotStats(routed: RouterRouted) {
   var days = Math.floor(hrs / 24)
   hrs = hrs % 24
 
-  const timeToShowDays = `${days > 9 ? + days : '0' + days} days`
-  const timeToShowHours = `${hrs > 9 ? + hrs : '0' + hrs}`
-  const timeToShowMins = `${min > 9 ? + min : '0' + min}`
-  const timeToShowSecs = `${sec > 9 ? + sec : '0' + sec}`
+  const timeToShowDays = `${days > 9 ? +days : '0' + days} days`
+  const timeToShowHours = `${hrs > 9 ? +hrs : '0' + hrs}`
+  const timeToShowMins = `${min > 9 ? +min : '0' + min}`
+  const timeToShowSecs = `${sec > 9 ? +sec : '0' + sec}`
 
   const combined = `${timeToShowDays} ${timeToShowHours}:${timeToShowMins}:${timeToShowSecs}`
 
