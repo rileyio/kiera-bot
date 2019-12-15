@@ -1,7 +1,7 @@
 import { Bot } from '.'
 import { EventEmitter } from 'events'
 import { DatabaseMonitor } from './db/monitor'
-import { LiveStatistics } from './bot-stats'
+import { LiveStatistics } from './live-statistics'
 import { TextChannel } from 'discord.js'
 import { WebAPI } from './api/web-api'
 
