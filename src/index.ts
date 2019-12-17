@@ -11,6 +11,7 @@ import { BotMonitor } from './monitor'
 import { routeLoader } from './router/route-loader'
 import { Audit } from './objects/audit'
 import { BattleNet } from './integrations/BNet'
+import { Statistics } from './statistics'
 
 export class Bot {
   public client = new Discord.Client()
@@ -43,6 +44,9 @@ export class Bot {
   public Service = {
     BattleNet: new BattleNet()
   }
+
+  // Statistics
+  public Statistics: Statistics = new Statistics(this)
 
   public async start() {
     this.DEBUG.log('getting things setup...')

@@ -56,41 +56,54 @@ export class BotStatistics {
   }
 }
 
-export enum UserStatisticsType {
+export enum ServerStatisticType {
   Message,
-  Reaction
+  MessageDeleted,
+  MessageEdit,
+  Reaction,
+  ReactionRemoved,
+  UserJoined,
+  UserLeft,
+  UserNicknameChanged
 }
 
-export class UserStatistics {
+/**
+ * For User/Server statistics
+ *
+ * **Type of stats:**
+ *   - Messages
+ *   - Message Interactions (reactions, etc)
+ *
+ * **Types of possible reported stats:**
+ *   - Time of day pop
+ *   - User statistics
+ *   - Trends
+ *   - Server statistics
+ *   - Channel statistics
+ * @export
+ * @class ServerStatistic
+ */
+export class ServerStatistic {
   public _id: ObjectID
   public serverID: string
   public userID: string
   public channelID: string
-  public type: UserStatisticsType
+  public type: ServerStatisticType
 
-  constructor(init: Partial<UserStatistics>) {
+  constructor(init: Partial<ServerStatistic>) {
     Object.assign(this, init)
   }
 }
 
-export class ServerStatistics {
+export enum StatisticsSettingType {
+  ServerDisableStats,
+  ServerNonPublicStats,
+  UserDisableStats
+}
+
+export class StatisticsSetting {
   public _id: ObjectID
-  public serverID: string
-  public serverName: string
-  public date: string
-
-  public usersJoined: number = 0
-  public usersLeft: number = 0
-
-  constructor(init: Partial<ServerStatistics>) {
-    if (init) {
-      Object.assign(this, init)
-    } else {
-      // Current Date
-      const cd = new Date()
-      cd.setHours(0, 0, 0, 0)
-
-      this.date = cd.toISOString()
-    }
-  }
+  public userID?: string
+  public serverID?: string
+  public setting: StatisticsSettingType
 }

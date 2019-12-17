@@ -9,7 +9,7 @@ import { performance } from 'perf_hooks'
 import { fallbackHelp } from '../embedded/fallback-help'
 import { RouteConfigurationCategory } from './route-categories'
 import { RouteActionUserTarget, ProcessedPermissions } from './route-permissions'
-import { UserStatistics, UserStatisticsType } from '../objects/statistics'
+import { ServerStatisticType } from '../objects/statistics'
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
 
@@ -173,7 +173,7 @@ export class Router {
     } else {
       if (direction === 'added') {
         // Track stats
-        this.bot.DB.add('stats-users', new UserStatistics({ serverID: message.guild.id, channelID: message.channel.id, userID: user.id, type: UserStatisticsType.Reaction }))
+        this.bot.Statistics.trackServerStatistic(message.guild.id, message.channel.id, user.id, ServerStatisticType.Reaction)
       }
     }
 
@@ -268,7 +268,7 @@ export class Router {
       this.bot.BotMonitor.LiveStatistics.increment('dms-received')
     } else {
       // Track stats
-      this.bot.DB.add('stats-users', new UserStatistics({ serverID: message.guild.id, channelID: message.channel.id, userID: message.author.id, type: UserStatisticsType.Message }))
+      this.bot.Statistics.trackServerStatistic(message.guild.id, message.channel.id, message.author.id, ServerStatisticType.Message)
     }
 
     const containsPrefix = message.content.startsWith(prefix)
@@ -290,7 +290,7 @@ export class Router {
 
       // Try to find a route
       var examples = []
-      const route = await routes.find(r => {
+      const route = routes.find(r => {
         // Add to examples
         if (r.permissions.restricted === false) examples.push(r.example)
         else {

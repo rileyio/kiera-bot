@@ -37,7 +37,7 @@ export const Routes = ExportRoutes(
 )
 
 export async function statsByTopChannels(routed: RouterRouted) {
-  const data = await routed.bot.DB.aggregate<{ channelID: string; count: number; name?: string }>('stats-users', [
+  const data = await routed.bot.DB.aggregate<{ channelID: string; count: number; name?: string }>('stats-servers', [
     {
       $match: { type: 0, serverID: routed.message.guild.id }
     },
@@ -77,7 +77,7 @@ export async function statsByTopChannels(routed: RouterRouted) {
 }
 
 export async function serverStats(routed: RouterRouted) {
-  const topChannelsByMsgCount = await routed.bot.DB.aggregate<{ channelID: string; count: number; name?: string }>('stats-users', [
+  const topChannelsByMsgCount = await routed.bot.DB.aggregate<{ channelID: string; count: number; name?: string }>('stats-servers', [
     {
       $match: { type: 0, serverID: routed.message.guild.id }
     },
@@ -97,7 +97,7 @@ export async function serverStats(routed: RouterRouted) {
     }
   ])
 
-  const topUsersByMsgCount = await routed.bot.DB.aggregate<{ userID: string; count: number; name?: string }>('stats-users', [
+  const topUsersByMsgCount = await routed.bot.DB.aggregate<{ userID: string; count: number; name?: string }>('stats-servers', [
     {
       $match: { type: 0, serverID: routed.message.guild.id }
     },
@@ -117,7 +117,7 @@ export async function serverStats(routed: RouterRouted) {
     }
   ])
 
-  const topUsersByReactionsCount = await routed.bot.DB.aggregate<{ userID: string; count: number; name?: string }>('stats-users', [
+  const topUsersByReactionsCount = await routed.bot.DB.aggregate<{ userID: string; count: number; name?: string }>('stats-servers', [
     {
       $match: { type: 1, serverID: routed.message.guild.id }
     },

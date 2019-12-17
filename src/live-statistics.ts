@@ -1,5 +1,5 @@
 import { Bot } from '.'
-import { BotStatistics, BotStatistic, ServerStatistics } from './objects/statistics'
+import { BotStatistics, BotStatistic, ServerStatistic } from './objects/statistics'
 import { EventEmitter } from 'events'
 import * as Helper from './utils/stats'
 
@@ -8,7 +8,6 @@ export class LiveStatistics extends EventEmitter {
   private dbUpdateInterval: NodeJS.Timer
   private _Bot: Bot
   public Bot = new BotStatistics()
-  public Server: Array<ServerStatistics> = []
 
   // Ticker states
   private uptimeTickerRunning = false

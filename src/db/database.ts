@@ -23,7 +23,7 @@ export type Collections =
   | 'server-settings'
   | 'servers'
   | 'settings'
-  | 'stats-users'
+  | 'stats-settings'
   | 'stats-servers'
   | 'stats-bot'
   | 'users'
