@@ -73,8 +73,9 @@ export class Bot {
       new Task.ChastiKeyAPIRunningLocks(this),
       new Task.ChastiKeyAPIKeyholders(this),
       new Task.ChastiKeyAPILockees(this),
-      new Task.ChastiKeyAPILocktober(this),
-      new Task.ChastiKeyBackgroundLocktoberMonitor(this)
+      // new Task.ChastiKeyAPILocktober(this),
+      // new Task.ChastiKeyBackgroundLocktoberMonitor(this)
+      new Task.ChastiKeyBackgroundVerifiedMonitor(this)
     ])
 
     ////////////////////////////////////////
@@ -173,12 +174,10 @@ export class Bot {
   }
 
   private onUserJoined(member: Discord.GuildMember) {
-    console.log('Tracking user joined')
     this.Statistics.trackServerStatistic(member.guild.id, null, member.user.id, ServerStatisticType.UserJoined)
   }
 
   private onUserLeft(member: Discord.GuildMember) {
-    console.log('Tracking user left')
     this.Statistics.trackServerStatistic(member.guild.id, null, member.user.id, ServerStatisticType.UserLeft)
   }
 }

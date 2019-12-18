@@ -31,7 +31,7 @@ export class Statistics {
             type
           })
         )
-        console.log('Stat Logged')
+        // console.log('Stat Logged')
       } catch (error) {
         console.error('Stat Logging Error!')
       }

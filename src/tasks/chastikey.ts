@@ -1,7 +1,8 @@
 import * as APIUrls from '@/api-urls'
 import { Collections } from '@/db'
 import { ChastiKeyAPIFetchAndStore } from '@/tasks/templates/ck-api-fetch-store'
-import { ChastiKeyEventRoleMonitor } from '@/tasks/templates/ck-locktober-monitor'
+// import { ChastiKeyEventRoleMonitor } from '@/tasks/templates/ck-locktober-monitor'
+import { ChastiKeyVerifiedRoleMonitor } from '@/tasks/templates/ck-verified-monitor'
 
 export class ChastiKeyAPIRunningLocks extends ChastiKeyAPIFetchAndStore {
   // Setting the props for this Task
@@ -36,19 +37,27 @@ export class ChastiKeyAPIUsers extends ChastiKeyAPIFetchAndStore {
 }
 
 // TO be removed in December/January
-export class ChastiKeyAPILocktober extends ChastiKeyAPIFetchAndStore {
-  // Setting the props for this Task
-  name = 'ChastiKeyAPILocktober'
-  APIEndpoint = APIUrls.ChastiKey.CachedLocktober
-  frequency = 1800000 / 2 // 15 minutes
-  dbCollection: Collections = 'ck-locktober'
-}
+// export class ChastiKeyAPILocktober extends ChastiKeyAPIFetchAndStore {
+//   // Setting the props for this Task
+//   name = 'ChastiKeyAPILocktober'
+//   APIEndpoint = APIUrls.ChastiKey.CachedLocktober
+//   frequency = 1800000 / 2 // 15 minutes
+//   dbCollection: Collections = 'ck-locktober'
+// }
 
 // TO be removed in December/January
-export class ChastiKeyBackgroundLocktoberMonitor extends ChastiKeyEventRoleMonitor {
+// export class ChastiKeyBackgroundLocktoberMonitor extends ChastiKeyEventRoleMonitor {
+//   // Setting the props for this Task
+//   name = 'ChastiKeyBackgroundLocktoberMonitor'
+//   frequency = 1800000 / 2 // 15 minutes
+//   dbCollection: Collections = 'ck-locktober'
+//   eventRole = 'Locktober 2019'
+// }
+
+// TO be removed in December/January
+export class ChastiKeyBackgroundVerifiedMonitor extends ChastiKeyVerifiedRoleMonitor {
   // Setting the props for this Task
-  name = 'ChastiKeyBackgroundLocktoberMonitor'
-  frequency = 1800000 / 2 // 15 minutes
-  dbCollection: Collections = 'ck-locktober'
-  eventRole = 'Locktober 2019'
+  name = 'ChastiKeyBackgroundVerifiedMonitor'
+  frequency = 1800000 / 30 // 1 minute
+  verifiedRole = 'ChastiKey Verified'
 }
