@@ -59,7 +59,7 @@ export class Router {
       }
       return // Hard block
     } else {
-      if (direction === 'added') {
+      if (direction === 'added' && user.bot === false) {
         // Track stats
         this.bot.Statistics.trackServerStatistic(message.guild.id, message.channel.id, user.id, ServerStatisticType.Reaction)
       }
@@ -155,8 +155,10 @@ export class Router {
     if (message.channel.type === 'dm') {
       this.bot.BotMonitor.LiveStatistics.increment('dms-received')
     } else {
-      // Track stats
-      this.bot.Statistics.trackServerStatistic(message.guild.id, message.channel.id, message.author.id, ServerStatisticType.Message)
+      if (message.author.bot === false) {
+        // Track stats
+        this.bot.Statistics.trackServerStatistic(message.guild.id, message.channel.id, message.author.id, ServerStatisticType.Message)
+      }
     }
 
     const containsPrefix = message.content.startsWith(prefix)
