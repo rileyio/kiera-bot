@@ -125,6 +125,13 @@ All code for [kierabot.xyz](https://kierabot.xyz) will be at [rileyio/kiera-web]
 
   - `!register` Registers the user with the bot
 
+- Moderation
+
+  - `!mod mute emma#1366 "Reason is optional"` - Mute the given user
+  - `!mod unmute emma#1366` - Unmute the given user
+  - `!mod list muted` - Display a list of muted users
+  - `!mod lookup mute emma#1366` - Lookup a muted user
+
 - Roll
 
   - `!roll` - Roll a single die
