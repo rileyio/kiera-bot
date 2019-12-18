@@ -10,6 +10,7 @@ import { BotMonitor } from '@/monitor'
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
 import { Statistics } from '@/statistics'
+import { ServerStatisticType } from './objects/statistics'
 
 export class Bot {
   public client = new Discord.Client()
@@ -95,6 +96,8 @@ export class Bot {
     this.client.on('guildCreate', async guild => this.onGuildCreate(guild))
     this.client.on('guildDelete', async guild => this.onGuildDelete(guild))
     this.client.on('guildUpdate', async guild => this.onGuildCreate(guild))
+    this.client.on('guildMemberAdd', member => this.onUserJoined(member))
+    this.client.on('guildMemberRemove', member => this.onUserLeft(member))
     ///   Reaction in (Cached)  ///
     // this.client.on('messageReactionAdd', (react, user) => this.onMessageCachedReactionAdd(react, user))
     ///  Reaction out (Cached)  ///
@@ -167,5 +170,15 @@ export class Bot {
     // this.client.emit(DISCORD_CLIENT_EVENTS[event.t], reaction, user)
     if (event.t === 'MESSAGE_REACTION_ADD') return await this.onMessageCachedReactionAdd(message, emojiKey, user)
     if (event.t === 'MESSAGE_REACTION_REMOVE') return await this.onMessageCachedReactionRemove(message, emojiKey, user)
+  }
+
+  private onUserJoined(member: Discord.GuildMember) {
+    console.log('Tracking user joined')
+    this.Statistics.trackServerStatistic(member.guild.id, null, member.user.id, ServerStatisticType.UserJoined)
+  }
+
+  private onUserLeft(member: Discord.GuildMember) {
+    console.log('Tracking user left')
+    this.Statistics.trackServerStatistic(member.guild.id, null, member.user.id, ServerStatisticType.UserLeft)
   }
 }
