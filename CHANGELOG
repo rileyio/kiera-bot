@@ -1,6 +1,7 @@
 5.0.0
-- Improved: Project imports
-- Added: Server & User stats and commands for: display, manage, settings
+- Fixed: #13 CK Stats Lockee and Keyholder no longer working after release of 4.12.0
+- Improved: #14 Project imports
+- Added: #15 Server & User stats and commands for: display, manage, settings
 
 4.12.0
 - Fixed: Text on CK Lockee stats saying: (not greens)

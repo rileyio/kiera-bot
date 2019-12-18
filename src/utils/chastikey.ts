@@ -95,7 +95,7 @@ export namespace ChastiKey {
       username: ckUser.username,
       joined: userInLockeeStats ? userInLockeeStats.joined : '-',
       timestampLastActive: Date.now() / 1000 - ckUser.timestampLastActive,
-      verifiedTo: Utils.User.buildUserChatAt(ckUser.discordID, Utils.User.UserRefType.snowflake),
+      verifiedTo: ckUser.isVerified() ? Utils.User.buildUserChatAt(ckUser.discordID, Utils.User.UserRefType.snowflake) : null,
       additional: { timeSinceLast: calculatedTimeSinceLastLock > 0 ? Date.now() / 1000 - calculatedTimeSinceLastLock : 0 },
       isVerified: ckUser.isVerified(),
       routerStats: routerStats

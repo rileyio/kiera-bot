@@ -361,7 +361,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
 
   // Send stats
   await routed.message.channel.send(
-    keyholderStats(keyholder, cachedRunningLocks, cachedTimestamp, routed.routerStats, Utils.User.buildUserChatAt(ckUser.discordID, Utils.User.UserRefType.snowflake), {
+    keyholderStats(keyholder, cachedRunningLocks, cachedTimestamp, routed.routerStats, ckUser.isVerified() ? Utils.User.buildUserChatAt(ckUser.discordID, Utils.User.UserRefType.snowflake) : null, {
       showRating: user.ChastiKey.ticker.showStarRatingScore,
       showAverage: user.ChastiKey.preferences.keyholder.showAverage,
       isVerified: ckUser.isVerified()
