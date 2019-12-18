@@ -84,7 +84,7 @@ export enum ServerStatisticType {
  * @class ServerStatistic
  */
 export class ServerStatistic {
-  public _id: ObjectID
+  public readonly _id: ObjectID
   public serverID: string
   public userID: string
   public channelID: string
@@ -102,8 +102,12 @@ export enum StatisticsSettingType {
 }
 
 export class StatisticsSetting {
-  public _id: ObjectID
+  public readonly _id?: ObjectID
   public userID?: string
   public serverID?: string
   public setting: StatisticsSettingType
+
+  constructor(init: StatisticsSetting) {
+    Object.assign(this, init)
+  }
 }
