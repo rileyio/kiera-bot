@@ -23,7 +23,7 @@ export const Routes = ExportRoutes(
     commandTarget: 'none',
     controller: enableServerStats,
     example: '{{prefix}}stats enable server',
-    name: 'stats-enable-user',
+    name: 'stats-enable-server',
     validate: '/stats:string/enable:string/server:string',
     permissions: {
       defaultEnabled: true,
