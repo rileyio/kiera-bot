@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
     name: 'kiera-bot',
-    script: './start.js',
+    script: './app/start.js',
 
     // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
     // args: 'one two',
@@ -17,7 +17,8 @@ module.exports = {
     env_production: {
       NODE_ENV: 'production',
       DEBUG: 'kiera-bot:*'
-    }
+    },
+    max_restarts: 1
   }],
 
   deploy: {

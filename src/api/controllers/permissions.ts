@@ -1,12 +1,12 @@
-import * as Validation from '../validations/index';
-import * as errors from 'restify-errors';
-import { validate } from '../utils/validate';
-import { WebRouted } from '../web-router';
-import { CommandPermission } from '../../objects/permission';
-import { ObjectID } from 'bson';
-import { routeLoader } from '../../router/route-loader';
-import { sb } from '../../utils';
-import { TrackedAvailableObject } from '../../objects/available-objects';
+import * as Validation from '@/api/validations'
+import * as errors from 'restify-errors'
+import { validate } from '@/api/utils/validate'
+import { WebRouted } from '@/api/web-router'
+import { CommandPermission } from '@/objects/permission'
+import { ObjectID } from 'bson'
+import { routeLoader } from '@/router/route-loader'
+import { sb } from '@/utils'
+import { TrackedAvailableObject } from '@/objects/available-objects'
 
 export namespace Permissions {
   export async function getAll(routed: WebRouted) {
@@ -24,11 +24,11 @@ export namespace Permissions {
       }
 
       // Check ChastiKey enabled state in db
-      var ckEnabledState = await routed.Bot.DB.get<TrackedAvailableObject>('server-settings', {
+      var ckEnabledState = (await routed.Bot.DB.get<TrackedAvailableObject>('server-settings', {
         serverID: v.o.serverID,
         key: 'server.chastikey.enabled',
         state: true
-      }) || { value: false, state: true }
+      })) || { value: false, state: true }
 
       if (!ckEnabledState.value && ckEnabledState.state) {
         query['command'] = { $not: /^ck-/ }
@@ -40,11 +40,15 @@ export namespace Permissions {
       const permissions = await routed.Bot.DB.getMultiple<CommandPermission>('command-permissions', query)
       // Sort by permission name
       permissions.sort((a, b) => {
-        var x = a.command.toLowerCase();
-        var y = b.command.toLowerCase();
-        if (x < y) { return -1; }
-        if (x > y) { return 1; }
-        return 0;
+        var x = a.command.toLowerCase()
+        var y = b.command.toLowerCase()
+        if (x < y) {
+          return -1
+        }
+        if (x > y) {
+          return 1
+        }
+        return 0
       })
 
       // Map in the route examples & categories
@@ -58,11 +62,11 @@ export namespace Permissions {
         }
       })
 
-      return routed.res.send(permissions);
+      return routed.res.send(permissions)
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 
   export async function get(routed: WebRouted) {
@@ -81,7 +85,7 @@ export namespace Permissions {
     // }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 
   export async function updateGlobal(routed: WebRouted) {
@@ -89,16 +93,13 @@ export namespace Permissions {
 
     if (v.valid) {
       // Update global permission in db
-      const updateCount = await routed.Bot.DB.update(
-        'command-permissions',
-        { _id: new ObjectID(v.o._id) },
-        { enabled: v.o.state })
-      if (updateCount > 0) return routed.res.send({ status: 'updated', success: true });
-      return routed.res.send({ status: 'failed', success: false });
+      const updateCount = await routed.Bot.DB.update('command-permissions', { _id: new ObjectID(v.o._id) }, { enabled: v.o.state })
+      if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
+      return routed.res.send({ status: 'failed', success: false })
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 
   export async function deleteGlobal(routed: WebRouted) {
@@ -106,16 +107,15 @@ export namespace Permissions {
 
     if (v.valid) {
       // Update allowed permission in db
-      const deleteCount = await routed.Bot.DB.remove(
-        'command-permissions', {
-          _id: new ObjectID(v.o._id),
-        })
-      if (deleteCount > 0) return routed.res.send({ status: 'deleted', success: true });
-      return routed.res.send({ status: 'failed', success: false });
+      const deleteCount = await routed.Bot.DB.remove('command-permissions', {
+        _id: new ObjectID(v.o._id)
+      })
+      if (deleteCount > 0) return routed.res.send({ status: 'deleted', success: true })
+      return routed.res.send({ status: 'failed', success: false })
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 
   export async function updateAllowed(routed: WebRouted) {
@@ -124,20 +124,24 @@ export namespace Permissions {
     if (v.valid) {
       // Update allowed permission in db
       const updateCount = await routed.Bot.DB.update(
-        'command-permissions', {
+        'command-permissions',
+        {
           _id: new ObjectID(v.o._id),
           command: v.o.command,
           'allowed.target': v.o.target
-        }, {
+        },
+        {
           $set: {
             'allowed.$.allow': v.o.state
           }
-        }, { atomic: true })
-      if (updateCount > 0) return routed.res.send({ status: 'updated', success: true });
-      return routed.res.send({ status: 'failed', success: false });
+        },
+        { atomic: true }
+      )
+      if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
+      return routed.res.send({ status: 'failed', success: false })
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 }

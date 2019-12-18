@@ -1,9 +1,9 @@
 require('dotenv').config()
-import test from 'ava';
-import { Validate } from './validate';
-import { getArgs } from '../utils/';
+import test from 'ava'
+import { Validate } from '@/router/validate'
+import { getArgs } from '@/utils'
 
-var validate: Validate;
+var validate: Validate
 
 test('Utils:Validate => Generate Validate', t => {
   t.plan(2)
@@ -72,5 +72,5 @@ test('Utils:Validate => Multi Args', t => {
   t.plan(2)
   const v1 = new Validate('/decision:string/name=string/args...string')
   t.is(v1.test(`${process.env.BOT_MESSAGE_PREFIX}decision "Should ask a question?" "Yes" "No" "Maybe"`), true)
-  t.deepEqual(v1.validateArgs(getArgs(`${process.env.BOT_MESSAGE_PREFIX}decision "Should ask a question?" "Yes" "No" "Maybe"`)).o.args, [ 'Yes', 'No', 'Maybe' ] )
+  t.deepEqual(v1.validateArgs(getArgs(`${process.env.BOT_MESSAGE_PREFIX}decision "Should ask a question?" "Yes" "No" "Maybe"`)).o.args, ['Yes', 'No', 'Maybe'])
 })

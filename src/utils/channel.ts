@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js'
-import { Logging } from '../utils/'
+import { Logging } from '@/utils'
 
 export namespace Channel {
   /**

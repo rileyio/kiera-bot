@@ -16,7 +16,7 @@ export const mainDecision = `\`{{prefix}}decision\` - Create, Edit or Roll - \`n
 export const mainFlip = `\`{{prefix}}flip\` - Flip a coin`
 export const mainPoll = `\`{{prefix}}poll\` - Create a poll to vote on`
 export const mainRoll = `\`{{prefix}}roll\` - Dice roller`
-export const mainStats =`\`{{prefix}}stats\` - Bot tracked statistics`
+export const mainStats = `\`{{prefix}}stats\` - Bot tracked statistics`
 
 export const register = `
 Registers (opt-in) the user to use the full suite of bot commands.

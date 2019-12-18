@@ -1,10 +1,10 @@
-import * as Validation from '../validations/index'
+import * as Validation from '@/api/validations'
 import * as errors from 'restify-errors'
-import { validate } from '../utils/validate'
-import { WebRouted } from '../web-router'
-import { TrackedDecision, TrackedDecisionOption } from '../../objects/decision'
+import { validate } from '@/api/utils/validate'
+import { WebRouted } from '@/api/web-router'
+import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import { ObjectID } from 'bson'
-import { TrackedUser } from '../../objects/user'
+import { TrackedUser } from '@/objects/user'
 
 export namespace Decisions {
   export async function getDecisions(routed: WebRouted) {

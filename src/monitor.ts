@@ -1,4 +1,4 @@
-import { Bot } from '.'
+import { Bot } from '@/index'
 import { EventEmitter } from 'events'
 import { DatabaseMonitor } from './db/monitor'
 import { LiveStatistics } from './live-statistics'

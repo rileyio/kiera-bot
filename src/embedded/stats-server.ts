@@ -1,4 +1,4 @@
-import * as Utils from '../utils/'
+import * as Utils from '@/utils'
 
 interface StatsTopServerChannelsData {
   serverIcon: string

@@ -58,7 +58,7 @@ export namespace BattleNet {
         azeritePowerLevel: number
         azeritePower4: number
       }
-      stats: Array<{ stat: number, amount: number }>
+      stats: Array<{ stat: number; amount: number }>
       armor: number
       context: string
       bonusLists: Array<number>
@@ -76,7 +76,7 @@ export namespace BattleNet {
         azeriteExperienceRemaining: number
       }
       azeriteEmpoweredItem: {
-        azeritePowers: Array<{ id: number, tier: number, spellId: number, bonusListId: number }>
+        azeritePowers: Array<{ id: number; tier: number; spellId: number; bonusListId: number }>
       }
     }
   }

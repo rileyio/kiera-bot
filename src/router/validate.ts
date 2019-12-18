@@ -1,5 +1,5 @@
-import * as XRegex from 'xregexp';
-import * as Utils from '../utils/';
+import * as XRegex from 'xregexp'
+import * as Utils from '@/utils'
 
 export const validationRegex = XRegex('(\\/(?<name>[a-z0-9]*)(?<optional>\\?\\:|\\:|\\=|\\?\\=|(?<multi>\\.\\.\\.))(?<type>[a-z]*))', 'img')
 
@@ -36,7 +36,7 @@ export class Validate {
   public test(message: string) {
     const regex = XRegex(this.signature, 'ig')
     const match = XRegex.test(message, regex)
-    return match;
+    return match
   }
 
   /**
@@ -49,7 +49,7 @@ export class Validate {
     var matches = []
     XRegex.forEach(str, validationRegex, (match: any, i: number) => {
       matches.push(this.createValidationType(match))
-    });
+    })
 
     return matches
   }
@@ -70,31 +70,29 @@ export class Validate {
       // From a server channel it should look like: <@146439529824256000>
       // Check that first
       return /^\<\@([0-9]*)\>$/i.test(value.toString()) || /^(\@((?!@|#|:|`).*)\#[0-9]{4,5})$/i.test(value.toString())
-    if (expected === 'string')
-      return typeof value === 'string'
+    if (expected === 'string') return typeof value === 'string'
     if (expected === 'number') {
       return Number.isNaN(Number(value)) === false
     }
-    if (expected === 'boolean')
-      return value.toString().toLowerCase() === 'true' || value.toString().toLowerCase() === 'false'
+    if (expected === 'boolean') return value.toString().toLowerCase() === 'true' || value.toString().toLowerCase() === 'false'
     return false
   }
 
   /**
- * Validates the chat arguments against the TypeValidations provided to determine
- * if all arguments meet the defined type
- * @export
- * @param {Array<string>} args
- * @param {Array<TypeValidation>} validation
- * @returns
- */
+   * Validates the chat arguments against the TypeValidations provided to determine
+   * if all arguments meet the defined type
+   * @export
+   * @param {Array<string>} args
+   * @param {Array<TypeValidation>} validation
+   * @returns
+   */
   public validateArgs(args: Array<string>) {
     var allValid = true
     var ret: any = {}
     var validationMap = JSON.parse(JSON.stringify(this.validation))
     var validated = validationMap.map((v: ValidationType, i: number) => {
       const singleStrRegexp = /^["]([^"].+)["]\s?$/im
-      const multiStrRegexp = /^["]([^"].+)["]\s?$/img
+      const multiStrRegexp = /^["]([^"].+)["]\s?$/gim
       const isMulti = v.multi
       // If its a single non-multi arg value expected
       if (!isMulti) {
@@ -120,8 +118,7 @@ export class Validate {
         // Add v to ret
         ret[v.name] = v.value
         return v
-      }
-      else {
+      } else {
         const sliced = args.slice(i).map(v => {
           return v.substr(1, v.length - 2)
         })
@@ -158,15 +155,15 @@ export class Validate {
 
       // Handling of static route values
       if (match.optional === ':' || match.optional === '?:') {
-        sig += (match.optional === '?:') ? `(${match.name})\\s?` :`(${match.name})\\s?`
+        sig += match.optional === '?:' ? `(${match.name})\\s?` : `(${match.name})\\s?`
       }
 
       // Handling for user's input values
       if (match.optional === '=' || match.optional === '?=') {
         if (match.type === 'user') sig += `(\\@[\\w\\s-]*\\#[0-9]+|\\<\\@[0-9]*\\>)\\s?`
-        else sig += (match.optional === '?=') ? `(?:["]?([^"+]+)["]?\s?)?` : `["]?([^"+]+)["]?\\s?`
+        else sig += match.optional === '?=' ? `(?:["]?([^"+]+)["]?\s?)?` : `["]?([^"+]+)["]?\\s?`
       }
-    });
+    })
 
     // Add end of string $
     sig += '$'

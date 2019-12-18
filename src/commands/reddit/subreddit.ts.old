@@ -1,8 +1,7 @@
 // import Snoowrap = require('snoowrap');
-// import * as Middleware from '../../middleware';
-// import { RouterRouted } from '../../router/router';
-// import { ExportRoutes } from '../../router/routes-exporter';
-// import { eightBallResult } from '../../embedded/8ball-embed';
+// import * as Middleware from '@/middleware';
+// import { RouterRouted, ExportRoutes } from '@/router'
+// // import { eightBallResult } from '@/embedded/8ball-embed';
 // import got = require('got');
 
 // export const Routes = ExportRoutes(

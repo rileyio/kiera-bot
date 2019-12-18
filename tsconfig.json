@@ -7,13 +7,15 @@
     "experimentalDecorators": true,
     "preserveConstEnums": true,
     "declaration": true,
-    // "sourceMap": true,
     "outDir": "app",
-    "rootDir": "./src",
     "inlineSourceMap": true,
     "skipLibCheck": true,
     "typeRoots": ["src/typings", "./node_modules/@types/"],
-    "lib": ["es6", "es2016"]
+    "lib": ["es6", "es2016"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

@@ -1,9 +1,8 @@
-import * as Middleware from '../../middleware'
+import * as Middleware from '@/middleware'
 import * as XRegex from 'xregexp'
-import * as Utils from '../../utils/'
-import { ExportRoutes } from '../../router/routes-exporter'
-import { RouterRouted } from '../../router/router'
-import { TrackedMutedUser, TrackedUser } from '../../objects/user'
+import * as Utils from '@/utils'
+import { ExportRoutes, RouterRouted } from '@/router'
+import { TrackedMutedUser, TrackedUser } from '@/objects/user'
 
 export const Routes = ExportRoutes(
   {

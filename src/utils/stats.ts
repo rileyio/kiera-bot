@@ -1,5 +1,5 @@
-import { Bot } from '..'
-import { TrackedBotSetting } from '../objects/setting'
+import { Bot } from '@/index'
+import { TrackedBotSetting } from '@/objects/setting'
 
 export async function fetchUserCounts(Bot: Bot) {
   const skipGuildsInDB = await Bot.DB.get<TrackedBotSetting>('settings', { key: 'bot.statistics.ignoreGuilds' })

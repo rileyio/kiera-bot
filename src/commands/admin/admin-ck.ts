@@ -1,9 +1,7 @@
-import * as Middleware from '../../middleware';
-import * as Utils from '../../utils';
-import { RouterRouted } from '../../utils';
-import { TrackedBotSetting } from '../../objects/setting';
-import { ChastiKeyAPIFetchAndStore } from '../../tasks/templates/ck-api-fetch-store';
-import { ExportRoutes } from '../../router/routes-exporter';
+import * as Utils from '@/utils'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { TrackedBotSetting } from '@/objects/setting'
+import { ChastiKeyAPIFetchAndStore } from '@/tasks/templates/ck-api-fetch-store'
 
 export const Routes = ExportRoutes({
   type: 'message',
@@ -17,10 +15,10 @@ export const Routes = ExportRoutes({
     serverAdminOnly: true,
     restrictedTo: [
       '473856245166506014', // KevinCross#0001
-      '146439529824256000'  // Emma#1366
+      '146439529824256000' // Emma#1366
     ]
   },
-  validate: '/admin:string/ck:string/stats:string/refresh:string',
+  validate: '/admin:string/ck:string/stats:string/refresh:string'
 })
 
 /**
@@ -29,20 +27,19 @@ export const Routes = ExportRoutes({
  * @param {RouterRouted} routed
  */
 export async function forceStatsReload(routed: RouterRouted) {
-  await routed.message.channel.send(Utils.sb(Utils.en.chastikey.adminRefreshStats, {
-    seconds: ((routed.v.o.seconds || 5000) / 1000)
-  }))
+  await routed.message.channel.send(
+    Utils.sb(Utils.en.chastikey.adminRefreshStats, {
+      seconds: (routed.v.o.seconds || 5000) / 1000
+    })
+  )
 
   // Update in db
-  await routed.bot.DB.update<TrackedBotSetting>('settings',
-    { key: /^bot\.task\.chastikey\.api\.fetch/i },
-    { lastUpdatd: Date.now(), value: 0 },
-    { updateOne: false })
+  await routed.bot.DB.update<TrackedBotSetting>('settings', { key: /^bot\.task\.chastikey\.api\.fetch/i }, { lastUpdatd: Date.now(), value: 0 }, { updateOne: false })
 
   // Update in TaskManager
   Object.keys(routed.bot.Task.registered).forEach(taskName => {
     if (!/^ChastiKeyAPI/.test(taskName)) return // skip this task
-    (<ChastiKeyAPIFetchAndStore>routed.bot.Task.registered[taskName]).previousRefresh = 0
+    ;(<ChastiKeyAPIFetchAndStore>routed.bot.Task.registered[taskName]).previousRefresh = 0
   })
 
   // Successful end

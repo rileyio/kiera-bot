@@ -1,4 +1,4 @@
-import { Bot } from '.'
+import { Bot } from '@/index'
 import { BotStatistics, BotStatistic, ServerStatistic } from './objects/statistics'
 import { EventEmitter } from 'events'
 import * as Helper from './utils/stats'

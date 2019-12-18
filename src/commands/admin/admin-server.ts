@@ -1,9 +1,8 @@
-import * as Middleware from '../../middleware';
-import * as Utils from '../../utils';
-import { performance } from 'perf_hooks';
-import { RouterRouted } from '../../router/router';
-import { TrackedMessage } from '../../objects/message';
-import { ExportRoutes } from '../../router/routes-exporter';
+import * as Middleware from '@/middleware'
+import * as Utils from '@/utils'
+import { performance } from 'perf_hooks'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { TrackedMessage } from '@/objects/message'
 
 export const Routes = ExportRoutes(
   {
@@ -37,13 +36,11 @@ export const Routes = ExportRoutes(
       restricted: true,
       restrictedTo: [
         '473856245166506014', // KevinCross#0001
-        '146439529824256000'  // Emma#1366
+        '146439529824256000' // Emma#1366
       ]
     },
     validate: '/admin:string/restart:string/bot:string/seconds?=number',
-    middleware: [
-      Middleware.hasRole('developer')
-    ]
+    middleware: [Middleware.hasRole('developer')]
   }
 )
 
@@ -51,33 +48,37 @@ export async function pingPong(routed: RouterRouted) {
   const startTime = performance.now()
 
   // Track all incoming messages
-  await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
-    authorID: routed.message.author.id,
-    id: routed.message.id,
-    messageCreatedAt: routed.message.createdAt.getTime(),
-    channelId: routed.message.channel.id,
-    // Flags
-    flagAutoDelete: true,
-    flagTrack: true,
-    // Deletion settings
-    storageKeepInChatFor: 10000
-  }))
-
-  const ms = Math.round((performance.now() - startTime) * 100) / 100
-  const response = await routed.message.reply(`pong \`${ms}ms\``);
-
-  if (!Array.isArray(response)) {
-    await routed.bot.MsgTracker.trackMsg(new TrackedMessage({
-      authorID: response.author.id,
-      id: response.id,
-      messageCreatedAt: response.createdAt.getTime(),
-      channelId: response.channel.id,
+  await routed.bot.MsgTracker.trackMsg(
+    new TrackedMessage({
+      authorID: routed.message.author.id,
+      id: routed.message.id,
+      messageCreatedAt: routed.message.createdAt.getTime(),
+      channelId: routed.message.channel.id,
       // Flags
       flagAutoDelete: true,
       flagTrack: true,
       // Deletion settings
       storageKeepInChatFor: 10000
-    }))
+    })
+  )
+
+  const ms = Math.round((performance.now() - startTime) * 100) / 100
+  const response = await routed.message.reply(`pong \`${ms}ms\``)
+
+  if (!Array.isArray(response)) {
+    await routed.bot.MsgTracker.trackMsg(
+      new TrackedMessage({
+        authorID: response.author.id,
+        id: response.id,
+        messageCreatedAt: response.createdAt.getTime(),
+        channelId: response.channel.id,
+        // Flags
+        flagAutoDelete: true,
+        flagTrack: true,
+        // Deletion settings
+        storageKeepInChatFor: 10000
+      })
+    )
   }
 
   routed.bot.DEBUG_MSG_INCOMING.log(`${routed.message.content} response => pong ${ms}ms`)
@@ -95,9 +96,11 @@ export async function versionCheck(routed: RouterRouted) {
 }
 
 export async function forceRestart(routed: RouterRouted) {
-  await routed.message.channel.send(Utils.sb(Utils.en.admin.botManualRestart, {
-    seconds: ((routed.v.o.seconds || 5000) / 1000)
-  }))
+  await routed.message.channel.send(
+    Utils.sb(Utils.en.admin.botManualRestart, {
+      seconds: (routed.v.o.seconds || 5000) / 1000
+    })
+  )
 
   setTimeout(() => {
     process.exit(0)

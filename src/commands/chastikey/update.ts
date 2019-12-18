@@ -1,12 +1,11 @@
 import got = require('got')
-import * as APIUrls from '../../api-urls'
-import * as Middleware from '../../middleware'
-import * as Utils from '../../utils'
+import * as APIUrls from '@/api-urls'
+import * as Middleware from '@/middleware'
+import * as Utils from '@/utils'
 import * as Discord from 'discord.js'
-import { TrackedUser } from '../../objects/user'
-import { RouterRouted } from '../../router/router'
-import { ExportRoutes } from '../../router/routes-exporter'
-import { TrackedChastiKeyUserAPIFetch, TrackedChastiKeyKeyholderStatistics, ChastiKeyVerifyDiscordID } from '../../objects/chastikey'
+import { TrackedUser } from '@/objects/user'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { TrackedChastiKeyUserAPIFetch, TrackedChastiKeyKeyholderStatistics, ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
 import { performance } from 'perf_hooks'
 
 export const Routes = ExportRoutes({

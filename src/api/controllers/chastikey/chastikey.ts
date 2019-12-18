@@ -1,8 +1,8 @@
 import * as jwt from 'jsonwebtoken'
 import * as errors from 'restify-errors'
-import { WebRouted } from '../../web-router'
-import { TrackedChastiKeyUser, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '../../../objects/chastikey'
-import { TrackedUser } from '../../../objects/user'
+import { WebRouted } from '@/api/web-router'
+import { TrackedChastiKeyUser, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '@/objects/chastikey'
+import { TrackedUser } from '@/objects/user'
 
 export namespace ChastiKey {
   export async function authTest(routed: WebRouted) {

@@ -1,9 +1,8 @@
-import * as Middleware from '../../middleware';
-import * as Utils from '../../utils/';
-import { RouterRouted } from '../../router/router';
+import * as Middleware from '@/middleware';
+import * as Utils from '@/utils';
+import { RouterRouted, ExportRoutes } from '@/router'
 import { Attachment } from 'discord.js';
-import { TrackedUser } from '../../objects/user';
-import { ExportRoutes } from '../../router/routes-exporter';
+import { TrackedUser } from '@/objects/user';
 
 export const Routes = ExportRoutes(
   {

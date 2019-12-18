@@ -1,8 +1,8 @@
-import * as deepExtend from 'deep-extend';
-import * as jwt from 'jsonwebtoken';
-import { ObjectId } from 'bson';
-import { TrackedChastiKey } from './chastikey';
-import { TrackedServer } from './server';
+import * as deepExtend from 'deep-extend'
+import * as jwt from 'jsonwebtoken'
+import { ObjectId } from 'bson'
+import { TrackedChastiKey } from '@/objects/chastikey'
+import { TrackedServer } from '@/objects/server'
 
 export class TrackedUser {
   public __notStored: boolean
@@ -26,7 +26,7 @@ export class TrackedUser {
   public ChastiKey: TrackedChastiKey
 
   constructor(init: Partial<TrackedUser>) {
-    deepExtend(this, init);
+    deepExtend(this, init)
     this.ChastiKey = new TrackedChastiKey(init !== null ? init.ChastiKey : {})
   }
 
@@ -34,7 +34,7 @@ export class TrackedUser {
     Object.assign(this, initOauth)
 
     // If valid & updated, generate a token for use with Kiera
-    this.webToken = jwt.sign({ id: this.id }, process.env.BOT_SECRET, { expiresIn: '3h' });
+    this.webToken = jwt.sign({ id: this.id }, process.env.BOT_SECRET, { expiresIn: '3h' })
   }
 
   public reduceServers(connectedGuilds: Array<TrackedServer>) {
@@ -72,7 +72,7 @@ export class TrackedMutedUser {
   public removeAt: number = 0
   public removedAt: number
   public removedBy: string
-  public roles: Array<{ id: string, name: string }> = []
+  public roles: Array<{ id: string; name: string }> = []
   public active: boolean = true
 
   constructor(init: Partial<TrackedMutedUser>) {

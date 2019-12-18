@@ -1,5 +1,5 @@
-import { TrackedChastiKeyUser } from '../objects/chastikey'
-import { RouterStats } from '../utils'
+import { TrackedChastiKeyUser } from '@/objects/chastikey'
+import { RouterStats } from '@/router'
 
 export function searchResults(found: Array<TrackedChastiKeyUser>, routerStats: RouterStats, cachedTimestamp: number) {
   var description = ``
@@ -18,7 +18,7 @@ export function searchResults(found: Array<TrackedChastiKeyUser>, routerStats: R
       footer: {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
         text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
-      },
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { TrackedPoll } from '../objects/poll';
+import { TrackedPoll } from '@/objects/poll'
 
 export function poll(poll: TrackedPoll) {
   const embed = {

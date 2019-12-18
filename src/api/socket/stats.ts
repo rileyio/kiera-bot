@@ -1,4 +1,4 @@
-import { Bot } from '../..';
+import { Bot } from '@/index'
 
 export function stats(Bot: Bot, socket: SocketIO.Server) {
   // Emit stats periodically

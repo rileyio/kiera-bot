@@ -1,6 +1,6 @@
-import { WebRoute } from './web-router'
-import * as WebController from './controllers'
-import * as Middleware from './middleware/web-middleware'
+import { WebRoute } from '@/api/web-router'
+import * as WebController from '@/api/controllers'
+import * as Middleware from '@/api/middleware'
 
 export const routes: Array<WebRoute> = [
   /*

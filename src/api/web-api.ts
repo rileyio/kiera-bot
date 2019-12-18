@@ -1,13 +1,13 @@
-import * as restify from 'restify';
-import * as Debug from 'debug';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as corsMiddleware from 'restify-cors-middleware';
-import * as SocketIO from 'socket.io';
-import * as SocketStats from './socket/stats';
-import { Bot } from '..';
-import { routes } from './routes';
-import { WebRouter } from './web-router';
+import * as restify from 'restify'
+import * as Debug from 'debug'
+import * as fs from 'fs'
+import * as path from 'path'
+import * as corsMiddleware from 'restify-cors-middleware'
+import * as SocketIO from 'socket.io'
+import * as SocketStats from '@/api/socket/stats'
+import { Bot } from '@/index'
+import { routes } from '@/api/routes'
+import { WebRouter } from '@/api/web-router'
 
 export class WebAPI {
   protected Bot: Bot
@@ -20,7 +20,7 @@ export class WebAPI {
   protected router: WebRouter
   protected readonly port: number = Number(process.env.API_PORT || 8234)
   protected readonly prefix: string = '/api'
-  protected DEBUG_WEBAPI = Debug('WebAPI');
+  protected DEBUG_WEBAPI = Debug('WebAPI')
 
   constructor(bot: Bot) {
     this.Bot = bot
@@ -46,14 +46,14 @@ export class WebAPI {
 
     // Setup SocketIO
     this.socket = SocketIO.listen(this.server.server)
-    this.socket.sockets.on('connection', (socket) => {
+    this.socket.sockets.on('connection', socket => {
       this.DEBUG_WEBAPI('socket connection')
       // socket.emit('news', { hello: 'world' });
       // socket.on('my other event', (data) => {
       //   this.DEBUG_WEBAPI(data);
       // });
       SocketStats.heartBeat(this.Bot, this.socket)
-    });
+    })
 
     // Emit Stats (Loop)
     SocketStats.stats(this.Bot, this.socket)

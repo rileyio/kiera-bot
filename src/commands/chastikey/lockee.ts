@@ -1,13 +1,12 @@
-import got = require('got');
-import * as APIUrls from '../../api-urls';
-import * as Middleware from '../../middleware';
-import * as Utils from '../../utils'
-import { ExportRoutes } from '../../router/routes-exporter';
-import { RouterRouted } from '../../utils';
-import { TrackedChastiKeyUser, TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyUserAPIFetch } from '../../objects/chastikey';
-import { lockeeHistory, lockeeHistoryPersonal, lockeeHistoryForKeyholder } from '../../embedded/chastikey-history';
-import { TrackedUser } from '../../objects/user';
-import { TrackedBotSetting } from '../../objects/setting';
+import got = require('got')
+import * as APIUrls from '@/api-urls'
+import * as Middleware from '@/middleware'
+import * as Utils from '@/utils'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { TrackedChastiKeyUser, TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyUserAPIFetch } from '@/objects/chastikey'
+import { lockeeHistory, lockeeHistoryPersonal, lockeeHistoryForKeyholder } from '@/embedded/chastikey-history'
+import { TrackedUser } from '@/objects/user'
+import { TrackedBotSetting } from '@/objects/setting'
 
 export const Routes = ExportRoutes(
   {
@@ -18,9 +17,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck lockee history',
     name: 'ck-lockee-history',
     validate: '/ck:string/lockee:string/history:string/',
-    middleware: [
-      Middleware.isCKVerified
-    ],
+    middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: true,
       serverOnly: false
@@ -34,14 +31,12 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck lockee history personal',
     name: 'ck-lockee-history-personal',
     validate: '/ck:string/lockee:string/history:string/personal:string/',
-    middleware: [
-      Middleware.isCKVerified
-    ],
+    middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: true,
       serverOnly: false
     }
-  },
+  }
   // {
   //   type: 'message',
   //   category: 'ChastiKey',
@@ -166,12 +161,12 @@ export async function historyForKeyholder(routed: RouterRouted) {
   }
 
   // Get user's current ChastiKey username from users collection or by the override
-  const user = (routed.v.o.user)
-    ? new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] }))
-    // Fallback: Create a mock record
-    || new TrackedUser(<TrackedUser>{ __notStored: true, ChastiKey: { username: ckUser.username, isVerified: false, ticker: { showStarRatingScore: true } } })
-    // Else: Lookup the user by Discord ID
-    : new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id }))
+  const user = routed.v.o.user
+    ? new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] })) ||
+      // Fallback: Create a mock record
+      new TrackedUser(<TrackedUser>{ __notStored: true, ChastiKey: { username: ckUser.username, isVerified: false, ticker: { showStarRatingScore: true } } })
+    : // Else: Lookup the user by Discord ID
+      new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id }))
 
   // Get current locks by user store in the collection
   const activeLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { username: ckUser.username })
@@ -199,6 +194,8 @@ export async function historyForKeyholder(routed: RouterRouted) {
   const cachedTimestamp = cachedTimestampFromFetch.value
 
   // if (routed.message.channel.type === 'text') await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeStatsHistorical))
-  await routed.message.channel.send(lockeeHistoryForKeyholder(ckUser, { showRating: user.ChastiKey.ticker.showStarRatingScore }, compiledLockeeStats, apiLockeeLocks, routed.routerStats, cachedTimestamp))
+  await routed.message.channel.send(
+    lockeeHistoryForKeyholder(ckUser, { showRating: user.ChastiKey.ticker.showStarRatingScore }, compiledLockeeStats, apiLockeeLocks, routed.routerStats, cachedTimestamp)
+  )
   return true
 }

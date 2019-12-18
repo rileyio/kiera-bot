@@ -1,8 +1,8 @@
-import test from 'ava';
-import { AuthKey } from './authkey';
+import test from 'ava'
+import { AuthKey } from './authkey'
 
 var authKey = new AuthKey()
-var key;
+var key
 
 test('AuthKey:Generate => create new key', t => {
   t.plan(2)

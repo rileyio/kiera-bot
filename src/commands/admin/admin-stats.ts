@@ -1,6 +1,4 @@
-import * as Middleware from '../../middleware'
-import { RouterRouted } from '../../router/router'
-import { ExportRoutes } from '../../router/routes-exporter'
+import { RouterRouted, ExportRoutes } from '@/router'
 
 export const Routes = ExportRoutes({
   type: 'message',

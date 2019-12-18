@@ -1,6 +1,5 @@
-import { RouterRouted } from '../router/router';
-import { rollDie, rollDice } from '../embedded/roll-embed';
-import { ExportRoutes } from '../router/routes-exporter';
+import { RouterRouted, ExportRoutes } from '@/router'
+import { rollDie, rollDice } from '@/embedded/roll-embed';
 
 export const Routes = ExportRoutes(
   {

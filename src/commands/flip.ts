@@ -1,6 +1,5 @@
-import { RouterRouted } from '../router/router';
-import { ExportRoutes } from '../router/routes-exporter';
-import { flipCoin } from '../embedded/flip-embed';
+import { RouterRouted, ExportRoutes } from '@/router'
+import { flipCoin } from '@/embedded/flip-embed';
 
 export const Routes = ExportRoutes(
   {

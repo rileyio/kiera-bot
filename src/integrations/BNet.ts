@@ -1,7 +1,7 @@
 import { initialize, Blizzard } from 'blizzard.js'
-import { Bot } from '..'
-import { TrackedBotSetting } from '../objects/setting'
-import { Logging } from '../utils'
+import { Bot } from '@/index'
+import { TrackedBotSetting } from '@/objects/setting'
+import { Logging } from '@/utils'
 
 export class BattleNet {
   private bot: Bot

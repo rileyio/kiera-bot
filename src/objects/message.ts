@@ -1,5 +1,5 @@
-import { ObjectID } from 'bson';
-import { MessageReaction } from 'discord.js';
+import { ObjectID } from 'bson'
+import { MessageReaction } from 'discord.js'
 
 export class TrackedMessage {
   public _id: ObjectID = new ObjectID()
@@ -21,7 +21,7 @@ export class TrackedMessage {
   public storageKeepInMemFor: number = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
 
   constructor(init: Partial<TrackedMessage>) {
-    Object.assign(this, init);
+    Object.assign(this, init)
 
     // Process incoming message reactions
     if (this.reactions.length > 0) this.parseReactions()
@@ -36,26 +36,27 @@ export class TrackedMessage {
   }
 
   public parseReactions() {
-    this.reactions = this.reactions.map(r => { return r = new TrackedMessageReaction(r) })
+    this.reactions = this.reactions.map(r => {
+      return (r = new TrackedMessageReaction(r))
+    })
   }
 }
 
 export class TrackedMessageReaction {
   users: Array<string>
   count: number
-  emoji: { id: string, name: string }
+  emoji: { id: string; name: string }
 
   constructor(init: Partial<TrackedMessageReaction> | MessageReaction) {
     // When incoming is just a raw Discord.MessageReaction
     if (Object(init).hasOwnProperty('message')) {
-      const r = (<MessageReaction>init)
+      const r = <MessageReaction>init
       this.users = r.users.array().map(u => u.id)
       this.count = r.count
       this.emoji = { id: r.emoji.id, name: r.emoji.name }
-    }
-    else {
+    } else {
       // When its from the db just merge the props
-      Object.assign(this, init);
+      Object.assign(this, init)
     }
   }
 }

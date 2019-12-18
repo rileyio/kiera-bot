@@ -1,24 +1,15 @@
 import got = require('got')
-import * as APIUrls from '../../api-urls'
-import * as Middleware from '../../middleware'
-import * as Utils from '../../utils'
-import { RouterRouted } from '../../utils'
-import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '../../embedded/chastikey-stats'
-import { TrackedUser } from '../../objects/user'
-import {
-  TrackedChastiKeyLock,
-  TrackedChastiKeyLockee,
-  TrackedChastiKeyUserTotalLockedTime,
-  TrackedChastiKeyKeyholderStatistics,
-  TrackedChastiKey,
-  TrackedChastiKeyUser,
-  TrackedChastiKeyUserAPIFetch
-} from '../../objects/chastikey'
-import { TrackedNotification } from '../../objects/notification'
+import * as APIUrls from '@/api-urls'
+import * as Middleware from '@/middleware'
+import * as Utils from '@/utils'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '@/embedded/chastikey-stats'
+import { TrackedUser } from '@/objects/user'
+import { TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetch } from '@/objects/chastikey'
+import { TrackedNotification } from '@/objects/notification'
 import { TextChannel, Message } from 'discord.js'
-import { ExportRoutes } from '../../router/routes-exporter'
-import { TrackedMessage } from '../../objects/message'
-import { TrackedBotSetting } from '../../objects/setting'
+import { TrackedMessage } from '@/objects/message'
+import { TrackedBotSetting } from '@/objects/setting'
 
 export const Routes = ExportRoutes(
   {

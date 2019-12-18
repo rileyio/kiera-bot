@@ -1,9 +1,17 @@
-import * as joi from '@hapi/joi';
+import * as joi from '@hapi/joi'
 
 export namespace Lists {
   export function get() {
-    return joi.object().keys({
-      input: joi.string().alphanum().min(2).max(24).required(),
-    }).required()
+    return joi
+      .object()
+      .keys({
+        input: joi
+          .string()
+          .alphanum()
+          .min(2)
+          .max(24)
+          .required()
+      })
+      .required()
   }
 }

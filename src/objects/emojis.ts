@@ -1,4 +1,4 @@
-import { Emoji } from 'discord.js';
+import { Emoji } from 'discord.js'
 
 export class TrackedEmoji {
   public _id: string
@@ -20,7 +20,7 @@ export class TrackedEmoji {
       identifier: init.identifier,
       name: init.name,
       roles: init.roles,
-      url: init.url,
-    });
+      url: init.url
+    })
   }
 }

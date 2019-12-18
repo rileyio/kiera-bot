@@ -1,9 +1,9 @@
-import * as Validation from '../validations/index';
-import * as errors from 'restify-errors';
-import { validate } from '../utils/validate';
-import { WebRouted } from '../web-router';
-import { TrackedAvailableObject } from '../../objects/available-objects';
-import { ObjectID } from 'bson';
+import * as Validation from '@/api/validations'
+import * as errors from 'restify-errors'
+import { validate } from '@/api/utils/validate'
+import { WebRouted } from '@/api/web-router'
+import { TrackedAvailableObject } from '@/objects/available-objects'
+import { ObjectID } from 'bson'
 
 export namespace Server {
   export async function settings(routed: WebRouted) {
@@ -16,11 +16,11 @@ export namespace Server {
         serverID: v.o.serverID
       })
 
-      return routed.res.send(serverSettings);
+      return routed.res.send(serverSettings)
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 
   export async function updateSettings(routed: WebRouted) {
@@ -29,7 +29,8 @@ export namespace Server {
     // console.log('req params', v)
 
     if (v.valid) {
-      var updateCount = await routed.Bot.DB.update<TrackedAvailableObject>('server-settings',
+      var updateCount = await routed.Bot.DB.update<TrackedAvailableObject>(
+        'server-settings',
         v.o._id ? { _id: new ObjectID(v.o._id) } : { serverID: v.o.serverID },
         {
           $set: {
@@ -38,13 +39,15 @@ export namespace Server {
             state: v.o.state,
             value: v.o.value
           }
-        }, { atomic: true, upsert: true })
+        },
+        { atomic: true, upsert: true }
+      )
 
-      if (updateCount > 0) return routed.res.send({ status: 'updated', success: true });
-      return routed.res.send({ status: 'failed', success: false });
+      if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
+      return routed.res.send({ status: 'failed', success: false })
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 }

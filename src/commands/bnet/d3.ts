@@ -1,6 +1,5 @@
-import { RouterRouted } from '../../router/router'
-import { ExportRoutes } from '../../router/routes-exporter'
-import { sb, en } from '../../utils/'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { sb, en } from '@/utils'
 
 export const Routes = ExportRoutes(
   {

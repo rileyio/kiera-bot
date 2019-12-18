@@ -1,6 +1,6 @@
-import { RouterRouted } from '../router/router';
-import { TrackedChastiKeyUser } from '../objects/chastikey';
-import { TrackedUser } from '../objects/user';
+import { RouterRouted } from '@/router'
+import { TrackedChastiKeyUser } from '@/objects/chastikey'
+import { TrackedUser } from '@/objects/user'
 
 export async function isCKVerified(routed: RouterRouted) {
   const ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: routed.user.id }))

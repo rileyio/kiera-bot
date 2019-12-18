@@ -1,5 +1,5 @@
 import * as restify from 'restify'
-import { Bot } from '..'
+import { Bot } from '@/index'
 import { Request, Response, Next } from 'restify'
 
 export interface WebRoute {

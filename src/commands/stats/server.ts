@@ -1,7 +1,6 @@
-import * as Utils from '../../utils/'
-import { RouterRouted } from '../../router/router'
-import { ExportRoutes } from '../../router/routes-exporter'
-import { statsTopServerChannels, statsServer } from '../../embedded/stats-server'
+import * as Utils from '@/utils'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { statsTopServerChannels, statsServer } from '@/embedded/stats-server'
 
 export const Routes = ExportRoutes(
   {

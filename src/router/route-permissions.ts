@@ -8,14 +8,6 @@ export interface ProcessedPermissions {
   pass?: boolean
 }
 
-export type ProcessedPermissionOutcome = 'Pass'
-  | 'FailedAdmin'
-  | 'FailedIDCheck'
-  | 'FailedManageGuild'
-  | 'FailedPermissionsCheck'
-  | 'FailedServerOnlyRestriction'
+export type ProcessedPermissionOutcome = 'Pass' | 'FailedAdmin' | 'FailedIDCheck' | 'FailedManageGuild' | 'FailedPermissionsCheck' | 'FailedServerOnlyRestriction'
 
-export type RouteActionUserTarget = 'none'
-  | 'author'
-  | 'argument'
-  | 'controller-decision'
+export type RouteActionUserTarget = 'none' | 'author' | 'argument' | 'controller-decision'

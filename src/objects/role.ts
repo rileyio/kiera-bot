@@ -1,4 +1,4 @@
-import { Role } from "discord.js";
+import { Role } from 'discord.js'
 
 export class TrackedRole {
   public _id: string
@@ -17,6 +17,6 @@ export class TrackedRole {
       position: init.position,
       permissions: init.permissions,
       mentionable: init.mentionable
-    });
+    })
   }
 }

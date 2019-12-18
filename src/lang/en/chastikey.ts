@@ -3,7 +3,7 @@ export const adminRefreshStats = `Manual stats refresh triggered..`
 // Error
 // export const usernameNotSet = `You'll need to tell the bot your username in order to use this command, Set your username (found in the ChastiKey app) using \`{{prefix}}ck username YourUsernameHere\``
 // export const usernameNotSetByOwner = `The requested ChastiKey username does not exist -or- the owner of it has not set it with Kiera.`
-export const userNotFoundRemote =  `User could not be found on the ChastiKey server.`
+export const userNotFoundRemote = `User could not be found on the ChastiKey server.`
 export const userNotFound = `User not found! The owner of the ChastiKey account must \`{{prefix}}ck verify\` in order to proceed with calling this command upon them.`
 export const userLookupErrorOrNotFound = `A ChastiKey user with that username could not be found!`
 export const keyholderOrAboveRoleRequired = `Calling this command for another user requires you hold the Keyholder or above role.`
@@ -11,7 +11,6 @@ export const keyholderOrAboveRoleRequired = `Calling this command for another us
 // Ticker
 export const invalidOverrideType = `Invalid override type, please use: (1) Keyholder, (2) Lockee, (3) Both`
 export const incorrectTickerTimer = `*Does something look incorrect? Please contact **Kevin** the developer of ChastiKey if any numbers appear incorrect*`
-
 
 // Lookup notification
 export const lockeeCommandNotification = `\`{{user}}\` has just looked up your **lockee** stats in \`{{channel}}\` on the \`{{server}}\` server`

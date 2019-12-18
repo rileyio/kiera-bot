@@ -1,4 +1,4 @@
-import { TrackedMessageReaction } from '../objects/message';
+import { TrackedMessageReaction } from '@/objects/message'
 
 export namespace React {
   export function filter(limitTo: Array<string>, reacts: Array<TrackedMessageReaction>) {
@@ -6,7 +6,6 @@ export namespace React {
       return limitTo.findIndex(lr => lr === r.emoji.name) > -1
     })
   }
-  
 
   export function toInt(mapping: { [emoji: string]: number }, reacts: Array<TrackedMessageReaction>) {
     return reacts.map(r => mapping[r.emoji.name])

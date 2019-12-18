@@ -1,4 +1,4 @@
-import { Bot } from '..'
+import { Bot } from '@/index'
 
 export type AuditEntryType = '<>' | 'discord.message.delete' | 'discord.user.join' | 'discord.user.leave' | 'discord.user.nickname' | 'api.oauth' | 'bot.command' | 'bot.maintenance'
 

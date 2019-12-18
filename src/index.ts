@@ -1,17 +1,15 @@
-require('dotenv').config()
 const { version } = require('../package.json')
 import * as Discord from 'discord.js'
-import * as Task from './tasks/task'
-import { MsgTracker, MongoDB, MongoDBLoader } from './db/database'
-import { TrackedServer } from './objects/server'
-import { Router } from './router/router'
-import { Logging } from './utils/'
-import { DISCORD_CLIENT_EVENTS } from './utils/client-event-handler'
-import { BotMonitor } from './monitor'
-import { routeLoader } from './router/route-loader'
-import { Audit } from './objects/audit'
-import { BattleNet } from './integrations/BNet'
-import { Statistics } from './statistics'
+import * as Task from '@/tasks'
+import { MsgTracker, MongoDB, MongoDBLoader } from '@/db'
+import { TrackedServer } from '@/objects/server'
+import { Router, routeLoader } from '@/router'
+import { Logging } from '@/utils'
+import { DISCORD_CLIENT_EVENTS } from '@/utils'
+import { BotMonitor } from '@/monitor'
+import { Audit } from '@/objects/audit'
+import { BattleNet } from '@/integrations/BNet'
+import { Statistics } from '@/statistics'
 
 export class Bot {
   public client = new Discord.Client()

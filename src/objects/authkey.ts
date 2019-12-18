@@ -1,5 +1,5 @@
-import { ObjectID } from 'bson';
-import * as crypto from 'crypto-js';
+import { ObjectID } from 'bson'
+import * as crypto from 'crypto-js'
 
 export class AuthKey {
   public readonly _id: ObjectID
@@ -22,7 +22,10 @@ export class AuthKey {
   }
 
   public generate(username: string, index: number) {
-    const key = `${username}:${index}:${crypto.SHA256(Math.random().toString()).toString().substr(0, 8)}`
+    const key = `${username}:${index}:${crypto
+      .SHA256(Math.random().toString())
+      .toString()
+      .substr(0, 8)}`
     this.hash = username + `:${index}:` + crypto.SHA256(key)
 
     // Return user's key and not storing

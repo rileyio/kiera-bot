@@ -1,27 +1,23 @@
-import * as Middleware from '../../middleware';
-import * as Utils from '../../utils';
-import { RouterRouted } from '../../router/router';
-import { TrackedUser } from '../../objects/user';
-import { ExportRoutes } from '../../router/routes-exporter';
+import * as Utils from '@/utils'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { TrackedUser } from '@/objects/user'
 
-export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'Admin',
-    commandTarget: 'argument',
-    controller: removeUser,
-    example: '{{prefix}}admin user delete @user#0000',
-    name: 'admin-user-delete',
-    permissions: {
-      restricted: true,
-      restrictedTo: [
-        '473856245166506014', // KevinCross#0001
-        '146439529824256000'  // Emma#1366
-      ]
-    },
-    validate: '/admin:string/user:string/delete:string/user=user'
-  }
-)
+export const Routes = ExportRoutes({
+  type: 'message',
+  category: 'Admin',
+  commandTarget: 'argument',
+  controller: removeUser,
+  example: '{{prefix}}admin user delete @user#0000',
+  name: 'admin-user-delete',
+  permissions: {
+    restricted: true,
+    restrictedTo: [
+      '473856245166506014', // KevinCross#0001
+      '146439529824256000' // Emma#1366
+    ]
+  },
+  validate: '/admin:string/user:string/delete:string/user=user'
+})
 
 /**
  * Remove user from DB
@@ -36,10 +32,9 @@ export async function removeUser(routed: RouterRouted) {
   const user = await routed.bot.DB.get<TrackedUser>('users', userQuery)
   const removed = await routed.bot.DB.remove('users', userQuery)
 
-  if (removed === 0) return true; // Stop here if nothing is removed
+  if (removed === 0) return true // Stop here if nothing is removed
   // Process command
-  await routed.message
-    .reply(`:white_check_mark: Removing user ${Utils.User.buildUserChatAt(user, userArgType)} from db`)
+  await routed.message.reply(`:white_check_mark: Removing user ${Utils.User.buildUserChatAt(user, userArgType)} from db`)
   routed.bot.DEBUG_MSG_COMMAND.log(`!admin user delete ${Utils.User.buildUserChatAt(user, userArgType)}`)
 
   return true

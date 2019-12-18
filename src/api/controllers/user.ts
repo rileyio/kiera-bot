@@ -1,18 +1,16 @@
-import * as Validation from '../validations/index';
-import * as errors from 'restify-errors';
-import { validate } from '../utils/validate';
-import { TrackedUser } from '../../objects/user';
-import { WebRouted } from '../web-router';
-import { performance } from 'perf_hooks';
+import * as Validation from '@/api/validations'
+import * as errors from 'restify-errors'
+import { validate } from '@/api/utils/validate'
+import { TrackedUser } from '@/objects/user'
+import { WebRouted } from '@/api/web-router'
+import { performance } from 'perf_hooks'
 
 export namespace User {
   export async function get(routed: WebRouted) {
     const v = await validate(Validation.User.get(), routed.req.body)
 
     if (v.valid) {
-      const query = v.o._id !== undefined
-        ? { _id: v.o._id }
-        : { id: v.o.id }
+      const query = v.o._id !== undefined ? { _id: v.o._id } : { id: v.o.id }
 
       var user = await routed.Bot.DB.get<TrackedUser>('users', query, {
         avatar: 1,
@@ -24,48 +22,47 @@ export namespace User {
 
       // Sort guilds
       user.guilds.sort(g => {
-        return (g.owner) ? -1 : 1
+        return g.owner ? -1 : 1
       })
 
-      return routed.res.send(user);
+      return routed.res.send(user)
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 
   export async function update(routed: WebRouted) {
     const v = await validate(Validation.User.update(), routed.req.body)
 
     if (v.valid) {
-      var updateValueKey;
+      var updateValueKey
 
       switch (v.o.key) {
         case 'ChastiKey.username':
           updateValueKey = { $set: { 'ChastiKey.username': v.o.value } }
-          break;
+          break
         case 'ChastiKey.ticker.type':
           updateValueKey = { $set: { 'ChastiKey.ticker.type': v.o.value } }
-          break;
+          break
         case 'ChastiKey.ticker.date':
           updateValueKey = { $set: { 'ChastiKey.ticker.date': v.o.value } }
-          break;
+          break
         case 'ChastiKey.ticker.showStarRatingScore':
           updateValueKey = { $set: { 'ChastiKey.ticker.showStarRatingScore': v.o.value } }
-          break;
+          break
         default:
           // On error
-          return routed.next(new errors.BadRequestError());
+          return routed.next(new errors.BadRequestError())
       }
 
-      var user = await routed.Bot.DB.update<TrackedUser>('users',
-        { id: routed.req.header('id') }, updateValueKey, { atomic: true })
+      var user = await routed.Bot.DB.update<TrackedUser>('users', { id: routed.req.header('id') }, updateValueKey, { atomic: true })
 
-      return routed.res.send({ status: 'updated', success: true });
+      return routed.res.send({ status: 'updated', success: true })
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 
   export async function oauth(routed: WebRouted) {
@@ -82,7 +79,7 @@ export namespace User {
       if (v.valid) {
         const storedUser = await routed.Bot.DB.get('users', { id: v.o.id })
         // Is user already stored?
-        uUser = (storedUser) ? new TrackedUser(storedUser) : new TrackedUser(v.o)
+        uUser = storedUser ? new TrackedUser(storedUser) : new TrackedUser(v.o)
         // Update with Oauth data
         uUser.oauth(v.o)
         // tslint:disable-next-line:no-console
@@ -93,8 +90,7 @@ export namespace User {
         if (storedUser) {
           await routed.Bot.DB.update('users', { id: v.o.id }, uUser)
           updateType = 'updated'
-        }
-        else {
+        } else {
           await routed.Bot.DB.add('users', uUser)
           updateType = 'added'
         }
@@ -111,14 +107,14 @@ export namespace User {
       switch (updateType) {
         case 'added':
           auditDetails = 'Logging in to kiera-web'
-          break;
+          break
         case 'updated':
           auditDetails = 'Logging in to kiera-web (Refreshed login)'
-          break;
+          break
 
         default:
           auditDetails = 'THIS SHOULD NEVER HAPPEN!'
-          break;
+          break
       }
 
       // Track in an audit event
@@ -133,10 +129,11 @@ export namespace User {
       })
 
       return routed.res.send({
-        status: updateType, success: true, webToken: uUser.webToken
-      });
-    }
-    else {
+        status: updateType,
+        success: true,
+        webToken: uUser.webToken
+      })
+    } else {
       // Track in an audit event
       routed.Bot.Audit.NewEntry({
         name: 'API Authentication Failed',
@@ -152,6 +149,6 @@ export namespace User {
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 }

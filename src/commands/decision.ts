@@ -1,12 +1,11 @@
-import * as Middleware from '../middleware'
-import * as Utils from '../utils/'
-import { RouterRouted } from '../router/router'
-import { TrackedUser } from '../objects/user'
-import { TrackedDecision, TrackedDecisionOption } from '../objects/decision'
+import * as Middleware from '@/middleware'
+import * as Utils from '@/utils'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { TrackedUser } from '@/objects/user'
+import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import { ObjectID } from 'bson'
-import { decisionFromSaved, decisionRealtime } from '../embedded/decision-embed'
-import { sb, en } from '../utils/'
-import { ExportRoutes } from '../router/routes-exporter'
+import { decisionFromSaved, decisionRealtime } from '@/embedded/decision-embed'
+import { sb, en } from '@/utils'
 
 export const Routes = ExportRoutes(
   {

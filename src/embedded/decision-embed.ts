@@ -1,5 +1,5 @@
-import { TrackedDecision, TrackedDecisionOption } from '../objects/decision';
-import * as Utils from '../utils/'
+import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
+import * as Utils from '@/utils'
 
 export function decisionFromSaved(decision: TrackedDecision, option: TrackedDecisionOption) {
   var _embed = {
@@ -11,8 +11,7 @@ export function decisionFromSaved(decision: TrackedDecision, option: TrackedDeci
 
   if (Utils.URL.isImage(option.text)) {
     _embed.embed['image'] = { url: option.text }
-  }
-  else {
+  } else {
     // If its just plain text return surrounded by ``
     _embed.embed['description'] = `\`${option.text}\``
   }
@@ -30,8 +29,7 @@ export function decisionRealtime(question: string, result: string) {
 
   if (Utils.URL.isImage(result)) {
     _embed.embed['image'] = { url: result }
-  }
-  else {
+  } else {
     // If its just plain text return surrounded by ``
     _embed.embed['description'] = `\`${result}\``
   }

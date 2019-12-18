@@ -1,7 +1,7 @@
-import * as Validation from '../validations/index';
-import * as errors from 'restify-errors';
-import { validate } from '../utils/validate';
-import { WebRouted } from '../web-router';
+import * as Validation from '@/api/validations'
+import * as errors from 'restify-errors'
+import { validate } from '@/api/utils/validate'
+import { WebRouted } from '@/api/web-router'
 
 export namespace Lists {
   export async function get(routed: WebRouted) {
@@ -14,22 +14,28 @@ export namespace Lists {
     // this.DEBUG_WEBAPI('req params', v.o)
 
     if (v.valid) {
-      var users = await routed.Bot.DB.getMultiple('users', {
-        username: { $regex: new RegExp(`^${v.o.input}`), $options: 'i' }
-      }, { username: 1, discriminator: 1 })
-      var servers = await routed.Bot.DB.getMultiple('servers', {
-        name: { $regex: new RegExp(`^${v.o.input}`), $options: 'i' }
-      }, { name: 1, region: 1, ownerID: 1 })
+      var users = await routed.Bot.DB.getMultiple(
+        'users',
+        {
+          username: { $regex: new RegExp(`^${v.o.input}`), $options: 'i' }
+        },
+        { username: 1, discriminator: 1 }
+      )
+      var servers = await routed.Bot.DB.getMultiple(
+        'servers',
+        {
+          name: { $regex: new RegExp(`^${v.o.input}`), $options: 'i' }
+        },
+        { name: 1, region: 1, ownerID: 1 }
+      )
 
       payload.servers = servers
       payload.users = users
 
-      return routed.res.send(payload);
+      return routed.res.send(payload)
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
-
-
 }

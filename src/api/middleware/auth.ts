@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken'
-import { WebRouted } from '../web-router'
-import { AuthKey } from '../../objects/authkey'
-import { TrackedUser } from '../../objects/user'
+import { WebRouted } from '@/api/web-router'
+import { AuthKey } from '@/objects/authkey'
+import { TrackedUser } from '@/objects/user'
 
 export async function isAuthenticatedOwner(routed: WebRouted) {
   // User & Token from header

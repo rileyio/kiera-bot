@@ -1,7 +1,6 @@
-import * as Utils from '../utils/'
-import { RouterRouted } from '../router/router';
-import { ExportRoutes } from '../router/routes-exporter';
-import { TrackedAvailableObject } from '../objects/available-objects';
+import * as Utils from '@/utils'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { TrackedAvailableObject } from '@/objects/available-objects'
 
 export const Routes = ExportRoutes(
   {
@@ -23,16 +22,16 @@ export const Routes = ExportRoutes(
     name: 'help',
     validate: '/help:string',
     permissions: { serverOnly: false }
-  },
+  }
 )
 
 export async function genericFallback(routed: RouterRouted) {
   // Check ChastiKey enabled state in db
-  var ckEnabledState = await routed.bot.DB.get<TrackedAvailableObject>('server-settings', {
+  var ckEnabledState = (await routed.bot.DB.get<TrackedAvailableObject>('server-settings', {
     serverID: routed.message.guild.id,
     key: 'server.chastikey.enabled',
     state: true
-  }) || { value: false, state: true }
+  })) || { value: false, state: true }
 
   // Create HelpBlock from all indivisual command strings
   var helpBlock = Utils.en.help.main + '\n'
@@ -55,7 +54,6 @@ export async function genericFallback(routed: RouterRouted) {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
         text: `Generated from the current version ${routed.bot.version}`
       }
-
     }
   })
   return true
@@ -63,14 +61,14 @@ export async function genericFallback(routed: RouterRouted) {
 
 export async function commandHelp(routed: RouterRouted) {
   // Check ChastiKey enabled state in db
-  var ckEnabledState = await routed.bot.DB.get<TrackedAvailableObject>('server-settings', {
+  var ckEnabledState = (await routed.bot.DB.get<TrackedAvailableObject>('server-settings', {
     serverID: routed.message.guild.id,
     key: 'server.chastikey.enabled',
     state: true
-  }) || { value: false, state: true }
+  })) || { value: false, state: true }
 
   // If command is for ChastiKey, block it if thats disabled
-  if (routed.v.o.command === 'ck' && ckEnabledState.value === false || ckEnabledState.state === false) return; // Stop here 
+  if ((routed.v.o.command === 'ck' && ckEnabledState.value === false) || ckEnabledState.state === false) return // Stop here
 
   // Determine if there's a route,if not inform the user
   if (Utils.en.help[routed.v.o.command]) {
@@ -85,8 +83,7 @@ export async function commandHelp(routed: RouterRouted) {
         }
       }
     })
-  }
-  else {
+  } else {
     await routed.message.reply(Utils.en.error.helpCommandMissing)
   }
 

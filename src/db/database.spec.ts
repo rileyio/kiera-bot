@@ -1,14 +1,14 @@
 require('dotenv').config()
 
-import test from 'ava';
-import { MongoDB } from './database';
-import { TrackedUser } from '../objects/user';
+import test from 'ava'
+import { MongoDB } from '@/db'
+import { TrackedUser } from '@/objects/user'
 
-const db = new MongoDB();
+const db = new MongoDB()
 const newUser = new TrackedUser({
   id: '526039977247899649',
   username: 'ldi-bot',
-  discriminator: '9713',
+  discriminator: '9713'
 })
 
 test('DB:insert => Insert a record', async t => {

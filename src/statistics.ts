@@ -1,5 +1,5 @@
-import { Bot } from '.'
-import { ServerStatisticType, ServerStatistic, StatisticsSetting, StatisticsSettingType } from './objects/statistics'
+import { Bot } from '@/index'
+import { ServerStatisticType, ServerStatistic, StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 
 export class Statistics {
   private Bot: Bot

@@ -1,20 +1,16 @@
-import * as Middleware from '../middleware';
-import { RouterRouted } from '../router/router';
-import { ExportRoutes } from '../router/routes-exporter';
-import { eightBallResult } from '../embedded/8ball-embed';
+import { RouterRouted, ExportRoutes } from '@/router'
+import { eightBallResult } from '@/embedded/8ball-embed'
 
-export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'Fun',
-    commandTarget: 'argument',
-    controller: eightBall,
-    example: '{{prefix}}8ball',
-    name: '8ball',
-    validate: '/8ball:string/question?=string',
-    permissions: { serverOnly: false }
-  }
-)
+export const Routes = ExportRoutes({
+  type: 'message',
+  category: 'Fun',
+  commandTarget: 'argument',
+  controller: eightBall,
+  example: '{{prefix}}8ball',
+  name: '8ball',
+  validate: '/8ball:string/question?=string',
+  permissions: { serverOnly: false }
+})
 
 /**
  * 8 Ball
@@ -40,7 +36,7 @@ export async function eightBall(routed: RouterRouted) {
     'Cannot predict now',
     'Concentrate and ask again',
 
-    'Don\'t count on it',
+    `Don't count on it`,
     'My reply is no',
     'My sources say no',
     'Outlook not so good',

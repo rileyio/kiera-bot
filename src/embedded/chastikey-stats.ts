@@ -1,6 +1,6 @@
 import { TrackedChastiKeyLock, TrackedChastiKeyKeyholderStatistics } from '../objects/chastikey'
-import * as Utils from '../utils/'
-import { RouterStats } from '../utils/'
+import * as Utils from '@/utils'
+import { RouterStats } from '@/router'
 
 export interface LockeeStats {
   averageLocked: number

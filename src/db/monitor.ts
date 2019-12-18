@@ -1,7 +1,7 @@
-import { MongoDB, MongoDBLoader } from './database';
-import { EventEmitter } from 'events';
+import { MongoDB, MongoDBLoader } from '@/db'
+import { EventEmitter } from 'events'
 import { performance } from 'perf_hooks'
-import { Bot } from '..';
+import { Bot } from '@/index'
 
 export class DatabaseMonitor extends EventEmitter {
   private Bot: Bot
@@ -32,10 +32,12 @@ export class DatabaseMonitor extends EventEmitter {
 
   public async monitor() {
     // Block dup
-    if (this.isMonitorRunning) return;
+    if (this.isMonitorRunning) return
 
     this.isMonitorRunning = true
-    this.monitorInterval = setInterval(async () => { await this.pingDB() }, 5000)
+    this.monitorInterval = setInterval(async () => {
+      await this.pingDB()
+    }, 5000)
     // Trigger 1 ping to start with for startup
     return await this.pingDB()
   }
@@ -43,7 +45,7 @@ export class DatabaseMonitor extends EventEmitter {
   private async pingDB() {
     var success = false
     // Check if a ping is hanging, don't let it pool them
-    if (this.isWaiting) return;
+    if (this.isWaiting) return
     this.isWaiting = true
     try {
       // track performance
@@ -59,8 +61,7 @@ export class DatabaseMonitor extends EventEmitter {
         success = true
         // tslint:disable-next-line:no-console
         // console.log('***** ping', _ping, Math.round(this.pingTotalLatency / this.pingCount), 'ms')
-      }
-      else {
+      } else {
         this.pingFailedCount += 1
         success = false
         // tslint:disable-next-line:no-console
@@ -76,10 +77,7 @@ export class DatabaseMonitor extends EventEmitter {
     this.isWaiting = false
 
     // Emit event for current status
-    this.emitUpdate(
-      success ? 'dbPingSuccessful' : 'dbPingFailed',
-      success ? this.lastPingEnd : undefined,
-      success ? Math.round(this.pingTotalLatency / this.pingCount) : undefined)
+    this.emitUpdate(success ? 'dbPingSuccessful' : 'dbPingFailed', success ? this.lastPingEnd : undefined, success ? Math.round(this.pingTotalLatency / this.pingCount) : undefined)
 
     // Return success status
     return success

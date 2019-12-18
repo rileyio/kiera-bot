@@ -1,6 +1,6 @@
 require('dotenv').config()
-import test from 'ava';
-import * as Utils from './index';
+import test from 'ava'
+import * as Utils from '@/utils'
 
 test('Utils:getArgs => Ensure proper parsing of args', t => {
   t.plan(2)

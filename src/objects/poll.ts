@@ -1,4 +1,4 @@
-import { ObjectID } from 'bson';
+import { ObjectID } from 'bson'
 
 export class TrackedPoll {
   public _id: ObjectID
@@ -32,7 +32,7 @@ export class TrackedPoll {
       serverID: init.serverID || this.serverID,
       title: init.title || this.title,
       type: init.type || this.type
-    });
+    })
 
     // Handle constructors for votes and vote options
     if (init.emojiOptions) this.emojiOptions = init.emojiOptions.map(e => new TrackedVoteOption(e))
@@ -86,7 +86,7 @@ export class TrackedVoteOption {
       _id: init._id || new ObjectID(),
       emoji: init.emoji,
       description: init.description || this.description
-    });
+    })
   }
 }
 
@@ -102,6 +102,6 @@ export class TrackedVote {
       authorID: init.authorID,
       serverID: init.serverID,
       vote: init.vote
-    });
+    })
   }
 }

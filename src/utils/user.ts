@@ -1,12 +1,12 @@
-import * as XRegex from 'xregexp';
-import { TrackedUser, TrackedUserQuery } from '../objects/user';
+import * as XRegex from 'xregexp'
+import { TrackedUser, TrackedUserQuery } from '@/objects/user'
 
 export namespace User {
   export enum UserRefType {
     /**
      * discord uses as the user id
-     * 
-     * Typically seen when only using an id or 
+     *
+     * Typically seen when only using an id or
      * Example: `<@146439529824256000>`
      */
     snowflake,
@@ -107,20 +107,18 @@ export namespace User {
    * Takes the source input to determine the format needed for the proper
    * @user#0000 to appear in chat, this is because DMs to the bot and
    * textChannel messages don't work the same
-   * 
+   *
    * `textChannel` messages need a snowflake
-   * 
+   *
    * `dm` messages use just plain text
-   * 
+   *
    * @export
    * @param {(string | TrackedUser)} input
    * @param {UserRefType} neededInFormat
    * @returns string
    */
   export function buildUserChatAt(input: string | TrackedUser, neededInFormat: UserRefType): string {
-    if (neededInFormat === UserRefType.snowflake)
-      return buildUserWrappedSnowflake(input)
-    if (neededInFormat === UserRefType.usernameFull && typeof input === 'object')
-      return buildUserFull(input)
+    if (neededInFormat === UserRefType.snowflake) return buildUserWrappedSnowflake(input)
+    if (neededInFormat === UserRefType.usernameFull && typeof input === 'object') return buildUserFull(input)
   }
 }

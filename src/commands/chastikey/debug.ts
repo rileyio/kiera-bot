@@ -1,33 +1,28 @@
-import got = require('got');
-import * as APIUrls from '../../api-urls';
-import * as Middleware from '../../middleware';
-import { ExportRoutes } from '../../router/routes-exporter';
-import { RouterRouted } from '../../utils';
-import { TrackedUser } from '../../objects/user';
-import { TrackedChastiKeyUser, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLockee, TrackedChastiKeyLock, ChastiKeyVerifyDiscordID } from '../../objects/chastikey';
+import got = require('got')
+import * as APIUrls from '@/api-urls'
+import * as Middleware from '@/middleware'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { TrackedUser } from '@/objects/user'
+import { TrackedChastiKeyUser, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLockee, TrackedChastiKeyLock, ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
 
-export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'ChastiKey',
-    commandTarget: 'author',
-    controller: debug,
-    example: '{{prefix}}ck debug UsernameHere',
-    name: 'ck-debug-username',
-    validate: '/ck:string/debug:string/user=string',
-    middleware: [
-      Middleware.isModerator
-    ],
-    permissions: {
-      defaultEnabled: true,
-      serverOnly: true,
-      restrictedTo: [
-        '473856245166506014', // KevinCross#0001
-        '146439529824256000'  // Emma#1366
-      ]
-    }
+export const Routes = ExportRoutes({
+  type: 'message',
+  category: 'ChastiKey',
+  commandTarget: 'author',
+  controller: debug,
+  example: '{{prefix}}ck debug UsernameHere',
+  name: 'ck-debug-username',
+  validate: '/ck:string/debug:string/user=string',
+  middleware: [Middleware.isModerator],
+  permissions: {
+    defaultEnabled: true,
+    serverOnly: true,
+    restrictedTo: [
+      '473856245166506014', // KevinCross#0001
+      '146439529824256000' // Emma#1366
+    ]
   }
-)
+})
 
 export async function debug(routed: RouterRouted) {
   const usernameRegex = new RegExp(`^${routed.v.o.user}$`, 'i')
@@ -40,7 +35,7 @@ export async function debug(routed: RouterRouted) {
   const ckUser = await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckKH = await routed.bot.DB.get<TrackedChastiKeyKeyholderStatistics>('ck-keyholders', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckLockee = await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
-  const ckLocktober = await routed.bot.DB.get<{ username: string, discordID: string }>('ck-locktober', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
+  const ckLocktober = await routed.bot.DB.get<{ username: string; discordID: string }>('ck-locktober', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckRunningLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
 
   var verifyIDAPIResp: got.Response<ChastiKeyVerifyDiscordID>
@@ -85,9 +80,9 @@ export async function debug(routed: RouterRouted) {
   response += `\nIs in ck-running-locks Data (from CK) (Count: ${ckRunningLocks.length}): ${ckRunningLocks.length > 0 ? true : false}\n`
   if (ckRunningLocks.length > 0) {
     ckRunningLocks.forEach((l, i) => {
-    response += `  -> index               = ${i}\n`
-    response += `  -> discordID           = ${l.discordID}\n`
-    response += `  -> username            = ${l.username}\n`
+      response += `  -> index               = ${i}\n`
+      response += `  -> discordID           = ${l.discordID}\n`
+      response += `  -> username            = ${l.username}\n`
     })
   }
   response += `\nAnything from Verify live check (from CK): ${verifyIDAPIResp.statusCode === 200 ? true : false}\n`

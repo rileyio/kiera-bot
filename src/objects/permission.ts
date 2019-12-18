@@ -1,5 +1,5 @@
-import { ObjectID } from 'bson';
-import { GuildChannel } from 'discord.js';
+import { ObjectID } from 'bson'
+import { GuildChannel } from 'discord.js'
 
 export interface TextChannelExtended extends GuildChannel {
   permissions: Array<any>

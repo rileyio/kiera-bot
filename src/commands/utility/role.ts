@@ -1,5 +1,4 @@
-import { RouterRouted } from '../../utils';
-import { ExportRoutes } from '../../router/routes-exporter';
+import { RouterRouted, ExportRoutes } from '@/router'
 
 export const Routes = ExportRoutes(
   {
@@ -59,11 +58,15 @@ export async function displayRoles(routed: RouterRouted) {
 
   // Sort roles by position
   roles.sort((a, b) => {
-    var x = a.position;
-    var y = b.position;
-    if (x > y) { return -1; }
-    if (x < y) { return 1; }
-    return 0;
+    var x = a.position
+    var y = b.position
+    if (x > y) {
+      return -1
+    }
+    if (x < y) {
+      return 1
+    }
+    return 0
   })
 
   var message = `\n**Server Roles**\n`
@@ -71,7 +74,7 @@ export async function displayRoles(routed: RouterRouted) {
   message += `\`\`\``
 
   roles.forEach(r => {
-    message += `(${r.position < 10 ? `0` + r.position : r.position}) ${r.name} ${Array.from(Array((longestName + 3) - r.name.length)).join('.')} [${r.members}]\n`
+    message += `(${r.position < 10 ? `0` + r.position : r.position}) ${r.name} ${Array.from(Array(longestName + 3 - r.name.length)).join('.')} [${r.members}]\n`
   })
 
   message += `\`\`\``
@@ -98,20 +101,25 @@ export async function displayRoles(routed: RouterRouted) {
  * @param {RouterRouted} routed
  */
 export async function displayRoleRange(routed: RouterRouted) {
-  const roles = routed.message.guild.roles.array().map(r => { return { name: r.name, hexColor: r.hexColor, members: r.members.size, position: r.position } })
+  const roles = routed.message.guild.roles.array().map(r => {
+    return { name: r.name, hexColor: r.hexColor, members: r.members.size, position: r.position }
+  })
 
   // Sort roles by position
   roles.sort((a, b) => {
-    var x = a.position;
-    var y = b.position;
-    if (x < y) { return -1; }
-    if (x > y) { return 1; }
-    return 0;
+    var x = a.position
+    var y = b.position
+    if (x < y) {
+      return -1
+    }
+    if (x > y) {
+      return 1
+    }
+    return 0
   })
 
   // Splice out only what the user wants
   const slicedRoles = roles.slice(routed.v.o.from, routed.v.o.until + 1)
-
 
   if (slicedRoles.length > 0) {
     var message = `\n**Server Role(s)**\n`
@@ -120,14 +128,13 @@ export async function displayRoleRange(routed: RouterRouted) {
 
     slicedRoles.forEach((r, i) => {
       message += `${r.name} [${r.members}]\n`
-      if (i < (slicedRoles.length - 1)) message += `\n` // Add extra space between roles
+      if (i < slicedRoles.length - 1) message += `\n` // Add extra space between roles
     })
 
     message += `\`\`\``
 
     await routed.message.channel.send(message)
-  }
-  else routed.message.channel.send('Count not find roles in the given range!')
+  } else routed.message.channel.send('Count not find roles in the given range!')
   // Successful end
   return true
 }
@@ -164,11 +171,15 @@ export async function displayRolesLike(routed: RouterRouted) {
 
   // Sort roles by position
   roles.sort((a, b) => {
-    var x = a.position;
-    var y = b.position;
-    if (x < y) { return -1; }
-    if (x > y) { return 1; }
-    return 0;
+    var x = a.position
+    var y = b.position
+    if (x < y) {
+      return -1
+    }
+    if (x > y) {
+      return 1
+    }
+    return 0
   })
 
   if (slicedRoles.length > 0) {
@@ -177,16 +188,14 @@ export async function displayRolesLike(routed: RouterRouted) {
     message += `\`\`\``
 
     slicedRoles.forEach((r, i) => {
-      message += `(${r.position < 10 ? `0` + r.position : r.position}) ${r.name} ${Array.from(Array((longestName + 3) - r.name.length)).join('.')} [${r.members}]`
-      if (i < (slicedRoles.length - 1)) message += `\n` // Add extra space between roles
+      message += `(${r.position < 10 ? `0` + r.position : r.position}) ${r.name} ${Array.from(Array(longestName + 3 - r.name.length)).join('.')} [${r.members}]`
+      if (i < slicedRoles.length - 1) message += `\n` // Add extra space between roles
     })
 
     message += `\`\`\``
 
     await routed.message.channel.send(message)
-  }
-
-  else routed.message.channel.send(`Count not find roles that contain \`${routed.v.o.name}\``)
+  } else routed.message.channel.send(`Count not find roles that contain \`${routed.v.o.name}\``)
   // Successful end
   return true
 }
@@ -197,8 +206,7 @@ export async function displayRolesLike(routed: RouterRouted) {
  * @param {RouterRouted} routed
  */
 export async function displayRole(routed: RouterRouted) {
-  const role = routed.message.guild.roles.array()
-    .find(r => r.name.toLocaleLowerCase().replace(' ', '') === routed.v.o.name.toLocaleLowerCase().replace(' ', ''))
+  const role = routed.message.guild.roles.array().find(r => r.name.toLocaleLowerCase().replace(' ', '') === routed.v.o.name.toLocaleLowerCase().replace(' ', ''))
 
   // If Role was found: Show details about it
   if (role) {
@@ -214,8 +222,7 @@ export async function displayRole(routed: RouterRouted) {
     message += `\`\`\``
 
     await routed.message.channel.send(message)
-  }
-  else {
+  } else {
     await routed.message.channel.send(`Count not find role by the given name \`${routed.v.o.name}\`!`)
   }
 

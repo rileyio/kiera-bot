@@ -1,10 +1,10 @@
-import * as APIUrls from '../api-urls'
 import * as QRCode from 'qrcode'
-import * as Utils from '.'
-import { Transform, Stream } from 'stream'
-import { TrackedChastiKey, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetchLock, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '../objects/chastikey'
-import { LockeeStats } from '../embedded/chastikey-stats'
-import { RouterStats } from '../router/router'
+import * as APIUrls from '@/api-urls'
+import * as Utils from '@/utils'
+import { Transform } from 'stream'
+import { TrackedChastiKey, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetchLock, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '@/objects/chastikey'
+import { LockeeStats } from '@/embedded/chastikey-stats'
+import { RouterStats } from '@/router'
 
 export namespace ChastiKey {
   export function generateTickerURL(ck: TrackedChastiKey, overrideType?: number) {

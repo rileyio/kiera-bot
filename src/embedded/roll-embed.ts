@@ -1,7 +1,7 @@
 export function rollDice(sides: number, count: number, outcome: Array<number>) {
   return {
     embed: {
-      title: `:game_die: Rolling ${(count) ? `\`${count}\` dice` : 'a pair of dice'} with **\`${sides}\`** sides`,
+      title: `:game_die: Rolling ${count ? `\`${count}\` dice` : 'a pair of dice'} with **\`${sides}\`** sides`,
       description: `Results from ${count} dice \n\`\`\`js\n[ ${outcome.join(', ')} ]\`\`\``,
       color: 14553782
     }

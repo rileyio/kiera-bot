@@ -1,9 +1,8 @@
-import * as Middleware from '../middleware';
-import * as Utils from '../utils/';
-import { TrackedUser } from '../objects/user';
-import { RouterRouted } from '../router/router';
-import { AuthKey } from '../objects/authkey';
-import { ExportRoutes } from '../router/routes-exporter';
+import * as Middleware from '@/middleware'
+import * as Utils from '@/utils'
+import { TrackedUser } from '@/objects/user'
+import { RouterRouted, ExportRoutes } from '@/router'
+import { AuthKey } from '@/objects/authkey'
 
 export const Routes = ExportRoutes(
   {
@@ -14,9 +13,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}register',
     name: 'register',
     validate: '/register:string',
-    middleware: [
-      Middleware.middlewareTest
-    ]
+    middleware: [Middleware.middlewareTest]
   },
   {
     type: 'message',
@@ -26,12 +23,10 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}user key new',
     name: 'user-api-authkey-create',
     validate: '/user:string/key:string/new:string',
-    middleware: [
-      Middleware.isUserRegistered
-    ],
+    middleware: [Middleware.isUserRegistered],
     permissions: {
       restrictedTo: [
-        '146439529824256000'  // Emma#1366
+        '146439529824256000' // Emma#1366
       ]
     }
   },
@@ -43,12 +38,10 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}user key destroy user:1:123abc',
     name: 'user-api-authkey-destroy',
     validate: '/user:string/key:string/destroy:string/authkey=string',
-    middleware: [
-      Middleware.isUserRegistered
-    ],
+    middleware: [Middleware.isUserRegistered],
     permissions: {
       restrictedTo: [
-        '146439529824256000'  // Emma#1366
+        '146439529824256000' // Emma#1366
       ]
     }
   }
@@ -60,18 +53,20 @@ export async function registerUser(routed: RouterRouted) {
 
   if (!isRegistered) {
     // If not yet registered, store user in db
-    const userID = await routed.bot.DB.add('users', new TrackedUser({
-      id: routed.message.author.id,
-      username: routed.message.author.username,
-      discriminator: routed.message.author.discriminator,
-    }))
+    const userID = await routed.bot.DB.add(
+      'users',
+      new TrackedUser({
+        id: routed.message.author.id,
+        username: routed.message.author.username,
+        discriminator: routed.message.author.discriminator
+      })
+    )
     const user = await routed.bot.DB.get<TrackedUser>('users', { _id: userID })
     const userAt = Utils.User.buildUserChatAt(user, userArgType)
 
     await routed.message.reply(`:white_check_mark: You're now registered! ^_^`)
     routed.bot.DEBUG_MSG_COMMAND.log(`!register ${userAt}`)
-  }
-  else {
+  } else {
     await routed.message.reply(`You're already registered! :wink:`)
     const userAt = Utils.User.buildUserChatAt(routed.message.author.id, userArgType)
     routed.bot.DEBUG_MSG_COMMAND.log(`!register ${userAt} - user already registered`)
@@ -91,7 +86,8 @@ export async function registerAPIAuthKey(routed: RouterRouted) {
   await routed.bot.DB.add('authkeys', authKey)
   await routed.message.author.send(
     `:exclamation: This is your private key \`${priKey}\` **(DO NOT share this with anyone!)**
-       Note: if you need to destroy this you can run \`!user key destroy ${priKey}\``)
+       Note: if you need to destroy this you can run \`!user key destroy ${priKey}\``
+  )
 
   return true
 }
@@ -109,8 +105,7 @@ export async function destroyAPIAuthKey(routed: RouterRouted) {
   // Else: continue
   const updated = await routed.bot.DB.update<AuthKey>('authkeys', { _id: authKey._id }, { isActive: false })
 
-  await routed.message.author.send(
-    `:exclamation: Your authkey \`${routed.v.o.authkey}\` is now deactivated!`)
+  await routed.message.author.send(`:exclamation: Your authkey \`${routed.v.o.authkey}\` is now deactivated!`)
 
   return true
 }

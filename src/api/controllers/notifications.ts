@@ -1,16 +1,14 @@
-import * as Validation from '../validations/index';
-import * as errors from 'restify-errors';
-import { validate } from '../utils/validate';
-import { WebRouted } from '../web-router';
-import { TrackedNotification } from '../../objects/notification';
-import { ObjectID } from 'bson';
+import * as Validation from '@/api/validations/'
+import * as errors from 'restify-errors'
+import { validate } from '@/api/utils/validate'
+import { WebRouted } from '@/api/web-router'
+import { TrackedNotification } from '@/objects/notification'
 
 export namespace Notifications {
   export async function getNotifications(routed: WebRouted) {
     const v = await validate(Validation.Notifications.get(), routed.req.body)
 
     if (v.valid) {
-
       // User & Token from header
       const id = routed.req.header('id')
 
@@ -19,11 +17,11 @@ export namespace Notifications {
         serverID: v.o.serverID !== undefined ? v.o.serverID : undefined
       })
 
-      return routed.res.send(notificationSettings);
+      return routed.res.send(notificationSettings)
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 
   export async function updateNotification(routed: WebRouted) {
@@ -53,17 +51,21 @@ export namespace Notifications {
       }
       // Else update
       else {
-        updateCount = await routed.Bot.DB.update<TrackedNotification>('notifications', {
-          name: v.o.name,
-          authorID: v.o.authorID,
-          serverID: v.o.serverID
-        }, v.o)
+        updateCount = await routed.Bot.DB.update<TrackedNotification>(
+          'notifications',
+          {
+            name: v.o.name,
+            authorID: v.o.authorID,
+            serverID: v.o.serverID
+          },
+          v.o
+        )
       }
-      if (updateCount > 0) return routed.res.send({ status: 'updated', success: true });
-      return routed.res.send({ status: 'failed', success: false });
+      if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
+      return routed.res.send({ status: 'failed', success: false })
     }
 
     // On error
-    return routed.next(new errors.BadRequestError());
+    return routed.next(new errors.BadRequestError())
   }
 }

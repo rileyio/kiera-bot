@@ -1,7 +1,5 @@
-import * as Utils from '../../utils'
-import { RouterRouted } from '../../router/router';
-import { ExportRoutes } from '../../router/routes-exporter';
-import { example } from 'joi';
+import * as Utils from '@/utils'
+import { RouterRouted, ExportRoutes } from '@/router'
 
 export const Routes = ExportRoutes(
   {
@@ -56,9 +54,7 @@ export async function listCommandCategories(routed: RouterRouted) {
 
   routed.bot.Router.routes.forEach(route => {
     // Track category and how many times its seen across all commands
-    categories[route.category] === undefined
-      ? categories[route.category] = { count: 1 }
-      : categories[route.category].count += 1
+    categories[route.category] === undefined ? (categories[route.category] = { count: 1 }) : (categories[route.category].count += 1)
 
     // Track which category name is the longest
     if (longestName < route.category.length) longestName = route.category.length
@@ -69,16 +65,20 @@ export async function listCommandCategories(routed: RouterRouted) {
 
   // Sort A > Z
   categoryNames.sort((a, b) => {
-    var x = a.toLowerCase();
-    var y = b.toLowerCase();
-    if (x < y) { return -1; }
-    if (x > y) { return 1; }
-    return 0;
+    var x = a.toLowerCase()
+    var y = b.toLowerCase()
+    if (x < y) {
+      return -1
+    }
+    if (x > y) {
+      return 1
+    }
+    return 0
   })
 
   // Add each command category's name & total
   categoryNames.forEach((catName, index) => {
-    responseString += `${catName} ${Array.from(Array((longestName + 3) - catName.length)).join('.')} Commands: ${categories[catName].count}${(index < (categoryNames.length - 1)) ? '\n' : ''}`
+    responseString += `${catName} ${Array.from(Array(longestName + 3 - catName.length)).join('.')} Commands: ${categories[catName].count}${index < categoryNames.length - 1 ? '\n' : ''}`
   })
 
   await routed.message.reply(Utils.sb(Utils.en.admin.commandCategoriesList, { categories: responseString }))
@@ -103,7 +103,7 @@ export async function listCategoryCommands(routed: RouterRouted) {
       // Track command name, example, and if it's restricted
       commands.push({
         name: route.name,
-        restricted: (route.permissions.restrictedTo.length > 0 || route.permissions.serverAdminOnly || !route.permissions.defaultEnabled),
+        restricted: route.permissions.restrictedTo.length > 0 || route.permissions.serverAdminOnly || !route.permissions.defaultEnabled,
         example: route.example
       })
       // Track which command name is the longest
@@ -114,22 +114,24 @@ export async function listCategoryCommands(routed: RouterRouted) {
 
   // Sort A > Z
   commands.sort((a, b) => {
-    var x = a.name.toLowerCase();
-    var y = b.name.toLowerCase();
-    if (x < y) { return -1; }
-    if (x > y) { return 1; }
-    return 0;
+    var x = a.name.toLowerCase()
+    var y = b.name.toLowerCase()
+    if (x < y) {
+      return -1
+    }
+    if (x > y) {
+      return 1
+    }
+    return 0
   })
 
   // Add each command category's name & total
   commands.forEach((command, index) => {
-    responseString += `${command.name} ${Array.from(Array((longestName + 3) - command.name.length)).join('.')} Example: ${Utils.sb(command.example)}${(index < (commands.length - 1)) ? '\n' : ''}`
+    responseString += `${command.name} ${Array.from(Array(longestName + 3 - command.name.length)).join('.')} Example: ${Utils.sb(command.example)}${index < commands.length - 1 ? '\n' : ''}`
   })
 
   await routed.message.reply(Utils.sb(Utils.en.admin.commandCategoryCommands, { category: routed.v.o.category, commands: responseString }))
   return true // Successful
 }
 
-export async function commandRestrict(){
-  
-}
+export async function commandRestrict() {}

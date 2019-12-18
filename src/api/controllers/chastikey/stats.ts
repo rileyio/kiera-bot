@@ -1,5 +1,5 @@
-import { WebRouted } from '../../web-router'
-import { TrackedChastiKeyLock } from '../../../objects/chastikey'
+import { WebRouted } from '@/api/web-router'
+import { TrackedChastiKeyLock } from '@/objects/chastikey'
 
 export namespace ChastiKeyWebStats {
   export async function locks(routed: WebRouted) {

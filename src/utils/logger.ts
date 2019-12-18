@@ -1,6 +1,6 @@
-import * as _Debug from 'debug';
-import * as _Winston from 'winston';
-import { Types } from '.';
+import * as _Debug from 'debug'
+import * as _Winston from 'winston'
+import { Types } from '@/utils'
 
 export namespace Logging {
   export class Debug {
@@ -24,25 +24,18 @@ export namespace Logging {
 
       var loggerProps = {
         level: process.env.BOT_LOGGING || 'debug',
-        transports: [
-          new _Winston.transports.File({ filename: `./logs/${this.name}.log` }),
-          new _Winston.transports.Console({ format: _Winston.format.simple() })
-        ],
-        format: _Winston.format.combine(
-          _Winston.format.timestamp(),
-          _Winston.format.json())
+        transports: [new _Winston.transports.File({ filename: `./logs/${this.name}.log` }), new _Winston.transports.Console({ format: _Winston.format.simple() })],
+        format: _Winston.format.combine(_Winston.format.timestamp(), _Winston.format.json())
       }
 
       // If console.opts is set to false, don't add it
-      if (!this.options.console || !this._toConsole) loggerProps.transports = [
-        new _Winston.transports.File({ filename: `./logs/${this.name}.log` })
-      ]
+      if (!this.options.console || !this._toConsole) loggerProps.transports = [new _Winston.transports.File({ filename: `./logs/${this.name}.log` })]
 
       // this._debug = _Debug(name)
       this._winston = _Winston.createLogger(loggerProps)
 
       // Keep Winston from an exit if it fails
-      this._winston.exitOnError = false;
+      this._winston.exitOnError = false
 
       // Bind _debug.log to console
       // this._debug.log = console.log.bind(console);
@@ -64,7 +57,7 @@ export namespace Logging {
       //     break;
       // }
 
-      this._winston.info(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '))
+      this._winston.info(args.map(a => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
     }
   }
 }

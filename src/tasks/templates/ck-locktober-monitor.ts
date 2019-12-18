@@ -1,6 +1,5 @@
-import { Task } from '../task'
-import { Collections } from '../../db/database'
-import { TextChannel } from 'discord.js'
+import { Task } from '@/objects/task'
+import { Collections } from '@/db/database'
 
 export class ChastiKeyEventRoleMonitor extends Task {
   public dbCollection: Collections

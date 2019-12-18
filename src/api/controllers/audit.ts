@@ -1,9 +1,5 @@
-import * as Validation from '../validations/index';
-import * as errors from 'restify-errors';
-import { validate } from '../utils/validate';
-import { WebRouted } from '../web-router';
-import { TrackedNotification } from '../../objects/notification';
-import { AuditEntry } from '../../objects/audit';
+import { WebRouted } from '@/api/web-router'
+import { AuditEntry } from '@/objects/audit'
 
 export namespace Audit {
   export async function getEntries(routed: WebRouted) {
@@ -18,6 +14,6 @@ export namespace Audit {
     // Sort Desc on date
     auditEntries.reverse()
 
-    return routed.res.send(auditEntries);
+    return routed.res.send(auditEntries)
   }
 }

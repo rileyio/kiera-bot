@@ -12,14 +12,17 @@
     "clean": "trash app",
     "dev": "tsc -w",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
-    "start:nodebug": "node ./start.js",
-    "start": "DEBUG='kiera-bot:*' node ./start.js",
-    "start:ps:debug": "@powershell -Command $env:DEBUG='kiera-bot:*'; node ./start.js",
-    "start:term:debug": "DEBUG='kiera-bot:*' node ./start.js",
+    "start:nodebug": "node ./app/start.js",
+    "start": "DEBUG='kiera-bot:*' node ./app/start.js",
+    "start:ps:debug": "@powershell -Command $env:DEBUG='kiera-bot:*'; node ./app/start.js",
+    "start:term:debug": "DEBUG='kiera-bot:*' node ./app/start.js",
     "test": "run-s clean build test:n",
     "test:n": "nyc --silent ava --tap --serial | tnyan",
     "test:v": "nyc --silent ava --verbose --serial",
     "test:verbose": "run-s clean build test:v"
+  },
+  "_moduleAliases": {
+    "@": "app"
   },
   "ava": {
     "failFast": false,
@@ -45,6 +48,7 @@
     "form-data": "^2.5.0",
     "got": "^9.6.0",
     "jsonwebtoken": "^8.4.0",
+    "module-alias": "^2.2.2",
     "mongodb": "^3.1.10",
     "qrcode": "^1.4.1",
     "restify": "^7.3.0",

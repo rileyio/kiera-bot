@@ -1,5 +1,5 @@
-import test from 'ava';
-import { CommandPermission } from './permission';
+import test from 'ava'
+import { CommandPermission } from './permission'
 
 var permission1 = new CommandPermission({
   serverID: '111111222223333333',

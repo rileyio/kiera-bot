@@ -1,7 +1,7 @@
-import { Task } from '../task';
-import got = require('got');
-import { Collections } from '../../db/database';
-import { TrackedBotSetting } from '../../objects/setting';
+import got = require('got')
+import { Task } from '@/objects/task'
+import { Collections } from '@/db'
+import { TrackedBotSetting } from '@/objects/setting'
 
 export class ChastiKeyAPIFetchAndStore extends Task {
   public reload: boolean = true
@@ -20,24 +20,22 @@ export class ChastiKeyAPIFetchAndStore extends Task {
     if (this.reload) {
       var dbFrequency = await this.Bot.DB.get<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.frequency.${this.name}` })
       if (dbFrequency) this.frequency = dbFrequency.value
-      else dbFrequency = new TrackedBotSetting({
-        added: Date.now(),
-        author: 'kiera-bot',
-        env: '*',
-        key: `bot.task.chastikey.api.frequency.${this.name}`,
-        value: this.frequency,
-        updated: Date.now()
-      })
+      else
+        dbFrequency = new TrackedBotSetting({
+          added: Date.now(),
+          author: 'kiera-bot',
+          env: '*',
+          key: `bot.task.chastikey.api.frequency.${this.name}`,
+          value: this.frequency,
+          updated: Date.now()
+        })
 
-      await this.Bot.DB.update<TrackedBotSetting>('settings',
-        { key: `bot.task.chastikey.api.frequency.${this.name}` },
-        dbFrequency,
-        { upsert: true })
+      await this.Bot.DB.update<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.frequency.${this.name}` }, dbFrequency, { upsert: true })
 
       this.reload = false
     }
 
-    if ((Date.now() - this.previousRefresh) < this.frequency) return true // Block as its too soon
+    if (Date.now() - this.previousRefresh < this.frequency) return true // Block as its too soon
     try {
       // Check in DB when last interval was
       var dbLastRunSetting = await this.Bot.DB.get<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.fetch.${this.name}` })
@@ -46,27 +44,24 @@ export class ChastiKeyAPIFetchAndStore extends Task {
         dbLastRunSetting = new TrackedBotSetting(dbLastRunSetting)
         // Update task's last run timestamp
         this.previousRefresh = dbLastRunSetting.value || 0
-        if ((Date.now() - this.previousRefresh) < this.frequency) return // Stop here
-      }
-      else {
+        if (Date.now() - this.previousRefresh < this.frequency) return // Stop here
+      } else {
         dbLastRunSetting = new TrackedBotSetting({
           added: Date.now(),
           author: 'kiera-bot',
           env: '*',
-          key: `bot.task.chastikey.api.fetch.${this.name}`,
+          key: `bot.task.chastikey.api.fetch.${this.name}`
         })
       }
 
       console.log(`### Task:Fetching => ${this.name}`)
-      const response = await got(this.APIEndpoint, { json: (<any>this.isJSON) })
+      const response = await got(this.APIEndpoint, { json: <any>this.isJSON })
 
-      await this.storeInDB((this.isJSON)
-        ? response.body : JSON.parse(response.body.replace(this.strip, '')))
+      await this.storeInDB(this.isJSON ? response.body : JSON.parse(response.body.replace(this.strip, '')))
 
-      await this.Bot.DB.update<TrackedBotSetting>('settings',
-        { key: `bot.task.chastikey.api.fetch.${this.name}` },
-        dbLastRunSetting.update({ value: Date.now(), updated: Date.now() }),
-        { upsert: true })
+      await this.Bot.DB.update<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.fetch.${this.name}` }, dbLastRunSetting.update({ value: Date.now(), updated: Date.now() }), {
+        upsert: true
+      })
 
       this.previousRefresh = Date.now()
 

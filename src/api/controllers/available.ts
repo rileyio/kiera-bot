@@ -1,9 +1,9 @@
-import * as Validation from '../validations/index';
-import { WebRouted } from '../web-router';
-import { TrackedNotification } from '../../objects/notification';
-import { TrackedAvailableObject } from '../../objects/available-objects';
-import { TrackedUser } from '../../objects/user';
-import { validate } from '../utils/validate';
+import * as Validation from '@/api/validations'
+import { WebRouted } from '@/api/web-router'
+import { TrackedNotification } from '@/objects/notification'
+import { TrackedAvailableObject } from '@/objects/available-objects'
+import { TrackedUser } from '@/objects/user'
+import { validate } from '@/api/utils/validate'
 
 export namespace Available {
   export async function notifications(routed: WebRouted) {
@@ -13,21 +13,25 @@ export namespace Available {
     // Requested server
     const serverID = v.o.serverID
 
-    var templateNotifications = await routed.Bot.DB.getMultiple<TrackedNotification>('available-server-notifications', {
-      serverID: serverID.length > 0 ? serverID : ''
-    }, { _id: 0 })
+    var templateNotifications = await routed.Bot.DB.getMultiple<TrackedNotification>(
+      'available-server-notifications',
+      {
+        serverID: serverID.length > 0 ? serverID : ''
+      },
+      { _id: 0 }
+    )
 
-    return routed.res.send(templateNotifications);
+    return routed.res.send(templateNotifications)
   }
 
   export async function settings(routed: WebRouted) {
     // this.DEBUG_WEBAPI('req params', v.o)
 
     var templateNotifications = await routed.Bot.DB.getMultiple<TrackedAvailableObject>('available-server-settings', {}, { _id: 0 })
-    return routed.res.send(templateNotifications);
+    return routed.res.send(templateNotifications)
   }
 
   export async function userGeneric(routed: WebRouted) {
-    return routed.res.send(new TrackedUser({}));
+    return routed.res.send(new TrackedUser({}))
   }
 }

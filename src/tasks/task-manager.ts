@@ -1,22 +1,5 @@
-import { Bot } from '..';
-
-export class Task {
-  protected Bot: Bot
-  /**
-   * Set the target method to run when the task is called
-   * @type {string}
-   * @memberof Task
-   */
-  public run: () => Promise<boolean>
-  public frequency: number
-  public lastRun: number
-  public isAsync: boolean = false
-  public name: string
-
-  constructor(bot: Bot) {
-    this.Bot = bot
-  }
-}
+import { Bot } from '@/index'
+import { Task } from '@/objects/task'
 
 export class TaskManager {
   protected Bot: Bot
@@ -29,7 +12,7 @@ export class TaskManager {
     this.Bot = bot
     this.taskRunner()
     for (let index = 0; index < tasks.length; index++) {
-      const task = tasks[index];
+      const task = tasks[index]
       this.register(task)
     }
   }
@@ -49,11 +32,10 @@ export class TaskManager {
       // Checking tasks to run
       for (const key in this.registered) {
         try {
-          const task = this.registered[key];
+          const task = this.registered[key]
           // Check if task if past due to run
           await task.run()
-        }
-        catch (error) {
+        } catch (error) {
           // tslint:disable-next-line:no-console
           console.log(`Task:Manager => ${key} failed`, error)
         }
@@ -65,5 +47,3 @@ export class TaskManager {
     }, 5000)
   }
 }
-
-export * from './chastikey'

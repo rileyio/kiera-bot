@@ -1,22 +1,19 @@
-import { RouterRouted } from '../router/router';
-import { ExportRoutes } from '../router/routes-exporter';
+import { RouterRouted, ExportRoutes } from '@/router'
 
-export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'Info',
-    commandTarget: 'argument',
-    controller: commandUsageStats,
-    example: '{{prefix}}stats commands',
-    name: 'stats-commands',
-    validate: '/stats:string/commands:string',
-    permissions: { serverOnly: false }
-  }
-)
+export const Routes = ExportRoutes({
+  type: 'message',
+  category: 'Info',
+  commandTarget: 'argument',
+  controller: commandUsageStats,
+  example: '{{prefix}}stats commands',
+  name: 'stats-commands',
+  validate: '/stats:string/commands:string',
+  permissions: { serverOnly: false }
+})
 
 export async function commandUsageStats(routed: RouterRouted) {
   // Get Audit trail for commands from DB to run stats on
-  var collection = await routed.bot.DB.aggregate<{ _id: string, count: number }>('audit-log', [
+  var collection = (await routed.bot.DB.aggregate<{ _id: string; count: number }>('audit-log', [
     {
       $match: { type: 'bot.command' }
     },
@@ -27,7 +24,7 @@ export async function commandUsageStats(routed: RouterRouted) {
       }
     },
     { $sort: { count: -1 } }
-  ]) as Array<{ _id: string, count: number, percent?: number }>
+  ])) as Array<{ _id: string; count: number; percent?: number }>
 
   var total = 0
   var text = `Statistics by command usage:
@@ -35,7 +32,7 @@ export async function commandUsageStats(routed: RouterRouted) {
 `
 
   // Determine total
-  collection.forEach((item) => {
+  collection.forEach(item => {
     total += item.count
   })
   console.log('Total:', total)
@@ -49,10 +46,14 @@ export async function commandUsageStats(routed: RouterRouted) {
 
   // Generate text visualisation
   for (var i = 0; i < collection.length && i < 10; i++) {
-    text
-      += `# ${collection[i]._id} (${collection[i].count})\n`
-      + `  ` + Array(Math.round(collection[i].percent * 100)).fill('▀').reduce((a, c) => a += c) + ` [${Math.round(collection[i].percent * 100)}%]`
-      + '\n'
+    text +=
+      `# ${collection[i]._id} (${collection[i].count})\n` +
+      `  ` +
+      Array(Math.round(collection[i].percent * 100))
+        .fill('▀')
+        .reduce((a, c) => (a += c)) +
+      ` [${Math.round(collection[i].percent * 100)}%]` +
+      '\n'
   }
 
   // Append a little extra text to inform user some commands wont be seen in list due to count

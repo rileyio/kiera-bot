@@ -1,5 +1,5 @@
 import { MongoClient, MongoClientOptions, Cursor, Db, MongoError, CollectionInsertManyOptions } from 'mongodb'
-import { Logging } from '../utils/'
+import { Logging } from '@/utils'
 
 export * from './promise'
 export * from './message-tracker'
