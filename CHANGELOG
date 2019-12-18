@@ -1,3 +1,7 @@
+5.0.0
+- Improved: Project imports
+- Added: Server & User stats and commands for: display, manage, settings
+
 4.12.0
 - Fixed: Text on CK Lockee stats saying: (not greens)
 - Fixed: Moderator Mute to not allow a mute on a user with one already tracked
