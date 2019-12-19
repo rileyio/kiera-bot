@@ -351,6 +351,7 @@ export class Router {
     var checks: ProcessedPermissions = {
       // Permissions of user
       hasAdministrator: !routed.isDM ? routed.message.member.hasPermission('ADMINISTRATOR') : false,
+      hasManageChannel: !routed.isDM ? routed.message.member.permissionsIn(routed.message.channel).hasPermission('MANAGE_CHANNELS') : false,
       hasManageGuild: !routed.isDM ? routed.message.member.hasPermission('MANAGE_GUILD') : false
     }
 
@@ -374,11 +375,21 @@ export class Router {
       }
     }
 
-    // [IF: Required Admin] Verify is the user a server admin if command requires it
+    // [IF: Required Server Admin] Verify is the user a server admin if command requires it
     if (routed.route.permissions.serverAdminOnly) {
       // [FAIL: Admin]
       if (!checks.hasAdministrator) {
         checks.outcome = 'FailedAdmin'
+        checks.pass = false
+        return checks // Hard stop here
+      }
+    }
+
+    // [IF: Required Manage Channel] Verify is the user a channel admin if command requires it
+    if (routed.route.permissions.manageChannelReq) {
+      // [FAIL: Admin]
+      if (!checks.hasManageChannel) {
+        checks.outcome = 'FailedManageChannel'
         checks.pass = false
         return checks // Hard stop here
       }

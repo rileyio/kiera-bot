@@ -26,6 +26,7 @@ export interface RouteConfiguration {
     serverAdminOnly?: boolean
     restrictedTo?: Array<string>
     serverOnly?: boolean
+    manageChannelReq?: boolean
   }
   type: 'message' | 'reaction'
   validate?: string
@@ -66,7 +67,8 @@ export class MessageRoute {
     restricted: false,
     serverAdminOnly: false,
     restrictedTo: [],
-    serverOnly: true
+    serverOnly: true,
+    manageChannelReq: false
   }
 
   public category: string
@@ -83,6 +85,7 @@ export class MessageRoute {
     serverAdminOnly: boolean
     restrictedTo: Array<string>
     serverOnly: boolean
+    manageChannelReq: boolean
   }
   public type: 'message' | 'reaction'
   public validate: string
