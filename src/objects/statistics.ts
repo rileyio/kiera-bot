@@ -98,13 +98,15 @@ export class ServerStatistic {
 export enum StatisticsSettingType {
   ServerDisableStats,
   ServerNonPublicStats,
-  UserDisableStats
+  UserDisableStats,
+  ChannelDisableStats
 }
 
 export class StatisticsSetting {
   public readonly _id?: ObjectID
   public userID?: string
   public serverID?: string
+  public channelID?: string
   public setting: StatisticsSettingType
 
   constructor(init: StatisticsSetting) {

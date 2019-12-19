@@ -1,5 +1,5 @@
 import { RouterRouted, ExportRoutes } from '@/router'
-import { StatisticsSetting, StatisticsSettingType, ServerStatisticType } from '@/objects/statistics'
+import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 
 export const Routes = ExportRoutes(
   {
@@ -45,7 +45,7 @@ export async function disableServerStats(routed: RouterRouted) {
   )
 
   await routed.message.reply(
-    'All stats have now been **Disabled** for this server. If you wish to delete all recorded stats to date (command coming soon!) please reachout via the Kiera Bot Dev Server.'
+    'All stats have now been **Disabled** for this server.\n\n  - If you wish to delete all recorded stats to date (command coming soon!) please reachout via the Kiera Bot Dev Server.\n  - Disabling alone stops new logging going forward only.'
   )
   return true
 }

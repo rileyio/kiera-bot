@@ -40,7 +40,7 @@ export async function diableUserStats(routed: RouterRouted) {
   )
 
   await routed.message.reply(
-    'All stats have now been **Disabled** for your account (across all servers where Kiera is present). If you wish to delete all recorded stats to date (command coming soon!) please reachout via the Kiera Bot Dev Server.'
+    'All stats have now been **Disabled** for your account (across all servers where Kiera is present).\n\n  - If you wish to delete all recorded stats to date (command coming soon!) please reachout via the Kiera Bot Dev Server.\n  - Disabling alone stops new logging going forward only.'
   )
   return true
 }

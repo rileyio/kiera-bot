@@ -9,11 +9,7 @@ export const Routes = ExportRoutes({
   name: 'admin-check-permissions',
   validate: '/check:string/permissions:string/user?=string',
   permissions: {
-    defaultEnabled: false,
-    serverAdminOnly: true,
-    restrictedTo: [
-      '146439529824256000' // Emma#1366
-    ]
+    defaultEnabled: true
   }
 })
 

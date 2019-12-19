@@ -13,7 +13,11 @@ export class Statistics {
       try {
         // Check Stats Settings if server is tracking & if the user has stats turned off
         const statsSettings = await this.Bot.DB.getMultiple<StatisticsSetting>('stats-settings', {
-          $or: [{ setting: StatisticsSettingType.UserDisableStats, userID }, { setting: StatisticsSettingType.ServerDisableStats, serverID }]
+          $or: [
+            { setting: StatisticsSettingType.ServerDisableStats, serverID },
+            { setting: StatisticsSettingType.ChannelDisableStats, channelID },
+            { setting: StatisticsSettingType.UserDisableStats, userID }
+          ]
         })
 
         if (statsSettings.length > 0) {
