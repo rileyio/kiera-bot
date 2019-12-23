@@ -2,9 +2,10 @@ import * as QRCode from 'qrcode'
 import * as APIUrls from '@/api-urls'
 import * as Utils from '@/utils'
 import { Transform } from 'stream'
-import { TrackedChastiKey, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetchLock, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '@/objects/chastikey'
+import { TrackedChastiKey, TrackedChastiKeyUser } from '@/objects/chastikey'
 import { LockeeStats } from '@/embedded/chastikey-stats'
 import { RouterStats } from '@/router'
+import { LockeeData, LockeeDataLock } from 'chastikey.js/app/objects'
 
 export namespace ChastiKey {
   export function generateTickerURL(ck: TrackedChastiKey, overrideType?: number) {
@@ -33,9 +34,9 @@ export namespace ChastiKey {
 
   export function compileLockeeStats(
     ckUser: TrackedChastiKeyUser,
-    userInLockeeStats: TrackedChastiKeyLockee,
-    cachedActiveLocks: Array<TrackedChastiKeyLock>,
-    locks: Array<TrackedChastiKeyUserAPIFetchLock>,
+    userInLockeeStats: LockeeData,
+    cachedActiveLocks: Array<LockeeDataLock>,
+    locks: Array<LockeeDataLock>,
     routerStats: RouterStats
   ): LockeeStats {
     // Variables - Defaults (unless changed later)
@@ -47,14 +48,14 @@ export namespace ChastiKey {
     try {
       // For any dates with a { ... end: 0 } set the 0 to the current timestamp (still active)
       allLockeesLocks.map(d => {
-        const lockIsAbandoned = d.lockDeleted === 1 && d.timestampUnlocked === 0
+        const lockIsAbandoned = d.deleted === 1 && d.timestampUnlocked === 0
         // Remove unlocked time if the lock status is: Locked, Deleted and has a Completion timestamp
-        if (d.timestampUnlocked > 0 && d.status === 'Locked' && d.lockDeleted === 1) {
+        if (d.timestampUnlocked > 0 && d.status === 'Locked' && d.deleted === 1) {
           // console.log('set to:', 0)
           d.timestampUnlocked = 0
         }
 
-        if (d.timestampUnlocked === 0 && (d.status === 'Locked' || d.status === 'ReadyToUnlock') && d.lockDeleted === 0) {
+        if (d.timestampUnlocked === 0 && (d.status === 'Locked' || d.status === 'ReadyToUnlock') && d.deleted === 0) {
           // console.log('set to:', Math.round(Date.now() / 1000))
           d.timestampUnlocked = Math.round(Date.now() / 1000)
         }

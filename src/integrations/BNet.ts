@@ -4,7 +4,7 @@ import { TrackedBotSetting } from '@/objects/setting'
 import { Logging } from '@/utils'
 
 export class BattleNet {
-  private bot: Bot
+  private Bot: Bot
   private ClientID: string = process.env.BNET_CLIENT_ID
   private ClientSecret: string = process.env.BNET_CLIENT_SECRET
   private ClientAccessToken: string
@@ -17,9 +17,9 @@ export class BattleNet {
   public async setup(bot: Bot) {
     this.DEBUG_BNET = new Logging.Debug(`BattleNet`)
     this.DEBUG_BNET.log('🎮 BattleNet -> Setting Up!')
-    this.bot = bot
+    this.Bot = bot
     // Check DB for Blizzard Access token
-    const storedAcceessToken = await this.bot.DB.get<TrackedBotSetting>('settings', { key: 'bot.bnet.api.accessToken' })
+    const storedAcceessToken = await this.Bot.DB.get<TrackedBotSetting>('settings', { key: 'bot.bnet.api.accessToken' })
     this.DEBUG_BNET.log(`🎮 BattleNet -> Token Stored = ${JSON.stringify(storedAcceessToken)}`)
 
     // [ Only when DB record is missing ] If Access token is missing fetch one
@@ -56,11 +56,11 @@ export class BattleNet {
 
     // Store it in the DB
     if (this.isTokenStored) {
-      const update = await this.bot.DB.update<TrackedBotSetting>('settings', { key: 'bot.bnet.api.accessToken' }, { $set: { value: resp.data.access_token, updated: Date.now() } }, { atomic: true })
+      const update = await this.Bot.DB.update<TrackedBotSetting>('settings', { key: 'bot.bnet.api.accessToken' }, { $set: { value: resp.data.access_token, updated: Date.now() } }, { atomic: true })
 
       this.DEBUG_BNET.log('🎮 BattleNet -> Updated Token(s): ', update)
     } else {
-      await this.bot.DB.add<TrackedBotSetting>(
+      await this.Bot.DB.add<TrackedBotSetting>(
         'settings',
         new TrackedBotSetting({
           key: 'bot.bnet.api.accessToken',

@@ -1,11 +1,12 @@
-import { TrackedChastiKeyLock, TrackedChastiKeyKeyholderStatistics } from '../objects/chastikey'
+import { TrackedChastiKeyKeyholderStatistics } from '../objects/chastikey'
 import * as Utils from '@/utils'
 import { RouterStats } from '@/router'
+import { LockeeDataLock } from 'chastikey.js/app/objects'
 
 export interface LockeeStats {
   averageLocked: number
   averageRating: number | string
-  locks: Array<TrackedChastiKeyLock>
+  locks: Array<LockeeDataLock>
   longestLock: number
   monthsLocked: number | string
   noOfRatings: number | string
@@ -39,7 +40,7 @@ export interface TrackedKeyholderLockeesStatistics {
     keyholder: string
     secondsLocked: number
     noOfTurns: number
-    sharedLockName: string
+    lockName: string
   }>
 }
 
@@ -88,6 +89,7 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean },
   description += `\nJoined \`${data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}`
   if (data.isVerified) description += `\nVerified to ${data.verifiedTo}`
 
+
   const messageBlock = {
     embed: {
       title: `${data.isVerified ? '<:verified:625628727820288000> ' : ''}\`${data.username}\` - ChastiKey Lockee Statistics - Active Stats`,
@@ -115,15 +117,15 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean },
 /**
  * Generate an entry for each lock
  * @param {number} index
- * @param {TrackedChastiKeyLock} lock
+ * @param {LockeeDataLock} lock
  * @param {number} totalExpected
  * @returns
  */
-function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: number) {
+function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number) {
   const cumulative = lock.cumulative === 1 ? 'Cumulative' : 'Non-Cumulative'
 
   // Calculate human readible time for lock from seconds
-  const combined = Utils.Date.calculateHumanTimeDDHHMM(lock.secondsLocked)
+  const combined = Utils.Date.calculateHumanTimeDDHHMM(lock.isLocked ? lock.totalTimeLocked : lock.timestampUnlocked - lock.timestampLocked)
 
   // Calculate regularity
   var regularity = ``
@@ -156,8 +158,8 @@ function lockEntry(index: number, lock: TrackedChastiKeyLock, totalExpected: num
   })
 
   // When the lock has a name
-  if (lock.sharedLockName !== '') {
-    var name = `Active Lock ${index + 1} (\`${lock.sharedLockName}\`)`
+  if (lock.lockName !== '') {
+    var name = `Active Lock ${index + 1} (\`${lock.lockName}\`)`
   } else {
     var name = `Active Lock ${index + 1}`
   }
@@ -239,10 +241,10 @@ export function keyholderStats(
         numberOfTurns += !lock.fixed ? lock.noOfTurns : 0
 
         // Track individual lock stats
-        if (individualLockStats.findIndex(_l => _l.name === lock.sharedLockName) === -1) {
-          individualLockStats.push({ name: lock.sharedLockName, count: 1, fixed: lock.fixed })
+        if (individualLockStats.findIndex(_l => _l.name === lock.lockName) === -1) {
+          individualLockStats.push({ name: lock.lockName, count: 1, fixed: lock.fixed })
         } else {
-          individualLockStats.find(_l => _l.name === lock.sharedLockName).count += 1
+          individualLockStats.find(_l => _l.name === lock.lockName).count += 1
         }
 
         // Only look at if the value is a positive value (to skip over problem causing values)

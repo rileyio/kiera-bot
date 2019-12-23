@@ -163,24 +163,27 @@ export async function getLockeeStats(routed: RouterRouted) {
         })
       : null
 
-  // Get current locks by user store in the collection
-  const cachedRunningLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { username: ckUser.username })
-  // Get user from lockee data (Total locks, raitings, averages)
-  const userInLockeeStats = new TrackedChastiKeyLockee(await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { username: ckUser.username }))
+  // !ChastiKey.js Alpha Testing
+  const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({ username: ckUser.username, showDeleted: true })
 
-  // User has no data in the Lockee stats db
-  // Causes
-  //  - Have not opened the App in >=2 week
-  //  - Wrong Username set with Kiera
-  if (!userInLockeeStats._hasDBData) {
-    // Notify in chat what the issue could be
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeStatsMissing, { user: routed.v.o.user }))
-    return true // Stop here
-  }
+  // Get current locks by user store in the collection
+  const cachedRunningLocks = lockeeData.getLocked
+  // Get user from lockee data (Total locks, raitings, averages)
+  const userInLockeeStats = lockeeData.data
+
+  // // User has no data in the Lockee stats db
+  // // Causes
+  // //  - Have not opened the App in >=2 week
+  // //  - Wrong Username set with Kiera
+  // if (!userInLockeeStats._hasDBData) {
+  //   // Notify in chat what the issue could be
+  //   await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeStatsMissing, { user: routed.v.o.user }))
+  //   return true // Stop here
+  // }
 
   // Get all API locks
-  const apiResponse: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}`, { json: true })
-  var apiLockeeLocks = apiResponse.body.locks
+  // const apiResponse: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}`, { json: true })
+  var apiLockeeLocks = lockeeData.locks
 
   // Generate
   var compiledLockeeStats = Utils.ChastiKey.compileLockeeStats(ckUser, userInLockeeStats, cachedRunningLocks, apiLockeeLocks, routed.routerStats)

@@ -11,6 +11,7 @@ import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
 import { Statistics } from '@/statistics'
 import { ServerStatisticType } from './objects/statistics'
+import { ChastiKey } from './integrations/ChastiKey'
 
 export class Bot {
   public client = new Discord.Client()
@@ -41,7 +42,8 @@ export class Bot {
 
   // API Services
   public Service = {
-    BattleNet: new BattleNet()
+    BattleNet: new BattleNet(),
+    ChastiKey: new ChastiKey()
   }
 
   // Statistics
@@ -108,8 +110,9 @@ export class Bot {
     ///// Setup API Services ///////////////
     ////////////////////////////////////////
     try {
-      /// BattleNet
+      /// Integrations / Services / 3rd party
       await this.Service.BattleNet.setup(this)
+      await this.Service.ChastiKey.setup(this)
       /// Reserved...
       /// ...
     } catch (error) {

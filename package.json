@@ -40,6 +40,7 @@
   "dependencies": {
     "@hapi/joi": "^15.0.3",
     "blizzard.js": "^3.0.0",
+    "chastikey.js": "https://github.com/ChastiKey/chastikey.js.git#2.0.0-alpha",
     "crypto-js": "^3.1.9-1",
     "deep-extend": "^0.6.0",
     "discord.js": "^11.4.2",
