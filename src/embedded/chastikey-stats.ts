@@ -20,7 +20,7 @@ export interface TrackedKeyholderLockeesStatistics {
     keyholder: string
     secondsLocked: number
     noOfTurns: number
-    lockName: string
+    sharedLockName: string
   }>
 }
 
@@ -223,10 +223,10 @@ export function keyholderStats(
         numberOfTurns += !lock.fixed ? lock.noOfTurns : 0
 
         // Track individual lock stats
-        if (individualLockStats.findIndex(_l => _l.name === lock.lockName) === -1) {
-          individualLockStats.push({ name: lock.lockName, count: 1, fixed: lock.fixed })
+        if (individualLockStats.findIndex(_l => _l.name === lock.sharedLockName) === -1) {
+          individualLockStats.push({ name: lock.sharedLockName, count: 1, fixed: lock.fixed })
         } else {
-          individualLockStats.find(_l => _l.name === lock.lockName).count += 1
+          individualLockStats.find(_l => _l.name === lock.sharedLockName).count += 1
         }
 
         // Only look at if the value is a positive value (to skip over problem causing values)
