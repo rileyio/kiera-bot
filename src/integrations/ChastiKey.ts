@@ -35,4 +35,7 @@ export class ChastiKey {
   public async fetchAPILockeeData(query: { discordid?: string; username?: string; showDeleted: boolean }) {
     return await this.Client.LockeeData.get({ username: query.username, discordid: query.discordid, showdeleted: query.showDeleted ? 1 : 0 })
   }
+  public async fetchAPIKeyholderData(query: { discordid?: string; username?: string }) {
+    return await this.Client.KeyholderData.get({ username: query.username, discordid: query.discordid })
+  }
 }

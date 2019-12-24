@@ -1,10 +1,9 @@
-import got = require('got')
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '@/embedded/chastikey-stats'
 import { TrackedUser } from '@/objects/user'
-import { TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetch } from '@/objects/chastikey'
+import { TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyUser } from '@/objects/chastikey'
 import { TrackedNotification } from '@/objects/notification'
 import { TextChannel, Message } from 'discord.js'
 import { TrackedMessage } from '@/objects/message'
