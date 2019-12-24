@@ -1,7 +1,7 @@
 import * as XRegex from 'xregexp'
 import * as Utils from '@/utils'
 
-export const validationRegex = XRegex('(\\/(?<name>[a-z0-9]*)(?<optional>\\?\\:|\\:|\\=|\\?\\=|(?<multi>\\.\\.\\.))(?<type>[a-z]*))', 'img')
+export const validationRegex = XRegex('(\\/(?<name>[a-z0-9]*)(?<optional>\\?\\:|\\:|\\=|\\?\\=|(?<multi>\\.\\.\\.))(?<type>[a-z\\-]*))', 'img')
 
 export interface ValidationType {
   multi: string
@@ -70,6 +70,7 @@ export class Validate {
       // From a server channel it should look like: <@146439529824256000>
       // Check that first
       return /^\<\@([0-9]*)\>$/i.test(value.toString()) || /^(\@((?!@|#|:|`).*)\#[0-9]{4,5})$/i.test(value.toString())
+    if (expected === 'string-number') return Number.isNaN(Number(value)) === false
     if (expected === 'string') return typeof value === 'string'
     if (expected === 'number') {
       return Number.isNaN(Number(value)) === false
@@ -107,6 +108,9 @@ export class Validate {
 
         if (v.type === 'user') v.value = Utils.User.extractUserIdFromString(args[i])
         if (v.type === 'string') v.value = _tempVal
+
+        // Fix: If expected type is valid and is a number but for this type convert it back to a string
+        if (v.type === 'string-number' && v.valid) v.value = String(_tempVal)
 
         // Fix: If expected type is valid and is a number, convert it to a number
         if (v.type === 'number' && v.valid) v.value = Number(_tempVal)
