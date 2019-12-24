@@ -1,11 +1,10 @@
 import got = require('got')
-import * as APIUrls from '@/api-urls'
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '@/embedded/chastikey-stats'
 import { TrackedUser } from '@/objects/user'
-import { TrackedChastiKeyLock, TrackedChastiKeyLockee, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetch } from '@/objects/chastikey'
+import { TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetch } from '@/objects/chastikey'
 import { TrackedNotification } from '@/objects/notification'
 import { TextChannel, Message } from 'discord.js'
 import { TrackedMessage } from '@/objects/message'
@@ -163,36 +162,11 @@ export async function getLockeeStats(routed: RouterRouted) {
         })
       : null
 
-  // !ChastiKey.js Alpha Testing
+  // Get user from lockee data (Stats, User and Locks)
   const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({ username: ckUser.username, showDeleted: true })
 
-  // Get current locks by user store in the collection
-  const cachedRunningLocks = lockeeData.getLocked
-  // Get user from lockee data (Total locks, raitings, averages)
-  const userInLockeeStats = lockeeData.data
-
-  // // User has no data in the Lockee stats db
-  // // Causes
-  // //  - Have not opened the App in >=2 week
-  // //  - Wrong Username set with Kiera
-  // if (!userInLockeeStats._hasDBData) {
-  //   // Notify in chat what the issue could be
-  //   await routed.message.reply(Utils.sb(Utils.en.chastikey.lockeeStatsMissing, { user: routed.v.o.user }))
-  //   return true // Stop here
-  // }
-
-  // Get all API locks
-  // const apiResponse: got.Response<TrackedChastiKeyUserAPIFetch> = await got(`${APIUrls.ChastiKey.ListLocks}?username=${user.ChastiKey.username}`, { json: true })
-  var apiLockeeLocks = lockeeData.locks
-
-  // Generate
-  var compiledLockeeStats = Utils.ChastiKey.compileLockeeStats(ckUser, userInLockeeStats, cachedRunningLocks, apiLockeeLocks, routed.routerStats)
-
-  // Set cached timestamp for running locks
-  const cachedTimestampFromFetch = new TrackedBotSetting(await routed.bot.DB.get('settings', { key: 'bot.task.chastikey.api.fetch.ChastiKeyAPIRunningLocks' }))
-  const cachedTimestamp = cachedTimestampFromFetch.value
-
-  await routed.message.channel.send(lockeeStats(compiledLockeeStats, { showRating: user.ChastiKey.ticker.showStarRatingScore }, cachedTimestamp))
+  // Generate compiled stats
+  await routed.message.channel.send(lockeeStats(lockeeData, { showRating: user.ChastiKey.ticker.showStarRatingScore }, routed.routerStats))
 
   // Notify the stats owner if that's applicable
   if (userNotifyConfig !== null) {

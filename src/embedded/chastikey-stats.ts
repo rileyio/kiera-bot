@@ -1,27 +1,7 @@
-import { TrackedChastiKeyKeyholderStatistics } from '../objects/chastikey'
+import { TrackedChastiKeyKeyholderStatistics } from '@/objects/chastikey'
 import * as Utils from '@/utils'
 import { RouterStats } from '@/router'
-import { LockeeDataLock } from 'chastikey.js/app/objects'
-
-export interface LockeeStats {
-  averageLocked: number
-  averageRating: number | string
-  locks: Array<LockeeDataLock>
-  longestLock: number
-  monthsLocked: number | string
-  noOfRatings: number | string
-  totalNoOfCompletedLocks: number
-  username: string
-  joined: string
-  timestampLastActive: number
-  verifiedTo: string
-  // Custom
-  additional?: { timeSinceLast: number }
-  // For Discord/CK verified check
-  isVerified?: boolean
-  // From router
-  routerStats: RouterStats
-}
+import { LockeeDataLock, LockeeDataResponse } from 'chastikey.js/app/objects'
 
 export interface TrackedSharedKeyholderStatistics {
   _id: string
@@ -64,10 +44,10 @@ const cardsEmoji = {
   Freeze: `<:1_:601169050294419476>`
 }
 
-export function lockeeStats(data: LockeeStats, options: { showRating: boolean }, cachedTimestamp: number) {
+export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRating: boolean }, routerStats: RouterStats) {
   var fields: Array<{ name: string; value: string }> = []
 
-  data.locks.forEach((l, i) => {
+  lockeeData.getLocked.forEach((l, i) => {
     if (i > 19) return // Skip, there can only be 20 locks in the db, this means theres an issue server side
     fields.push(lockEntry(i, l, fields.length))
   })
@@ -76,29 +56,31 @@ export function lockeeStats(data: LockeeStats, options: { showRating: boolean },
   if (fields.length === 0) {
     fields.push({
       name: 'No active locks',
-      value: `To see any additional stats a lock must be active.\n Time Since Last Lock \`${Utils.Date.calculateHumanTimeDDHHMM(data.additional.timeSinceLast)}\``
+      value: `To see any additional stats a lock must be active.\n Time Since Last Lock \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.timeSinceLastLocked)}\``
     })
   }
 
-  var dateJoinedDaysAgo = data.joined !== '-' ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)` : ''
-  var description = `Locked for \`${data.monthsLocked}\` months to date | \`${data.totalNoOfCompletedLocks}\` locks completed`
+  var dateJoinedDaysAgo = lockeeData.data.joined !== '-' ? `(${Math.round((Date.now() - new Date(lockeeData.data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)` : ''
+  var description = `Locked for \`${Math.round((lockeeData.data.cumulativeSecondsLocked / 2592000) * 100) / 100}\` months to date | \`${lockeeData.data.totalNoOfCompletedLocks}\` locks completed`
   // Only show the ratings if the user has > 5 & if the user has specified they want to show the rating
-  if (data.noOfRatings > 4 && options.showRating) description += `\nAvg Rating \`${data.averageRating}\` | # Ratings \`${data.noOfRatings}\``
-  description += `\nLongest (completed) \`${Utils.Date.calculateHumanTimeDDHHMM(data.longestLock)}\` | Average Time Locked (overall) \`${Utils.Date.calculateHumanTimeDDHHMM(data.averageLocked)}\``
-  description += `\nLast Active \`${Utils.Date.calculateHumanTimeDDHHMM(data.timestampLastActive)}\``
-  description += `\nJoined \`${data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}`
-  if (data.isVerified) description += `\nVerified to ${data.verifiedTo}`
-
+  if (lockeeData.data.noOfRatings > 4 && options.showRating) description += `\nAvg Rating \`${lockeeData.data.averageRating}\` | # Ratings \`${lockeeData.data.noOfRatings}\``
+  description += `\nLongest (completed) \`${Utils.Date.calculateHumanTimeDDHHMM(
+    lockeeData.data.longestCompletedLockInSeconds
+  )}\` | Average Time Locked (overall) \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.data.averageTimeLockedInSeconds)}\``
+  description += `\nLast Active \`${Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lockeeData.data.timestampLastActive)}\``
+  description += `\nJoined \`${lockeeData.data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}`
+  // Only Show verified @User if the user is verified
+  if (lockeeData.data.discordID) description += `\nVerified to ${Utils.User.buildUserChatAt(lockeeData.data.discordID, Utils.User.UserRefType.snowflake)}`
 
   const messageBlock = {
     embed: {
-      title: `${data.isVerified ? '<:verified:625628727820288000> ' : ''}\`${data.username}\` - ChastiKey Lockee Statistics - Active Stats`,
+      title: `${lockeeData.data.discordID ? '<:verified:625628727820288000> ' : ''}\`${lockeeData.data.username}\` - ChastiKey Lockee Statistics - Active Stats`,
       description: description,
       color: 9125611,
-      timestamp: cachedTimestamp,
+      timestamp: Date.now(),
       footer: {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: `Runtime ${data.routerStats.performance}ms :: Requested By ${data.routerStats.user} :: Cached by Kiera`
+        text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Retrieved by Kiera`
       },
       // thumbnail: {
       //   url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'

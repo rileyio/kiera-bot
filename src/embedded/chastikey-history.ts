@@ -1,7 +1,7 @@
 import * as Utils from '@/utils'
 import { TrackedChastiKeyUser, TrackedChastiKeyUserAPIFetchLock } from '@/objects/chastikey'
-import { LockeeStats } from '@/embedded/chastikey-stats'
 import { RouterStats } from '@/router'
+import { LockeeStats } from '@/utils'
 
 export function lockeeHistory(
   user: TrackedChastiKeyUser,

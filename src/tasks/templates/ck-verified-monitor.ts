@@ -2,6 +2,7 @@ import { Task } from '@/objects/task'
 import { TrackedUser } from '@/objects/user'
 
 export class ChastiKeyVerifiedRoleMonitor extends Task {
+  private announcementMade: boolean = false
   public verifiedRole: string
   public previousRefresh: number = 0
 
@@ -13,7 +14,10 @@ export class ChastiKeyVerifiedRoleMonitor extends Task {
 
     // If Debug block is in place, stop here
     if (process.env.BOT_BLOCK_CKVERIFY) {
-      console.log('Verified Role Monitor::Blocking Verified Role update per debug setting in .env file.')
+      if (!this.announcementMade) {
+        console.log('Verified Role Monitor::Blocking Verified Role update per debug setting in .env file.')
+        this.announcementMade = true
+      }
       this.previousRefresh = Date.now()
       return true
     }
