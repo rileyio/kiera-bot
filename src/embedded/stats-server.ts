@@ -70,9 +70,11 @@ export function statsServer(stats: StatsServerData) {
   descriptionBuilt += `Current Member Count: \`${stats.memberCount}\`\n`
   // Add Server User Joined & Leave stats
   descriptionBuilt += `Members Join : Leave: \`${stats.usersJoined}\` : \`${stats.usersLeft}\`\n`
-  descriptionBuilt += `Server Size ${stats.usersJoined - stats.usersLeft > 0 ? 'Increased by' : 'Decreased by'}: \`${Math.round(
-    ((stats.memberCount - (stats.memberCount - (stats.usersJoined - stats.usersLeft))) / (stats.memberCount - (stats.usersJoined - stats.usersLeft))) * 1000
-  ) / 1000 * 100}%\``
+  if (stats.usersJoined !== 0 || stats.usersLeft !== 0)
+    descriptionBuilt += `Server Size ${stats.usersJoined - stats.usersLeft > 0 ? 'Increased by' : 'Decreased by'}: \`${Math.round(
+      Math.abs((Math.round(((stats.memberCount - (stats.memberCount - (stats.usersJoined - stats.usersLeft))) / (stats.memberCount - (stats.usersJoined - stats.usersLeft))) * 1000) / 1000) * 100) *
+        100
+    ) / 100}%\``
 
   // Add channels
   var channelsField = { name: `Top ${stats.data.channels.length} Channels by Messages`, value: '' }
