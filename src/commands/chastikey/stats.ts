@@ -104,7 +104,7 @@ export async function getLockeeStats(routed: RouterRouted) {
       await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
 
   // If the lookup is not upon someone else & the requestor's account is not yet verified: stop and inform
-  if (ckUser._noData && !routed.v.o.user && !user.ChastiKey.isVerified) {
+  if (ckUser._noData && !routed.v.o.user) {
     await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyVerifyReq2))
     return false // Stop
   }
