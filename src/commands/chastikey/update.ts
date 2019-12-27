@@ -112,9 +112,7 @@ export async function update(routed: RouterRouted) {
   changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Lockee' })
 
   // Find if any locked locks
-  const hasLockedLock = lockeeData.locks.filter(lock => lock.status === 'Locked' || lock.status === 'ReadyToUnlock')
-
-  // console.log('hasLockedLock:', hasLockedLock)
+  const hasLockedLock = lockeeData.getLocked
 
   // Fetch some stuff from Discord & ChastiKey
   const discordUser =
