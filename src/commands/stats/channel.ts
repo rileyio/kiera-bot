@@ -1,6 +1,6 @@
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
-import { ServerStatisticType } from '@/objects/statistics'
+import { ServerStatisticType, StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 import { statsChannel } from '@/embedded/stats-channel'
 import { TextChannel } from 'discord.js'
 
@@ -22,6 +22,14 @@ export const Routes = ExportRoutes({
 
 export async function statsForChannel(routed: RouterRouted) {
   const channelID = routed.v.o.id !== undefined ? `${routed.v.o.id}` : routed.message.channel.id
+
+  // Check for stats disabled setting on channel
+  if (await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { channelID, setting: StatisticsSettingType.ChannelDisableStats })) {
+    await routed.message.reply(Utils.sb(Utils.en.stats.channelStatsDisabledInfo))
+
+    return true // Stop here
+  }
+
   const data = await routed.bot.DB.aggregate<{ name?: string; userID: string; messages: number; reactions: number }>('stats-servers', [
     {
       $match: { type: ServerStatisticType.Message, serverID: routed.message.guild.id, channelID }
