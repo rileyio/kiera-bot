@@ -230,10 +230,10 @@ export class MongoDB {
     return (<Cursor<T>>result).toArray()
   }
 
-  public async count(targetCollection: Collections, query: any, options?: any) {
+  public async count<T>(targetCollection: Collections, query: Partial<T>, options?: any) {
     this.DEBUG_DB.log(`.count => ${targetCollection}`)
     const connection = await this.connect()
-    const collection = <any>connection.db.collection(targetCollection, options)
+    const collection = connection.db.collection(targetCollection, options)
     const result = await collection.countDocuments(query)
     this.DEBUG_DB.log(`.count results [${targetCollection}] =>`, result)
     // connection.client.close()
