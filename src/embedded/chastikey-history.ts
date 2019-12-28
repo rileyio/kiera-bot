@@ -59,7 +59,7 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
       if (isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot) stats.last12Months.abandonedCount += 1
       // [3 MONTHS] Increment total locked time
       // *Excludes: Abandoned, Self, Bots
-      if (!isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot) stats.last12Months.totalTimeLocked += lock.timestampUnlocked === 0 ? Date.now() / 1000 - lock.timestampLocked : lockLength
+      if (!isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot && lock.isUnlocked) stats.last12Months.totalTimeLocked += lock.timestampUnlocked === 0 ? Date.now() / 1000 - lock.timestampLocked : lockLength
       // [12 MONTHS] Ensure KH is tracked for count
       // *Excludes: Self, Bots
       if (khIndex12Months === -1 && !lockWasSelfLocked && !lockWasWithBot) stats.last12Months.khNames.push(lock.lockedBy)
