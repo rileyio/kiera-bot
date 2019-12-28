@@ -1,7 +1,7 @@
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { statsTopServerChannels, statsServer } from '@/embedded/stats-server'
-import { ServerStatisticType } from '@/objects/statistics'
+import { ServerStatisticType, StatisticsSetting, StatisticsSettingType, ServerStatistic } from '@/objects/statistics'
 import { ObjectID } from 'bson'
 
 export const Routes = ExportRoutes(
@@ -33,6 +33,21 @@ export const Routes = ExportRoutes(
       defaultEnabled: true,
       serverOnly: true,
       restricted: false
+    }
+  },
+  {
+    type: 'message',
+    category: 'Stats',
+    commandTarget: 'none',
+    controller: aboutStats,
+    example: '{{prefix}}stats about',
+    name: 'stats-server',
+    validate: '/stats:string/about:string',
+    middleware: [],
+    permissions: {
+      defaultEnabled: true,
+      restricted: false,
+      serverOnly: true
     }
   }
 )
@@ -203,5 +218,22 @@ export async function serverStats(routed: RouterRouted) {
     })
   )
 
+  return true
+}
+
+export async function aboutStats(routed: RouterRouted) {
+  // Get states
+  const statsDisabledServer = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { serverID: routed.message.guild.id, setting: StatisticsSettingType.ServerDisableStats })
+  const statsDisabledUser = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { userID: routed.user.id, setting: StatisticsSettingType.UserDisableStats })
+  // Get user total stats count
+  const statsCount = await routed.bot.DB.count<ServerStatistic>('stats-servers', { userID: routed.user.id })
+
+  await routed.message.reply(
+    Utils.sb(Utils.en.stats.aboutStats, {
+      serverState: statsDisabledServer ? 'Disabled' : 'Enabled',
+      userState: statsDisabledUser ? 'Disabled' : 'Enabled',
+      count: statsCount
+    })
+  )
   return true
 }

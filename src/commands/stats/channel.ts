@@ -29,8 +29,7 @@ export async function statsForChannel(routed: RouterRouted) {
     {
       $group: {
         _id: '$userID',
-        messages: { $sum: 1 },
-        reactions: { $sum: 1 }
+        messages: { $sum: 1 }
       }
     },
     { $sort: { messages: -1 } },
@@ -38,8 +37,7 @@ export async function statsForChannel(routed: RouterRouted) {
       $project: {
         _id: 0,
         userID: '$_id',
-        messages: 1,
-        reactions: 1
+        messages: 1
       }
     }
   ])

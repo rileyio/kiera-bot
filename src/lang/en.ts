@@ -6,6 +6,7 @@ import * as Error from './en/error'
 import * as HelpStrings from './en/help'
 import * as Mod from './en/mod'
 import * as Poll from './en/poll'
+import * as Stats from './en/stats'
 
 export const en = {
   admin: Admin,
@@ -15,5 +16,6 @@ export const en = {
   error: Error,
   help: HelpStrings,
   mod: Mod,
-  poll: Poll
+  poll: Poll,
+  stats: Stats
 }

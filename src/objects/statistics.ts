@@ -64,7 +64,9 @@ export enum ServerStatisticType {
   ReactionRemoved,
   UserJoined,
   UserLeft,
-  UserNicknameChanged
+  UserNicknameChanged,
+  CommandSuccess,
+  CommandFailure
 }
 
 /**
@@ -80,6 +82,7 @@ export enum ServerStatisticType {
  *   - Trends
  *   - Server statistics
  *   - Channel statistics
+ *   - Command usage
  * @export
  * @class ServerStatistic
  */
@@ -89,6 +92,11 @@ export class ServerStatistic {
   public userID: string
   public channelID: string
   public type: ServerStatisticType
+  // Command Specific
+  public command?: {
+    name: string,
+    successful: boolean
+  }
 
   constructor(init: Partial<ServerStatistic>) {
     Object.assign(this, init)
