@@ -1,6 +1,8 @@
 5.0.0
 - Fixed: #13 CK Stats Lockee and Keyholder no longer working after release of 4.12.0
 - Improved: #14 Project imports
+- Improved: CK Stats Lockee is now using live data
+- Removed: Legacy notifications
 - Added: #15 Server & User stats and commands for: display, manage, settings
 - Added: #17 ChastiKey Verified users to have their profile auto updated with the Verified role
 

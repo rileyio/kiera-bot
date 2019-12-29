@@ -17,13 +17,6 @@ export const routes: Array<WebRoute> = [
    * Available
    */
   {
-    controller: WebController.Available.notifications,
-    method: 'post',
-    name: 'available-notifications',
-    path: '/api/available/notifications',
-    middleware: [Middleware.isAuthenticated]
-  },
-  {
     controller: WebController.Available.settings,
     method: 'post',
     name: 'available-settings',
@@ -45,23 +38,6 @@ export const routes: Array<WebRoute> = [
     method: 'post',
     name: 'lists-get',
     path: '/api/lists'
-  },
-  /*
-   * Notifications
-   */
-  {
-    controller: WebController.Notifications.getNotifications,
-    method: 'post',
-    name: 'notifications-get',
-    path: '/api/notifications',
-    middleware: [Middleware.isAuthenticated]
-  },
-  {
-    controller: WebController.Notifications.updateNotification,
-    method: 'post',
-    name: 'notifications-update',
-    path: '/api/notification/update',
-    middleware: [Middleware.isAuthenticated]
   },
   /*
    * Permissions

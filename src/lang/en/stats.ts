@@ -63,5 +63,25 @@ export const channelStatsDeletionConfirmReceived = `Confirmation Received! Chann
 export const channelStatsDeletionDeleted = `Stats \`(count: {{count}})\` for this channel have been deleted!`
 export const channelStatsDeletionCancelled = `Channel Stats Deletion Cancelled! Reply not received before timeout (1 minute).`
 export const channelStatsDeletionNoStats = `There are no stats stored for this channel!`
-
 export const channelStatsDisabledInfo = `This Channel has requested stats be disabled - (Note: It may appear in server or user statistics unless all stored statistics for the channel are deleted.)`
+
+export const serverStatsDisabled = `All stats have now been **Disabled** for this server.\n\n
+  - If you wish to delete all recorded stats to date you can run the following command \`{{prefix}}stats delete server\`.
+  - Disabling alone stops new logging going forward only.
+  - When server statistics are disabled but not deleted they may still appear on Channel or User statistics.
+  - The \`{{prefix}}stats server\` command will now be disabled for this server.
+
+For more information about Statistics, see the \`{{prefix}}stats about\` command output.
+`
+
+export const serverStatsEnabled = `Stats are now **Enabled** for this server.
+
+For more information about Statistics, see the \`{{prefix}}stats about\` command output.
+`
+
+export const serverStatsDeletionConfirm = `To confirm deleting all stats pertaining to this server, send **\`yes\`** in the next 60 seconds!`
+export const serverStatsDeletionConfirmReceived = `Confirmation Received! Channel Stats Deletion in progress... please wait`
+export const serverStatsDeletionDeleted = `Stats \`(count: {{count}})\` for this channel have been deleted!`
+export const serverStatsDeletionCancelled = `Channel Stats Deletion Cancelled! Reply not received before timeout (1 minute).`
+export const serverStatsDeletionNoStats = `There are no stats stored for this channel!`
+export const serverStatsDisabledIno = `This Channel has requested stats be disabled - (Note: It may appear in server or user statistics unless all stored statistics for the channel are deleted.)`

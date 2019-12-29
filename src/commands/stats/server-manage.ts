@@ -61,9 +61,7 @@ export async function disableServerStats(routed: RouterRouted) {
     })
   )
 
-  await routed.message.reply(
-    'All stats have now been **Disabled** for this server.\n\n  - If you wish to delete all recorded stats to date (command coming soon!) please reachout via the Kiera Bot Dev Server.\n  - Disabling alone stops new logging going forward only.'
-  )
+  await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsDisabled))
   return true
 }
 
@@ -73,7 +71,7 @@ export async function enableServerStats(routed: RouterRouted) {
     setting: StatisticsSettingType.ServerDisableStats
   })
 
-  if (removed > 0) await routed.message.reply('Stats are now **Enabled** for this server.')
+  if (removed > 0) await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsEnabled))
   return true
 }
 
@@ -82,7 +80,7 @@ export async function deleteServerStats(routed: RouterRouted) {
   const count = await routed.bot.DB.count('stats-servers', { serverID: routed.message.guild.id })
 
   if (count > 0) {
-    await routed.message.reply('To confirm deleting all stats pertaining to this server, send **`yes`** in the next 60 seconds!')
+    await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsDeletionConfirm))
 
     try {
       // Filter to watch for the correct user & text to be sent (+ remove any whitespace)
@@ -92,18 +90,18 @@ export async function deleteServerStats(routed: RouterRouted) {
       // Delete the previous message at this stage
       await Utils.Channel.deleteMessage(routed.message.channel, collected.first().id)
       // Upon valid message collection, begin deletion - notify user
-      const pleaseWaitMessage = (await routed.message.reply('Confirmation Received! Server Stats Deletion in progress... please wait')) as Message
+      const pleaseWaitMessage = (await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsDeletionConfirmReceived))) as Message
       // Delete from DB
       const removed = await routed.bot.DB.remove('stats-servers', { serverID: routed.message.guild.id }, { deleteOne: false })
       // Delete the previous message at this stage
       await Utils.Channel.deleteMessage(routed.message.channel, pleaseWaitMessage.id)
-      await routed.message.reply(`Stats \`(count: ${removed})\` for this server have been deleted!`)
+      await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsDeletionDeleted, { count: removed }))
     } catch (error) {
-      await routed.message.channel.send(`Server Stats Deletion Cancelled! Reply not received before timeout (1 minute).`)
+      await routed.message.channel.send(Utils.sb(Utils.en.stats.serverStatsDeletionCancelled))
     }
   }
   // Nothing to delete - notify caller
-  else await routed.message.reply(`There are no stats stored for this server!`)
+  else await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsDeletionNoStats))
 
   return true
 }

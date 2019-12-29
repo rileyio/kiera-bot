@@ -4,8 +4,7 @@ import { RouterRouted, ExportRoutes } from '@/router'
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '@/embedded/chastikey-stats'
 import { TrackedUser } from '@/objects/user'
 import { TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyUser } from '@/objects/chastikey'
-import { TrackedNotification } from '@/objects/notification'
-import { TextChannel, Message } from 'discord.js'
+import { Message } from 'discord.js'
 import { TrackedMessage } from '@/objects/message'
 import { TrackedBotSetting } from '@/objects/setting'
 
@@ -83,40 +82,22 @@ export const Routes = ExportRoutes(
 )
 
 export async function getLockeeStats(routed: RouterRouted) {
-  // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
-  var ckUser = routed.v.o.user
-    ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: new RegExp(`^${routed.v.o.user}$`, 'i') }))
-    : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: routed.user.id }))
+  // Get user from lockee data (Stats, User and Locks)
+  const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({
+    username: routed.v.o.user ? routed.v.o.user : undefined,
+    discordid: !routed.v.o.user ? routed.user.id : undefined,
+    showDeleted: true
+  })
 
   // If the lookup is upon someone else with no data, return the standard response
-  if (ckUser._noData === true && routed.v.o.user) {
+  if (lockeeData.response.status !== 200) {
     // Notify in chat what the issue could be
     await routed.message.reply(Utils.sb(Utils.en.chastikey.userLookupErrorOrNotFound, { user: routed.v.o.user }))
     return true // Stop here
   }
 
-  // Get user's current ChastiKey username from users collection or by the override
-  const user = routed.v.o.user
-    ? (await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] })) ||
-      // Fallback: Create a mock record
-      <TrackedUser>{ __notStored: true, ChastiKey: { username: ckUser.username, isVerified: false, ticker: { showStarRatingScore: true } } }
-    : // Else: Lookup the user by Discord ID
-      await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
-
-  // If the lookup is not upon someone else & the requestor's account is not yet verified: stop and inform
-  if (ckUser._noData && !routed.v.o.user) {
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyVerifyReq2))
-    return false // Stop
-  }
-
-  // If the user is verified in the Kiera table (meaning they followed the FF steps)
-  if (ckUser._noData && !routed.v.o.user && user.ChastiKey.isVerified) {
-    // Update the ckUser record for this run to let them see stuff
-    ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: user.ChastiKey.username }))
-  }
-
   // If the user has display_in_stats === 2 then stop here
-  if (!ckUser.displayInStats) {
+  if (!lockeeData.data.displayInStats) {
     // Track incoming message and delete for the target user's privacy
     await routed.bot.MsgTracker.trackMsg(
       new TrackedMessage({
@@ -131,6 +112,7 @@ export async function getLockeeStats(routed: RouterRouted) {
         storageKeepInChatFor: 5000
       })
     )
+
     // Notify in chat that the user has requested their stats not be public
     const response = (await routed.message.reply(Utils.sb(Utils.en.chastikey.userRequestedNoStats))) as Message
     // Track incoming message and delete for the target user's privacy
@@ -151,44 +133,17 @@ export async function getLockeeStats(routed: RouterRouted) {
     return true
   }
 
-  // Check to see if there are any notifications programmed for this user in the db
-  const userNotifyConfig =
-    routed.v.o.user && user._id && user.__notStored === undefined
-      ? await routed.bot.DB.get<TrackedNotification>('notifications', {
-          authorID: routed.user.id,
-          serverID: routed.message.guild.id,
-          name: 'notify-ck-stats-lockee'
-        })
-      : null
-
-  // Get user from lockee data (Stats, User and Locks)
-  const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({ username: ckUser.username, showDeleted: true })
+  // Get user's current ChastiKey username from users collection or by the override
+  const kieraUser =
+    routed.v.o.user && lockeeData.data.discordID
+      ? (await routed.bot.DB.get<TrackedUser>('users', { id: String(lockeeData.data.discordID) })) ||
+        // Fallback: Create a mock record
+        <TrackedUser>{ ChastiKey: { username: lockeeData.data.username, isVerified: false, ticker: { showStarRatingScore: true } } }
+      : // Else when its the caller themself: Lookup the user by Discord ID
+        await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
 
   // Generate compiled stats
-  await routed.message.channel.send(lockeeStats(lockeeData, { showRating: user.ChastiKey.ticker.showStarRatingScore }, routed.routerStats))
-
-  // Notify the stats owner if that's applicable
-  if (userNotifyConfig !== null) {
-    if (userNotifyConfig.where !== 'Discord' || userNotifyConfig.state !== true) return // stop here
-    // BLOCK: If in blacklisted channel by server settings //
-    const serverBlackListedChannels = await routed.bot.DB.verify('server-settings', {
-      serverID: routed.message.guild.id,
-      value: routed.message.channel.id,
-      key: 'server.channel.notification.block',
-      state: true
-    })
-    // BLOCK: If blacklisted validate === true
-    if (serverBlackListedChannels) return true
-
-    // Send DM to user
-    await routed.bot.client.users.get(user.id).send(
-      Utils.sb(Utils.en.chastikey.lockeeCommandNotification, {
-        user: `${routed.message.author.username}#${routed.message.author.discriminator}`,
-        channel: (<TextChannel>routed.message.channel).name,
-        server: routed.message.guild.name
-      })
-    )
-  }
+  await routed.message.channel.send(lockeeStats(lockeeData, { showRating: kieraUser.ChastiKey.ticker.showStarRatingScore }, routed.routerStats))
 
   return true
 }
@@ -270,16 +225,6 @@ export async function getKeyholderStats(routed: RouterRouted) {
     ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: user.ChastiKey.username }))
   }
 
-  // Check to see if there are any notifications programmed for this user in the db
-  const userNotifyConfig =
-    routed.v.o.user && user._id && user.__notStored === undefined
-      ? await routed.bot.DB.get<TrackedNotification>('notifications', {
-          authorID: routed.user.id,
-          serverID: routed.message.guild.id,
-          name: 'notify-ck-stats-keyholder'
-        })
-      : null
-
   // Generate regex for username to ignore case
   const usernameRegex = new RegExp(`^${ckUser.username}$`, 'i')
 
@@ -343,29 +288,6 @@ export async function getKeyholderStats(routed: RouterRouted) {
       isVerified: ckUser.isVerified()
     })
   )
-
-  // Notify the stats owner if that's applicable
-  if (userNotifyConfig !== null) {
-    if (userNotifyConfig.where !== 'Discord' || userNotifyConfig.state !== true) return // stop here
-    // BLOCK: If in blacklisted channel by server settings //
-    const serverBlackListedChannels = await routed.bot.DB.verify('server-settings', {
-      serverID: routed.message.guild.id,
-      value: routed.message.channel.id,
-      key: 'server.channel.notification.block',
-      state: true
-    })
-    // BLOCK: If blacklisted validate === true
-    if (serverBlackListedChannels) return true
-
-    // Send DM to user
-    await routed.bot.client.users.get(user.id).send(
-      Utils.sb(Utils.en.chastikey.keyholderCommandNotification, {
-        user: `${routed.message.author.username}#${routed.message.author.discriminator}`,
-        channel: (<TextChannel>routed.message.channel).name,
-        server: routed.message.guild.name
-      })
-    )
-  }
 
   // Successful end
   return true
