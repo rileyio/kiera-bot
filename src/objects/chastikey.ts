@@ -22,16 +22,9 @@ export class TrackedChastiKey {
   public verificationCode: string = ''
   public verificationCodeRequestedAt: number = 0
   public displayInStats: boolean = false
-  // For API Auth on other projects
-  public extSession: string = ''
 
   constructor(init: Partial<TrackedChastiKey>) {
     Object.assign(this, init)
-  }
-
-  public extSessionCreate(id: string, username: string) {
-    // If valid & updated, generate a token for use with Kiera
-    this.extSession = jwt.sign({ id: id, username: username }, process.env.BOT_SECRET)
   }
 }
 

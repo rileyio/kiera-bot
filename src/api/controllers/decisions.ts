@@ -8,10 +8,10 @@ import { TrackedUser } from '@/objects/user'
 
 export namespace Decisions {
   export async function getDecisions(routed: WebRouted) {
-    const session = routed.req.header('session')
-
     // Get user from users collection
-    const user = new TrackedUser(await routed.Bot.DB.get<TrackedUser>('users', { 'ChastiKey.extSession': session }))
+    const user = new TrackedUser(
+      await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
+    )
 
     // If user does not exist, fail
     if (!user) {
@@ -26,12 +26,13 @@ export namespace Decisions {
   }
 
   export async function deleteDecision(routed: WebRouted) {
-    const session = routed.req.header('session')
     const v = await validate(Validation.Decisions.deleteDecision(), routed.req.body)
 
     if (v.valid) {
       // Get user from users collection
-      const user = new TrackedUser(await routed.Bot.DB.get<TrackedUser>('users', { 'ChastiKey.extSession': session }))
+      const user = new TrackedUser(
+        await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
+      )
 
       var deleteCount = await routed.Bot.DB.remove<TrackedDecision>('decision', {
         _id: new ObjectID(v.o._id),
@@ -47,12 +48,13 @@ export namespace Decisions {
   }
 
   export async function updateDecisionOutcome(routed: WebRouted) {
-    const session = routed.req.header('session')
     const v = await validate(Validation.Decisions.update(), routed.req.body)
 
     if (v.valid) {
       // Get user from users collection
-      const user = new TrackedUser(await routed.Bot.DB.get<TrackedUser>('users', { 'ChastiKey.extSession': session }))
+      const user = new TrackedUser(
+        await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
+      )
 
       const updateCount = await routed.Bot.DB.update(
         'decision',
@@ -75,12 +77,13 @@ export namespace Decisions {
   }
 
   export async function updateDecisionName(routed: WebRouted) {
-    const session = routed.req.header('session')
     const v = await validate(Validation.Decisions.updateOutcomeName(), routed.req.body)
 
     if (v.valid) {
       // Get user from users collection
-      const user = new TrackedUser(await routed.Bot.DB.get<TrackedUser>('users', { 'ChastiKey.extSession': session }))
+      const user = new TrackedUser(
+        await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
+      )
 
       const updateCount = await routed.Bot.DB.update(
         'decision',
@@ -103,11 +106,12 @@ export namespace Decisions {
 
   export async function deleteDecisionOutcome(routed: WebRouted) {
     const v = await validate(Validation.Decisions.deleteOutcome(), routed.req.body)
-    const session = routed.req.header('session')
 
     if (v.valid) {
       // Get user from users collection
-      const user = new TrackedUser(await routed.Bot.DB.get<TrackedUser>('users', { 'ChastiKey.extSession': session }))
+      const user = new TrackedUser(
+        await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
+      )
 
       var deleteCount = await routed.Bot.DB.update<TrackedDecision>(
         'decision',
@@ -126,11 +130,12 @@ export namespace Decisions {
 
   export async function addDecisionOutcome(routed: WebRouted) {
     const v = await validate(Validation.Decisions.addOutcome(), routed.req.body)
-    const session = routed.req.header('session')
 
     if (v.valid) {
       // Get user from users collection
-      const user = new TrackedUser(await routed.Bot.DB.get<TrackedUser>('users', { 'ChastiKey.extSession': session }))
+      const user = new TrackedUser(
+        await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
+      )
       const newDecisionOutcome = new TrackedDecisionOption({ text: v.o.text, type: v.o.type })
 
       const addOutcome = await routed.Bot.DB.update<TrackedDecision>('decision', { _id: new ObjectID(v.o._id), authorID: user.id }, { $push: { options: newDecisionOutcome } }, { atomic: true })
@@ -150,11 +155,12 @@ export namespace Decisions {
 
   export async function addDecision(routed: WebRouted) {
     const v = await validate(Validation.Decisions.addDecision(), routed.req.body)
-    const session = routed.req.header('session')
 
     if (v.valid) {
       // Get user from users collection
-      const user = new TrackedUser(await routed.Bot.DB.get<TrackedUser>('users', { 'ChastiKey.extSession': session }))
+      const user = new TrackedUser(
+        await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
+      )
       const newDeicison = new TrackedDecision({ name: v.o.name, authorID: user.id, serverID: '473856867768991744' })
 
       const decisionId = await routed.Bot.DB.add<TrackedDecision>('decision', newDeicison)
@@ -176,11 +182,12 @@ export namespace Decisions {
 
   export async function enableDecision(routed: WebRouted) {
     const v = await validate(Validation.Decisions.enableDecision(), routed.req.body)
-    const session = routed.req.header('session')
 
     if (v.valid) {
       // Get user from users collection
-      const user = new TrackedUser(await routed.Bot.DB.get<TrackedUser>('users', { 'ChastiKey.extSession': session }))
+      const user = new TrackedUser(
+        await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
+      )
 
       const updateCount = await routed.Bot.DB.update(
         'decision',

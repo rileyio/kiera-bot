@@ -11,7 +11,7 @@ export const routes: Array<WebRoute> = [
     method: 'post',
     name: 'audit-log',
     path: '/api/audit',
-    middleware: [Middleware.isAuthenticated]
+    middleware: [Middleware.validateSession]
   },
   /*
    * Available
@@ -21,14 +21,14 @@ export const routes: Array<WebRoute> = [
     method: 'post',
     name: 'available-settings',
     path: '/api/available/settings',
-    middleware: [Middleware.isAuthenticated]
+    middleware: [Middleware.validateSession]
   },
   {
     controller: WebController.Available.userGeneric,
     method: 'post',
     name: 'available-user',
     path: '/api/available/user',
-    middleware: [Middleware.isAuthenticated]
+    middleware: [Middleware.validateSession]
   },
   /*
    * Lists
@@ -104,38 +104,38 @@ export const routes: Array<WebRoute> = [
     method: 'post',
     name: 'user-get',
     path: '/api/user',
-    middleware: [Middleware.isAuthenticated]
-  },
-  {
-    controller: WebController.User.oauth,
-    method: 'post',
-    name: 'user-oauth',
-    path: '/api/oauth',
-    middleware: [Middleware.validAuthKey]
+    middleware: [Middleware.validateSession]
   },
   {
     controller: WebController.User.update,
     method: 'post',
     name: 'user-update',
     path: '/api/user/update',
-    middleware: [Middleware.isAuthenticated]
+    middleware: [Middleware.validateSession]
+  },
+  {
+    controller: WebController.Auth.otl,
+    method: 'post',
+    name: 'user-otl',
+    path: '/api/otl'
+  },
+  {
+    controller: WebController.Auth.verifySession,
+    method: 'post',
+    name: 'user-session-verify',
+    path: '/api/session/verify',
+    middleware: [Middleware.validateSession]
   },
   /*
    * Kiera + CK Specific
    */
-  {
-    controller: WebController.ChastiKey.authTest,
-    method: 'post',
-    name: 'ck-3rd-auth-test',
-    path: '/api/ck/auth'
-  },
   // * Kiera+CK Keyholder * //
   {
     controller: WebController.ChastiKey.khData,
     method: 'get',
     name: 'ck-3rd-kh-view',
     path: '/api/ck/keyholder',
-    middleware: [Middleware.validCKAuth]
+    middleware: [Middleware.validateSession]
   },
   // * Kiera+CK Lockee * //
   {
@@ -143,7 +143,7 @@ export const routes: Array<WebRoute> = [
     method: 'get',
     name: 'ck-3rd-lockee-view',
     path: '/api/ck/lockee',
-    middleware: [Middleware.validCKAuth]
+    middleware: [Middleware.validateSession]
   },
   // * Kiera+CK Stats * //
   {
@@ -160,55 +160,55 @@ export const routes: Array<WebRoute> = [
     method: 'get',
     name: 'web-decision-as-owner',
     path: '/api/decisions',
-    middleware: [Middleware.validCKAuth]
+    middleware: [Middleware.validateSession]
   },
   {
     controller: WebController.Decisions.updateDecisionName,
     method: 'patch',
     name: 'web-decision-update-name',
     path: '/api/decision/name',
-    middleware: [Middleware.validCKAuth]
+    middleware: [Middleware.validateSession]
   },
   {
     controller: WebController.Decisions.enableDecision,
     method: 'patch',
     name: 'web-decision-update-enabled',
     path: '/api/decision/enabled',
-    middleware: [Middleware.validCKAuth]
+    middleware: [Middleware.validateSession]
   },
   {
     controller: WebController.Decisions.addDecisionOutcome,
     method: 'put',
     name: 'web-decision-new-outcome',
     path: '/api/decision/outcome',
-    middleware: [Middleware.validCKAuth]
+    middleware: [Middleware.validateSession]
   },
   {
     controller: WebController.Decisions.updateDecisionOutcome,
     method: 'patch',
     name: 'web-decision-update-outcome',
     path: '/api/decision/outcome',
-    middleware: [Middleware.validCKAuth]
+    middleware: [Middleware.validateSession]
   },
   {
     controller: WebController.Decisions.deleteDecisionOutcome,
     method: 'delete',
     name: 'web-decision-new-outcome',
     path: '/api/decision/outcome',
-    middleware: [Middleware.validCKAuth]
+    middleware: [Middleware.validateSession]
   },
   {
     controller: WebController.Decisions.addDecision,
     method: 'put',
     name: 'web-decision-new',
     path: '/api/decision',
-    middleware: [Middleware.validCKAuth]
+    middleware: [Middleware.validateSession]
   },
   {
     controller: WebController.Decisions.deleteDecision,
     method: 'delete',
     name: 'web-decision-delete',
     path: '/api/decision',
-    middleware: [Middleware.validCKAuth]
+    middleware: [Middleware.validateSession]
   }
 ]

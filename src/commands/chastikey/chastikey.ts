@@ -7,6 +7,7 @@ import * as Discord from 'discord.js'
 import { TrackedUser } from '@/objects/user'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { ChastiKeyVerifyResponse, TrackedChastiKeyCombinationsAPIFetch, ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
+import { TrackedSession } from '@/objects/session'
 
 export const Routes = ExportRoutes(
   {
@@ -174,7 +175,9 @@ export async function recoverCombos(routed: RouterRouted) {
  */
 export async function verifyAccount(routed: RouterRouted) {
   // Get the user from the db in their current state
-  var user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id }))
+  var user = new TrackedUser(
+    await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
+  )
 
   // Make request out to ChastiKey to start process
   const postData = new FormData()
@@ -366,14 +369,17 @@ export async function extSessionOld(routed: RouterRouted) {
 }
 
 export async function extSession(routed: RouterRouted) {
-  // Get Kiera user from DB
-  var user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id }))
-  // Generate 3rd party session and store on user's ChastiKey record
-  user.ChastiKey.extSessionCreate(user.id, user.username)
-  await routed.bot.DB.update<TrackedUser>('users', { id: user.id }, { $set: { 'ChastiKey.extSession': user.ChastiKey.extSession } }, { atomic: true })
-  // Inform user of their token
+  // Create new Session Object
+  const newSession = new TrackedSession({ userID: routed.user.id, generatedFor: 'kiera-ck' })
+  // Generate OTL and store in sessions table
+  newSession.newOTL()
+
+  // Store new Session w/OTL
+  await routed.bot.DB.add<TrackedSession>('sessions', newSession)
+
+  // Inform user of their OTL
   await routed.message.author.send(
-    `This is your **External ChastiKey Application Authentication Key**, __KEEP IT SAFE__, Run the command again to receive a new key \`!ck ext session\`\n\nUse this to login: ${process.env.API_EXT_DEFAULT_URL}/login/${user.ChastiKey.extSession} \n\n-or- Copy and Paste this in the \`Login Token\` box \`\`\`${user.ChastiKey.extSession}\`\`\``
+    `This is your **Kiera + ChastiKey One Time Login**, __KEEP IT SAFE__, Run the command again to receive a new key \`!ck web\`\n\n**Note:** This will expire in 5 minutes!\n\nUse this to login: ${process.env.API_EXT_DEFAULT_URL}/login/${newSession.otl} \n\n-or- Copy and Paste this in the \`Login Token\` box \`\`\`${newSession.otl}\`\`\``
   )
 
   return true

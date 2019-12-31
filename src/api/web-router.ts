@@ -1,6 +1,7 @@
 import * as restify from 'restify'
 import { Bot } from '@/index'
 import { Request, Response, Next } from 'restify'
+import { TrackedSession } from '@/objects/session'
 
 export interface WebRoute {
   controller: Function | void
@@ -18,6 +19,7 @@ export class WebRouted {
   public req: Request
   public res: Response
   public next: Next
+  public session: Partial<TrackedSession>
 
   constructor(init: Partial<WebRouted>) {
     Object.assign(this, init)
@@ -106,7 +108,6 @@ export class WebRouter {
 }
 
 export async function middlewareHandler(routed: WebRouted) {
-  // console.log('Web middlewareHandler')
   // Process middleware
   const mwareCount = Array.isArray(routed.route.middleware) ? routed.route.middleware.length : 0
   var mwareProcessed = 0

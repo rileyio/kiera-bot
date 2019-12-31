@@ -1,4 +1,5 @@
 export * from './audit'
+export * from './auth'
 export * from './available'
 export * from './chastikey/'
 export * from './lists'
