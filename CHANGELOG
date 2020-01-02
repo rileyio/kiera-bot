@@ -1,15 +1,20 @@
 5.0.0
 - Fixed: #13 CK Stats Lockee and Keyholder no longer working after release of 4.12.0
+- Fixed: CK Verify middleware error message to use proper prefix for env
 - Improved: #14 Project imports
 - Improved: CK Stats Lockee is now using live data
 - Improved: CK Lockee Queries on External portal will now be the same live data as CK stats lockee
 - Improved: New One time login tokens to authenticate, now with expiry & much shorter (will be used on Kiera's site rework)
 - Removed: Legacy notifications
 - Removed: Old CK Auth token/session system
+- Updated: CK Tasks all updated to new API Data
+- Updated: Locktober Auto update re-added
 - Added: New Web API authentication (will break kiera.xyz until rework)
 - Added: #15 Server & User stats and commands for: display, manage, settings
 - Added: #17 ChastiKey Verified users to have their profile auto updated with the Verified role
 - Added: CK Lockee History that's a combination of previously discussed, removed all others
+- Added: Legacy Task Template for older CK endpoints
+- Added: New on API task fetch fail don't wipe Database but wait for next refresh time unless bot is restarted
 
 4.12.0
 - Fixed: Text on CK Lockee stats saying: (not greens)
