@@ -1,3 +1,4 @@
+import * as Utils from '@/utils'
 import { RouterRouted } from '@/router'
 import { TrackedUser } from '@/objects/user'
 import { UserData } from 'chastikey.js/app/objects'
@@ -19,7 +20,9 @@ export async function isCKVerified(routed: RouterRouted) {
   if (!ckUser.userID || kieraUser.ChastiKey.isVerified) return routed // No need to hault if this passes
   // Fallback, user not yet registered
   await routed.message.reply(
-    'This command requires your account be verified with ChastiKey using the following command: `!ck verify`\n\nIf you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `!ck verify` again.'
+    Utils.sb(
+      'This command requires your account be verified with ChastiKey using the following command: `{{prefix}}ck verify`\n\nIf you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `{{prefix}}ck verify` again.'
+    )
   )
   return // Returns nothing which halts going any further
 }

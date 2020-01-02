@@ -41,4 +41,7 @@ export class ChastiKey {
   public async fetchAPIUserDataCache() {
     return await this.Client.UserData.get()
   }
+  public async fetchAPIRunningLocksDataCache() {
+    return await this.Client.UserData.get()
+  }
 }
