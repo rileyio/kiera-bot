@@ -72,12 +72,10 @@ export class Bot {
     // Register background tasks
     this.Task.start(this, [
       new Task.ChastiKeyAPIUsers(this),
-      // new Task.ChastiKeyAPIRunningLocks(this),
-      // new Task.ChastiKeyAPIKeyholders(this),
-      // new Task.ChastiKeyAPILockees(this),
-      // // new Task.ChastiKeyAPILocktober(this),
+      new Task.ChastiKeyAPIRunningLocks(this),
+      new Task.ChastiKeyAPILocktober(this),
       // // new Task.ChastiKeyBackgroundLocktoberMonitor(this)
-      // new Task.ChastiKeyBackgroundVerifiedMonitor(this)
+      new Task.ChastiKeyBackgroundVerifiedMonitor(this)
     ])
 
     ////////////////////////////////////////

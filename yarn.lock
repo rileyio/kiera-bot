@@ -1192,7 +1192,7 @@ chalk@^2.0.0, chalk@^2.0.1, chalk@^2.3.0, chalk@^2.4.1, chalk@^2.4.2:
 
 "chastikey.js@https://github.com/ChastiKey/chastikey.js.git#2.0.0-alpha":
   version "2.0.0"
-  resolved "https://github.com/ChastiKey/chastikey.js.git#3e373aabc43647c08b61af4c727d140a6419e1e0"
+  resolved "https://github.com/ChastiKey/chastikey.js.git#4a09e4e40c0d5306df7b89718dfb1818cf58e696"
   dependencies:
     axios "^0.19.0"
     typescript "^3.7.2"

@@ -1,9 +1,8 @@
-import got = require('got')
 import { Task } from '@/objects/task'
 import { Collections } from '@/db'
 import { TrackedBotSetting } from '@/objects/setting'
 
-export type ChastiKeyAPIFetchAndStoreMethod = 'fetchAPIUserDataCache'
+export type ChastiKeyAPIFetchAndStoreMethod = 'fetchAPIUserDataCache' | 'fetchAPIRunningLocksDataCache'
 
 export class ChastiKeyAPIFetchAndStore extends Task {
   public reload: boolean = true
@@ -63,9 +62,9 @@ export class ChastiKeyAPIFetchAndStore extends Task {
         await this.Bot.DB.update<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.fetch.${this.name}` }, dbLastRunSetting.update({ value: Date.now(), updated: Date.now() }), {
           upsert: true
         })
-
-        this.previousRefresh = Date.now()
       }
+
+      this.previousRefresh = Date.now()
 
       return true
     } catch (error) {
