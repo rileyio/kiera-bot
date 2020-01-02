@@ -61,42 +61,6 @@ export class TrackedChastiKeyPreferences {
 }
 
 /**
- * ChastiKey User Record Data
- *
- * Stored In DB Collection: `ck-users`
- *
- * Found at: https://chastikey.com/json/v1.0/kiera_user_data.json
- * @export
- * @class TrackedChastiKeyUser
- */
-export class TrackedChastiKeyUser {
-  public _noData: boolean = true
-  public userID: number
-  public username: string
-  public discordID: string = null
-  public displayInStats: boolean | number
-  public joined: string
-  public keyholderLevel: number
-  public lockeeLevel: number
-  public mainRole: number
-  public status: number
-  public timestampLastActive: number
-
-  constructor(init: Partial<TrackedChastiKeyUser>) {
-    Object.assign(this, init)
-    this._noData = !init ? true : false
-    // Transform Username if needed to a string
-    this.username = String(this.username)
-    // Transform display in stats
-    this.displayInStats = this.displayInStats === 1
-  }
-
-  public isVerified() {
-    return this.discordID !== null
-  }
-}
-
-/**
  * ChastiKey cached user stats
  *
  * Stored In DB Collection: `ck-lockees`

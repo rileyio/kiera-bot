@@ -140,10 +140,16 @@ export const routes: Array<WebRoute> = [
   // * Kiera+CK Lockee * //
   {
     controller: WebController.ChastiKey.lockeeData,
-    method: 'get',
+    method: 'post',
     name: 'ck-3rd-lockee-view',
-    path: '/api/ck/lockee',
-    middleware: [Middleware.validateSession]
+    path: '/api/ck/lockee'
+  },
+  // * Kiera+CK Search * //
+  {
+    controller: WebController.ChastiKey.search,
+    method: 'post',
+    name: 'ck-search',
+    path: '/api/ck/search'
   },
   // * Kiera+CK Stats * //
   {

@@ -1,8 +1,11 @@
 import * as jwt from 'jsonwebtoken'
 import * as errors from 'restify-errors'
+import * as Validation from '@/api/validations'
 import { WebRouted } from '@/api/web-router'
-import { TrackedChastiKeyUser, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLockee, TrackedChastiKeyLock } from '@/objects/chastikey'
+import { TrackedChastiKeyKeyholderStatistics } from '@/objects/chastikey'
 import { TrackedUser } from '@/objects/user'
+import { validate } from '@/api/utils/validate'
+import { UserData } from 'chastikey.js/app/objects'
 
 export namespace ChastiKey {
   export async function authTest(routed: WebRouted) {
@@ -56,18 +59,13 @@ export namespace ChastiKey {
     }
 
     // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
-    // var ckUser = new TrackedChastiKeyUser(await routed.Bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: /Emma/i }))
-    var ckUser = new TrackedChastiKeyUser(
-      await routed.Bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: user.id })
+    // var ckUser = new UserData(await routed.Bot.DB.get<UserData>('ck-users', { username: /Emma/i }))
+    var ckUser = new UserData(
+      await routed.Bot.DB.get<UserData>('ck-users', { discordID: user.id })
     )
 
     // If the lookup is upon someone else with no data, return the standard response
-    if (ckUser._noData === true) {
-      return routed.next(new errors.BadRequestError())
-    }
-
-    // If the user has display_in_stats === 2 then stop here
-    if (!ckUser.displayInStats) {
+    if (!ckUser.userID) {
       return routed.next(new errors.BadRequestError())
     }
 
@@ -122,17 +120,13 @@ export namespace ChastiKey {
    * @returns
    */
   export async function lockeeData(routed: WebRouted) {
-    // Kiera User
-    const kieraUser = new TrackedUser(await routed.Bot.DB.get('users', { id: routed.session.userID }))
-
-    // If user does not with kiera for some reason, fail
-    if (!kieraUser) {
-      return routed.next(new errors.BadRequestError())
-    }
+    const v = await validate(Validation.ChastiKey.lockeeFetch(), routed.req.body)
+    const hasUsernameInReq = v.o.username ? true : false
 
     // Get user from lockee data (Stats, User and Locks)
     const lockeeData = await routed.Bot.Service.ChastiKey.fetchAPILockeeData({
-      discordid: routed.session.userID,
+      discordid: hasUsernameInReq ? undefined : routed.session.userID,
+      username: hasUsernameInReq ? v.o.username : undefined,
       showDeleted: true
     })
 
@@ -147,10 +141,28 @@ export namespace ChastiKey {
     }
 
     return routed.res.send({
-      user: kieraUser.ChastiKey,
       lockee: lockeeData.data,
       runningLocks: lockeeData.getLocked,
       allLocks: lockeeData.locks
     })
+  }
+
+  /**
+   * Find Locks, Keyholders and Shared KH Locks matching the query
+   * @export
+   * @param {WebRouted} routed
+   * @returns
+   */
+  export async function search(routed: WebRouted) {
+    const v = await validate(Validation.ChastiKey.search(), routed.req.body)
+
+    if (v.valid) {
+      const users = await routed.Bot.DB.getMultiple('ck-users', { username: new RegExp(`${v.o.query}`, 'i') })
+      return routed.res.send(
+        users.map((u: any) => {
+          return { type: 'User', name: u.username, isVerified: u.discordID ? true : false }
+        }) || []
+      )
+    }
   }
 }

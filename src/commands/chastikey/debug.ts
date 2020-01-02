@@ -3,7 +3,8 @@ import * as APIUrls from '@/api-urls'
 import * as Middleware from '@/middleware'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { TrackedUser } from '@/objects/user'
-import { TrackedChastiKeyUser, TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLockee, TrackedChastiKeyLock, ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
+import { TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLockee, TrackedChastiKeyLock, ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
+import { UserData } from 'chastikey.js/app/objects'
 
 export const Routes = ExportRoutes({
   type: 'message',
@@ -32,7 +33,7 @@ export async function debug(routed: RouterRouted) {
   console.log('asDiscordID', asDiscordID)
 
   const kieraUser = await routed.bot.DB.get<TrackedUser>('users', { $or: [{ 'ChastiKey.username': usernameRegex }, { id: routed.v.o.user }] })
-  const ckUser = await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
+  const ckUser = await routed.bot.DB.get<UserData>('ck-users', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckKH = await routed.bot.DB.get<TrackedChastiKeyKeyholderStatistics>('ck-keyholders', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckLockee = await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckLocktober = await routed.bot.DB.get<{ username: string; discordID: string }>('ck-locktober', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
@@ -56,7 +57,6 @@ export async function debug(routed: RouterRouted) {
   if (ckUser) {
     response += `  -> discordID           = ${ckUser.discordID}\n`
     response += `  -> username            = ${ckUser.username}\n`
-    response += `  -> displayInStats      = ${ckUser.displayInStats}\n`
     response += `  -> timestampLastActive = ${ckUser.timestampLastActive}\n`
   }
   response += `\nIs in ck-keyholders Data (from CK): ${ckKH ? true : false}\n`

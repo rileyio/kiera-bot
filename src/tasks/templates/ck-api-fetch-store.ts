@@ -3,13 +3,13 @@ import { Task } from '@/objects/task'
 import { Collections } from '@/db'
 import { TrackedBotSetting } from '@/objects/setting'
 
+export type ChastiKeyAPIFetchAndStoreMethod = 'fetchAPIUserDataCache'
+
 export class ChastiKeyAPIFetchAndStore extends Task {
   public reload: boolean = true
-  public APIEndpoint: string
   public previousRefresh: number = 0
   public dbCollection: Collections
-  public isJSON: boolean = true
-  public strip: string
+  public method: ChastiKeyAPIFetchAndStoreMethod
 
   run = this.fetch
   isAsync = true
@@ -55,15 +55,17 @@ export class ChastiKeyAPIFetchAndStore extends Task {
       }
 
       console.log(`### Task:Fetching => ${this.name}`)
-      const response = await got(this.APIEndpoint, { json: <any>this.isJSON })
+      const resp = await this.Bot.Service.ChastiKey[this.method]()
 
-      await this.storeInDB(this.isJSON ? response.body : JSON.parse(response.body.replace(this.strip, '')))
+      // Only if resp contains data delete and attempt to save the new cache
+      if (resp.response.status === 200 && resp.users.length > 0) {
+        await this.storeInDB(resp.users)
+        await this.Bot.DB.update<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.fetch.${this.name}` }, dbLastRunSetting.update({ value: Date.now(), updated: Date.now() }), {
+          upsert: true
+        })
 
-      await this.Bot.DB.update<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.fetch.${this.name}` }, dbLastRunSetting.update({ value: Date.now(), updated: Date.now() }), {
-        upsert: true
-      })
-
-      this.previousRefresh = Date.now()
+        this.previousRefresh = Date.now()
+      }
 
       return true
     } catch (error) {

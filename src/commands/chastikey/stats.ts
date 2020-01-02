@@ -3,10 +3,11 @@ import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '@/embedded/chastikey-stats'
 import { TrackedUser } from '@/objects/user'
-import { TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyUser } from '@/objects/chastikey'
+import { TrackedChastiKeyKeyholderStatistics } from '@/objects/chastikey'
 import { Message } from 'discord.js'
 import { TrackedMessage } from '@/objects/message'
 import { TrackedBotSetting } from '@/objects/setting'
+import { UserData } from 'chastikey.js/app/objects'
 
 export const Routes = ExportRoutes(
   {
@@ -151,55 +152,25 @@ export async function getLockeeStats(routed: RouterRouted) {
 export async function getKeyholderStats(routed: RouterRouted) {
   // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
   var ckUser = routed.v.o.user
-    ? new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: new RegExp(`^${routed.v.o.user}$`, 'i') }))
-    : new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { discordID: routed.user.id }))
+    ? new UserData(
+        await routed.bot.DB.get<UserData>('ck-users', { username: new RegExp(`^${routed.v.o.user}$`, 'i') })
+      )
+    : new UserData(
+        await routed.bot.DB.get<UserData>('ck-users', { discordID: routed.user.id })
+      )
 
   // If the lookup is upon someone else with no data, return the standard response
-  if (ckUser._noData === true && routed.v.o.user) {
+  if (!ckUser.userID && routed.v.o.user) {
     // Notify in chat what the issue could be
     await routed.message.reply(Utils.sb(Utils.en.chastikey.userLookupErrorOrNotFound))
     return true // Stop here
   }
 
-  // If the user has display_in_stats === 2 then stop here
-  if (!ckUser.displayInStats) {
-    // Track incoming message and delete for the target user's privacy
-    await routed.bot.MsgTracker.trackMsg(
-      new TrackedMessage({
-        authorID: routed.message.author.id,
-        id: routed.message.id,
-        messageCreatedAt: routed.message.createdAt.getTime(),
-        channelId: routed.message.channel.id,
-        // Flags
-        flagAutoDelete: true,
-        flagTrack: true,
-        // Deletion settings
-        storageKeepInChatFor: 5000
-      })
-    )
-    // Notify in chat that the user has requested their stats not be public
-    const response = (await routed.message.reply(Utils.sb(Utils.en.chastikey.userRequestedNoStats))) as Message
-    // Track incoming message and delete for the target user's privacy
-    await routed.bot.MsgTracker.trackMsg(
-      new TrackedMessage({
-        authorID: response.author.id,
-        id: response.id,
-        messageCreatedAt: response.createdAt.getTime(),
-        channelId: response.channel.id,
-        // Flags
-        flagAutoDelete: true,
-        flagTrack: true,
-        // Deletion settings
-        storageKeepInChatFor: 15000
-      })
-    )
-    // Stop here
-    return true
-  }
-
   // Get user's current ChastiKey username from users collection or by the override
   var user = routed.v.o.user
-    ? new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) || 123 }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] })) ||
+    ? new TrackedUser(
+        await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(ckUser.discordID) || 123 }, { 'ChastiKey.username': new RegExp(`^${ckUser.username}$`, 'i') }] })
+      ) ||
       // Fallback: Create a mock record
       new TrackedUser(<any>{
         __notStored: true,
@@ -214,15 +185,17 @@ export async function getKeyholderStats(routed: RouterRouted) {
     : await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
 
   // If the lookup is not upon someone else & the requestor's account is not yet verified: stop and inform
-  if (ckUser._noData && !routed.v.o.user && !user.ChastiKey.isVerified) {
+  if (!ckUser.userID && !routed.v.o.user && !user.ChastiKey.isVerified) {
     await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyVerifyReq2))
     return false // Stop
   }
 
   // If the user is verified in the Kiera table (meaning they followed the FF steps)
-  if (ckUser._noData && !routed.v.o.user && user.ChastiKey.isVerified) {
+  if (!ckUser.userID && !routed.v.o.user && user.ChastiKey.isVerified) {
     // Update the ckUser record for this run to let them see stuff
-    ckUser = new TrackedChastiKeyUser(await routed.bot.DB.get<TrackedChastiKeyUser>('ck-users', { username: user.ChastiKey.username }))
+    ckUser = new UserData(
+      await routed.bot.DB.get<UserData>('ck-users', { username: user.ChastiKey.username })
+    )
   }
 
   // Generate regex for username to ignore case
@@ -282,10 +255,10 @@ export async function getKeyholderStats(routed: RouterRouted) {
 
   // Send stats
   await routed.message.channel.send(
-    keyholderStats(keyholder, cachedRunningLocks, cachedTimestamp, routed.routerStats, ckUser.isVerified() ? Utils.User.buildUserChatAt(ckUser.discordID, Utils.User.UserRefType.snowflake) : null, {
+    keyholderStats(keyholder, cachedRunningLocks, cachedTimestamp, routed.routerStats, ckUser.isVerified ? Utils.User.buildUserChatAt(ckUser.discordID, Utils.User.UserRefType.snowflake) : null, {
       showRating: user.ChastiKey.ticker.showStarRatingScore,
       showAverage: user.ChastiKey.preferences.keyholder.showAverage,
-      isVerified: ckUser.isVerified()
+      isVerified: ckUser.isVerified
     })
   )
 

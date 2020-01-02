@@ -1,37 +1,37 @@
 import * as APIUrls from '@/api-urls'
 import { Collections } from '@/db'
-import { ChastiKeyAPIFetchAndStore } from '@/tasks/templates/ck-api-fetch-store'
+import { ChastiKeyAPIFetchAndStore, ChastiKeyAPIFetchAndStoreMethod } from '@/tasks/templates/ck-api-fetch-store'
 // import { ChastiKeyEventRoleMonitor } from '@/tasks/templates/ck-locktober-monitor'
 import { ChastiKeyVerifiedRoleMonitor } from '@/tasks/templates/ck-verified-monitor'
 
-export class ChastiKeyAPIRunningLocks extends ChastiKeyAPIFetchAndStore {
-  // Setting the props for this Task
-  name = 'ChastiKeyAPIRunningLocks'
-  APIEndpoint = APIUrls.ChastiKey.CachedRunningLocks
-  frequency = 1800000 / 2 // 15 minutes (this is the refresh rate of this data)
-  dbCollection: Collections = 'ck-running-locks'
-}
+// export class ChastiKeyAPIRunningLocks extends ChastiKeyAPIFetchAndStore {
+//   // Setting the props for this Task
+//   name = 'ChastiKeyAPIRunningLocks'
+//   APIEndpoint = APIUrls.ChastiKey.CachedRunningLocks
+//   frequency = 1800000 / 2 // 15 minutes (this is the refresh rate of this data)
+//   dbCollection: Collections = 'ck-running-locks'
+// }
 
-export class ChastiKeyAPIKeyholders extends ChastiKeyAPIFetchAndStore {
-  // Setting the props for this Task
-  name = 'ChastiKeyAPIKeyholders'
-  APIEndpoint = APIUrls.ChastiKey.CachedKeyholderData
-  frequency = 1800000 / 2 // 15 minutes (this is the refresh rate of this data)
-  dbCollection: Collections = 'ck-keyholders'
-}
+// export class ChastiKeyAPIKeyholders extends ChastiKeyAPIFetchAndStore {
+//   // Setting the props for this Task
+//   name = 'ChastiKeyAPIKeyholders'
+//   APIEndpoint = APIUrls.ChastiKey.CachedKeyholderData
+//   frequency = 1800000 / 2 // 15 minutes (this is the refresh rate of this data)
+//   dbCollection: Collections = 'ck-keyholders'
+// }
 
-export class ChastiKeyAPILockees extends ChastiKeyAPIFetchAndStore {
-  // Setting the props for this Task
-  name = 'ChastiKeyAPILockees'
-  APIEndpoint = APIUrls.ChastiKey.CachedLockeeData
-  frequency = 1800000 / 2 // 15 minutes
-  dbCollection: Collections = 'ck-lockees'
-}
+// export class ChastiKeyAPILockees extends ChastiKeyAPIFetchAndStore {
+//   // Setting the props for this Task
+//   name = 'ChastiKeyAPILockees'
+//   APIEndpoint = APIUrls.ChastiKey.CachedLockeeData
+//   frequency = 1800000 / 2 // 15 minutes
+//   dbCollection: Collections = 'ck-lockees'
+// }
 
 export class ChastiKeyAPIUsers extends ChastiKeyAPIFetchAndStore {
   // Setting the props for this Task
   name = 'ChastiKeyAPIUsers'
-  APIEndpoint = APIUrls.ChastiKey.CachedCKUserData
+  method: ChastiKeyAPIFetchAndStoreMethod = 'fetchAPIUserDataCache'
   frequency = 1800000 / 2 // 15 minutes
   dbCollection: Collections = 'ck-users'
 }
@@ -54,10 +54,10 @@ export class ChastiKeyAPIUsers extends ChastiKeyAPIFetchAndStore {
 //   eventRole = 'Locktober 2019'
 // }
 
-// TO be removed in December/January
-export class ChastiKeyBackgroundVerifiedMonitor extends ChastiKeyVerifiedRoleMonitor {
-  // Setting the props for this Task
-  name = 'ChastiKeyBackgroundVerifiedMonitor'
-  frequency = 1800000 / 30 // 1 minute
-  verifiedRole = 'ChastiKey Verified'
-}
+// // TO be removed in December/January
+// export class ChastiKeyBackgroundVerifiedMonitor extends ChastiKeyVerifiedRoleMonitor {
+//   // Setting the props for this Task
+//   name = 'ChastiKeyBackgroundVerifiedMonitor'
+//   frequency = 1800000 / 30 // 1 minute
+//   verifiedRole = 'ChastiKey Verified'
+// }

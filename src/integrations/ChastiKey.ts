@@ -38,4 +38,7 @@ export class ChastiKey {
   public async fetchAPIKeyholderData(query: { discordid?: string; username?: string }) {
     return await this.Client.KeyholderData.get({ username: query.username, discordid: query.discordid })
   }
+  public async fetchAPIUserDataCache() {
+    return await this.Client.UserData.get()
+  }
 }

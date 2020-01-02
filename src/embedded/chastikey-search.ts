@@ -1,12 +1,11 @@
-import { TrackedChastiKeyUser } from '@/objects/chastikey'
 import { RouterStats } from '@/router'
+import { UserData } from 'chastikey.js/app/objects'
 
-export function searchResults(found: Array<TrackedChastiKeyUser>, routerStats: RouterStats, cachedTimestamp: number) {
+export function searchResults(found: Array<UserData>, routerStats: RouterStats, cachedTimestamp: number) {
   var description = ``
 
   found.forEach(ckUser => {
-    console.log(ckUser.username, ckUser.displayInStats)
-    description += `${!ckUser.displayInStats ? '<:statshidden:631822699425169429>' : ''}${ckUser.isVerified() ? '<:verified:631826983688339474> ' : ''}${ckUser.username}\n`
+    description += `${ckUser.isVerified ? '<:verified:631826983688339474> ' : ''}${ckUser.username}\n`
   })
 
   return {
