@@ -11,7 +11,6 @@ export type Collections =
   | 'available-server-settings'
   | 'ck-running-locks'
   | 'ck-keyholders'
-  | 'ck-lockees'
   | 'ck-locktober'
   | 'ck-users'
   | 'command-permissions'

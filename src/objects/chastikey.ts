@@ -61,44 +61,6 @@ export class TrackedChastiKeyPreferences {
 }
 
 /**
- * ChastiKey cached user stats
- *
- * Stored In DB Collection: `ck-lockees`
- *
- * Found at: https://chastikey.com/api/kiera/lockees_data.json
- * @export
- * @class TrackedChastiKeyLockee
- */
-export class TrackedChastiKeyLockee {
-  public readonly _hasDBData: boolean = false
-  public username: string
-  public joined: string
-  public timestampLastActive: number
-  public secondsLockedInCurrentLock: number
-  public averageTimeLockedInSeconds: number
-  public longestCompletedLockInSeconds: number
-  public totalNoOfCompletedLocks: number
-  public averageRating: number
-  public noOfRatings: number
-  public discordID: string
-
-  constructor(init: Partial<TrackedChastiKeyLockee>) {
-    this._hasDBData = init === null ? false : true
-    Object.assign(this, init !== null ? init : {})
-  }
-
-  /**
-   * Compares what's in Kiera's DB for known Discord ID's and compares against what ChastiKey knows as verified
-   * @param {number} knownID
-   * @returns
-   * @memberof TrackedChastiKeyLockee
-   */
-  public isVerified() {
-    return this.discordID !== null
-  }
-}
-
-/**
  * ChastiKey cached running lock
  *
  * Stored In DB Collection: `ck-running-locks`

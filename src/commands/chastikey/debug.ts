@@ -3,7 +3,7 @@ import * as APIUrls from '@/api-urls'
 import * as Middleware from '@/middleware'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { TrackedUser } from '@/objects/user'
-import { TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLockee, TrackedChastiKeyLock, ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
+import { TrackedChastiKeyKeyholderStatistics, TrackedChastiKeyLock, ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
 import { UserData } from 'chastikey.js/app/objects'
 
 export const Routes = ExportRoutes({
@@ -35,7 +35,6 @@ export async function debug(routed: RouterRouted) {
   const kieraUser = await routed.bot.DB.get<TrackedUser>('users', { $or: [{ 'ChastiKey.username': usernameRegex }, { id: routed.v.o.user }] })
   const ckUser = await routed.bot.DB.get<UserData>('ck-users', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckKH = await routed.bot.DB.get<TrackedChastiKeyKeyholderStatistics>('ck-keyholders', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
-  const ckLockee = await routed.bot.DB.get<TrackedChastiKeyLockee>('ck-lockees', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckLocktober = await routed.bot.DB.get<{ username: string; discordID: string }>('ck-locktober', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckRunningLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
 
@@ -65,12 +64,6 @@ export async function debug(routed: RouterRouted) {
     response += `  -> username            = ${ckKH.username}\n`
     response += `  -> displayInStats      = ${ckKH.displayInStats === 1}\n`
     response += `  -> dateFirstKeyheld    = ${ckKH.dateFirstKeyheld}\n`
-  }
-  response += `\nIs in ck-lockees Data (from CK): ${ckLockee ? true : false}\n`
-  if (ckLockee) {
-    response += `  -> discordID           = ${ckLockee.discordID}\n`
-    response += `  -> username            = ${ckLockee.username}\n`
-    response += `  -> joined              = ${ckLockee.joined}\n`
   }
   response += `\nIs in ck-locktober Data (from CK): ${ckLocktober ? true : false}\n`
   if (ckLocktober) {

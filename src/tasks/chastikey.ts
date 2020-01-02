@@ -20,14 +20,6 @@ import { ChastiKeyVerifiedRoleMonitor } from '@/tasks/templates/ck-verified-moni
 //   dbCollection: Collections = 'ck-keyholders'
 // }
 
-// export class ChastiKeyAPILockees extends ChastiKeyAPIFetchAndStore {
-//   // Setting the props for this Task
-//   name = 'ChastiKeyAPILockees'
-//   APIEndpoint = APIUrls.ChastiKey.CachedLockeeData
-//   frequency = 1800000 / 2 // 15 minutes
-//   dbCollection: Collections = 'ck-lockees'
-// }
-
 export class ChastiKeyAPIUsers extends ChastiKeyAPIFetchAndStore {
   // Setting the props for this Task
   name = 'ChastiKeyAPIUsers'
