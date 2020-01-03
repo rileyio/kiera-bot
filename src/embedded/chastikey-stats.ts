@@ -56,7 +56,7 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
   if (fields.length === 0) {
     fields.push({
       name: 'No active locks',
-      value: `To see any additional stats a lock must be active.\n Time Since Last Lock \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.timeSinceLastLocked)}\``
+      value: `To see any additional stats a lock must be active.\n Time Since Last Lock \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.timeSinceLastLocked, true)}\``
     })
   }
 
@@ -64,10 +64,9 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
   var description = `Locked for \`${Math.round((lockeeData.data.cumulativeSecondsLocked / 2592000) * 100) / 100}\` months to date | \`${lockeeData.data.totalNoOfCompletedLocks}\` locks completed`
   // Only show the ratings if the user has > 5 & if the user has specified they want to show the rating
   if (lockeeData.data.noOfRatings > 4 && options.showRating) description += `\nAvg Rating \`${lockeeData.data.averageRating}\` | # Ratings \`${lockeeData.data.noOfRatings}\``
-  description += `\nLongest (completed) \`${Utils.Date.calculateHumanTimeDDHHMM(
-    lockeeData.data.longestCompletedLockInSeconds
-  )}\` | Average Time Locked (overall) \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.data.averageTimeLockedInSeconds)}\``
-  description += `\nLast Active \`${Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lockeeData.data.timestampLastActive)}\``
+  description += `\nLongest (completed) \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.data.longestCompletedLockInSeconds, true)}\``
+  description += `\nAverage Time Locked (overall) \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.data.averageTimeLockedInSeconds, true)}\``
+  description += `\nLast Active in ChastiKey App \`${Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lockeeData.data.timestampLastActive, true)}\` ago`
   description += `\nJoined \`${lockeeData.data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}`
   // Only Show verified @User if the user is verified
   if (lockeeData.data.discordID) description += `\nVerified to ${Utils.User.buildUserChatAt(lockeeData.data.discordID, Utils.User.UserRefType.snowflake)}`
@@ -106,8 +105,8 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
 function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number) {
   const cumulative = lock.cumulative === 1 ? 'Cumulative' : 'Non-Cumulative'
 
-  // Calculate human readible time for lock from seconds
-  const combined = Utils.Date.calculateHumanTimeDDHHMM(lock.isLocked ? lock.totalTimeLocked : lock.timestampUnlocked - lock.timestampLocked)
+  // Calculate human readable time for lock from seconds
+  const timeLocked = Utils.Date.calculateHumanTimeDDHHMM(lock.isLocked ? lock.totalTimeLocked : lock.timestampUnlocked - lock.timestampLocked, true)
 
   // Calculate regularity
   var regularity = ``
@@ -148,13 +147,24 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number) {
 
   name += ` ${lock.cardInfoHidden || lock.timerHidden ? indicatorEmoji.Hidden : ''}`
   name += ` ${lock.lockFrozenByKeyholder || lock.lockFrozenByCard ? (lock.lockFrozenByKeyholder ? indicatorEmoji.Frozen : cardsEmoji.Freeze) : ''}`
+  name += ` ${lock.isTrustedKeyholder ? `<:trustkeyholder:474975187310346240>` : ''}`
 
-  var value = ``
-  value += `Keyholder **\`${lock.lockedBy}\`** Status **\`Locked\`** **\`${combined}\`**`
+  var value = `Keyholder **\`${lock.lockedBy}\`** Status **\`Locked\`** **\`${timeLocked}\`**`
+
+  // If lock has frozen time
+  if (lock.totalTimeFrozen > 0) value += `\nTotal time frozen \`${Utils.Date.calculateHumanTimeDDHHMM(lock.totalTimeFrozen, true)}\``
+  // If a last/next pick time is known
+  if (lock.timestampLastPicked > 0) value += `\nLast Pick \`${Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lock.timestampLastPicked, true)}\` ago`
+  else value += `\nLast Pick \`has yet to pick\``
+  if (lock.timestampNextPick > 0) {
+    const timeTillPickFormatted = Utils.Date.calculateHumanTimeDDHHMM(lock.timestampNextPick - Date.now() / 1000, true)
+    value += `\nNext pick \`${lock.timestampNextPick - Date.now() / 1000 <= 0 ? 'now' : `in ${timeTillPickFormatted}`}\``
+  }
 
   // When its a variable lock
   if (lock.fixed === 0) {
     value += `\nDetails \`${cumulative}\` regularity \`${regularity}\` with \`${lock.noOfTurns}\` turns made.`
+
     if (totalExpected < 6) value += `\nThe last (${discardPile.length}) cards discarded:\n${discardPileStr}`
     else value += `\n${discardPileStr}`
 
