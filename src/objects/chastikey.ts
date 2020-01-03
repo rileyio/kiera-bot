@@ -1,4 +1,3 @@
-import * as jwt from 'jsonwebtoken'
 import { ObjectID } from 'bson'
 
 export enum ChastiKeyTickerType {
@@ -175,102 +174,6 @@ export class TrackedChastiKeyUserTotalLockedTime {
   public username: string
   public totalSecondsLocked: number
   public totalMonthsLocked: number
-}
-
-/**
- * ChastiKey Keyholder Statistcs
- * @export
- * @class TrackedChastiKeyKeyholderStatistics
- */
-export class TrackedChastiKeyKeyholderStatistics {
-  /**
-   * ChastiKey user unique ID
-   * @type {number}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public userID: number
-  /**
-   * ChastiKey Username
-   * @type {string}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public username: string
-  /**
-   * Discord Showflake
-   * @type {number}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public discordID: string
-  /**
-   * Date Joined ChastiKey App
-   * @type {string}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public joined: string
-  /**
-   * # of locks created (not active, non-deleted)
-   * @type {number}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public noOfSharedLocks: number = 0
-  /**
-   * # of active Locks (Running now)
-   *
-   * @type {number}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public noOfLocksManagingNow: number = 0
-  /**
-   * # of lockee's who have flagged KH as trusted
-   * @type {number}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public noOfLocksFlaggedAsTrusted: number = 0
-  /**
-   * # of locks loaded and used (inc current)
-   * @type {number}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public totalLocksManaged: number = 0
-  /**
-   * Average KH Rating provided by ChastiKey
-   * @type {number}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public averageRating: number
-  /**
-   * Number of Ratings from ChastiKey
-   * @type {number}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public noOfRatings: number
-  /**
-   * If KH want's their stats displayed
-   * @type {number}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public displayInStats: number
-  /**
-   * Date User began keyholding
-   * @type {string}
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public dateFirstKeyheld: string
-  public timestampFirstKeyheld: number
-
-  constructor(init: Partial<TrackedChastiKeyKeyholderStatistics>) {
-    Object.assign(this, init)
-  }
-
-  /**
-   * Compares what's in Kiera's DB for known Discord ID's and compares against what ChastiKey knows as verified
-   * @param {number} knownID
-   * @returns
-   * @memberof TrackedChastiKeyKeyholderStatistics
-   */
-  public isVerified() {
-    return this.discordID !== null
-  }
 }
 
 /**

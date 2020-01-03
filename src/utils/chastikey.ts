@@ -16,7 +16,6 @@ export interface LockeeStats {
   username: string
   joined: string
   timestampLastActive: number
-  verifiedTo: string
   // Custom
   additional?: { timeSinceLast: number }
   // For Discord/CK verified check

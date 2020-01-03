@@ -1,7 +1,6 @@
-import { TrackedChastiKeyKeyholderStatistics } from '@/objects/chastikey'
 import * as Utils from '@/utils'
 import { RouterStats } from '@/router'
-import { LockeeDataLock, LockeeDataResponse } from 'chastikey.js/app/objects'
+import { LockeeDataLock, LockeeDataResponse, UserData, KeyholderData } from 'chastikey.js/app/objects'
 
 export interface TrackedSharedKeyholderStatistics {
   _id: string
@@ -21,6 +20,7 @@ export interface TrackedKeyholderLockeesStatistics {
     secondsLocked: number
     noOfTurns: number
     sharedLockName: string
+    cumulative: boolean
   }>
 }
 
@@ -186,21 +186,20 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number) {
 }
 
 export function keyholderStats(
-  data: TrackedChastiKeyKeyholderStatistics,
+  keyholderData: KeyholderData,
   activeLocks: Array<TrackedKeyholderLockeesStatistics>,
   cachedTimestamp: number,
   routerStats: RouterStats,
-  verifiedTo: string,
-  options: { showRating: boolean; showAverage: boolean; isVerified: boolean }
+  options: { showRating: boolean; showAverage: boolean }
 ) {
-  var dateJoinedDaysAgo = data.joined !== '-' ? `(${Math.round((Date.now() - new Date(data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)` : ''
+  var dateJoinedDaysAgo = keyholderData.joined !== '-' ? `(${Math.round((Date.now() - new Date(keyholderData.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)` : ''
   var description = ``
 
-  const dateRearrangedYYYY = data.dateFirstKeyheld.substr(6, 4)
-  const dateRearrangedMM = data.dateFirstKeyheld.substr(3, 2)
-  const dateRearrangedDD = data.dateFirstKeyheld.substr(0, 2)
+  const dateRearrangedYYYY = keyholderData.dateFirstKeyheld.substr(6, 4)
+  const dateRearrangedMM = keyholderData.dateFirstKeyheld.substr(3, 2)
+  const dateRearrangedDD = keyholderData.dateFirstKeyheld.substr(0, 2)
   const dateFormatted = new Date(`${dateRearrangedYYYY}-${dateRearrangedMM}-${dateRearrangedDD}`)
-  const dateFirstKHAgo = data.joined !== '-' ? `(${Math.round((Date.now() - dateFormatted.getTime()) / 1000 / 60 / 60 / 24)} days ago)` : ''
+  const dateFirstKHAgo = keyholderData.joined !== '-' ? `(${Math.round((Date.now() - dateFormatted.getTime()) / 1000 / 60 / 60 / 24)} days ago)` : ''
 
   var dateRearranged = `${dateRearrangedYYYY}-${dateRearrangedMM}-${dateRearrangedDD}`
 
@@ -210,7 +209,7 @@ export function keyholderStats(
   var numberOfFixed = 0
   var numberOfVar = 0
   var numberOfTurns = 0
-  var individualLockStats: Array<{ name: string; count: number; fixed: boolean }> = []
+  var individualLockStats: Array<{ name: string; count: number; fixed: boolean; cumulative: boolean }> = []
 
   activeLocks.forEach(l => {
     // Add to avg and count for calculation
@@ -224,7 +223,7 @@ export function keyholderStats(
 
         // Track individual lock stats
         if (individualLockStats.findIndex(_l => _l.name === lock.sharedLockName) === -1) {
-          individualLockStats.push({ name: lock.sharedLockName, count: 1, fixed: lock.fixed })
+          individualLockStats.push({ name: lock.sharedLockName, count: 1, fixed: lock.fixed, cumulative: lock.cumulative })
         } else {
           individualLockStats.find(_l => _l.name === lock.sharedLockName).count += 1
         }
@@ -255,15 +254,15 @@ export function keyholderStats(
     return 0
   })
 
-  if (data.noOfRatings > 4 && options.showRating) description += `Avg Rating **\`${data.averageRating}\`** | # Ratings **\`${data.noOfRatings}\`**\n`
-  description += `# of Users Locked **\`${data.noOfLocksManagingNow}\`**\n`
-  description += `# of Locks Flagged As Trusted **\`${data.noOfLocksFlaggedAsTrusted}\`** <:trustkeyholder:474975187310346240>\n`
-  description += `# of Shared Locks **\`${data.noOfSharedLocks}\`**\nTotal Locks Managed **\`${data.totalLocksManaged}\`**\n`
-  description += `Joined \`${data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}\n`
+  if (keyholderData.noOfRatings > 4 && options.showRating) description += `Avg Rating **\`${keyholderData.averageRating}\`** | # Ratings **\`${keyholderData.noOfRatings}\`**\n`
+  description += `# of Users Locked **\`${keyholderData.noOfLocksManagingNow}\`**\n`
+  description += `# of Locks Flagged As Trusted **\`${keyholderData.noOfLocksFlaggedAsTrusted}\`** <:trustkeyholder:474975187310346240>\n`
+  description += `# of Shared Locks **\`${keyholderData.noOfSharedLocks}\`**\nTotal Locks Managed **\`${keyholderData.totalLocksManaged}\`**\n`
+  description += `Joined \`${keyholderData.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}\n`
   description += `Date first keyheld \`${dateRearranged}\` ${dateFirstKHAgo}\n`
-  if (data.isVerified) description += `Verified to ${verifiedTo}\n`
+  if (keyholderData.discordID) description += `Verified to ${Utils.User.buildUserChatAt(keyholderData.discordID, Utils.User.UserRefType.snowflake)}\n`
 
-  description += `\n**Stats**\n`
+  description += `\n**Stats** (Running Locks)\n`
   if (options.showAverage) description += `Average Time of Locks \`${lockCount > 1 ? Utils.Date.calculateHumanTimeDDHHMM(cumulativeTimelocked / lockCount) : '00d 00h 00m'}\`\n`
   description += `Cumulative Time Locked \`${Utils.Date.calculateHumanTimeDDHHMM(cumulativeTimelocked)}\`\n`
   description += `Number of Fixed Locks \`${numberOfFixed}\`\n`
@@ -271,15 +270,15 @@ export function keyholderStats(
   description += `Number of Turns (variable) \`${numberOfTurns}\`\n\n`
 
   // For each lock
-  description += `**Locks**\n`
-  if (lockCount > 0) individualLockStats.forEach(lock => (description += `\`${lock.count}\` ${lock.name} \`[${lock.fixed ? 'F' : 'V'}]\`\n`))
+  description += `**Locks** (Running Locks)\n`
+  if (lockCount > 0) individualLockStats.forEach(lock => (description += `\`${lock.count}\` ${lock.name || `<No Name>`} \`[${lock.fixed ? 'F' : 'V'}]\` \`[${lock.cumulative ? 'C' : 'NC'}]\`\n`))
   else {
     description += `No active locks to display!`
   }
 
   return {
     embed: {
-      title: `${options.isVerified ? '<:verified:625628727820288000> ' : ''}\`${data.username}\` - ChastiKey Keyholder Statistics`,
+      title: `${keyholderData.isVerified ? '<:verified:625628727820288000> ' : ''}\`${keyholderData.username}\` - ChastiKey Keyholder Statistics`,
       description: description,
       color: 9125611,
       timestamp: cachedTimestamp,

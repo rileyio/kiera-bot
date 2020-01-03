@@ -2,7 +2,6 @@ import * as jwt from 'jsonwebtoken'
 import * as errors from 'restify-errors'
 import * as Validation from '@/api/validations'
 import { WebRouted } from '@/api/web-router'
-import { TrackedChastiKeyKeyholderStatistics } from '@/objects/chastikey'
 import { TrackedUser } from '@/objects/user'
 import { validate } from '@/api/utils/validate'
 import { UserData } from 'chastikey.js/app/objects'
@@ -71,9 +70,6 @@ export namespace ChastiKey {
 
     const usernameRegex = new RegExp(`^${ckUser.username}$`, 'i')
 
-    // Get KH from KH data
-    var keyholder = await routed.Bot.DB.get<TrackedChastiKeyKeyholderStatistics>('ck-keyholders', { username: usernameRegex })
-
     // Get lockees under a KH
     const cachedRunningLocks = await routed.Bot.DB.aggregate<{ _id: string; locks: Array<any>; count: number; uniqueCount: number }>('ck-running-locks', [
       {
@@ -103,12 +99,12 @@ export namespace ChastiKey {
     ])
 
     // If there is no data in the kh dataset inform the user
-    if (!keyholder) {
+    if (!ckUser.timestampFirstKeyheld) {
       return routed.next(new errors.BadRequestError())
     }
 
     return routed.res.send({
-      keyholder,
+      keyholder: ckUser,
       locks: cachedRunningLocks
     })
   }

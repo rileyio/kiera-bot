@@ -10,7 +10,6 @@ export type Collections =
   | 'available-server-notifications'
   | 'available-server-settings'
   | 'ck-running-locks'
-  | 'ck-keyholders'
   | 'ck-locktober'
   | 'ck-users'
   | 'command-permissions'

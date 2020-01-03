@@ -3,12 +3,14 @@ import { Collections } from '@/db'
 import { TrackedBotSetting } from '@/objects/setting'
 
 export type ChastiKeyAPIFetchAndStoreMethod = 'fetchAPIUserDataCache' | 'fetchAPIRunningLocksDataCache'
+export type ChastiKeyAPIFetchAndStoreArray = 'locks' | 'users'
 
 export class ChastiKeyAPIFetchAndStore extends Task {
   public reload: boolean = true
   public previousRefresh: number = 0
   public dbCollection: Collections
   public method: ChastiKeyAPIFetchAndStoreMethod
+  public respArray: ChastiKeyAPIFetchAndStoreArray
 
   run = this.fetch
   isAsync = true
@@ -57,8 +59,8 @@ export class ChastiKeyAPIFetchAndStore extends Task {
       const resp = await this.Bot.Service.ChastiKey[this.method]()
 
       // Only if resp contains data delete and attempt to save the new cache
-      if (resp.response.status === 200 && resp.users.length > 0) {
-        await this.storeInDB(resp.users)
+      if (resp.response.status === 200 && resp[this.respArray].length > 0) {
+        await this.storeInDB(resp[this.respArray])
         await this.Bot.DB.update<TrackedBotSetting>('settings', { key: `bot.task.chastikey.api.fetch.${this.name}` }, dbLastRunSetting.update({ value: Date.now(), updated: Date.now() }), {
           upsert: true
         })
