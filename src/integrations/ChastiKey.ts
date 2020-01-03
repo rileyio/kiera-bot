@@ -1,6 +1,10 @@
+import * as APIUrls from '@/api-urls'
+import * as got from 'got'
 import { Bot } from '@/index'
 import { Logging } from '@/utils'
 import { ChastiKey as ChastiKeyAPI } from 'chastikey.js'
+import { ChastiKeyVerifyDiscordID, ChastiKeyVerifyResponse } from '@/objects/chastikey'
+import FormData = require('form-data')
 
 /**
  * !Early Testing!
@@ -38,10 +42,30 @@ export class ChastiKey {
   public async fetchAPIKeyholderData(query: { discordid?: string; username?: string }) {
     return await this.Client.KeyholderData.get({ username: query.username, discordid: query.discordid })
   }
+  public async fetchAPICombinations(query: { discordid?: string; username?: string }) {
+    return await this.Client.Combinations.get({ username: query.username, discordid: query.discordid })
+  }
   public async fetchAPIUserDataCache() {
     return await this.Client.UserData.get()
   }
   public async fetchAPIRunningLocksDataCache() {
     return await this.Client.RunningLocks.get()
+  }
+
+  // Legacy Requests (Some are unique to Kiera)
+  public async verifyCKAccountCheck(discordID: string) {
+    const { body }: got.Response<ChastiKeyVerifyDiscordID> = await got(`${APIUrls.ChastiKey.VerifyDiscordID}?discord_id=${discordID}`, { json: true })
+    return new ChastiKeyVerifyDiscordID(body)
+  }
+  public async verifyCKAccountGetCode(discordID: string, username: string, discriminator: string) {
+    // Make request out to ChastiKey to start process
+    const postData = new FormData()
+    // Check if verify key has been cached recently
+    postData.append('id', discordID)
+    postData.append('username', username)
+    postData.append('discriminator', discriminator)
+
+    const { body }: got.Response<string> = await got.post(APIUrls.ChastiKey.DiscordAuth, { body: postData } as any)
+    return new ChastiKeyVerifyResponse(JSON.parse(body))
   }
 }

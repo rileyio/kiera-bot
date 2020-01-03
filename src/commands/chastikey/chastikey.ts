@@ -1,12 +1,8 @@
-import got = require('got')
-import * as APIUrls from '@/api-urls'
-import * as FormData from 'form-data'
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import * as Discord from 'discord.js'
 import { TrackedUser } from '@/objects/user'
 import { RouterRouted, ExportRoutes } from '@/router'
-import { ChastiKeyVerifyResponse, TrackedChastiKeyCombinationsAPIFetch, ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
 import { TrackedSession } from '@/objects/session'
 
 export const Routes = ExportRoutes(
@@ -117,22 +113,25 @@ export async function recoverCombos(routed: RouterRouted) {
   const getCount = routed.v.o.count || 5
 
   // Get user's past locks
-  const { body }: got.Response<TrackedChastiKeyCombinationsAPIFetch> = await got(`${APIUrls.ChastiKey.Combinations}?discord_id=${routed.user.id}`, { json: true })
+  const resp = await routed.bot.Service.ChastiKey.fetchAPICombinations({
+    username: routed.v.o.user ? routed.v.o.user : undefined,
+    discordid: !routed.v.o.user ? routed.user.id : undefined
+  })
 
   // Stop if error in lookup
-  if (body.status !== 200) {
+  if (resp.response.status !== 200) {
     await routed.message.author.send(`There has been an error processing your request. Please contact @emma#1366`)
     return true // Stop here
   }
 
   // Catch: If there are no past locks inform the user
-  if (body.locks.length === 0) {
+  if (resp.locks.length === 0) {
     await routed.message.author.send(`You have no locks at this time to show, if you believe this is an error please reachout via the \`Kiera Bot\` development/support server.`)
     return true // Stop here
   }
 
   // Sort locks to display an accurate account of past locks
-  const sortedLocks = body.locks.sort((lA, lB) => {
+  const sortedLocks = resp.locks.sort((lA, lB) => {
     var x = lA.timestampUnlocked
     var y = lB.timestampUnlocked
     if (x > y) {
@@ -152,10 +151,9 @@ export async function recoverCombos(routed: RouterRouted) {
   message += `\`\`\``
 
   selectedLocks.forEach((l, i) => {
-    // message += `Was locked by   ${l.locke}\n`
-    // message += `Was deleted?    ${l.lockDeleted === 1 ? 'Yes' : 'No'}\n`
+    message += `Lock ID         ${l.lockID}\n`
+    message += `Was locked by   ${l.lockedBy}\n`
     message += `Unlocked        ${new Date(l.timestampUnlocked * 1000)}\n`
-    message += `Lock Name       ${l.lockName}\n`
     message += `Combination     ${l.combination}\n`
     if (i < selectedLocks.length - 1) message += `\n` // Add extra space between
   })
@@ -179,9 +177,6 @@ export async function verifyAccount(routed: RouterRouted) {
     await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
   )
 
-  // Make request out to ChastiKey to start process
-  const postData = new FormData()
-
   // Statuses
   var isSuccessful = false
   var isNotSuccessfulReason = 'Unknown, Try again later.'
@@ -201,8 +196,7 @@ export async function verifyAccount(routed: RouterRouted) {
   // If user exists & this command is being re-run, try checking if they're verified on the ChastiKey side before
   // Triggering a new verify
   if (!user.ChastiKey.isVerified) {
-    const { body }: got.Response<ChastiKeyVerifyDiscordID> = await got(`${APIUrls.ChastiKey.VerifyDiscordID}?discord_id=${routed.user.id}`, { json: true })
-    const parsedVerifyDiscordID = new ChastiKeyVerifyDiscordID(body)
+    const parsedVerifyDiscordID = await routed.bot.Service.ChastiKey.verifyCKAccountCheck(routed.user.id)
 
     // When they are already verified, let them know & update the ChastiKey user record
     if (parsedVerifyDiscordID.status === 200) {
@@ -217,28 +211,16 @@ export async function verifyAccount(routed: RouterRouted) {
     }
   }
 
-  // Check if verify key has been cached recently
-  postData.append('id', routed.user.id)
-  postData.append('username', routed.user.username)
-  postData.append('discriminator', routed.user.discriminator)
+  const verifyResponse = await routed.bot.Service.ChastiKey.verifyCKAccountGetCode(routed.user.id, routed.user.username, routed.user.discriminator)
 
-  const { body } = await got.post(APIUrls.ChastiKey.DiscordAuth, {
-    body: postData
-  } as any)
-
-  // Convery body to JSON
-  const parsedBody = JSON.parse(body) as ChastiKeyVerifyResponse
-
-  // console.log(parsedBody);
-
-  if (parsedBody.success) {
+  if (verifyResponse.success) {
     isSuccessful = true
     // Track User's verification code
-    user.ChastiKey.verificationCode = parsedBody.code
+    user.ChastiKey.verificationCode = verifyResponse.code
     // Commit Verify code to db, to have on hand
     await routed.bot.DB.update('users', { id: routed.user.id }, user)
   } else {
-    isNotSuccessfulReason = parsedBody.reason || isNotSuccessfulReason
+    isNotSuccessfulReason = verifyResponse.reason || isNotSuccessfulReason
   }
 
   if (isSuccessful) {
