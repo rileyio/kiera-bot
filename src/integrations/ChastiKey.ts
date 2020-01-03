@@ -7,8 +7,7 @@ import { ChastiKeyVerifyDiscordID, ChastiKeyVerifyResponse } from '@/objects/cha
 import FormData = require('form-data')
 
 /**
- * !Early Testing!
- * TODO: Include ChastiKey/chastikey.js for all bot calls
+ * ChastiKey API Helper service
  * @export
  * @class ChastiKey
  */
@@ -19,6 +18,9 @@ export class ChastiKey {
   private RapidAPIKey: string = process.env.RAPIDAPIKEY
   public DEBUG_CK: Logging.Debug
   public Client: ChastiKeyAPI
+  public monitor: NodeJS.Timer
+  public usageSinceLastStartup: number = 0
+  public usageLastMinute: number = 0
 
   public async setup(bot: Bot) {
     this.DEBUG_CK = new Logging.Debug(`ChastiKey`)
@@ -34,22 +36,39 @@ export class ChastiKey {
 
       this.DEBUG_CK.log('🔒 ChastiKey -> Ready')
     }
+
+    if (!this.monitor) {
+      this.monitor = setInterval(() => {
+        // Reset usage in this last minute to 0
+        this.usageLastMinute = 0
+      }, 60000)
+    }
   }
 
   public async fetchAPILockeeData(query: { discordid?: string; username?: string; showDeleted: boolean }) {
-    return await this.Client.LockeeData.get({ username: query.username, discordid: query.discordid, showdeleted: query.showDeleted ? 1 : 0 })
+    const resp = await this.Client.LockeeData.get({ username: query.username, discordid: query.discordid, showdeleted: query.showDeleted ? 1 : 0 })
+    this.trackUsage()
+    return resp
   }
   public async fetchAPIKeyholderData(query: { discordid?: string; username?: string }) {
-    return await this.Client.KeyholderData.get({ username: query.username, discordid: query.discordid })
+    const resp = await this.Client.KeyholderData.get({ username: query.username, discordid: query.discordid })
+    this.trackUsage()
+    return resp
   }
   public async fetchAPICombinations(query: { discordid?: string; username?: string }) {
-    return await this.Client.Combinations.get({ username: query.username, discordid: query.discordid })
+    const resp = await this.Client.Combinations.get({ username: query.username, discordid: query.discordid })
+    this.trackUsage()
+    return resp
   }
   public async fetchAPIUserDataCache() {
-    return await this.Client.UserData.get()
+    const resp = await this.Client.UserData.get()
+    this.trackUsage()
+    return resp
   }
   public async fetchAPIRunningLocksDataCache() {
-    return await this.Client.RunningLocks.get()
+    const resp = await this.Client.RunningLocks.get()
+    this.trackUsage()
+    return resp
   }
 
   // Legacy Requests (Some are unique to Kiera)
@@ -58,7 +77,9 @@ export class ChastiKey {
       params.discordID ? `${APIUrls.ChastiKey.VerifyDiscordID}?discord_id=${params.discordID}` : `${APIUrls.ChastiKey.VerifyDiscordID}?username=${params.username}`,
       { json: true }
     )
-    return new ChastiKeyVerifyDiscordID(body)
+    const resp = new ChastiKeyVerifyDiscordID(body)
+    this.trackUsage()
+    return resp
   }
   public async verifyCKAccountGetCode(discordID: string, username: string, discriminator: string) {
     // Make request out to ChastiKey to start process
@@ -69,6 +90,13 @@ export class ChastiKey {
     postData.append('discriminator', discriminator)
 
     const { body }: got.Response<string> = await got.post(APIUrls.ChastiKey.DiscordAuth, { body: postData } as any)
-    return new ChastiKeyVerifyResponse(JSON.parse(body))
+    const resp = new ChastiKeyVerifyResponse(JSON.parse(body))
+    this.trackUsage()
+    return resp
+  }
+
+  private trackUsage() {
+    this.usageLastMinute += 1
+    this.usageSinceLastStartup += 1
   }
 }
