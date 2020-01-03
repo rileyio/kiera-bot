@@ -1,4 +1,3 @@
-import got = require('got')
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import { ExportRoutes } from '@/router/routes-exporter'
