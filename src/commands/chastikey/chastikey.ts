@@ -254,6 +254,7 @@ export async function roleCounts(routed: RouterRouted) {
   var largestNumberString = 1
 
   const counts = {
+    chastikeyVerified: 0,
     locked: 0,
     unlocked: 0,
     locktober: 0,
@@ -269,6 +270,7 @@ export async function roleCounts(routed: RouterRouted) {
 
   routed.message.guild.roles.forEach(r => {
     // Special states
+    if (r.name.toLowerCase() === 'chastikey verified') counts.chastikeyVerified = r.members.size
     if (r.name.toLowerCase() === 'locked') counts.locked = r.members.size
     if (r.name.toLowerCase() === 'unlocked') counts.unlocked = r.members.size
     if (r.name.toLowerCase() === 'locktober 2019') counts.locktober = r.members.size
@@ -295,6 +297,9 @@ export async function roleCounts(routed: RouterRouted) {
   response += `\`\`\``
   response += `Everyone               # ${routed.message.guild.members.size}\n`
   response += `=======================================\n`
+  response += `Verified               # ${counts.chastikeyVerified} ${Array.from(Array(largestNumberString + 3 - String(counts.chastikeyVerified).length)).join(' ')} ${roundedDisplay(
+    counts.chastikeyVerified / routed.message.guild.members.size
+  )}%\n`
   response += `Locked                 # ${counts.locked} ${Array.from(Array(largestNumberString + 3 - String(counts.locked).length)).join(' ')} ${roundedDisplay(
     counts.locked / routed.message.guild.members.size
   )}%\n`
