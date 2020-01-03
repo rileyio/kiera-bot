@@ -43,13 +43,13 @@ export namespace Date {
     for (var i = 1; i < dates.length; i++) {
       // Complete overlap, remove from consideration
       if (dates[i].start >= cumulative[cIndex].start && dates[i].end <= cumulative[cIndex].end) {
-        console.log(`index: ${i}, Condition 1 Met (Skip)`, dates[i]);
+        console.log(`index: ${i}, Condition 1 Met (Skip)`, dates[i])
         continue // Stop here
       }
 
       // New range beyond current range - set new range
       if (dates[i].start >= cumulative[cIndex].end) {
-        console.log(`index: ${i}, Condition 3 Met (New)`, dates[i]);
+        console.log(`index: ${i}, Condition 3 Met (New)`, dates[i])
         cIndex++
         cumulative.push(dates[i])
         continue // Stop here
@@ -57,13 +57,13 @@ export namespace Date {
 
       // Extend the current range
       if (dates[i].start >= cumulative[cIndex].start && dates[i].end > cumulative[cIndex].end) {
-        console.log(`index: ${i}, Condition 2 Met (Extend)`, dates[i]);
+        console.log(`index: ${i}, Condition 2 Met (Extend)`, dates[i])
         cumulative[cIndex].end = dates[i].end
         continue // Stop here
       }
 
       // All unmatched
-      console.log('Unmatched range:', dates[i], 'current cumulative:', cumulative[cIndex]);
+      console.log('Unmatched range:', dates[i], 'current cumulative:', cumulative[cIndex])
     }
 
     // Calculate sums
@@ -78,15 +78,15 @@ export namespace Date {
 
     // Print results
     console.log('=========================')
-    console.log(`Started with ${dates.length} ranges (${dates.reduce((s, c) => s += c.end - c.start, 0)}), reduced to ${cumulative.length}`)
-    console.log('cumulative results:', cumulative);
-    console.log('average results:', aTime);
+    console.log(`Started with ${dates.length} ranges (${dates.reduce((s, c) => (s += c.end - c.start), 0)}), reduced to ${cumulative.length}`)
+    console.log('cumulative results:', cumulative)
+    console.log('average results:', aTime)
     console.log(`cumulative time: ${cTime} seconds, (${cTime / 2592000})`)
 
     return { cumulative: cTime, average: aTime }
   }
 
-  export function calculateHumanTimeDDHHMM(seconds: number) {
+  export function calculateHumanTimeDDHHMM(seconds: number, dropZeros?: boolean) {
     // Calculate human readible time for lock from seconds
     const timelocked = seconds
     var min = Math.floor(timelocked / 60)
@@ -99,6 +99,8 @@ export namespace Date {
     const timeToShowHours = `${hrs > 9 ? +hrs : '0' + hrs}h`
     const timeToShowMins = `${min > 9 ? +min : '0' + min}m`
 
+    if (dropZeros && days === 0 && hrs === 0) return `${timeToShowMins}`
+    if (dropZeros && days === 0) return `${timeToShowHours} ${timeToShowMins}`
     return `${timeToShowDays} ${timeToShowHours} ${timeToShowMins}`
   }
 
