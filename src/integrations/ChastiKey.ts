@@ -53,8 +53,11 @@ export class ChastiKey {
   }
 
   // Legacy Requests (Some are unique to Kiera)
-  public async verifyCKAccountCheck(discordID: string) {
-    const { body }: got.Response<ChastiKeyVerifyDiscordID> = await got(`${APIUrls.ChastiKey.VerifyDiscordID}?discord_id=${discordID}`, { json: true })
+  public async verifyCKAccountCheck(params: { discordID?: string; username?: string }) {
+    const { body }: got.Response<ChastiKeyVerifyDiscordID> = await got(
+      params.discordID ? `${APIUrls.ChastiKey.VerifyDiscordID}?discord_id=${params.discordID}` : `${APIUrls.ChastiKey.VerifyDiscordID}?username=${params.username}`,
+      { json: true }
+    )
     return new ChastiKeyVerifyDiscordID(body)
   }
   public async verifyCKAccountGetCode(discordID: string, username: string, discriminator: string) {

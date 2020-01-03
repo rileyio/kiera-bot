@@ -1,5 +1,3 @@
-import got = require('got')
-import * as APIUrls from '@/api-urls'
 import * as Middleware from '@/middleware'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { TrackedUser } from '@/objects/user'
@@ -37,11 +35,10 @@ export async function debug(routed: RouterRouted) {
   const ckLocktober = await routed.bot.DB.get<{ username: string; discordID: string }>('ck-locktober', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckRunningLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
 
-  var verifyIDAPIResp: got.Response<ChastiKeyVerifyDiscordID>
-  if (asDiscordID === 123) verifyIDAPIResp = await got(`${APIUrls.ChastiKey.VerifyDiscordID}?username=${routed.v.o.user}`, { json: true })
-  if (asDiscordID !== 123) verifyIDAPIResp = await got(`${APIUrls.ChastiKey.VerifyDiscordID}?discord_id=${asDiscordID}`, { json: true })
-  var parsedVerifyDiscordID = new ChastiKeyVerifyDiscordID(verifyIDAPIResp.body)
-  console.log(parsedVerifyDiscordID)
+  var verifyIDAPIResp: ChastiKeyVerifyDiscordID
+  if (asDiscordID === 123) verifyIDAPIResp = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ username: routed.v.o.user })
+  if (asDiscordID !== 123) verifyIDAPIResp = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ discordID: routed.user.id })
+  console.log(verifyIDAPIResp)
 
   var response = `**ChastiKey User Debug**\n`
   response += '```'
@@ -71,10 +68,10 @@ export async function debug(routed: RouterRouted) {
       response += `  -> username            = ${l.username}\n`
     })
   }
-  response += `\nAnything from Verify live check (from CK): ${verifyIDAPIResp.statusCode === 200 ? true : false}\n`
-  if (verifyIDAPIResp.statusCode === 200) {
-    response += `  -> discordID           = ${parsedVerifyDiscordID.discordID}\n`
-    response += `  -> username            = ${parsedVerifyDiscordID.username}\n`
+  response += `\nAnything from Verify live check (from CK): ${verifyIDAPIResp.status === 200 ? true : false}\n`
+  if (verifyIDAPIResp.status === 200) {
+    response += `  -> discordID           = ${verifyIDAPIResp.discordID}\n`
+    response += `  -> username            = ${verifyIDAPIResp.username}\n`
   }
   response += '```'
 
