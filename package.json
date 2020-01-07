@@ -39,8 +39,9 @@
   },
   "dependencies": {
     "@hapi/joi": "^15.0.3",
+    "agenda": "^2.3.0",
     "blizzard.js": "^3.0.0",
-    "chastikey.js": "https://github.com/ChastiKey/chastikey.js.git#2.0.0-alpha",
+    "chastikey.js": "^2.1.0",
     "crypto-js": "^3.1.9-1",
     "deep-extend": "^0.6.0",
     "discord.js": "^11.4.2",
@@ -58,6 +59,7 @@
     "winston": "^3.1.0"
   },
   "devDependencies": {
+    "@types/agenda": "^2.0.6",
     "@types/crypto-js": "^3.1.43",
     "@types/debug": "^0.0.31",
     "@types/deep-extend": "^0.4.31",

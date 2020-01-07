@@ -5,10 +5,10 @@
 - Improved: CK Stats Lockee is now using live data
 - Improved: CK Lockee Queries on External portal will now be the same live data as CK stats lockee
 - Improved: New One time login tokens to authenticate, now with expiry & much shorter (will be used on Kiera's site rework)
+- Improved: Background task system using new scheduler
 - Removed: Legacy notifications
 - Removed: Old CK Auth token/session system
 - Updated: CK Tasks all updated to new API Data
-- Updated: Locktober Auto update re-added
 - Added: New Web API authentication (will break kiera.xyz until rework)
 - Added: #15 Server & User stats and commands for: display, manage, settings
 - Added: #17 ChastiKey Verified users to have their profile auto updated with the Verified role

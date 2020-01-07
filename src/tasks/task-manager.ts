@@ -1,16 +1,24 @@
+import * as Agenda from 'agenda'
 import { Bot } from '@/index'
 import { Task } from '@/objects/task'
 
 export class TaskManager {
   protected Bot: Bot
   public registered: { [name: string]: Task } = {}
-  public isTaskRunnerRunning: boolean = false
-  public isTaskRunnerProcessing: boolean = false
-  public _taskRunner: NodeJS.Timer
+  // Background tasks v5+
+  public Agenda = new Agenda({
+    db: {
+      address: `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
+      collection: 'scheduled-jobs'
+    }
+  })
 
-  public start(bot: Bot, tasks: Array<Task>) {
+  public async start(bot: Bot, tasks: Array<Task>) {
     this.Bot = bot
-    this.taskRunner()
+
+    // Start Agenda Queue
+    await this.Agenda.start()
+
     for (let index = 0; index < tasks.length; index++) {
       const task = tasks[index]
       this.register(task)
@@ -18,32 +26,13 @@ export class TaskManager {
   }
 
   public register(task: Task) {
+    // Assign Bot & Agenda to task
+    task.Agenda = this.Agenda
+    task.Bot = this.Bot
+
+    // Trigger Agenda setup if defined
+    task.setupAgenda()
+
     this.registered[task.name] = task
-    // tslint:disable-next-line:no-console
-    // console.log('Task:Registered:', task)
-  }
-
-  private taskRunner() {
-    if (this.isTaskRunnerRunning) return // Block dup
-    this._taskRunner = setInterval(async () => {
-      // Block a task runner refresh if its still running
-      if (this.isTaskRunnerProcessing) return
-      this.isTaskRunnerProcessing = true
-      // Checking tasks to run
-      for (const key in this.registered) {
-        try {
-          const task = this.registered[key]
-          // Check if task if past due to run
-          await task.run()
-        } catch (error) {
-          // tslint:disable-next-line:no-console
-          console.log(`Task:Manager => ${key} failed`, error)
-        }
-
-        this.registered[key].lastRun = Date.now()
-      }
-
-      this.isTaskRunnerProcessing = false
-    }, 5000)
   }
 }

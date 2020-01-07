@@ -1,4 +1,5 @@
 import { ObjectID } from 'bson'
+import { RunningLocksLock } from 'chastikey.js/app/objects'
 
 export enum ChastiKeyTickerType {
   None,
@@ -68,57 +69,11 @@ export class TrackedChastiKeyPreferences {
  * @export
  * @class TrackedChastiKeyLockee
  */
-export class TrackedChastiKeyLock {
+export class TrackedChastiKeyLock extends RunningLocksLock {
   // Kiera props
   public readonly _id: ObjectID
-  // ChastiKey Props
-  /**
-   * ChastiKey user unique ID
-   * @type {number}
-   * @memberof TrackedChastiKeyLock
-   */
-  public userID: number
-  /**
-   * ChastiKey Username
-   * @type {string}
-   * @memberof TrackedChastiKeyLock
-   */
-  public username: string
-  /**
-   * Discord Showflake
-   * @type {number}
-   * @memberof TrackedChastiKeyLock
-   */
-  public discordID: string
-  /**
-   * Date Joined ChastiKey App
-   * @type {string}
-   * @memberof TrackedChastiKeyLock
-   */
-  public sharedLockID: string
-  public regularity: number
-  public multipleGreensRequired: number
-  public timestampLocked: number
+  // ChastiKey Extra Props from DB Query
   public secondsLocked: number
-  public fixed: number
-  public cumulative: number
-  public cardInfoHidden: number
-  public timerHidden: number
-  public noOfTurns: number
-  public lockFrozenByCard: number
-  public lockFrozenByKeyholder: number
-  public discardPile: string
-  public lockedBy: string
-  public displayInStats: number
-  public sharedLockName: string
-  public trustKeyholder: number
-  /// Cards ///
-  public doubleUpCards: number
-  public freezeCards: number
-  public greenCards: number
-  public redCards: number
-  public resetCards: number
-  public yellowCards: number
 }
 
 /**

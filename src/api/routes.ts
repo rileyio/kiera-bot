@@ -151,6 +151,13 @@ export const routes: Array<WebRoute> = [
     name: 'ck-search',
     path: '/api/ck/search'
   },
+  // * Kiera+CK User * //
+  {
+    controller: WebController.ChastiKey.user,
+    method: 'post',
+    name: 'ck-user',
+    path: '/api/ck/user'
+  },
   // * Kiera+CK Stats * //
   {
     controller: WebController.ChastiKeyWebStats.locks,

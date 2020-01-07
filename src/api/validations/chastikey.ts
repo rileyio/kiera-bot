@@ -42,4 +42,18 @@ export namespace ChastiKey {
       })
       .required()
   }
+
+  export function user() {
+    return joi
+      .object()
+      .keys({
+        username: joi
+          .string()
+          .alphanum()
+          .min(2)
+          .max(32)
+          .required()
+      })
+      .required()
+  }
 }

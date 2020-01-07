@@ -160,5 +160,41 @@ export namespace ChastiKey {
         }) || []
       )
     }
+
+    // Fallback, fail
+    return routed.next(new errors.BadRequestError())
+  }
+
+  /**
+   * Find user profile requested
+   * @export
+   * @param {WebRouted} routed
+   * @returns
+   */
+  export async function user(routed: WebRouted) {
+    const v = await validate(Validation.ChastiKey.user(), routed.req.body)
+
+    if (v.valid) {
+      // Get the user from the ChastiKey user cache to keep from spamming Kevin's servers
+      const user = await routed.Bot.DB.get<UserData>('ck-users', { username: new RegExp(`${v.o.username}`, 'i') })
+
+      // If the user is verified
+      const kieraUser = new TrackedUser(
+        user.discordID ? await routed.Bot.DB.get<TrackedUser>('ck-users', { id: user.discordID }) : {}
+      )
+
+      // User's discord avatar (again, only if verified)
+      const discordUser = user.discordID ? await routed.Bot.client.fetchUser(user.discordID) : null
+
+      // If user does not exist, fail
+      if (!user) {
+        return routed.next({ success: false })
+      }
+
+      return routed.res.send({ success: true, user, discord: discordUser ? { id: discordUser.id, avatar: discordUser.avatar } : { id: null, avatar: null } })
+    }
+
+    // Fallback, fail
+    return routed.next(new errors.BadRequestError())
   }
 }

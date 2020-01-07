@@ -4,24 +4,24 @@ import { TrackedUser } from '@/objects/user'
 export class ChastiKeyVerifiedRoleMonitor extends Task {
   private announcementMade: boolean = false
   public verifiedRole: string
-  public previousRefresh: number = 0
 
+  // Config for this task
   run = this.process
-  isAsync = true
+  schedule = '* * * * *'
+  settingPrefix = 'bot.task.chastikey.verified.schedule'
 
   protected async process() {
-    if (Date.now() - this.previousRefresh < this.frequency) return // Stop here
-
     // If Debug block is in place, stop here
     if (process.env.BOT_BLOCK_CKVERIFY) {
       if (!this.announcementMade) {
         console.log('Verified Role Monitor::Blocking Verified Role update per debug setting in .env file.')
         this.announcementMade = true
       }
-      this.previousRefresh = Date.now()
+      this.lastRun = Date.now()
       return true
     }
 
+    // Perform the scheduled task/job
     try {
       // Get users who are eligible from the db, but only users who have verified their discord ID
       const stored = await this.Bot.DB.getMultiple<TrackedUser>('users', { 'ChastiKey.isVerified': true })
@@ -78,11 +78,11 @@ export class ChastiKeyVerifiedRoleMonitor extends Task {
         }
       }
 
-      this.previousRefresh = Date.now()
+      this.lastRun = Date.now()
       return true
     } catch (error) {
       console.log(error)
-      this.previousRefresh = Date.now()
+      this.lastRun = Date.now()
       return false
     }
   }

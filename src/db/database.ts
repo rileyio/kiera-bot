@@ -1,3 +1,4 @@
+import * as Agenda from 'agenda'
 import { MongoClient, MongoClientOptions, Cursor, Db, MongoError, CollectionInsertManyOptions } from 'mongodb'
 import { Logging } from '@/utils'
 
@@ -7,10 +8,10 @@ export * from './message-tracker'
 export type Collections =
   | 'audit-log'
   | 'authkeys'
-  | 'available-server-notifications'
   | 'available-server-settings'
   | 'ck-running-locks'
   | 'ck-locktober'
+  | 'ck-stats-hourly'
   | 'ck-users'
   | 'command-permissions'
   | 'decision'
@@ -35,15 +36,15 @@ export async function MongoDBLoader() {
 }
 
 export class MongoDB {
-  public connection: {
+  private connection: {
     db: Db
     client: MongoClient
     error: MongoError
   } = { db: undefined, client: undefined, error: undefined }
-  public DEBUG_DB: Logging.Debug
-  public dbName = `${process.env.DB_NAME}`
-  public dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${this.dbName}`
-  public dbOpts: MongoClientOptions = {
+  private DEBUG_DB: Logging.Debug
+  private dbName = `${process.env.DB_NAME}`
+  private dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${this.dbName}`
+  private dbOpts: MongoClientOptions = {
     useNewUrlParser: true,
     auth: {
       user: process.env.DB_USER,
@@ -207,6 +208,29 @@ export class MongoDB {
     this.DEBUG_DB.log(`.get results [${targetCollection}] =>`, result ? true : false)
     // connection.client.close()
     return <T>result
+  }
+
+  /**
+   * Fetch the latest record from the db
+   *
+   * This can accept one of the following formats in q:
+   * - `object` `{ id: '146439529824256000', username: 'emma', discriminator: '1336' }`
+   *
+   * @param {Q} q
+   * @returns
+   * @memberof DB
+   */
+  public async getLatest<T>(targetCollection: Collections, query: any, limit?: number) {
+    this.DEBUG_DB.log(`.get => ${targetCollection}`)
+    const connection = await this.connect()
+    const collection = connection.db.collection(targetCollection)
+    const result = collection
+      .find<T>(query)
+      .sort({ _id: -1 })
+      .limit(limit || 1)
+    this.DEBUG_DB.log(`.get results [${targetCollection}] =>`, result ? true : false)
+    // connection.client.close()
+    return await (<Cursor<T>>result).toArray()
   }
 
   /**

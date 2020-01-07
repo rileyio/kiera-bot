@@ -5,13 +5,13 @@ import { MsgTracker, MongoDB, MongoDBLoader } from '@/db'
 import { TrackedServer } from '@/objects/server'
 import { Router, routeLoader } from '@/router'
 import { Logging } from '@/utils'
-import { DISCORD_CLIENT_EVENTS } from '@/utils'
 import { BotMonitor } from '@/monitor'
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
 import { Statistics } from '@/statistics'
 import { ServerStatisticType } from './objects/statistics'
 import { ChastiKey } from './integrations/ChastiKey'
+import { DISCORD_CLIENT_EVENTS } from '@/utils'
 
 export class Bot {
   public client = new Discord.Client()
@@ -34,7 +34,7 @@ export class Bot {
   // Databases
   public DB: MongoDB
 
-  // Background tasks
+  // Background tasks v0-4
   public Task: Task.TaskManager = new Task.TaskManager()
 
   // Bot msg router
@@ -71,11 +71,12 @@ export class Bot {
     ////////////////////////////////////////
     // Register background tasks
     this.Task.start(this, [
-      new Task.ChastiKeyAPIUsers(this),
-      new Task.ChastiKeyAPIRunningLocks(this),
-      new Task.ChastiKeyAPILocktober(this),
-      // // new Task.ChastiKeyBackgroundLocktoberMonitor(this)
-      new Task.ChastiKeyBackgroundVerifiedMonitor(this)
+      new Task.ChastiKeyAPIUsers(),
+      new Task.ChastiKeyAPIRunningLocks(),
+      new Task.ChastiKeyAPILocktober(),
+      // // new Task.ChastiKeyBackgroundLocktoberMonitor()
+      new Task.ChastiKeyBackgroundVerifiedMonitor(),
+      new Task.ChastiKeyGenerateStatsScheduled()
     ])
 
     ////////////////////////////////////////

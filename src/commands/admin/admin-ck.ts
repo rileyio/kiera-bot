@@ -36,11 +36,11 @@ export async function forceStatsReload(routed: RouterRouted) {
   // Update in db
   await routed.bot.DB.update<TrackedBotSetting>('settings', { key: /^bot\.task\.chastikey\.api\.fetch/i }, { lastUpdatd: Date.now(), value: 0 }, { updateOne: false })
 
-  // Update in TaskManager
-  Object.keys(routed.bot.Task.registered).forEach(taskName => {
-    if (!/^ChastiKeyAPI/.test(taskName)) return // skip this task
-    ;(<ChastiKeyAPIFetchAndStore>routed.bot.Task.registered[taskName]).previousRefresh = 0
-  })
+  // // Update in TaskManager
+  // Object.keys(routed.bot.Task.registered).forEach(taskName => {
+  //   if (!/^ChastiKeyAPI/.test(taskName)) return // skip this task
+  //   ;(<ChastiKeyAPIFetchAndStore>routed.bot.Task.registered[taskName]).previousRefresh = 0
+  // })
 
   // Successful end
   return true
