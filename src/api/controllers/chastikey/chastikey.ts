@@ -1,4 +1,3 @@
-import * as jwt from 'jsonwebtoken'
 import * as errors from 'restify-errors'
 import * as Validation from '@/api/validations'
 import { WebRouted } from '@/api/web-router'
@@ -7,39 +6,6 @@ import { validate } from '@/api/utils/validate'
 import { UserData } from 'chastikey.js/app/objects'
 
 export namespace ChastiKey {
-  export async function authTest(routed: WebRouted) {
-    const sessionKey = routed.req.header('session')
-
-    // If missing, fail
-    if (!sessionKey) {
-      console.log('validCKAuth => session key missing')
-      routed.res.send(401, 'Unauthorized')
-      return // FAIL
-    }
-
-    // Verify sessionKey
-    try {
-      // Verify sessionKey & payload
-      const verifiedSession = jwt.verify(sessionKey, process.env.BOT_SECRET)
-      console.log('validCKAuth => verifiedSession:', verifiedSession)
-    } catch (error) {
-      console.log('validCKAuth => Session not valid!')
-      return routed.res.send(401, 'Unauthorized')
-    }
-
-    // Lookup ChastiKey user in DB by username and session
-    const authKeyStored = await routed.Bot.DB.get<TrackedUser>('users', {
-      'ChastiKey.extSession': sessionKey
-    })
-
-    // If no record, success
-    if (authKeyStored) return routed.res.send({ success: true, username: authKeyStored.ChastiKey.username })
-
-    // Fallback - fail auth
-    console.log('validCKAuth => Session not found!')
-    return routed.res.send(401, 'Unauthorized')
-  }
-
   /**
    * Get KH compiled data for external view
    * @export

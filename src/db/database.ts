@@ -220,14 +220,15 @@ export class MongoDB {
    * @returns
    * @memberof DB
    */
-  public async getLatest<T>(targetCollection: Collections, query: any, limit?: number) {
-    this.DEBUG_DB.log(`.get => ${targetCollection}`)
+  public async getLatest<T>(targetCollection: Collections, query: any, opts: { returnFields?: { [key: string]: number }; limit?: number } = {}) {
+    this.DEBUG_DB.log(`.getLatest => ${targetCollection}`)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const result = collection
       .find<T>(query)
       .sort({ _id: -1 })
-      .limit(limit || 1)
+      .limit(opts.hasOwnProperty('limit') ? opts.limit : 1)
+      .project(opts.hasOwnProperty('returnFields') ? opts.returnFields : undefined)
     this.DEBUG_DB.log(`.get results [${targetCollection}] =>`, result ? true : false)
     // connection.client.close()
     return await (<Cursor<T>>result).toArray()

@@ -56,4 +56,16 @@ export namespace ChastiKey {
       })
       .required()
   }
+
+  export function globalStats() {
+    return joi
+      .object()
+      .keys({
+        dateTime: joi
+          .date()
+          .iso()
+          .required()
+      })
+      .optional()
+  }
 }

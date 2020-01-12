@@ -4,13 +4,13 @@ import { TrackedChastiKeyLock } from '@/objects/chastikey'
 export class ChastiKeyGenerateStats extends Task {
   // Config for this task
   run = this.process
-  schedule = '*/5 * * * *'
+  schedule = '2 * * * *'
   settingPrefix = 'bot.task.chastikey.stats.schedule'
 
   protected async process() {
     // Perform the scheduled task/job
     try {
-      await this.Bot.DB.add('ck-stats-hourly', { interval: '60min', stats: await this.compileStats() })
+      await this.Bot.DB.add('ck-stats-hourly', { interval: '60min', dateTime: new Date().toISOString(), stats: await this.compileStats() })
       this.lastRun = Date.now()
       return true
     } catch (error) {
@@ -21,7 +21,92 @@ export class ChastiKeyGenerateStats extends Task {
   }
 
   private async compileStats() {
-    // Get Running Locks from local cache
+    // Get Running Locks from local cache for KH Cache
+    const cachedRunningLocksKHs = await this.Bot.DB.aggregate('ck-running-locks', [
+      {
+        $match: { $and: [{ lockedBy: { $ne: null } }, { lockedBy: { $ne: '' } }] }
+      },
+      {
+        $group: {
+          _id: '$lockedBy',
+          lockees: {
+            $addToSet: '$userID'
+          },
+          runningLocks: { $sum: 1 },
+          fixed: {
+            $sum: {
+              $cond: { if: { $eq: ['$fixed', 1] }, then: 1, else: 0 }
+            }
+          },
+          variable: {
+            $sum: {
+              $cond: { if: { $eq: ['$fixed', 0] }, then: 1, else: 0 }
+            }
+          },
+          infoHidden: {
+            $sum: {
+              $cond: { if: { $or: [{ $eq: ['$cardInfoHidden', 1] }, { $eq: ['$cardInfoHidden', 1] }] }, then: 1, else: 0 }
+            }
+          },
+          trust: {
+            $sum: {
+              $cond: { if: { $eq: ['$trustKeyholder', 1] }, then: 1, else: 0 }
+            }
+          },
+          frozen: {
+            $sum: {
+              $cond: { if: { $eq: ['$lockFrozen', 1] }, then: 1, else: 0 }
+            }
+          },
+          secondsLocked: {
+            $sum: {
+              $subtract: [Date.now() / 1000, '$timestampLocked']
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: 'ck-users',
+          localField: 'lockees',
+          foreignField: 'userID',
+          as: 'username'
+        }
+      },
+      {
+        $lookup: {
+          from: 'ck-users',
+          localField: '_id',
+          foreignField: 'username',
+          as: 'keyholder'
+        }
+      },
+      {
+        $sort: { runningLocks: -1 }
+      },
+      {
+        $unwind: '$keyholder'
+      },
+      {
+        $project: {
+          _id: 0,
+          keyholder: '$keyholder.userID',
+          level: '$keyholder.keyholderLevel',
+          averageKeyholderRating: '$keyholder.averageKeyholderRating',
+          uniqueLockeeCount: { $cond: { if: { $isArray: '$lockees' }, then: { $size: '$lockees' }, else: 0 } },
+          runningLocks: 1,
+          fixed: 1,
+          variable: 1,
+          infoHidden: { $multiply: [{ $divide: ['$infoHidden', '$runningLocks'] }, 100] },
+          trust: { $multiply: [{ $divide: ['$trust', '$runningLocks'] }, 100] },
+          frozen: { $multiply: [{ $divide: ['$frozen', '$runningLocks'] }, 100] },
+          lockees: '$username.userID',
+          secondsLocked: 1
+        }
+      }
+    ])
+
+    // Get Running Locks from local cache for Locks Cache
     const cachedRunningLocks = await this.Bot.DB.aggregate<TrackedChastiKeyLock>('ck-running-locks', [
       {
         $addFields: {
@@ -49,9 +134,17 @@ export class ChastiKeyGenerateStats extends Task {
     var fixedLocks = 0
     var variableLocks = 0
     var totalLocks = 0
-    var trusted = 0
+    var keyholderTrust = 0
+    var botTrust = 0
+    var frozenLocks = 0
     var botLocks = 0
     var keyholderLocks = 0
+    var selfLocks = 0
+
+    var _keyholdersAvgRating = cachedRunningLocksKHs.map((kh: { averageKeyholderRating: number }) => kh.averageKeyholderRating)
+    var keyholders = cachedRunningLocksKHs.length
+    var keyholdersWithRating = _keyholdersAvgRating.filter(avg => avg > 0).length
+    var ratings = _keyholdersAvgRating.reduce((cur, total) => (total = cur > 0 ? (total += cur) : total))
 
     // Process data and populate stats variables
     cachedRunningLocks.forEach(lock => {
@@ -152,6 +245,7 @@ export class ChastiKeyGenerateStats extends Task {
         if (lock.fixed === 0) distributionByLockedTimeVariable[11]++
         if (lock.fixed === 0 && lock.trustKeyholder) distributionByLockedTimeVariableTrusted[11]++
       }
+
       // >250 days}
       if (lock.secondsLocked >= 86400 * 250) {
         if (lock.fixed === 1) distributionByLockedTimeFixed[12]++
@@ -176,10 +270,17 @@ export class ChastiKeyGenerateStats extends Task {
       else botLocks++
       // [ Count: Fixed Lock ]
       if (lock.fixed === 1) fixedLocks++
+      // [ Count: Frozen ]
+      if (lock.lockFrozen === 1) frozenLocks++
       // [ Count: Variable Lock ]
       if (lock.fixed === 0) variableLocks++
-      // [ Count: Trusted ]
-      if (lock.trustKeyholder === 1) trusted++
+      // [ Count: Bot Trusted ]
+      if (lock.trustKeyholder === 1 && lock.lockedBy !== '' && lock.botChosen === 0) botTrust++
+      // [ Count: KH Trusted ]
+      if (lock.trustKeyholder === 1 && lock.lockedBy !== '' && lock.botChosen === 0) keyholderTrust++
+      // [ Count: Self Locks ]
+      if (lock.lockedBy === '') selfLocks++
+
       // [ Count: Total Locks ]
       totalLocks++
     })
@@ -187,17 +288,22 @@ export class ChastiKeyGenerateStats extends Task {
     return {
       distributionByInterval,
       totalLocks,
-      trust: trusted / totalLocks,
-      trusted,
+      keyholderTrust: keyholderTrust / keyholderLocks,
+      botTrust: botTrust / botLocks,
       fixedLocks,
+      frozenLocks,
       variableLocks,
       keyholderLocks,
+      selfLocks,
       botLocks,
+      keyholdersCount: keyholders,
+      keyholderAvgRating: ratings / keyholdersWithRating,
       distributionByLockedTimeFixed,
       distributionByLockedTimeFixedTrusted,
       distributionByLockedTimeVariable,
       distributionByLockedTimeVariableTrusted,
-      distributionByCardsRemaining
+      distributionByCardsRemaining,
+      keyholders: cachedRunningLocksKHs
     }
   }
 }

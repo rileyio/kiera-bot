@@ -161,7 +161,7 @@ export const routes: Array<WebRoute> = [
   // * Kiera+CK Stats * //
   {
     controller: WebController.ChastiKeyWebStats.locks,
-    method: 'get',
+    method: 'post',
     name: 'ck-stats-locks',
     path: '/api/ck/stats/locks'
   },
