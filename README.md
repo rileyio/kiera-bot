@@ -54,7 +54,7 @@ All code for [kierabot.xyz](https://kierabot.xyz) will be at [rileyio/kiera-web]
 ## API
 
 **API Endpoint:**
-**Note: The API key system will be overhauled in a future update.**
+**Note: The API endpoints will continue to evolve through `v5.0`.**
 
 > URL: <https://kierabot.xyz/api/>
 > Requires: AuthKey as header to authenticate
@@ -62,87 +62,96 @@ All code for [kierabot.xyz](https://kierabot.xyz) will be at [rileyio/kiera-web]
 
 ### Available
 
-- method: `post` `/available/notifications`
-- method: `post` `/available/settings`
-- method: `post` `/available/user`
-- method: `post` `/decisions`
-- method: `delete` `/decision/delete`
-- method: `post` `/decision/outcome/update`
-- method: `delete` `/decision/outcome/delete`
-- method: `post` `/decision/outcome/add`
-- method: `post` `/lists`
-- method: `post` `/notifications`
-- method: `post` `/notification/update`
-- method: `post` `/oauth`
-- method: `post` `/permissions`
-- method: `post` `/permissions/global/update`
-- method: `post` `/permissions/allowed/update`
-- method: `post` `/server/settings`
-- method: `post` `/server/setting/update`
-- method: `get` `/stats` - Returns (Object) all bot statistics
-- method: `post` `/user`
+- method: `post` `/api/audit`
+- method: `post` `/api/otl`
+- method: `post` `/api/session/verify`
+- method: `post` `/api/available/settings`
+- method: `post` `/api/available/user`
+- method: `get` `/api/decisions`
+- method: `patch` `/api/decision/name`
+- method: `patch` `/api/decision/enabled`
+- method: `put` `/api/decision/outcome`
+- method: `patch` `/api/decision/outcome`
+- method: `delete` `/api/decision/outcome`
+- method: `put` `/api/decision`
+- method: `delete` `/api/decision`
+- method: `post` `/api/lists`
+- method: `post` `/api/permissions`
+- method: `post` `/api/permission/global/update`
+- method: `delete` `/api/permission/global/delete`
+- method: `post` `/api/permission/allowed/update`
+- method: `post` `/api/server/settings`
+- method: `post` `/api/server/setting/update`
+- method: `get` `/api/stats`
+- method: `post` `/api/user`
+- method: `get` `/api/ck/keyholder`
+- method: `post` `/api/ck/lockee`
+- method: `post` `/api/ck/search`
+- method: `post` `/api/ck/user`
+- method: `post` `/api/ck/stats/locks`
 
 ## Commands
 
-- BNet
+BNet
 
-  - `!wow character Region Server CharacterName` - Lookup WoW Character
-  - `!d3 season current` - Lookup WoW Character
-  - `!d3 profile BattleTag#1111` - Lookup WoW Character
+- `!wow character Region Server CharacterName` - Lookup WoW Character
+- `!d3 season current` - Lookup WoW Character
+- `!d3 profile BattleTag#1111` - Lookup WoW Character
 
-- ChastiKey Specific
+ChastiKey Specific
 
-  - `!ck verify` - Register/Verify account
-  - `!ck web` - Opens the Kiera + ChastiKey specific web portal
-  - `!ck ticker` - Returns your ticker
-  - `!ck ticker #` - Returns a specific ticker type (replace #)
-  - `!ck ticker set type 2` - Set default ticker
-  - `!ck ticker set date 2019-01-27` - Start date for ticker data
-  - `!ck ticker set rating show` - To display rating or not show or hide
-  - `!ck stats lockee` - Get your lockee stats (by saved username)
-  - `!ck stats keyholder` - Get your keyholder stats (by saved username)
-  - `!ck stats lockee "Username"` - Get stats for defined username
-  - `!ck recover combos 5` - Returns past unlocked lock combinations
-  - `!ck update` - Performs a series of checks on the user's account and updates any discord roles
-  - `!ck role counts` - Stats to show distribution by roles
-  - `!ck debug UsernameHere` - Debugging tool for ChastiKey / Kiera accounts
-  - `!ck lockee history` - Returns Lockee History
-  - `!ck lockee history personal` - Returns a more detailed Lockee History
-  - `!ck stats locktober` - Show status of Locktober
-  - `!ck search UsernameHere` - Search usernames by string
-  - `!ck check multilocked KeyHolderName` - Check if any users are multilocked
-  - `!ck keyholder lockees KeyHolderName` - Prints a list of Lockees under you
-  - `!ck keyholder set average show` - Toggle your KH average in stats
+- `!ck verify` - Register/Verify account
+- `!ck web` - Opens the Kiera + ChastiKey specific web portal
+- `!ck ticker` - Returns your ticker
+- `!ck ticker #` - Returns a specific ticker type (replace #)
+- `!ck ticker set type 2` - Set default ticker
+- `!ck ticker set date 2019-01-27` - Start date for ticker data
+- `!ck ticker set rating show` - To display rating or not show or hide
+- `!ck stats lockee` - Get your lockee stats (by saved username)
+- `!ck stats keyholder` - Get your keyholder stats (by saved username)
+- `!ck stats lockee "Username"` - Get stats for defined username
+- `!ck recover combos 5` - Returns past unlocked lock combinations
+- `!ck update` - Performs a series of checks on the user's account and updates any discord roles
+- `!ck role counts` - Stats to show distribution by roles
+- `!ck debug UsernameHere` - Debugging tool for ChastiKey / Kiera accounts
+- `!ck lockee history` - Returns Lockee History
+- `!ck lockee history personal` - Returns a more detailed Lockee History
+- `!ck stats locktober` - Show status of Locktober
+- `!ck search UsernameHere` - Search usernames by string
+- `!ck check multilocked KeyHolderName` - Check if any users are multilocked
+- `!ck keyholder lockees KeyHolderName` - Prints a list of Lockees under you
+- `!ck keyholder set average show` - Toggle your KH average in stats
 
-- Decision Rollers
+Decision Rollers
 
-  - `!decision "Question here!" "Answers" "here"` - Run a random decision (without saving)
-  - `!decision new "Your decision question here"` - Create a new saved decision (reusable)
-  - `!decision "DecisionID" add "New outcome here"` - Add options to saved decision
-  - `!decision roll 'DecisionID'` - Roll for a result from a saved decision
+- `!decision "Question here!" "Answers" "here"` - Run a random decision (without saving)
+- `!decision new "Your decision question here"` - Create a new saved decision (reusable)
+- `!decision "DecisionID" add "New outcome here"` - Add options to saved decision
+- `!decision roll 'DecisionID'` - Roll for a result from a saved decision
 
-- General
+General
 
-  - `!register` Registers the user with the bot
+- `!register` Registers the user with the bot
 
-- Moderation
+Moderation
 
-  - `!mod mute emma#1366 "Reason is optional"` - Mute the given user
-  - `!mod unmute emma#1366` - Unmute the given user
-  - `!mod list muted` - Display a list of muted users
-  - `!mod lookup mute emma#1366` - Lookup a muted user
+- `!mod mute emma#1366 "Reason is optional"` - Mute the given user
+- `!mod unmute emma#1366` - Unmute the given user
+- `!mod list muted` - Display a list of muted users
+- `!mod lookup mute emma#1366` - Lookup a muted user
 
-- Roll
+Roll
 
-  - `!roll` - Roll a single die
-  - `!roll 20` - Roll a single die with 20 sides
-  - `!roll 10 6` - Roll multiple (10) dice with given number of sides (6)
+- `!roll` - Roll a single die
+- `!roll 20` - Roll a single die with 20 sides
+- `!roll 10 6` - Roll multiple (10) dice with given number of sides (6)
 
-- Poll
-  - `!poll new "Is Kiera the cat cute?"`
-  - `!poll edit 5cfcf44614e8a64034ca89f3 public false`
-  - `!poll start 5cfcf44614e8a64034ca89f3`
-  - `!poll stop 5cfcf44614e8a64034ca89f3`
-  - `!poll pick random 5cfcf44614e8a64034ca89f3 :thumbsup:`
-  - `!poll add option 5cfcf44614e8a64034ca89f3 :thumbsup: "Optional description here"`
-  - `!poll add option 5cfcf44614e8a64034ca89f3 :thumbsup:`
+Poll
+
+- `!poll new "Is Kiera the cat cute?"`
+- `!poll edit 5cfcf44614e8a64034ca89f3 public false`
+- `!poll start 5cfcf44614e8a64034ca89f3`
+- `!poll stop 5cfcf44614e8a64034ca89f3`
+- `!poll pick random 5cfcf44614e8a64034ca89f3 :thumbsup:`
+- `!poll add option 5cfcf44614e8a64034ca89f3 :thumbsup: "Optional description here"`
+- `!poll add option 5cfcf44614e8a64034ca89f3 :thumbsup:`
