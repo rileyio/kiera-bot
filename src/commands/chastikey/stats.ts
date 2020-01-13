@@ -3,10 +3,7 @@ import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '@/embedded/chastikey-stats'
 import { TrackedUser } from '@/objects/user'
-import { Message } from 'discord.js'
-import { TrackedMessage } from '@/objects/message'
 import { TrackedBotSetting } from '@/objects/setting'
-import { UserData } from 'chastikey.js/app/objects'
 
 export const Routes = ExportRoutes(
   {
@@ -44,7 +41,7 @@ export const Routes = ExportRoutes(
     controller: getCheckLockeeMultiLocked,
     example: '{{prefix}}ck check multilocked KeyHolderName',
     name: 'ck-check-multilocked',
-    validate: '/ck:string/check:string/multilocked:string/user=string',
+    validate: '/ck:string/check:string/multilocked:string/user?=string',
     middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: false,
@@ -58,7 +55,7 @@ export const Routes = ExportRoutes(
     controller: getKeyholderLockees,
     example: '{{prefix}}ck keyholder lockees KeyHolderName',
     name: 'ck-keyholder-lockees',
-    validate: '/ck:string/keyholder:string/lockees:string/user=string',
+    validate: '/ck:string/keyholder:string/lockees:string/user?=string',
     middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: false,
@@ -97,40 +94,9 @@ export async function getLockeeStats(routed: RouterRouted) {
   }
 
   // If the user has display_in_stats === 2 then stop here
-  if (!lockeeData.data.displayInStats) {
-    // Track incoming message and delete for the target user's privacy
-    await routed.bot.MsgTracker.trackMsg(
-      new TrackedMessage({
-        authorID: routed.message.author.id,
-        id: routed.message.id,
-        messageCreatedAt: routed.message.createdAt.getTime(),
-        channelId: routed.message.channel.id,
-        // Flags
-        flagAutoDelete: true,
-        flagTrack: true,
-        // Deletion settings
-        storageKeepInChatFor: 5000
-      })
-    )
-
-    // Notify in chat that the user has requested their stats not be public
-    const response = (await routed.message.reply(Utils.sb(Utils.en.chastikey.userRequestedNoStats))) as Message
-    // Track incoming message and delete for the target user's privacy
-    await routed.bot.MsgTracker.trackMsg(
-      new TrackedMessage({
-        authorID: response.author.id,
-        id: response.id,
-        messageCreatedAt: response.createdAt.getTime(),
-        channelId: response.channel.id,
-        // Flags
-        flagAutoDelete: true,
-        flagTrack: true,
-        // Deletion settings
-        storageKeepInChatFor: 15000
-      })
-    )
-    // Stop here
-    return true
+  if (lockeeData.data.displayInStats === 2) {
+    await Utils.ChastiKey.statsDisabledError(routed)
+    return true // Stop here
   }
 
   // Get user's current ChastiKey username from users collection or by the override
@@ -163,40 +129,9 @@ export async function getKeyholderStats(routed: RouterRouted) {
   }
 
   // If the user has display_in_stats === 2 then stop here
-  if (!keyholderData.data.displayInStats) {
-    // Track incoming message and delete for the target user's privacy
-    await routed.bot.MsgTracker.trackMsg(
-      new TrackedMessage({
-        authorID: routed.message.author.id,
-        id: routed.message.id,
-        messageCreatedAt: routed.message.createdAt.getTime(),
-        channelId: routed.message.channel.id,
-        // Flags
-        flagAutoDelete: true,
-        flagTrack: true,
-        // Deletion settings
-        storageKeepInChatFor: 5000
-      })
-    )
-
-    // Notify in chat that the user has requested their stats not be public
-    const response = (await routed.message.reply(Utils.sb(Utils.en.chastikey.userRequestedNoStats))) as Message
-    // Track incoming message and delete for the target user's privacy
-    await routed.bot.MsgTracker.trackMsg(
-      new TrackedMessage({
-        authorID: response.author.id,
-        id: response.id,
-        messageCreatedAt: response.createdAt.getTime(),
-        channelId: response.channel.id,
-        // Flags
-        flagAutoDelete: true,
-        flagTrack: true,
-        // Deletion settings
-        storageKeepInChatFor: 15000
-      })
-    )
-    // Stop here
-    return true
+  if (keyholderData.data.displayInStats === 2) {
+    await Utils.ChastiKey.statsDisabledError(routed)
+    return true // Stop here
   }
 
   // Get user's current ChastiKey username from users collection or by the override
@@ -277,8 +212,25 @@ export async function getKeyholderStats(routed: RouterRouted) {
 }
 
 export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
-  // Generate regex for username to ignore case
-  const usernameRegex = new RegExp(`^${routed.v.o.user}$`, 'i')
+  // Get user from lockee data (Stats, User and Locks)
+  const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
+    username: routed.v.o.user ? routed.v.o.user : undefined,
+    discordid: !routed.v.o.user ? routed.user.id : undefined
+  })
+
+  // If the lookup is upon someone else with no data, return the standard response
+  if (keyholderData.response.status !== 200) {
+    // Notify in chat what the issue could be
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.userLookupErrorOrNotFound))
+    return true // Stop here
+  }
+
+  // If the user has display_in_stats === 2 then stop here
+  if (keyholderData.data.displayInStats === 2) {
+    await Utils.ChastiKey.statsDisabledError(routed)
+    return true // Stop here
+  }
+
   // Get multiple KH locks from db
   const activeLocks = await routed.bot.DB.aggregate<any>('ck-running-locks', [
     {
@@ -300,7 +252,7 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
         count: 1
       }
     },
-    { $match: { count: { $gt: 1 }, uniqueKHCount: { $gt: 1 }, keyholders: { $in: [usernameRegex] } } },
+    { $match: { count: { $gt: 1 }, uniqueKHCount: { $gt: 1 }, keyholders: { $in: [keyholderData.data.username] } } },
     { $sort: { count: -1 } }
   ])
 
@@ -315,12 +267,29 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
 }
 
 export async function getKeyholderLockees(routed: RouterRouted) {
-  // Generate regex for username to ignore case
-  const usernameRegex = new RegExp(`^${routed.v.o.user}$`, 'i')
+  // Get user from lockee data (Stats, User and Locks)
+  const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
+    username: routed.v.o.user ? routed.v.o.user : undefined,
+    discordid: !routed.v.o.user ? routed.user.id : undefined
+  })
+
+  // If the lookup is upon someone else with no data, return the standard response
+  if (keyholderData.response.status !== 200) {
+    // Notify in chat what the issue could be
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.userLookupErrorOrNotFound))
+    return true // Stop here
+  }
+
+  // If the user has display_in_stats === 2 then stop here
+  if (keyholderData.data.displayInStats === 2) {
+    await Utils.ChastiKey.statsDisabledError(routed)
+    return true // Stop here
+  }
+
   // Get lockees under a KH
   const activeLocks = await routed.bot.DB.aggregate<any>('ck-running-locks', [
     {
-      $match: { lockedBy: usernameRegex }
+      $match: { lockedBy: keyholderData.data.username }
     },
     {
       $group: {

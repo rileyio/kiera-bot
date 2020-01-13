@@ -1,53 +1,70 @@
-import * as Validation from '@/api/validations'
 import * as errors from 'restify-errors'
+import * as Middleware from '@/api/middleware'
+import * as Validation from '@/api/validations'
 import { validate } from '@/api/utils/validate'
-import { WebRouted } from '@/api/web-router'
+import { WebRouted, WebRoute } from '@/api/web-router'
 import { TrackedAvailableObject } from '@/objects/available-objects'
 import { ObjectID } from 'bson'
 
-export namespace Server {
-  export async function settings(routed: WebRouted) {
-    const v = await validate(Validation.Server.getSettings(), routed.req.body)
+export const Routes: Array<WebRoute> = [
+  // * Server Settings * //
+  {
+    controller: settings,
+    method: 'post',
+    name: 'server-get-settings',
+    path: '/api/server/settings',
+    middleware: [Middleware.isAuthenticatedOwner]
+  },
+  {
+    controller: updateSettings,
+    method: 'post',
+    name: 'server-update-setting',
+    path: '/api/server/setting/update',
+    middleware: [Middleware.isAuthenticatedOwner]
+  }
+]
 
-    // this.DEBUG_WEBAPI('req params', v.o)
+export async function settings(routed: WebRouted) {
+  const v = await validate(Validation.Server.getSettings(), routed.req.body)
 
-    if (v.valid) {
-      var serverSettings = await routed.Bot.DB.getMultiple<TrackedAvailableObject>('server-settings', {
-        serverID: v.o.serverID
-      })
+  // this.DEBUG_WEBAPI('req params', v.o)
 
-      return routed.res.send(serverSettings)
-    }
+  if (v.valid) {
+    var serverSettings = await routed.Bot.DB.getMultiple<TrackedAvailableObject>('server-settings', {
+      serverID: v.o.serverID
+    })
 
-    // On error
-    return routed.next(new errors.BadRequestError())
+    return routed.res.send(serverSettings)
   }
 
-  export async function updateSettings(routed: WebRouted) {
-    const v = await validate(Validation.Server.updateSetting(), routed.req.body)
+  // On error
+  return routed.next(new errors.BadRequestError())
+}
 
-    // console.log('req params', v)
+export async function updateSettings(routed: WebRouted) {
+  const v = await validate(Validation.Server.updateSetting(), routed.req.body)
 
-    if (v.valid) {
-      var updateCount = await routed.Bot.DB.update<TrackedAvailableObject>(
-        'server-settings',
-        v.o._id ? { _id: new ObjectID(v.o._id) } : { serverID: v.o.serverID },
-        {
-          $set: {
-            key: 'server.channel.notification.block',
-            type: 'string',
-            state: v.o.state,
-            value: v.o.value
-          }
-        },
-        { atomic: true, upsert: true }
-      )
+  // console.log('req params', v)
 
-      if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
-      return routed.res.send({ status: 'failed', success: false })
-    }
+  if (v.valid) {
+    var updateCount = await routed.Bot.DB.update<TrackedAvailableObject>(
+      'server-settings',
+      v.o._id ? { _id: new ObjectID(v.o._id) } : { serverID: v.o.serverID },
+      {
+        $set: {
+          key: 'server.channel.notification.block',
+          type: 'string',
+          state: v.o.state,
+          value: v.o.value
+        }
+      },
+      { atomic: true, upsert: true }
+    )
 
-    // On error
-    return routed.next(new errors.BadRequestError())
+    if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
+    return routed.res.send({ status: 'failed', success: false })
   }
+
+  // On error
+  return routed.next(new errors.BadRequestError())
 }

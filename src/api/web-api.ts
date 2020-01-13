@@ -6,8 +6,8 @@ import * as corsMiddleware from 'restify-cors-middleware'
 import * as SocketIO from 'socket.io'
 import * as SocketStats from '@/api/socket/stats'
 import { Bot } from '@/index'
-import { routes } from '@/api/routes'
-import { WebRouter } from '@/api/web-router'
+import { WebRouter, WebRoute } from '@/api/web-router'
+import { webRouteLoader } from '@/api/router/route-loader'
 
 export class WebAPI {
   protected Bot: Bot
@@ -21,6 +21,7 @@ export class WebAPI {
   protected readonly port: number = Number(process.env.API_PORT || 8234)
   protected readonly prefix: string = '/api'
   protected DEBUG_WEBAPI = Debug('WebAPI')
+  protected configuredRoutes: Array<WebRoute> = []
 
   constructor(bot: Bot) {
     this.Bot = bot
@@ -41,8 +42,9 @@ export class WebAPI {
 
     // Setup routes
     // tslint:disable-next-line:no-console
-    routes.forEach(r => console.log(`api route:: [${r.method}] ${r.path}`))
-    this.router = new WebRouter(this.Bot, this.server, routes)
+    this.configuredRoutes = webRouteLoader()
+    this.configuredRoutes.forEach(r => console.log(`api route:: [${r.method}] ${r.path}`))
+    this.router = new WebRouter(this.Bot, this.server, this.configuredRoutes)
 
     // Setup SocketIO
     this.socket = SocketIO.listen(this.server.server)

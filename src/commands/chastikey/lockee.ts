@@ -31,15 +31,17 @@ export async function history(routed: RouterRouted) {
     showDeleted: true
   })
 
-  // If user has displayInStats set to false
-  if (!lockeeData.data.displayInStats) {
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.userRequestedNoStats))
+  // If the lookup is upon someone else with no data, return the standard response
+  if (lockeeData.response.status !== 200) {
+    // Notify in chat what the issue could be
+    await routed.message.reply(Utils.sb(Utils.en.chastikey.userLookupErrorOrNotFound, { user: routed.v.o.user }))
     return true // Stop here
   }
 
-  if (lockeeData.response.status !== 200) {
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.userNotFoundRemote))
-    return true
+  // If the user has display_in_stats === 2 then stop here
+  if (lockeeData.data.displayInStats === 2) {
+    await Utils.ChastiKey.statsDisabledError(routed)
+    return true // Stop here
   }
 
   await routed.message.reply(lockeeHistory(lockeeData, { showRating: !kieraUser.__notStored ? kieraUser.ChastiKey.ticker.showStarRatingScore : true }, routed.routerStats))

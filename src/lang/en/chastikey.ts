@@ -5,7 +5,9 @@ export const adminRefreshStats = `Manual stats refresh triggered..`
 // export const usernameNotSetByOwner = `The requested ChastiKey username does not exist -or- the owner of it has not set it with Kiera.`
 export const userNotFoundRemote = `User could not be found on the ChastiKey server.`
 export const userNotFound = `User not found! The owner of the ChastiKey account must \`{{prefix}}ck verify\` in order to proceed with calling this command upon them.`
-export const userLookupErrorOrNotFound = `A ChastiKey user with that username could not be found! Their stats may be turned off.`
+export const userLookupErrorOrNotFound = `Could not complete lookup! Some of the possible reasons:
+  - A user with that username may not exist.
+  - The user may have changed their username in the ChastiKey App.`
 export const keyholderOrAboveRoleRequired = `Calling this command for another user requires you hold the Keyholder or above role.`
 
 // Ticker

@@ -98,11 +98,30 @@ export async function update(routed: RouterRouted) {
     discordid: queryBy === 'Snowflake' ? queryValue : undefined,
     showDeleted: true
   })
+
+  // If the lookup is upon someone else with no data, return the standard response
+  if (lockeeData.response.status !== 200) {
+    if (lockeeData.data.displayInStats === 2) {
+      // Notify in chat what the issue could be
+      await Utils.ChastiKey.statsDisabledError(routed)
+      return true // Stop here
+    }
+  }
+
   // Get Data from new API
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
     username: queryBy === 'Username' ? queryValue : undefined,
     discordid: queryBy === 'Snowflake' ? queryValue : undefined
   })
+
+  // If the lookup is upon someone else with no data, return the standard response
+  if (keyholderData.response.status !== 200) {
+    if (keyholderData.data.displayInStats === 2) {
+      // Notify in chat what the issue could be
+      await Utils.ChastiKey.statsDisabledError(routed)
+      return true // Stop here
+    }
+  }
 
   ///////////////////////////////////////
   /// Collect User Data for update    ///
