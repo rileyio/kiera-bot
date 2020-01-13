@@ -44,8 +44,8 @@ Currently returns: (1) Keyholder, (2) Lockee, (3) Both
 \`{{prefix}}ck stats lockee UsernameHere\` - Get stats for defined username
 \`{{prefix}}ck stats locktober\` - Display Locktober stats
 
-\`{{prefix}}ck keyholder lockees UsernameHere\` - Get list of lockee names under a KH
-\`{{prefix}}ck keyholder set average show\` - Get list of lockee names under a KH
+\`{{prefix}}ck keyholder lockees UsernameHere\` - Get list of lockee names
+\`{{prefix}}ck keyholder set average show\` - Enable/Disable the average visibility in stats commands
 
 \`{{prefix}}ck check multilocked UsernameHere\` - Get list of KH's lockees who have 2 or more KHs
 

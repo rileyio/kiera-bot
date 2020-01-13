@@ -1,6 +1,7 @@
 5.0.0
 - Fixed: #13 CK Stats Lockee and Keyholder no longer working after release of 4.12.0
 - Fixed: CK Verify middleware error message to use proper prefix for env
+- Fixed: CK Help Text
 - Improved: #14 Project imports
 - Improved: CK Stats Lockee is now using live data
 - Improved: CK Lockee Queries on External portal will now be the same live data as CK stats lockee
