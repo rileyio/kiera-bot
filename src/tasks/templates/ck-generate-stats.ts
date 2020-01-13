@@ -4,7 +4,7 @@ import { TrackedChastiKeyLock } from '@/objects/chastikey'
 export class ChastiKeyGenerateStats extends Task {
   // Config for this task
   run = this.process
-  schedule = '2 * * * *'
+  schedule = '5 * * * *'
   settingPrefix = 'bot.task.chastikey.stats.schedule'
 
   protected async process() {
