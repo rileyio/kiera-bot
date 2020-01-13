@@ -53,9 +53,9 @@ export const Routes = ExportRoutes(
     category: 'ChastiKey',
     commandTarget: 'author',
     controller: getKeyholderLockees,
-    example: '{{prefix}}ck keyholder lockees KeyHolderName',
+    example: '{{prefix}}ck keyholder lockees',
     name: 'ck-keyholder-lockees',
-    validate: '/ck:string/keyholder:string/lockees:string/user?=string',
+    validate: '/ck:string/keyholder:string/lockees:string',
     middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: false,
@@ -269,8 +269,7 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
 export async function getKeyholderLockees(routed: RouterRouted) {
   // Get user from lockee data (Stats, User and Locks)
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
-    username: routed.v.o.user ? routed.v.o.user : undefined,
-    discordid: !routed.v.o.user ? routed.user.id : undefined
+    discordid: routed.user.id
   })
 
   // If the lookup is upon someone else with no data, return the standard response

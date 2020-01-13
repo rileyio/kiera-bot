@@ -10,6 +10,7 @@
 - Removed: Legacy notifications
 - Removed: Old CK Auth token/session system
 - Updated: CK Tasks all updated to new API Data
+- Updated: CK KH Lockees command to only show lockees for your own account as a KH
 - Added: New Web API authentication (will break kiera.xyz until rework)
 - Added: #15 Server & User stats and commands for: display, manage, settings
 - Added: #17 ChastiKey Verified users to have their profile auto updated with the Verified role
