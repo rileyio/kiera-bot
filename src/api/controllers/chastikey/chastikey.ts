@@ -192,6 +192,7 @@ export async function user(routed: WebRouted) {
       ckUser.cumulativeSecondsLocked > 0
         ? await routed.Bot.Service.ChastiKey.fetchAPILockeeData({ discordid: discordUser ? discordUser.id : undefined, username: ckUser.username, showDeleted: true })
         : null
+    const lockeeDataLocks = lockeeData ? (lockeeData.response.status === 200 ? lockeeData.getLocked : []) : []
 
     // If the user has locks per the cache then query for those
     const keyholderData = ckUser.noOfSharedLocks ? await routed.Bot.Service.ChastiKey.fetchAPIKeyholderData({ discordid: discordUser ? discordUser.id : undefined, username: ckUser.username }) : null
@@ -201,7 +202,7 @@ export async function user(routed: WebRouted) {
       success: true,
       user: ckUser,
       sharedLocks: asKeyholderSharedLocks,
-      runningLocks: lockeeData.response.status === 200 ? lockeeData.getLocked : [],
+      runningLocks: lockeeDataLocks,
       discord: discordUser ? { id: discordUser.id, avatar: discordUser.avatar } : { id: null, avatar: null }
     })
   }
