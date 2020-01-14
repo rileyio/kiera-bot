@@ -1,3 +1,6 @@
+5.0.1
+- Fixed: CK Web KH Stats Data
+
 5.0.0
 - Fixed: #13 CK Stats Lockee and Keyholder no longer working after release of 4.12.0
 - Fixed: CK Verify middleware error message to use proper prefix for env
