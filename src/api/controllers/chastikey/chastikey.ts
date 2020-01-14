@@ -47,8 +47,7 @@ export const Routes: Array<WebRoute> = [
 export async function khData(routed: WebRouted) {
   // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
   // If the user has locks per the cache then query for those
-  // const keyholderData = await routed.Bot.Service.ChastiKey.fetchAPIKeyholderData({ discordid: routed.session.userID })
-  const keyholderData = await routed.Bot.Service.ChastiKey.fetchAPIKeyholderData({ discordid: '354026441626746890' })
+  const keyholderData = await routed.Bot.Service.ChastiKey.fetchAPIKeyholderData({ discordid: routed.session.userID })
 
   // If the lookup is upon someone else with no data, return the standard response
   if (keyholderData.response.status !== 200) {
