@@ -27,9 +27,6 @@ export async function debug(routed: RouterRouted) {
   const usernameRegex = new RegExp(`^${routed.v.o.user}$`, 'i')
   const asDiscordID = Number(routed.v.o.user) ? routed.v.o.user : 123
 
-  console.log('usernameRegex', usernameRegex)
-  console.log('asDiscordID', asDiscordID)
-
   const kieraUser = await routed.bot.DB.get<TrackedUser>('users', { $or: [{ 'ChastiKey.username': usernameRegex }, { id: routed.v.o.user }] })
   const ckUser = await routed.bot.DB.get<UserData>('ck-users', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckLocktober = await routed.bot.DB.get<{ username: string; discordID: string }>('ck-locktober', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
@@ -37,8 +34,7 @@ export async function debug(routed: RouterRouted) {
 
   var verifyIDAPIResp: ChastiKeyVerifyDiscordID
   if (asDiscordID === 123) verifyIDAPIResp = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ username: routed.v.o.user })
-  if (asDiscordID !== 123) verifyIDAPIResp = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ discordID: routed.user.id })
-  console.log(verifyIDAPIResp)
+  if (asDiscordID !== 123) verifyIDAPIResp = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ discordID: asDiscordID })
 
   var response = `**ChastiKey User Debug**\n`
   response += '```'
