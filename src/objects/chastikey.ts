@@ -21,7 +21,6 @@ export class TrackedChastiKey {
   public isVerifiedInData: boolean = false
   public verificationCode: string = ''
   public verificationCodeRequestedAt: number = 0
-  public displayInStats: boolean = false
 
   constructor(init: Partial<TrackedChastiKey>) {
     Object.assign(this, init)

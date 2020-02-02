@@ -30,16 +30,16 @@ export class TrackedUser {
     this.ChastiKey = new TrackedChastiKey(init !== null ? init.ChastiKey : {})
   }
 
-  public oauth(initOauth: Partial<TrackedUser> | TrackedUser) {
-    Object.assign(this, initOauth)
+  // public oauth(initOauth: Partial<TrackedUser> | TrackedUser) {
+  //   Object.assign(this, initOauth)
 
-    // If valid & updated, generate a token for use with Kiera
-    this.webToken = jwt.sign({ id: this.id }, process.env.BOT_SECRET, { expiresIn: '3h' })
-  }
+  //   // If valid & updated, generate a token for use with Kiera
+  //   this.webToken = jwt.sign({ id: this.id }, process.env.BOT_SECRET, { expiresIn: '3h' })
+  // }
 
-  public reduceServers(connectedGuilds: Array<TrackedServer>) {
-    this.guilds = this.guilds.filter(g => connectedGuilds.findIndex(gg => gg.id === g.id) > -1)
-  }
+  // public reduceServers(connectedGuilds: Array<TrackedServer>) {
+  //   this.guilds = this.guilds.filter(g => connectedGuilds.findIndex(gg => gg.id === g.id) > -1)
+  // }
 }
 
 export interface TrackedUserQuery {
