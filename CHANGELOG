@@ -1,3 +1,6 @@
+5.1.0
+- Updated: CK Update command to work with new 1-5 calculated value API server side for KH Role.
+
 5.0.2
 - Fixed: CK Debug Verify check lookup
 

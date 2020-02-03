@@ -148,6 +148,7 @@ export async function update(routed: RouterRouted) {
     unlocked: undefined,
     locktober: undefined,
     renownedKeyholder: undefined,
+    distinguishedKeyholder: undefined,
     establishedKeyholder: undefined,
     keyholder: undefined,
     noviceKeyholder: undefined,
@@ -166,6 +167,7 @@ export async function update(routed: RouterRouted) {
     unlocked: false,
     locktober: false,
     renownedKeyholder: false,
+    distinguishedKeyholder: false,
     establishedKeyholder: false,
     keyholder: false,
     noviceKeyholder: false,
@@ -185,6 +187,7 @@ export async function update(routed: RouterRouted) {
     if (r.name.toLowerCase() === 'unlocked') role.unlocked = r
     if (r.name.toLowerCase() === 'locktober 2019') role.locktober = r
     if (r.name.toLowerCase() === 'renowned keyholder') role.renownedKeyholder = r
+    if (r.name.toLowerCase() === 'distinguished keyholder') role.distinguishedKeyholder = r
     if (r.name.toLowerCase() === 'established keyholder') role.establishedKeyholder = r
     if (r.name.toLowerCase() === 'keyholder') role.keyholder = r
     if (r.name.toLowerCase() === 'novice keyholder') role.noviceKeyholder = r
@@ -202,6 +205,7 @@ export async function update(routed: RouterRouted) {
     if (r.name.toLowerCase() === 'unlocked') discordUserHasRole.unlocked = true
     if (r.name.toLowerCase() === 'locktober 2019') discordUserHasRole.locktober = true
     if (r.name.toLowerCase() === 'renowned keyholder') discordUserHasRole.renownedKeyholder = true
+    if (r.name.toLowerCase() === 'distinguished keyholder') discordUserHasRole.distinguishedKeyholder = true
     if (r.name.toLowerCase() === 'established keyholder') discordUserHasRole.establishedKeyholder = true
     if (r.name.toLowerCase() === 'keyholder') discordUserHasRole.keyholder = true
     if (r.name.toLowerCase() === 'novice keyholder') discordUserHasRole.noviceKeyholder = true
@@ -450,18 +454,20 @@ export async function update(routed: RouterRouted) {
   changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Keyholder' })
 
   try {
-    if (discordUserHasRole.noviceKeyholder || discordUserHasRole.keyholder || discordUserHasRole.establishedKeyholder || discordUserHasRole.renownedKeyholder) {
-      const eligibleUpgradeEstablishedKeyholderToRenownedKeyholder =
-        keyholderData.data.totalLocksManaged >= 1500 && !discordUserHasRole.renownedKeyholder && Date.now() / 1000 - keyholderData.data.timestampFirstKeyheld >= 86400 * 182
-      const eligibleUpgradeKeyholderToEstablishedKeyholder =
-        keyholderData.data.totalLocksManaged >= 100 &&
-        keyholderData.data.totalLocksManaged < 1500 &&
-        !discordUserHasRole.establishedKeyholder &&
-        Date.now() / 1000 - keyholderData.data.timestampFirstKeyheld >= 86400 * 60
-      const eligibleUpgradeNoviceToKeyholder = keyholderData.data.totalLocksManaged >= 10 && keyholderData.data.totalLocksManaged < 100 && !discordUserHasRole.keyholder
+    if (
+      discordUserHasRole.noviceKeyholder ||
+      discordUserHasRole.keyholder ||
+      discordUserHasRole.establishedKeyholder ||
+      discordUserHasRole.distinguishedKeyholder ||
+      discordUserHasRole.renownedKeyholder
+    ) {
+      const eligibleUpgradeDistinguishedToRenowned = keyholderData.data.keyholderLevel === 5 && !discordUserHasRole.renownedKeyholder
+      const eligibleUpgradeEstablishedToDistinguished = keyholderData.data.keyholderLevel === 4 && !discordUserHasRole.distinguishedKeyholder
+      const eligibleUpgradeKeyholderToEstablished = keyholderData.data.keyholderLevel === 3 && !discordUserHasRole.establishedKeyholder
+      const eligibleUpgradeNoviceToKeyholder = keyholderData.data.keyholderLevel === 2 && !discordUserHasRole.keyholder
 
-      // Established Keyholder -> Renowned Keyholder role
-      if (eligibleUpgradeEstablishedKeyholderToRenownedKeyholder) {
+      // Distinguished Keyholder -> Renowned Keyholder role
+      if (eligibleUpgradeDistinguishedToRenowned) {
         await discordUser.addRole(role.renownedKeyholder)
         changesImplemented.push({ action: 'added', category: 'keyholder', type: 'role', result: 'Renowned Keyholder' })
 
@@ -473,6 +479,41 @@ export async function update(routed: RouterRouted) {
         )
 
         // Remove other roles
+        if (discordUserHasRole.distinguishedKeyholder) {
+          await discordUser.removeRole(role.distinguishedKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Distinguished Keyholder' })
+        }
+        if (discordUserHasRole.establishedKeyholder) {
+          await discordUser.removeRole(role.establishedKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Established Keyholder' })
+        }
+        if (discordUserHasRole.keyholder) {
+          await discordUser.removeRole(role.keyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Keyholder' })
+        }
+        if (discordUserHasRole.noviceKeyholder) {
+          await discordUser.removeRole(role.noviceKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Novice Keyholder' })
+        }
+      }
+
+      // Established Keyholder -> Distinguished Keyholder role
+      if (eligibleUpgradeEstablishedToDistinguished) {
+        await discordUser.addRole(role.distinguishedKeyholder)
+        changesImplemented.push({ action: 'added', category: 'keyholder', type: 'role', result: 'Distinguished Keyholder' })
+
+        // Print in Audit log
+        await routed.bot.auditLogChannel.send(
+          `:robot: **ChastiKey Keyholder Level Up**\nUpgraded to = \`Distinguished Keyholder\`\nServer = \`${discordUser.guild.name}\`\nTo = \`@${discordUser.nickname || discordUser.user.username}#${
+            discordUser.user.discriminator
+          }\``
+        )
+
+        // Remove other roles
+        if (discordUserHasRole.renownedKeyholder) {
+          await discordUser.removeRole(role.renownedKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Renowned Keyholder' })
+        }
         if (discordUserHasRole.establishedKeyholder) {
           await discordUser.removeRole(role.establishedKeyholder)
           changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Established Keyholder' })
@@ -488,7 +529,7 @@ export async function update(routed: RouterRouted) {
       }
 
       // Keyholder -> Established Keyholder role
-      if (eligibleUpgradeKeyholderToEstablishedKeyholder) {
+      if (eligibleUpgradeKeyholderToEstablished) {
         await discordUser.addRole(role.establishedKeyholder)
         changesImplemented.push({ action: 'added', category: 'keyholder', type: 'role', result: 'Established Keyholder' })
 
@@ -503,6 +544,10 @@ export async function update(routed: RouterRouted) {
         if (discordUserHasRole.renownedKeyholder) {
           await discordUser.removeRole(role.renownedKeyholder)
           changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Renowned Keyholder' })
+        }
+        if (discordUserHasRole.distinguishedKeyholder) {
+          await discordUser.removeRole(role.distinguishedKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Distinguished Keyholder' })
         }
         if (discordUserHasRole.keyholder) {
           await discordUser.removeRole(role.keyholder)
@@ -530,6 +575,10 @@ export async function update(routed: RouterRouted) {
         if (discordUserHasRole.renownedKeyholder) {
           await discordUser.removeRole(role.renownedKeyholder)
           changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Renowned Keyholder' })
+        }
+        if (discordUserHasRole.distinguishedKeyholder) {
+          await discordUser.removeRole(role.distinguishedKeyholder)
+          changesImplemented.push({ action: 'removed', category: 'keyholder', type: 'role', result: 'Distinguished Keyholder' })
         }
         if (discordUserHasRole.establishedKeyholder) {
           await discordUser.removeRole(role.establishedKeyholder)
