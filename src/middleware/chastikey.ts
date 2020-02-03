@@ -13,16 +13,13 @@ export async function isCKVerified(routed: RouterRouted) {
   )
 
   // Update kiera's record if something is missing
-  if (!ckUser.userID && kieraUser._id)
+  if (!ckUser.userID && kieraUser._id) {
     await routed.bot.DB.update('users', { id: routed.user.id }, { $set: { 'ChastiKey.isVerified': ckUser.isVerified, 'ChastiKey.username': ckUser.username } }, { atomic: true })
+  }
 
   // Verified!!
-  if (!ckUser.userID || kieraUser.ChastiKey.isVerified) return routed // No need to hault if this passes
+  if (ckUser.userID !== undefined || kieraUser.ChastiKey.isVerified) return routed // No need to hault if this passes
   // Fallback, user not yet registered
-  await routed.message.reply(
-    Utils.sb(
-      'This command requires your account be verified with ChastiKey using the following command: `{{prefix}}ck verify`\n\nIf you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `{{prefix}}ck verify` again.'
-    )
-  )
+  await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyVerifyReq2))
   return // Returns nothing which halts going any further
 }
