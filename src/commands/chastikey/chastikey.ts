@@ -260,8 +260,9 @@ export async function roleCounts(routed: RouterRouted) {
     locktober: 0,
     noviceKeyholder: 0,
     keyholder: 0,
-    renownedKeyholder: 0,
     establishedKeyholder: 0,
+    distinguishedKeyholder: 0,
+    renownedKeyholder: 0,
     devotedLockee: 0,
     experiencedLockee: 0,
     intermediateLockee: 0,
@@ -277,6 +278,7 @@ export async function roleCounts(routed: RouterRouted) {
     // Keyholders
     if (r.name.toLowerCase() === 'keyholder') counts.keyholder = r.members.size
     if (r.name.toLowerCase() === 'renowned keyholder') counts.renownedKeyholder = r.members.size
+    if (r.name.toLowerCase() === 'distinguished keyholder') counts.distinguishedKeyholder = r.members.size
     if (r.name.toLowerCase() === 'established keyholder') counts.establishedKeyholder = r.members.size
     if (r.name.toLowerCase() === 'novice keyholder') counts.noviceKeyholder = r.members.size
     // Lockees
@@ -295,44 +297,47 @@ export async function roleCounts(routed: RouterRouted) {
   var response = `:bar_chart: **Server Role Statistics**\n`
 
   response += `\`\`\``
-  response += `Everyone               # ${routed.message.guild.members.size}\n`
-  response += `=======================================\n`
-  response += `Verified               # ${counts.chastikeyVerified} ${Array.from(Array(largestNumberString + 3 - String(counts.chastikeyVerified).length)).join(' ')} ${roundedDisplay(
+  response += `Everyone                 # ${routed.message.guild.members.size}\n`
+  response += `=========================================\n`
+  response += `Verified                 # ${counts.chastikeyVerified} ${Array.from(Array(largestNumberString + 3 - String(counts.chastikeyVerified).length)).join(' ')} ${roundedDisplay(
     counts.chastikeyVerified / routed.message.guild.members.size
   )}%\n`
-  response += `Locked                 # ${counts.locked} ${Array.from(Array(largestNumberString + 3 - String(counts.locked).length)).join(' ')} ${roundedDisplay(
+  response += `Locked                   # ${counts.locked} ${Array.from(Array(largestNumberString + 3 - String(counts.locked).length)).join(' ')} ${roundedDisplay(
     counts.locked / routed.message.guild.members.size
   )}%\n`
-  response += `Unlocked               # ${counts.unlocked} ${Array.from(Array(largestNumberString + 3 - String(counts.unlocked).length)).join(' ')} ${roundedDisplay(
+  response += `Unlocked                 # ${counts.unlocked} ${Array.from(Array(largestNumberString + 3 - String(counts.unlocked).length)).join(' ')} ${roundedDisplay(
     counts.unlocked / routed.message.guild.members.size
   )}%\n`
-  response += `Locktober 2019         # ${counts.locktober} ${Array.from(Array(largestNumberString + 3 - String(counts.locktober).length)).join(' ')} ${roundedDisplay(
+  response += `Locktober 2019           # ${counts.locktober} ${Array.from(Array(largestNumberString + 3 - String(counts.locktober).length)).join(' ')} ${roundedDisplay(
     counts.locktober / routed.message.guild.members.size
   )}%\n`
-  response += `=======================================\n`
-  response += `Renowned Keyholder     # ${counts.renownedKeyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.renownedKeyholder).length)).join(' ')} ${roundedDisplay(
+  response += `=========================================\n`
+  response += `Renowned Keyholder       # ${counts.renownedKeyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.renownedKeyholder).length)).join(' ')} ${roundedDisplay(
     counts.renownedKeyholder / routed.message.guild.members.size
   )}%\n`
-  response += `Established Keyholder  # ${counts.establishedKeyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.establishedKeyholder).length)).join(' ')} ${roundedDisplay(
+  response += `Distinguished Keyholder  # ${counts.distinguishedKeyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.distinguishedKeyholder).length)).join(' ')} ${roundedDisplay(
+    counts.distinguishedKeyholder / routed.message.guild.members.size
+  )}%\n`
+  response += `Established Keyholder    # ${counts.establishedKeyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.establishedKeyholder).length)).join(' ')} ${roundedDisplay(
     counts.establishedKeyholder / routed.message.guild.members.size
   )}%\n`
-  response += `Keyholder              # ${counts.keyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.keyholder).length)).join(' ')} ${roundedDisplay(
+  response += `Keyholder                # ${counts.keyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.keyholder).length)).join(' ')} ${roundedDisplay(
     counts.keyholder / routed.message.guild.members.size
   )}%\n`
-  response += `Novice Keyholder       # ${counts.noviceKeyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.noviceKeyholder).length)).join(' ')} ${roundedDisplay(
+  response += `Novice Keyholder         # ${counts.noviceKeyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.noviceKeyholder).length)).join(' ')} ${roundedDisplay(
     counts.noviceKeyholder / routed.message.guild.members.size
   )}%\n`
-  response += `=======================================\n`
-  response += `Devoted Lockee         # ${counts.devotedLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.devotedLockee).length)).join(' ')} ${roundedDisplay(
+  response += `=========================================\n`
+  response += `Devoted Lockee           # ${counts.devotedLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.devotedLockee).length)).join(' ')} ${roundedDisplay(
     counts.devotedLockee / routed.message.guild.members.size
   )}%\n`
-  response += `Experienced Lockee     # ${counts.experiencedLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.experiencedLockee).length)).join(' ')} ${roundedDisplay(
+  response += `Experienced Lockee       # ${counts.experiencedLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.experiencedLockee).length)).join(' ')} ${roundedDisplay(
     counts.experiencedLockee / routed.message.guild.members.size
   )}%\n`
-  response += `Intermediate Lockee    # ${counts.intermediateLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.intermediateLockee).length)).join(' ')} ${roundedDisplay(
+  response += `Intermediate Lockee      # ${counts.intermediateLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.intermediateLockee).length)).join(' ')} ${roundedDisplay(
     counts.intermediateLockee / routed.message.guild.members.size
   )}%\n`
-  response += `Novice Lockee          # ${counts.noviceLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.noviceLockee).length)).join(' ')} ${roundedDisplay(
+  response += `Novice Lockee            # ${counts.noviceLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.noviceLockee).length)).join(' ')} ${roundedDisplay(
     counts.noviceLockee / routed.message.guild.members.size
   )}%\n`
   response += `\`\`\``
