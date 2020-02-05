@@ -26,6 +26,15 @@ export namespace Decisions {
       })
       .required()
   }
+  export function updateOutcomeDescription() {
+    return joi
+      .object()
+      .keys({
+        _id: joi.string().required(),
+        description: joi.string().required()
+      })
+      .required()
+  }
   export function deleteOutcome() {
     return joi
       .object()

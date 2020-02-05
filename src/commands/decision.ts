@@ -64,7 +64,6 @@ export async function newDecision(routed: RouterRouted) {
   // Create a new question &
   const nd = new TrackedDecision({
     name: routed.v.o.name,
-    owner: user._id,
     authorID: routed.message.author.id,
     serverID: routed.message.guild.id
   })
@@ -100,7 +99,7 @@ export async function newDecisionEntry(routed: RouterRouted) {
 }
 
 export async function runSavedDecision(routed: RouterRouted) {
-  const decision = await routed.bot.DB.get('decision', { _id: new ObjectID(routed.v.o.id) })
+  const decision = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id) })
   if (decision) {
     const sd = new TrackedDecision(decision)
     // Halt if decision is disabled
@@ -109,8 +108,11 @@ export async function runSavedDecision(routed: RouterRouted) {
       return true
     }
 
+    // Lookup author
+    const author = await routed.message.guild.fetchMember(decision.authorID, false)
+
     const random = Math.floor(Math.random() * sd.options.length)
-    await routed.message.reply(decisionFromSaved(sd, sd.options[random]))
+    await routed.message.reply(decisionFromSaved(sd, sd.options[random], { author: author }))
     return true
   }
   return false

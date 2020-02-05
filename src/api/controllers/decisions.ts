@@ -23,6 +23,13 @@ export const Routes: Array<WebRoute> = [
     middleware: [Middleware.validateSession]
   },
   {
+    controller: updateDecisionDescription,
+    method: 'patch',
+    name: 'web-decision-update-description',
+    path: '/api/decision/description',
+    middleware: [Middleware.validateSession]
+  },
+  {
     controller: enableDecision,
     method: 'patch',
     name: 'web-decision-update-enabled',
@@ -150,6 +157,34 @@ export async function updateDecisionName(routed: WebRouted) {
       {
         $set: {
           name: v.o.name
+        }
+      },
+      { atomic: true }
+    )
+
+    if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
+    return routed.res.send({ status: 'failed', success: false })
+  }
+
+  // On error
+  return routed.next(new errors.BadRequestError())
+}
+
+export async function updateDecisionDescription(routed: WebRouted) {
+  const v = await validate(Validation.Decisions.updateOutcomeDescription(), routed.req.body)
+
+  if (v.valid) {
+    // Get user from users collection
+    const user = new TrackedUser(
+      await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
+    )
+
+    const updateCount = await routed.Bot.DB.update(
+      'decision',
+      { authorID: user.id, _id: new ObjectID(v.o._id) },
+      {
+        $set: {
+          description: v.o.description
         }
       },
       { atomic: true }
