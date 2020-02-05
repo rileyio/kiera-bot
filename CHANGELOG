@@ -2,6 +2,9 @@
 - Updated: CK Update command to work with new 1-5 calculated value API server side for KH Role.
 - Updated: CK Admin Refresh stats to display under maintenance message while a new course of action is determined for refreshing data manually.
 - Updated: CK Role counts command to show new distinguished role.
+- Added: #19, #20 Markdown support for decision outcomes.
+- Added: #22 Description/Subtitle area to decisions.
+- Added: #18 Footer note with author's name.
 
 5.0.2
 - Fixed: CK Debug Verify check lookup
