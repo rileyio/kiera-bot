@@ -1,4 +1,5 @@
 5.1.0
+- Fixed: ChastiKey username changes should now properly update on the Kiera record side when a change is detected upon running a command.
 - Updated: CK Update command to work with new 1-5 calculated value API server side for KH Role.
 - Updated: CK Admin Refresh stats to display under maintenance message while a new course of action is determined for refreshing data manually.
 - Updated: CK Role counts command to show new distinguished role.

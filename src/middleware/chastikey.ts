@@ -13,7 +13,7 @@ export async function isCKVerified(routed: RouterRouted) {
   )
 
   // Update kiera's record if something is missing
-  if (!ckUser.userID && kieraUser._id) {
+  if ((!ckUser.userID && kieraUser._id) || ckUser.username !== kieraUser.ChastiKey.username) {
     await routed.bot.DB.update('users', { id: routed.user.id }, { $set: { 'ChastiKey.isVerified': ckUser.isVerified, 'ChastiKey.username': ckUser.username } }, { atomic: true })
   }
 
