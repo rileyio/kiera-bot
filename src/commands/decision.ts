@@ -1,3 +1,4 @@
+import * as Random from 'random'
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
@@ -111,7 +112,7 @@ export async function runSavedDecision(routed: RouterRouted) {
     // Lookup author
     const author = await routed.message.guild.fetchMember(decision.authorID, false)
 
-    const random = Math.floor(Math.random() * sd.options.length)
+    const random = Random.int(0, sd.options.length - 1)
     await routed.message.reply(decisionFromSaved(sd, sd.options[random], { author: author }))
     return true
   }
@@ -119,7 +120,7 @@ export async function runSavedDecision(routed: RouterRouted) {
 }
 
 export async function runRealtimeDecision(routed: RouterRouted) {
-  const random = Math.floor(Math.random() * routed.v.o.args.length)
+  const random = Random.int(0, routed.v.o.args.length - 1)
   await routed.message.reply(decisionRealtime(routed.v.o.question, routed.v.o.args[random]))
   return true
 }

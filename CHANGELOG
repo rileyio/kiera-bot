@@ -6,6 +6,7 @@
 - Added: #22 Description/Subtitle area to decisions.
 - Added: #18 Footer note with author's name.
 - Added: Random number between support to text, url & markdown decisions via `{{roll-0-100}}`
+- Added: 3rd party module to shorten random number calls & help add more randomness vs vanilla implementation
 
 5.0.2
 - Fixed: CK Debug Verify check lookup
