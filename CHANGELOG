@@ -5,6 +5,7 @@
 - Added: #19, #20 Markdown support for decision outcomes.
 - Added: #22 Description/Subtitle area to decisions.
 - Added: #18 Footer note with author's name.
+- Added: Random number between support to text, url & markdown decisions via `{{roll-0-100}}`
 
 5.0.2
 - Fixed: CK Debug Verify check lookup

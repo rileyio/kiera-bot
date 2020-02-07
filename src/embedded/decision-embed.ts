@@ -20,13 +20,19 @@ export function decisionFromSaved(decision: TrackedDecision, option: TrackedDeci
   }
   if (option.type === 'url') {
     _embed.embed.description += `\n\n**Outcome:** \n\n${option.text}`
+    // Run the String Builder
+    _embed.embed.description = Utils.sb(_embed.embed.description)
   }
   if (option.type === 'markdown') {
     _embed.embed.description += `\n\n**Outcome:** \n\n${option.text}`
+    // Run the String Builder
+    _embed.embed.description = Utils.sb(_embed.embed.description)
   }
   if (option.type === undefined || option.type === 'string') {
     // If its just plain text return surrounded by ``
     _embed.embed.description += `\n\n**Outcome:** \n\n\`${option.text}\``
+    // Run the String Builder
+    _embed.embed.description = Utils.sb(_embed.embed.description)
   }
 
   return _embed

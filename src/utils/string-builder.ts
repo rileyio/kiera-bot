@@ -1,7 +1,10 @@
+import * as Random from 'random'
+
 export function sb(baseString: string, data?: any) {
   // Defaults to use if not passed in data
   var globals = {
-    prefix: process.env.BOT_MESSAGE_PREFIX
+    prefix: process.env.BOT_MESSAGE_PREFIX,
+    'roll-[0-9]{1,3}-[0-9]{1,3}': (str: string) => roll(str)
   }
 
   // Merge data with global defaults
@@ -10,10 +13,38 @@ export function sb(baseString: string, data?: any) {
   var final = String(baseString || ``)
 
   for (const key in globals) {
-    final = final.replace(new RegExp(`{{${key}}}`, 'img'), globals[key])
+    const isFunc = typeof globals[key] === 'function'
+    // console.log('String Builder -> Key Matched:', key)
+    final = final.replace(new RegExp(`{{${key}}}`, 'img'), isFunc ? (matched: string) => globals[key](matched) : globals[key])
   }
 
   return final
+}
+
+function roll(str: string) {
+  const regex = /{{roll-([0-9]{1,3})-([0-9]{1,3})}}/gim
+  var m: RegExpExecArray
+  var v1 = 0
+  var v2 = 100
+
+  while ((m = regex.exec(str)) !== null) {
+    // This is necessary to avoid infinite loops with zero-width matches
+    if (m.index === regex.lastIndex) {
+      regex.lastIndex++
+    }
+
+    // The result can be accessed through the `m`-variable.
+    m.forEach((match, groupIndex) => {
+      // console.log(`Found match, group ${groupIndex}: ${match}`)
+      if (groupIndex === 1) v1 = Number(match)
+      if (groupIndex === 2) v2 = Number(match)
+    })
+  }
+
+  // Perform randomize - with some added protections for out of bounds numbers
+  var value = Random.int(v1 <= v2 ? v1 : 0, v2 >= v1 ? v2 : v1)
+
+  return value
 }
 
 export * from '../lang'
