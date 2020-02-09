@@ -149,13 +149,15 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number) {
   name += ` ${lock.lockFrozenByKeyholder || lock.lockFrozenByCard ? (lock.lockFrozenByKeyholder ? indicatorEmoji.Frozen : cardsEmoji.Freeze) : ''}`
   name += ` ${lock.isTrustedKeyholder ? `<:trustkeyholder:474975187310346240>` : ''}`
 
-  var value = `Keyholder **\`${lock.lockedBy}\`** Status **\`Locked\`** **\`${timeLocked}\`**`
+  var value = `Keyholder **\`${lock.lockedBy !== '' ? lock.lockedBy : 'Self Locked'}\`** Status **\`Locked\`** **\`${timeLocked}\`**`
 
   // If lock has frozen time
   if (lock.totalTimeFrozen > 0) value += `\nTotal time frozen \`${Utils.Date.calculateHumanTimeDDHHMM(lock.totalTimeFrozen, true)}\``
   // If a last/next pick time is known
-  if (lock.timestampLastPicked > 0) value += `\nLast Pick \`${Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lock.timestampLastPicked, true)}\` ago`
-  else value += `\nLast Pick \`has yet to pick\``
+  if (!lock.isFixed) {
+    if (lock.timestampLastPicked > 0) value += `\nLast Pick \`${Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lock.timestampLastPicked, true)}\` ago`
+    else value += `\nLast Pick \`has yet to pick\``
+  }
   if (lock.timestampNextPick > 0) {
     const timeTillPickFormatted = Utils.Date.calculateHumanTimeDDHHMM(lock.timestampNextPick - Date.now() / 1000, true)
     value += `\nNext pick \`${lock.timestampNextPick - Date.now() / 1000 <= 0 ? 'now' : `in ${timeTillPickFormatted}`}\``
