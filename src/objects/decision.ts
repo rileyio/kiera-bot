@@ -53,6 +53,8 @@ export class TrackedDecision {
    */
   public counter: number = 0
 
+  public log?: Array<TrackedDecisionLogEntry>
+
   constructor(init?: Partial<TrackedDecision>) {
     Object.assign(this, init || {})
     this.options = this.options.map(o => new TrackedDecisionOption(o))
@@ -85,5 +87,18 @@ export class TrackedDecisionOption {
 
   constructor(init: Partial<TrackedDecisionOption>) {
     Object.assign(this, init)
+  }
+}
+
+export class TrackedDecisionLogEntry {
+  public _id: Object = new ObjectID()
+  public callerID: string
+  public decisionID: string
+  public outcomeID: string
+  public serverID?: string
+  public channelID: string
+
+  constructor(init?: Partial<TrackedDecisionLogEntry>) {
+    Object.assign(this, init || {})
   }
 }

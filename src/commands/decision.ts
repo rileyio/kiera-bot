@@ -7,6 +7,8 @@ import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import { ObjectID } from 'bson'
 import { decisionFromSaved, decisionRealtime } from '@/embedded/decision-embed'
 import { sb, en } from '@/utils'
+import { TrackedDecisionLogEntry } from '@/objects/decision'
+import { decisionLogLast5 } from '@/embedded/decision-log'
 
 export const Routes = ExportRoutes(
   {
@@ -43,6 +45,16 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     commandTarget: 'author',
+    controller: fetchDecisionLog,
+    example: '{{prefix}}decision log id',
+    name: 'decision-log',
+    validate: '/decision:string/log=string/id=string',
+    middleware: [Middleware.isUserRegistered]
+  },
+  {
+    type: 'message',
+    category: 'Fun',
+    commandTarget: 'author',
     controller: runRealtimeDecision,
     example: '{{prefix}}decision "Question here" "Option 1" "Option 2" "etc.."',
     name: 'decision-realtime',
@@ -57,11 +69,6 @@ export const Routes = ExportRoutes(
  * @param {RouterRouted} routed
  */
 export async function newDecision(routed: RouterRouted) {
-  const userArgType = Utils.User.verifyUserRefType(routed.message.author.id)
-  const userQuery = Utils.User.buildUserQuery(routed.message.author.id, userArgType)
-
-  // Get the user from the db
-  const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', userQuery))
   // Create a new question &
   const nd = new TrackedDecision({
     name: routed.v.o.name,
@@ -86,7 +93,7 @@ export async function newDecisionEntry(routed: RouterRouted) {
   // Get the saved decision from the db (Only the creator can edit)
   var decision = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    owner: user._id
+    authorID: routed.user.id
   })
 
   if (decision) {
@@ -113,7 +120,21 @@ export async function runSavedDecision(routed: RouterRouted) {
     const author = await routed.message.guild.fetchMember(decision.authorID, false)
 
     const random = Random.int(0, sd.options.length - 1)
-    await routed.message.reply(decisionFromSaved(sd, sd.options[random], { author: author }))
+    const outcome = sd.options[random]
+
+    // Track in log
+    await routed.bot.DB.add(
+      'decision-log',
+      new TrackedDecisionLogEntry({
+        callerID: routed.user.id,
+        decisionID: String(decision._id),
+        outcomeID: String(outcome._id),
+        serverID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.guild.id,
+        channelID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.channel.id
+      })
+    )
+
+    await routed.message.reply(decisionFromSaved(sd, outcome, { author: author }))
     return true
   }
   return false
@@ -122,5 +143,31 @@ export async function runSavedDecision(routed: RouterRouted) {
 export async function runRealtimeDecision(routed: RouterRouted) {
   const random = Random.int(0, routed.v.o.args.length - 1)
   await routed.message.reply(decisionRealtime(routed.v.o.question, routed.v.o.args[random]))
+  return true
+}
+
+export async function fetchDecisionLog(routed: RouterRouted) {
+  const log: Array<TrackedDecision> = await routed.bot.DB.aggregate('decision', [
+    { $match: { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id } },
+    { $project: { _id: { $toString: '$_id' }, name: 1, options: 1 } },
+    {
+      $lookup: {
+        from: 'decision-log',
+        localField: '_id',
+        foreignField: 'decisionID',
+        as: 'log'
+      }
+    }
+  ])
+
+  if (!log) {
+    // If nothing comes up, inform the user
+    await routed.message.reply('Could not find a decision roll from the ID provided.')
+    return true // Stop Here
+  }
+
+  const decision = log[0]
+  await routed.message.channel.send(decisionLogLast5(decision, routed.user))
+
   return true
 }

@@ -10,6 +10,7 @@
 - Added: #18 Footer note with author's name.
 - Added: Random number between support to text, url & markdown decisions via `{{roll-0-100}}`
 - Added: 3rd party module to shorten random number calls & help add more randomness vs vanilla implementation
+- Added: Saved Decision roll log, logging, and last 5 in log command.
 
 5.0.2
 - Fixed: CK Debug Verify check lookup

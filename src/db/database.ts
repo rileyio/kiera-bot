@@ -15,6 +15,7 @@ export type Collections =
   | 'ck-users'
   | 'command-permissions'
   | 'decision'
+  | 'decision-log'
   | 'messages'
   | 'muted-users'
   | 'notifications'

@@ -6,17 +6,17 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "preserveConstEnums": true,
-    "declaration": true,
-    "outDir": "app",
+    "declaration": false,
+    "outDir": "./app",
     "inlineSourceMap": true,
     "skipLibCheck": true,
     "typeRoots": ["src/typings", "./node_modules/@types/"],
     "lib": ["es6", "es2016"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["src/*"]
     }
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "app"]
 }
