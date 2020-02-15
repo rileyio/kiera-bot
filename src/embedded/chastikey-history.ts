@@ -4,7 +4,6 @@ import { LockeeDataResponse } from 'chastikey.js/app/objects'
 
 export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRating: boolean }, routerStats: RouterStats) {
   const twelveMonthAgoTimestamp = Date.now() / 1000 - 7890000 * 4
-  const threeMonthAgoTimestamp = Date.now() / 1000 - 7890000
   var stats = {
     last12Months: {
       avgLockedTimePerKH: 0.0,
@@ -30,15 +29,22 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
     }
   }
 
+  var lockIDsSeen = {}
+
   // Calculate past KHs first
   lockeeData.locks.forEach(lock => {
+    // Track Lock ID
+    if (lockIDsSeen[lock.lockID] === undefined) lockIDsSeen[lock.lockID] = 1
+    else lockIDsSeen[lock.lockID]++
+
     const khIndex12Months = stats.last12Months.khNames.findIndex(name => name === lock.lockedBy)
     const isLockAbandoned = lock.status === 'Locked' && lock.deleted === 1
     const lockWasInLast12Months = lock.timestampLocked >= twelveMonthAgoTimestamp
     const lockWasSelfLocked = lock.lockedBy === '' || lock.lockedBy === lockeeData.data.username
     const lockWasWithBot = lock.lockedBy === 'Zoe' || lock.lockedBy === 'Chase' || lock.lockedBy === 'Blaine' || lock.lockedBy === 'Hailey'
     const lockLength = lock.timestampUnlocked - lock.timestampLocked
-    const lockIsAFakeStillLocked = lock.status === 'Locked' && lock.deleted === 1 && lockeeData.locks.findIndex(ll => ll.lockID === lock.lockID && ll.status === 'UnlockedReal') > -1
+    const lockIsAFakeStillLocked = lock.status === 'Locked' && lockeeData.locks.findIndex(ll => ll.lockID === lock.lockID && ll.status === 'UnlockedReal') > -1
+    const lockIDSeenBefore = lockIDsSeen[lock.lockID] > 1 // Suspected fake, has been seen in previous loop iteration
 
     if (lockWasInLast12Months) {
       // -----------------------------------------
@@ -54,10 +60,11 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
       if (!isLockAbandoned && lockWasWithBot) stats.last12Months.botLocks += 1
       // [12 MONTHS] Increment Abandoned count
       // *Excludes: Self, Bots
-      if (isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot && !lockIsAFakeStillLocked) stats.last12Months.abandonedCount += 1
-      // [3 MONTHS] Increment total locked time
+      if (isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot && !lockIsAFakeStillLocked && !lockIDSeenBefore) stats.last12Months.abandonedCount += 1
+      // [12 MONTHS] Increment total locked time
       // *Excludes: Abandoned, Self, Bots
-      if (!isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot && lock.isUnlocked) stats.last12Months.totalTimeLocked += lock.timestampUnlocked === 0 ? Date.now() / 1000 - lock.timestampLocked : lockLength
+      if (!isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot && lock.isUnlocked && !lockIDSeenBefore)
+        stats.last12Months.totalTimeLocked += lock.timestampUnlocked === 0 ? Date.now() / 1000 - lock.timestampLocked : lockLength
       // [12 MONTHS] Ensure KH is tracked for count
       // *Excludes: Self, Bots
       if (khIndex12Months === -1 && !lockWasSelfLocked && !lockWasWithBot) stats.last12Months.khNames.push(lock.lockedBy)
@@ -65,33 +72,6 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
       // *Excludes: Abandoned, Self, Bots
       if (!isLockAbandoned && lockLength > stats.last12Months.longestLock && !lockWasSelfLocked && !lockWasWithBot) stats.last12Months.longestLock = lockLength
       // [12 MONTHS] Stats END
-      // -----------------------------------------
-      // -----------------------------------------
-      // [3 MONTHS] Stats START
-      // if (lockWasInLast3Months) {
-      //   // [3 MONTHS] Increment total count
-      //   // *Excludes: Abandoned, Self, Bots
-      //   if (!isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot) stats.last3Months.totalLocksCount += 1
-      //   // [3 MONTHS] Increment Self locks count
-      //   // *Excludes: Abandoned
-      //   if (!isLockAbandoned && lockWasSelfLocked) stats.last3Months.selfLocks += 1
-      //   // [3 MONTHS] Increment Bot locks count
-      //   // *Excludes: Abandoned
-      //   if (!isLockAbandoned && lockWasWithBot) stats.last3Months.botLocks += 1
-      //   // [3 MONTHS] Increment Abandoned count
-      //   // *Excludes: Self, Bots
-      //   if (isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot) stats.last3Months.abandonedCount += 1
-      //   // [3 MONTHS] Increment total locked time
-      //   // *Excludes: Abandoned, Self, Bots
-      //   if (!isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot) stats.last3Months.totalTimeLocked += lock.timestampUnlocked === 0 ? Date.now() / 1000 - lock.timestampLocked : lockLength
-      //   // [3 MONTHS] Ensure KH is tracked for count
-      //   // *Excludes: Self, Bots
-      //   if (khIndex3Months === -1 && !lockWasSelfLocked && !lockWasWithBot) stats.last3Months.khNames.push(lock.lockedBy)
-      //   // [3 MONTHS] Longest lock
-      //   // *Excludes: Abandoned, Self, Bots
-      //   if (!isLockAbandoned && lockLength > stats.last3Months.longestLock && !lockWasSelfLocked && !lockWasWithBot) stats.last3Months.longestLock = lockLength
-      // }
-      // [3 MONTHS] Stats END
       // -----------------------------------------
     }
   })
@@ -126,20 +106,6 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
   // description += `\`${stats.last12Months.selfLocks}\` Self Created Locks\n`
   // description += `\`${stats.last12Months.selfLocks}\` Bot Keyholders\n`
   description += `\n`
-
-  // description += `**Last 3 months**\n`
-  // description += `Locked for \`${Math.round((stats.last3Months.totalTimeLocked / 60 / 60 / 24) * 100) / 100}\` __days__¹ ⁴\n`
-  // description += `Average \`${Math.round((stats.last3Months.totalLocksCount / stats.last3Months.khNames.length) * 100) / 100}\` __locks__ per Keyholder¹ ⁴\n`
-  // description += `Longest (completed)¹ \`${Utils.Date.calculateHumanTimeDDHHMM(stats.last3Months.longestLock)}\`\n`
-  // description += `\`${stats.last3Months.totalLocksCount}\` Keyholder __locks__ completed¹\n`
-  // description += `\`${stats.last3Months.botLocks}\` Bot __locks__ completed²\n`
-  // description += `\`${stats.last3Months.selfLocks}\` Self __locks__ completed²\n`
-  // description += `\`${stats.last3Months.abandonedCount}\` Keyholder __locks__ abandoned³\n`
-  // description += `\`${stats.last3Months.khNames.length}\` Keyholders¹\n`
-  // description += `\`\`\`${stats.last3Months.khNames.join(', ')}\`\`\`\n`
-  // // description += `\`${stats.last3Months.selfLocks}\` Self Created Locks\n`
-  // // description += `\`${stats.last3Months.selfLocks}\` Bot Keyholders\n`
-  // description += `\n`
 
   description += `¹ Excludes: Abandoned, Self, Bots.\n`
   description += `² Excludes: Abandoned.\n`
