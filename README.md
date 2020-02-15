@@ -128,6 +128,7 @@ Decision Rollers
 - `!decision new "Your decision question here"` - Create a new saved decision (reusable)
 - `!decision "DecisionID" add "New outcome here"` - Add options to saved decision
 - `!decision roll 'DecisionID'` - Roll for a result from a saved decision
+- `!decision log DecisionID` - Display last 5 calls of this command and outcomes.
 
 General
 

@@ -32,15 +32,13 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
 
   // Calculate past KHs first
   lockeeData.locks.forEach(lock => {
-    // console.log(lock.lockedBy, sharedLockNoLongerManaged)
     const khIndex12Months = stats.last12Months.khNames.findIndex(name => name === lock.lockedBy)
-    const khIndex3Months = stats.last3Months.khNames.findIndex(name => name === lock.lockedBy)
-    const isLockAbandoned = (lock.status === 'Locked') && lock.deleted === 1
+    const isLockAbandoned = lock.status === 'Locked' && lock.deleted === 1
     const lockWasInLast12Months = lock.timestampLocked >= twelveMonthAgoTimestamp
-    const lockWasInLast3Months = lock.timestampLocked >= threeMonthAgoTimestamp
     const lockWasSelfLocked = lock.lockedBy === '' || lock.lockedBy === lockeeData.data.username
     const lockWasWithBot = lock.lockedBy === 'Zoe' || lock.lockedBy === 'Chase' || lock.lockedBy === 'Blaine' || lock.lockedBy === 'Hailey'
     const lockLength = lock.timestampUnlocked - lock.timestampLocked
+    const lockIsAFakeStillLocked = lock.status === 'Locked' && lock.deleted === 1 && lockeeData.locks.findIndex(ll => ll.lockID === lock.lockID && ll.status === 'UnlockedReal') > -1
 
     if (lockWasInLast12Months) {
       // -----------------------------------------
@@ -56,7 +54,7 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
       if (!isLockAbandoned && lockWasWithBot) stats.last12Months.botLocks += 1
       // [12 MONTHS] Increment Abandoned count
       // *Excludes: Self, Bots
-      if (isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot) stats.last12Months.abandonedCount += 1
+      if (isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot && !lockIsAFakeStillLocked) stats.last12Months.abandonedCount += 1
       // [3 MONTHS] Increment total locked time
       // *Excludes: Abandoned, Self, Bots
       if (!isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot && lock.isUnlocked) stats.last12Months.totalTimeLocked += lock.timestampUnlocked === 0 ? Date.now() / 1000 - lock.timestampLocked : lockLength
