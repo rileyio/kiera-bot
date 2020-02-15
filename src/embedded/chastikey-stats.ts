@@ -363,7 +363,10 @@ export function keyholderLockees(data: Array<TrackedKeyholderLockeesStatistics>,
   return {
     embed: {
       title: `Keyholder Lockees`,
-      description: `These are all lockees \`(${lockeeNames.length})\` under keyholder \`${keyholderName}\` who are currently locked\n\`\`\`${lockeeNames.join(`, `)}\`\`\``,
+      description:
+        lockeeNames.length > 0
+          ? `These are all lockees \`(${lockeeNames.length})\` under keyholder \`${keyholderName}\` who are currently locked\n\`\`\`${lockeeNames.join(`, `)}\`\`\``
+          : `\`${keyholderName}\` has no lockees presently.`,
       color: 9125611,
       timestamp: cachedTimestamp,
       footer: {

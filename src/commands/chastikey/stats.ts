@@ -315,7 +315,7 @@ export async function getKeyholderLockees(routed: RouterRouted) {
   const cachedTimestampFromFetch = new TrackedBotSetting(await routed.bot.DB.get('settings', { key: 'bot.task.chastikey.api.fetch.ChastiKeyAPIRunningLocks' }))
   const cachedTimestamp = cachedTimestampFromFetch.value
 
-  await routed.message.reply(keyholderLockees(activeLocks, routed.v.o.user, routed.routerStats, cachedTimestamp))
+  await routed.message.reply(keyholderLockees(activeLocks, keyholderData.data.username, routed.routerStats, cachedTimestamp))
 
   // Successful end
   return true
