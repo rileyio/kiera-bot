@@ -157,7 +157,14 @@ export async function fetchDecisionLog(routed: RouterRouted) {
         foreignField: 'decisionID',
         as: 'log'
       }
-    }
+    },
+    { $unwind: '$log' },
+    { $sort: { 'log._id': -1 } },
+    { $limit: 5 },
+    {
+      $group: { _id: '$_id', name: { $first: '$name' }, options: { $first: '$options' }, log: { $push: '$log' } }
+    },
+    { $project: { _id: 1, name: 1, options: 1, log: 1 } }
   ])
 
   if (!log) {
