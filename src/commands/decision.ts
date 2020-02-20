@@ -48,7 +48,17 @@ export const Routes = ExportRoutes(
     controller: fetchDecisionLog,
     example: '{{prefix}}decision log id',
     name: 'decision-log',
-    validate: '/decision:string/log=string/id=string',
+    validate: '/decision:string/log:string/id=string',
+    middleware: [Middleware.isUserRegistered]
+  },
+  {
+    type: 'message',
+    category: 'Fun',
+    commandTarget: 'author',
+    controller: generateNewDecisionID,
+    example: '{{prefix}}decision "id" new id',
+    name: 'decision-log',
+    validate: '/decision:string/oldid=string/new:string/id:string',
     middleware: [Middleware.isUserRegistered]
   },
   {
@@ -177,4 +187,38 @@ export async function fetchDecisionLog(routed: RouterRouted) {
   await routed.message.channel.send(decisionLogLast5(decision, routed.user))
 
   return true
+}
+
+export async function generateNewDecisionID(routed: RouterRouted) {
+  const oldDecision = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.oldid), authorID: routed.user.id })
+
+  if (oldDecision) {
+    const oldID = new ObjectID(oldDecision._id)
+    const newID = new ObjectID()
+
+    // Update Decision ID in object
+    const decision = new TrackedDecision(Object.assign(oldDecision, { _id: newID }))
+
+    // Insert with new Decision ID into decision collection
+    await routed.bot.DB.add<TrackedDecision>('decision', decision)
+
+    // Remove Old Decision from decision collection
+    await routed.bot.DB.remove('decision', { _id: oldID })
+
+    // Fetch any records from the decision-log collection to be updated
+    await routed.bot.DB.update<TrackedDecisionLogEntry>(
+      'decision-log',
+      {
+        decisionID: oldID.toString()
+      },
+      { $set: { decisionID: newID.toString() } },
+      { atomic: true, updateOne: false }
+    )
+
+    // Notify user via DM of the new ID
+    await routed.message.author.send(`A new Decision ID has been assigned to \`${oldID.toString()}\`\n\nNew Decision ID: **\`${newID.toString()}\`**`)
+    return true
+  }
+
+  return false
 }
