@@ -16,7 +16,8 @@
 - Added: Saved Decision roll log, logging, and last 5 in log command.
 - Added: Alt text for Keyholder Lockees command when no lockees in list.
 - Added: Decision ID update command to generate new ID and DM the author (Updates Decision and Log entries).
-- Added: Decision User Blacklisting command and implemented at roll runtime.
+- Added: Decision User Blacklisting commands and implemented at roll runtime (Silently fails).
+- Added: Decision Server Whitelisting commands and implemented at roll runtime (Fails with a message).
 
 5.0.2
 - Fixed: CK Debug Verify check lookup
