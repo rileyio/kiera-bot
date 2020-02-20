@@ -1,14 +1,6 @@
 import * as joi from '@hapi/joi'
 
 export namespace Decisions {
-  export function get() {
-    return joi
-      .object()
-      .keys({
-        serverLimited: joi.bool().required()
-      })
-      .optional()
-  }
   export function deleteDecision() {
     return joi
       .object()

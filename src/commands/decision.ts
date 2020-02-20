@@ -9,6 +9,7 @@ import { decisionFromSaved, decisionRealtime } from '@/embedded/decision-embed'
 import { sb, en } from '@/utils'
 import { TrackedDecisionLogEntry } from '@/objects/decision'
 import { decisionLogLast5 } from '@/embedded/decision-log'
+import { User } from 'discord.js'
 
 export const Routes = ExportRoutes(
   {
@@ -19,16 +20,6 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision new "name"',
     name: 'decision-new',
     validate: '/decision:string/new:string/name=string',
-    middleware: [Middleware.isUserRegistered]
-  },
-  {
-    type: 'message',
-    category: 'Fun',
-    commandTarget: 'author',
-    controller: newDecisionEntry,
-    example: '{{prefix}}decision "id" add "Your decision entry here"',
-    name: 'decision-new-option',
-    validate: '/decision:string/id=string/add:string/text=string',
     middleware: [Middleware.isUserRegistered]
   },
   {
@@ -55,10 +46,50 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     commandTarget: 'author',
+    controller: newDecisionEntry,
+    example: '{{prefix}}decision "id" add "Your decision entry here"',
+    name: 'decision-new-option',
+    validate: '/decision:string/id=string/add:string/text=string',
+    middleware: [Middleware.isUserRegistered]
+  },
+  {
+    type: 'message',
+    category: 'Fun',
+    commandTarget: 'author',
     controller: generateNewDecisionID,
-    example: '{{prefix}}decision "id" new id',
-    name: 'decision-log',
+    example: '{{prefix}}decision "oldID" new id',
+    name: 'decision-new-decision-id',
     validate: '/decision:string/oldid=string/new:string/id:string',
+    middleware: [Middleware.isUserRegistered]
+  },
+  {
+    type: 'message',
+    category: 'Fun',
+    commandTarget: 'author',
+    controller: unblacklistUser,
+    example: '{{prefix}}decision "id" unblacklist user 146439529824256000',
+    name: 'decision-unblacklist-user',
+    validate: '/decision:string/id=string/unblacklist:string/user:string/user=string',
+    middleware: [Middleware.isUserRegistered]
+  },
+  {
+    type: 'message',
+    category: 'Fun',
+    commandTarget: 'author',
+    controller: blacklistUser,
+    example: '{{prefix}}decision "id" blacklist user 146439529824256000',
+    name: 'decision-blacklist-user',
+    validate: '/decision:string/id=string/blacklist:string/user:string/user=string',
+    middleware: [Middleware.isUserRegistered]
+  },
+  {
+    type: 'message',
+    category: 'Fun',
+    commandTarget: 'author',
+    controller: showUserBlacklist,
+    example: '{{prefix}}decision "id" blacklisted users',
+    name: 'decision-blacklist-show',
+    validate: '/decision:string/id=string/blacklisted:string/users:string',
     middleware: [Middleware.isUserRegistered]
   },
   {
@@ -117,11 +148,18 @@ export async function newDecisionEntry(routed: RouterRouted) {
 }
 
 export async function runSavedDecision(routed: RouterRouted) {
-  const decision = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id) })
-  if (decision) {
-    const sd = new TrackedDecision(decision)
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id) })
+
+  if (decisionFromDB) {
+    const decision = new TrackedDecision(decisionFromDB)
+
+    // Halt if user blacklist is triggered
+    if (decision.userBlacklist.findIndex(u => u === routed.user.id) > -1) {
+      return true
+    }
+
     // Halt if decision is disabled
-    if (sd.enabled === false) {
+    if (decision.enabled === false) {
       await routed.message.reply(`Decision not enabled!`)
       return true
     }
@@ -129,8 +167,8 @@ export async function runSavedDecision(routed: RouterRouted) {
     // Lookup author
     const author = await routed.message.guild.fetchMember(decision.authorID, false)
 
-    const random = Random.int(0, sd.options.length - 1)
-    const outcome = sd.options[random]
+    const random = Random.int(0, decision.options.length - 1)
+    const outcome = decision.options[random]
 
     // Track in log
     await routed.bot.DB.add(
@@ -144,7 +182,7 @@ export async function runSavedDecision(routed: RouterRouted) {
       })
     )
 
-    await routed.message.reply(decisionFromSaved(sd, outcome, { author: author }))
+    await routed.message.reply(decisionFromSaved(decision, outcome, { author: author }))
     return true
   }
   return false
@@ -218,6 +256,139 @@ export async function generateNewDecisionID(routed: RouterRouted) {
     // Notify user via DM of the new ID
     await routed.message.author.send(`A new Decision ID has been assigned to \`${oldID.toString()}\`\n\nNew Decision ID: **\`${newID.toString()}\`**`)
     return true
+  }
+
+  return false
+}
+
+export async function blacklistUser(routed: RouterRouted) {
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+
+  if (decisionFromDB) {
+    // Check if user snowflake passed is valid
+    const user: User = await routed.bot.client
+      .fetchUser(routed.v.o.user, false)
+      .then(u => {
+        return u
+      })
+      .catch(u => {
+        return null
+      })
+    const userExists = !!user
+
+    // When user does not exist stop here and notify user
+    if (!userExists) {
+      await routed.message.reply(
+        `Cannot find user with the given Snowflake \`${routed.v.o.user}\`! Check the User Snowflake sent is correct.\n\nIf you're unsure where to get this value:\n> 1. Go to your **User Settings** >  **Appearance** > Check **Developer Mode** is checked.\n> 2. Right click the user and click **Copy ID** from the menu.`
+      )
+      return false
+    }
+
+    // Construct
+    const decision = new TrackedDecision(decisionFromDB)
+
+    // Check if user snowflake is already in blacklist/whitelist
+    const isAlreadyBlacklisted = decision.userBlacklist.findIndex(u => u === routed.v.o.user) > -1
+
+    // When user is NOT blacklisted add them
+    if (!isAlreadyBlacklisted) {
+      decision.userBlacklist.push(routed.v.o.user)
+
+      // Update DB
+      await routed.bot.DB.update('decision', { _id: new ObjectID(routed.v.o.id) }, { $set: { userBlacklist: decision.userBlacklist } }, { atomic: true })
+
+      // Inform user
+      await routed.message.reply(`User \`${user.id}\` added to blacklist.`)
+    } else {
+      // Inform user
+      await routed.message.reply(`User \`${user.id}\` was already blacklisted.`)
+    }
+  }
+
+  return false
+}
+
+export async function unblacklistUser(routed: RouterRouted) {
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+
+  if (decisionFromDB) {
+    // Check if user snowflake passed is valid
+    const user: User = await routed.bot.client
+      .fetchUser(routed.v.o.user, false)
+      .then(u => {
+        return u
+      })
+      .catch(u => {
+        return null
+      })
+    const userExists = !!user
+
+    // When user does not exist stop here and notify user
+    if (!userExists) {
+      await routed.message.reply(
+        `Cannot find user with the given Snowflake \`${routed.v.o.user}\`! Check the User Snowflake sent is correct.\n\nIf you're unsure where to get this value:\n> 1. Go to your **User Settings** >  **Appearance** > Check **Developer Mode** is checked.\n> 2. Right click the user and click **Copy ID** from the menu.`
+      )
+      return false
+    }
+
+    // Construct
+    const decision = new TrackedDecision(decisionFromDB)
+
+    // Check if user snowflake is already in blacklist/whitelist
+    const isAlreadyBlacklisted = decision.userBlacklist.findIndex(u => u === routed.v.o.user) > -1
+
+    // When user is NOT blacklisted let the caller know
+    if (!isAlreadyBlacklisted) {
+      await routed.message.reply(`User \`${user.id}\` is not blacklisted on this decision roller.`)
+    } else {
+      // Remove user from blacklist
+      decision.userBlacklist.splice(
+        decision.userBlacklist.findIndex(u => u === user.id),
+        1
+      )
+
+      // Update DB
+      await routed.bot.DB.update('decision', { _id: new ObjectID(routed.v.o.id) }, { $set: { userBlacklist: decision.userBlacklist } }, { atomic: true })
+      await routed.message.reply(`User \`${user.id}\` is no longer blacklisted on this decision roller.`)
+    }
+  }
+
+  return false
+}
+
+export async function showUserBlacklist(routed: RouterRouted) {
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+
+  if (decisionFromDB) {
+    // Construct
+    const decision = new TrackedDecision(decisionFromDB)
+    var response = `The following users (\`${decision.userBlacklist.length}\`) are Blacklisted from this decision \`${decision._id.toString()}\`\n\n`
+
+    // Create list of blacklisted users to DM to author
+    if (decision.userBlacklist.length > 0) {
+      for (var i = 0; i < decision.userBlacklist.length; i++) {
+        const uid = decision.userBlacklist[i]
+        const user: User = await routed.bot.client
+          .fetchUser(uid, false)
+          .then(u => {
+            return u
+          })
+          .catch(u => {
+            return null
+          })
+
+        if (user) response += `@${user.username}#${user.discriminator} \`${user.id}\`\n`
+        else response += `\`${uid}\` - This user could not be found.. (account deleted??)`
+      }
+    }
+
+    // When no one is blacklisted
+    else {
+      response += `No one is blacklisted!`
+    }
+
+    // DM list to caller
+    await routed.message.author.send(response)
   }
 
   return false

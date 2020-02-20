@@ -33,11 +33,11 @@ export class TrackedDecision {
   public serverID: string
 
   /**
-   * Limit the Decision roller to its serverID
-   * @type {boolean}
+   * Permissions mode
+   * @type {('All' | 'None' | 'Whitelist')}
    * @memberof TrackedDecision
    */
-  public serverLimited: boolean = false
+  public usagePermission: 'All' | 'None' | 'Whitelist' = 'All'
 
   /**
    * Enables or Disables the whole decision
@@ -52,6 +52,10 @@ export class TrackedDecision {
    * @memberof Decision
    */
   public counter: number = 0
+
+  public serverWhitelist: Array<string> = []
+  public userWhitelist: Array<string> = []
+  public userBlacklist: Array<string> = []
 
   public log?: Array<TrackedDecisionLogEntry>
 
