@@ -170,7 +170,7 @@ export class Router {
 
       // Split message by args (spaces/quoted values)
       const args = Utils.getArgs(message.content)
-
+      
       // Find appropriate routes based on prefix command
       const routes = this.routes.filter(r => String(r.command).toLowerCase() === args[0].toLowerCase())
       this.bot.DEBUG_MSG_COMMAND.log(`Router -> Routes by '${args[0]}' command: ${routes.length}`)

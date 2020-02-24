@@ -1,3 +1,5 @@
+import * as XRegex from 'xregexp'
+
 /**
  * Splits args at spaces
  *
@@ -9,8 +11,8 @@
  */
 export function getArgs(msg: string) {
   return msg
-    .replace(new RegExp(`^\\${process.env.BOT_MESSAGE_PREFIX}`), '')
-    .replace(/(?!["][^"]\B)\s+(?![^"]+["]\B)/g, ' ')
+    .replace(XRegex(`^\\${process.env.BOT_MESSAGE_PREFIX}`), '')
+    .replace(XRegex(`/(?!["][^"]\B)\s+(?![^"]+["]\B)/`, 'g'), ' ')
     .split(/(?!["][^"]\B)\s+(?![^"]+["]\B)/g)
 }
 
