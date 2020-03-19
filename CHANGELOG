@@ -19,6 +19,8 @@
 - Added: Decision ID update command to generate new ID and DM the author (Updates Decision and Log entries).
 - Added: Decision User Blacklisting commands and implemented at roll runtime (Silently fails).
 - Added: Decision Server Whitelisting commands and implemented at roll runtime (Fails with a message).
+- Added: Decision Outcome Consume Modes
+- Added: Decision Outcome Consume Mode control commands
 
 5.0.2
 - Fixed: CK Debug Verify check lookup

@@ -35,7 +35,8 @@
   },
   "prettier": {
     "singleQuote": true,
-    "semi": false
+    "semi": false,
+    "printWidth": 180
   },
   "dependencies": {
     "@hapi/joi": "^15.0.3",

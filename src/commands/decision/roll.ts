@@ -56,9 +56,49 @@ export async function runSavedDecision(routed: RouterRouted) {
 
     // Lookup author
     const author = await routed.message.guild.fetchMember(decision.authorID, false)
+    var optionsPool = []
 
-    const random = Random.int(0, decision.options.length - 1)
-    const outcome = decision.options[random]
+    // When 'consumeMode' is Temporarily Consume, remove options from the pool depending on the setting
+    if (decision.consumeMode === 'Temporarily Consume') {
+      // Check timed decisions if they fall within the consume time (if set)
+      decision.options.forEach(d => {
+        // Remove if criteria is met
+        if (Date.now() - d.consumedTime <= decision.consumeReset * 1000) {
+          // console.log(
+          //   'Temporarily Consume: Removing Option ->',
+          //   decision.options.findIndex(dd => dd._id === d._id),
+          //   d._id.toHexString()
+          // )
+        }
+        // Add to pool
+        else {
+          optionsPool.push(d)
+        }
+      })
+    }
+
+    // When 'consumeMode' is Consume, remove options from the pool
+    if (decision.consumeMode === 'Consume') {
+      // Check if consumed is 'true', if so remove it
+      decision.options.forEach(d => {
+        // Remove if criteria is met
+        if (!d.consumed) optionsPool.push(d)
+      })
+    }
+
+    console.log('Remaining Size:', optionsPool.length)
+
+    // If the outcomes pool is empty: Inform and stop there
+    if (optionsPool.length === 0) {
+      if (decision.consumeMode === 'Temporarily Consume')
+        await routed.message.reply(`This decision roll has limiting enabled. There are no outcomes available at this time.`)
+      if (decision.consumeMode === 'Consume')
+        await routed.message.reply(`This decision roll has limiting enabled. There are no outcomes available anymore.`)
+      return true
+    }
+
+    const random = Random.int(0, optionsPool.length - 1)
+    const outcome = optionsPool[random]
 
     // Track in log
     await routed.bot.DB.add(
@@ -71,6 +111,16 @@ export async function runSavedDecision(routed: RouterRouted) {
         channelID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.channel.id
       })
     )
+
+    // Update Decision's Outcome to track consumed state (If something other than 'Basic' is set for the mode)
+    if (decision.consumeMode !== 'Basic') {
+      await routed.bot.DB.update(
+        'decision',
+        { _id: decision._id, 'options._id': outcome._id },
+        { $set: { 'options.$.consumed': true, 'options.$.consumedTime': Date.now() } },
+        { atomic: true }
+      )
+    }
 
     await routed.message.reply(decisionFromSaved(decision, outcome, { author: author }))
     return true

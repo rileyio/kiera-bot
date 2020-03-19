@@ -59,6 +59,9 @@ export class TrackedDecision {
 
   public log?: Array<TrackedDecisionLogEntry>
 
+  public consumeMode: 'Basic' | 'Temporarily Consume' | 'Consume' = 'Basic'
+  public consumeReset: number = 0 // Seconds
+
   constructor(init?: Partial<TrackedDecision>) {
     Object.assign(this, init || {})
     this.options = this.options.map(o => new TrackedDecisionOption(o))
@@ -88,6 +91,9 @@ export class TrackedDecisionOption {
    * @memberof TrackedDecisionOption
    */
   public type: 'string' | 'image' | 'url' | 'markdown'
+
+  public consumed?: boolean = false
+  public consumedTime?: number = 0
 
   constructor(init: Partial<TrackedDecisionOption>) {
     Object.assign(this, init)
