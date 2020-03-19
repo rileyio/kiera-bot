@@ -86,7 +86,8 @@ export async function runSavedDecision(routed: RouterRouted) {
       })
     }
 
-    console.log('Remaining Size:', optionsPool.length)
+    // When 'Basic' is used for Consume Mode
+    if (decision.consumeMode === 'Basic') optionsPool = decision.options
 
     // If the outcomes pool is empty: Inform and stop there
     if (optionsPool.length === 0) {
