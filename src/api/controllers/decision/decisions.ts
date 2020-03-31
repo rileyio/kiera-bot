@@ -9,9 +9,16 @@ import { TrackedUser } from '@/objects/user'
 
 export const Routes: Array<WebRoute> = [
   {
+    controller: getDecision,
+    method: 'post',
+    name: 'web-decision-as-owner',
+    path: '/api/decision',
+    middleware: [Middleware.validateSession]
+  },
+  {
     controller: getDecisions,
     method: 'get',
-    name: 'web-decision-as-owner',
+    name: 'web-decisions-as-owner',
     path: '/api/decisions',
     middleware: [Middleware.validateSession]
   },
@@ -73,22 +80,31 @@ export const Routes: Array<WebRoute> = [
   }
 ]
 
-export async function getDecisions(routed: WebRouted) {
-  // Get user from users collection
-  const user = new TrackedUser(
-    await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
-  )
+export async function getDecision(routed: WebRouted) {
+  const v = await validate(Validation.Decisions.getDecision(), routed.req.body)
+  if (v.valid) {
+    const decision = await routed.Bot.DB.get<TrackedDecision>('decision', {
+      _id: new ObjectID(v.o._id),
+      authorID: routed.session.userID
+    })
 
-  // If user does not exist, fail
-  if (!user) {
-    return routed.next(new errors.BadRequestError())
+    if (decision) return routed.res.send({ status: 'fetchedOne', success: true, data: new TrackedDecision(decision) })
+    return routed.res.send({ status: 'failed', success: false })
   }
 
+  return routed.next(new errors.BadRequestError())
+}
+
+export async function getDecisions(routed: WebRouted) {
   const decisions = await routed.Bot.DB.getMultiple<TrackedDecision>('decision', {
-    authorID: user.id
+    authorID: routed.session.userID
   })
 
-  return routed.res.send(decisions.map(d => new TrackedDecision(d)))
+  if (decisions.length) {
+    return routed.res.send(decisions.map(d => new TrackedDecision(d)))
+  }
+
+  return routed.next(new errors.BadRequestError())
 }
 
 export async function deleteDecision(routed: WebRouted) {
@@ -232,7 +248,12 @@ export async function addDecisionOutcome(routed: WebRouted) {
     )
     const newDecisionOutcome = new TrackedDecisionOption({ text: v.o.text, type: v.o.type })
 
-    const addOutcome = await routed.Bot.DB.update<TrackedDecision>('decision', { _id: new ObjectID(v.o._id), authorID: user.id }, { $push: { options: newDecisionOutcome } }, { atomic: true })
+    const addOutcome = await routed.Bot.DB.update<TrackedDecision>(
+      'decision',
+      { _id: new ObjectID(v.o._id), authorID: user.id },
+      { $push: { options: newDecisionOutcome } },
+      { atomic: true }
+    )
 
     if (addOutcome > 0)
       return routed.res.send({
