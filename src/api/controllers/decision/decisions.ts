@@ -5,7 +5,6 @@ import { validate } from '@/api/utils/validate'
 import { WebRouted, WebRoute } from '@/api/web-router'
 import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import { ObjectID } from 'bson'
-import { TrackedUser } from '@/objects/user'
 
 export const Routes: Array<WebRoute> = [
   {
@@ -34,6 +33,20 @@ export const Routes: Array<WebRoute> = [
     method: 'patch',
     name: 'web-decision-update-description',
     path: '/api/decision/description',
+    middleware: [Middleware.validateSession]
+  },
+  {
+    controller: updateDecisionConsumeMode,
+    method: 'patch',
+    name: 'web-decision-update-consume-mode',
+    path: '/api/decision/consumeMode',
+    middleware: [Middleware.validateSession]
+  },
+  {
+    controller: updateDecisionConsumeReset,
+    method: 'patch',
+    name: 'web-decision-update-consume-reset',
+    path: '/api/decision/consumeReset',
     middleware: [Middleware.validateSession]
   },
   {
@@ -77,6 +90,13 @@ export const Routes: Array<WebRoute> = [
     name: 'web-decision-delete',
     path: '/api/decision',
     middleware: [Middleware.validateSession]
+  },
+  {
+    controller: resetConsumed,
+    method: 'patch',
+    name: 'web-decision-reset-consume-mode',
+    path: '/api/decision/consumedReset',
+    middleware: [Middleware.validateSession]
   }
 ]
 
@@ -111,14 +131,9 @@ export async function deleteDecision(routed: WebRouted) {
   const v = await validate(Validation.Decisions.deleteDecision(), routed.req.body)
 
   if (v.valid) {
-    // Get user from users collection
-    const user = new TrackedUser(
-      await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
-    )
-
     var deleteCount = await routed.Bot.DB.remove<TrackedDecision>('decision', {
       _id: new ObjectID(v.o._id),
-      authorID: user.id
+      authorID: routed.session.userID
     })
 
     if (deleteCount > 0) return routed.res.send({ status: 'deleted', success: true })
@@ -133,14 +148,9 @@ export async function updateDecisionOutcome(routed: WebRouted) {
   const v = await validate(Validation.Decisions.update(), routed.req.body)
 
   if (v.valid) {
-    // Get user from users collection
-    const user = new TrackedUser(
-      await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
-    )
-
     const updateCount = await routed.Bot.DB.update(
       'decision',
-      { authorID: user.id, 'options._id': new ObjectID(v.o._id) },
+      { authorID: routed.session.userID, 'options._id': new ObjectID(v.o._id) },
       {
         $set: {
           'options.$.text': v.o.text,
@@ -162,14 +172,9 @@ export async function updateDecisionName(routed: WebRouted) {
   const v = await validate(Validation.Decisions.updateOutcomeName(), routed.req.body)
 
   if (v.valid) {
-    // Get user from users collection
-    const user = new TrackedUser(
-      await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
-    )
-
     const updateCount = await routed.Bot.DB.update(
       'decision',
-      { authorID: user.id, _id: new ObjectID(v.o._id) },
+      { authorID: routed.session.userID, _id: new ObjectID(v.o._id) },
       {
         $set: {
           name: v.o.name
@@ -190,14 +195,9 @@ export async function updateDecisionDescription(routed: WebRouted) {
   const v = await validate(Validation.Decisions.updateOutcomeDescription(), routed.req.body)
 
   if (v.valid) {
-    // Get user from users collection
-    const user = new TrackedUser(
-      await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
-    )
-
     const updateCount = await routed.Bot.DB.update(
       'decision',
-      { authorID: user.id, _id: new ObjectID(v.o._id) },
+      { authorID: routed.session.userID, _id: new ObjectID(v.o._id) },
       {
         $set: {
           description: v.o.description
@@ -214,18 +214,50 @@ export async function updateDecisionDescription(routed: WebRouted) {
   return routed.next(new errors.BadRequestError())
 }
 
+export async function updateDecisionConsumeMode(routed: WebRouted) {
+  const v = await validate(Validation.Decisions.updateConsumeMode(), routed.req.body)
+
+  if (v.valid) {
+    const updateCount = await routed.Bot.DB.update(
+      'decision',
+      { authorID: routed.session.userID, _id: new ObjectID(v.o._id) },
+      {
+        $set: {
+          consumeMode: v.o.consumeMode
+        }
+      },
+      { atomic: true }
+    )
+
+    if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
+    return routed.res.send({ status: 'failed', success: false })
+  }
+
+  // On error
+  return routed.next(new errors.BadRequestError())
+}
+
+export async function updateDecisionConsumeReset(routed: WebRouted) {
+  const v = await validate(Validation.Decisions.updateConsumeReset(), routed.req.body)
+
+  if (v.valid) {
+    const updateCount = await routed.Bot.DB.update('decision', { _id: new ObjectID(v.o._id) }, { $set: { consumeReset: Number(v.o.consumeReset) } }, { atomic: true })
+
+    if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
+    return routed.res.send({ status: 'failed', success: false })
+  }
+
+  // On error
+  return routed.next(new errors.BadRequestError())
+}
+
 export async function deleteDecisionOutcome(routed: WebRouted) {
   const v = await validate(Validation.Decisions.deleteOutcome(), routed.req.body)
 
   if (v.valid) {
-    // Get user from users collection
-    const user = new TrackedUser(
-      await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
-    )
-
     var deleteCount = await routed.Bot.DB.update<TrackedDecision>(
       'decision',
-      <any>{ authorID: user.id, 'options._id': new ObjectID(v.o._id) },
+      <any>{ authorID: routed.session.userID, 'options._id': new ObjectID(v.o._id) },
       { $pull: { options: { _id: new ObjectID(v.o._id) } } },
       { atomic: true }
     )
@@ -242,15 +274,11 @@ export async function addDecisionOutcome(routed: WebRouted) {
   const v = await validate(Validation.Decisions.addOutcome(), routed.req.body)
 
   if (v.valid) {
-    // Get user from users collection
-    const user = new TrackedUser(
-      await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
-    )
     const newDecisionOutcome = new TrackedDecisionOption({ text: v.o.text, type: v.o.type })
 
     const addOutcome = await routed.Bot.DB.update<TrackedDecision>(
       'decision',
-      { _id: new ObjectID(v.o._id), authorID: user.id },
+      { _id: new ObjectID(v.o._id), authorID: routed.session.userID },
       { $push: { options: newDecisionOutcome } },
       { atomic: true }
     )
@@ -272,11 +300,7 @@ export async function addDecision(routed: WebRouted) {
   const v = await validate(Validation.Decisions.addDecision(), routed.req.body)
 
   if (v.valid) {
-    // Get user from users collection
-    const user = new TrackedUser(
-      await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
-    )
-    const newDeicison = new TrackedDecision({ name: v.o.name, authorID: user.id, serverID: '473856867768991744' })
+    const newDeicison = new TrackedDecision({ name: v.o.name, authorID: routed.session.userID, serverID: '473856867768991744' })
 
     const decisionId = await routed.Bot.DB.add<TrackedDecision>('decision', newDeicison)
 
@@ -299,19 +323,34 @@ export async function enableDecision(routed: WebRouted) {
   const v = await validate(Validation.Decisions.enableDecision(), routed.req.body)
 
   if (v.valid) {
-    // Get user from users collection
-    const user = new TrackedUser(
-      await routed.Bot.DB.get<TrackedUser>('users', { id: routed.session.userID })
-    )
-
     const updateCount = await routed.Bot.DB.update(
       'decision',
-      { authorID: user.id, _id: new ObjectID(v.o._id) },
+      { authorID: routed.session.userID, _id: new ObjectID(v.o._id) },
       {
         $set: {
           enabled: v.o.enabled
         }
       },
+      { atomic: true }
+    )
+
+    if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
+    return routed.res.send({ status: 'failed', success: false })
+  }
+
+  // On error
+  return routed.next(new errors.BadRequestError())
+}
+
+export async function resetConsumed(routed: WebRouted) {
+  const v = await validate(Validation.Decisions.resetConsumed(), routed.req.body)
+
+  if (v.valid) {
+    // Reset all options consumed properties
+    const updateCount = await routed.Bot.DB.update(
+      'decision',
+      { _id: new ObjectID(v.o._id), 'options.consumed': true },
+      { $set: { 'options.$[].consumed': false, 'options.$[].consumedTime': 0 } },
       { atomic: true }
     )
 

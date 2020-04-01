@@ -194,11 +194,11 @@ export async function setConsumeReset(routed: RouterRouted) {
       // Only change the reset time if '0' was the value passed
       if (routed.v.o.value === 0) await routed.bot.DB.update('decision', { _id: decision._id }, { $set: { consumeReset: Number(routed.v.o.value) } }, { atomic: true })
       // Reset all options consumed properties
-      await routed.bot.DB.update<TrackedDecisionLogEntry>(
+      await routed.bot.DB.update(
         'decision',
-        { _id: decision._id },
-        { $set: { 'options.$.consumed': false, 'options.$.consumedTime': 0 } },
-        { atomic: true, updateOne: false }
+        { _id: decision._id, 'options.consumed': true },
+        { $set: { 'options.$[].consumed': false, 'options.$[].consumedTime': 0 } },
+        { atomic: true }
       )
 
       await routed.message.reply(`All decision outcome consumed flags have been reset & the reset time is now \`${routed.v.o.value}\`!`)

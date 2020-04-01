@@ -38,6 +38,24 @@ export namespace Decisions {
       })
       .required()
   }
+  export function updateConsumeMode() {
+    return joi
+      .object()
+      .keys({
+        _id: joi.string().required(),
+        consumeMode: joi.string().required()
+      })
+      .required()
+  }
+  export function updateConsumeReset() {
+    return joi
+      .object()
+      .keys({
+        _id: joi.string().required(),
+        consumeReset: joi.number().required()
+      })
+      .required()
+  }
   export function deleteOutcome() {
     return joi
       .object()
@@ -75,6 +93,11 @@ export namespace Decisions {
     return joi.object().keys({
       _id: joi.string().required(),
       enabled: joi.bool().required()
+    })
+  }
+  export function resetConsumed() {
+    return joi.object().keys({
+      _id: joi.string().required()
     })
   }
 }
