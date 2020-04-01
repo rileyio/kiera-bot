@@ -3,7 +3,7 @@ import * as Middleware from '@/api/middleware'
 import * as Validation from '@/api/validations'
 import { validate } from '@/api/utils/validate'
 import { WebRouted, WebRoute } from '@/api/web-router'
-import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
+import { TrackedDecision, TrackedDecisionOption, TrackedDecisionLogEntry } from '@/objects/decision'
 import { ObjectID } from 'bson'
 
 export const Routes: Array<WebRoute> = [
@@ -108,7 +108,13 @@ export async function getDecision(routed: WebRouted) {
       authorID: routed.session.userID
     })
 
-    if (decision) return routed.res.send({ status: 'fetchedOne', success: true, data: new TrackedDecision(decision) })
+    if (decision) {
+      // Lookup usage count to append
+      const used = await routed.Bot.DB.count<TrackedDecisionLogEntry>('decision-log', { decisionID: decision._id.toHexString() })
+      decision.counter = used
+
+      return routed.res.send({ status: 'fetchedOne', success: true, data: new TrackedDecision(decision) })
+    }
     return routed.res.send({ status: 'failed', success: false })
   }
 
