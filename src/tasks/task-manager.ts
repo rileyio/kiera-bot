@@ -8,7 +8,9 @@ export class TaskManager {
   // Background tasks v5+
   public Agenda = new Agenda({
     db: {
-      address: `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
+      address: process.env.DB_STRING
+        ? process.env.DB_STRING
+        : `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
       collection: 'scheduled-jobs'
     }
   })
