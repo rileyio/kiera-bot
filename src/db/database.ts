@@ -45,24 +45,9 @@ export class MongoDB {
   private DEBUG_DB: Logging.Debug
   private dbName = `${process.env.DB_NAME}`
   private dbUrl = process.env.DB_STRING
-    ? process.env.DB_STRING
-    : `mongodb${process.env.DB_SRV ? '+srv' : ''}://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
-  private dbOpts: MongoClientOptions = process.env.DB_STRING
-    ? { useNewUrlParser: true, useUnifiedTopology: true, readPreference: 'primary' }
-    : {
-        useNewUrlParser: true,
-        auth: {
-          user: process.env.DB_USER,
-          password: process.env.DB_PASS
-        },
-        authSource: 'test',
-        useUnifiedTopology: true,
-        w: 'majority',
-        ssl: true
-      }
+  private dbOpts: MongoClientOptions = { useNewUrlParser: true, useUnifiedTopology: true, readPreference: 'primary' }
 
   constructor() {
-    console.log(this.dbUrl)
     this.DEBUG_DB = new Logging.Debug(`database`, { console: false })
   }
 
@@ -88,17 +73,17 @@ export class MongoDB {
   }
 
   private async newConnection() {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       const client = new MongoClient(this.dbUrl, this.dbOpts)
       client.connect(err => {
         if (!err) {
           this.connection = { db: client.db(this.dbName), client: client, error: undefined }
           return resolve()
-        }
-        else {
+        } else {
           // tslint:disable-next-line:no-console
           console.log('>>>>> Failed to connect to db for query')
           this.connection.error = err
+          return reject(err)
         }
       })
     })
