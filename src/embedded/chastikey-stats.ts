@@ -61,7 +61,9 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
   }
 
   var dateJoinedDaysAgo = lockeeData.data.joined !== '-' ? `(${Math.round((Date.now() - new Date(lockeeData.data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)` : ''
-  var description = `Locked for \`${Math.round((lockeeData.data.cumulativeSecondsLocked / 2592000) * 100) / 100}\` months to date | \`${lockeeData.data.totalNoOfCompletedLocks}\` locks completed`
+  var description = `Locked for \`${Math.round((lockeeData.data.cumulativeSecondsLocked / 2592000) * 100) / 100}\` months to date | \`${
+    lockeeData.data.totalNoOfCompletedLocks
+  }\` locks completed`
   // Only show the ratings if the user has > 5 & if the user has specified they want to show the rating
   if (lockeeData.data.noOfRatings > 4 && options.showRating) description += `\nAvg Rating \`${lockeeData.data.averageRating}\` | # Ratings \`${lockeeData.data.noOfRatings}\``
   description += `\nLongest (completed) \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.data.longestCompletedLockInSeconds, true)}\``
@@ -158,7 +160,7 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number) {
     if (lock.timestampLastPicked > 0) value += `\nLast Pick \`${Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lock.timestampLastPicked, true)}\` ago`
     else value += `\nLast Pick \`has yet to pick\``
   }
-  if (lock.timestampNextPick > 0) {
+  if (lock.timestampNextPick > 0 && !lock.isFixed) {
     const timeTillPickFormatted = Utils.Date.calculateHumanTimeDDHHMM(lock.timestampNextPick - Date.now() / 1000, true)
     value += `\nNext pick \`${lock.timestampNextPick - Date.now() / 1000 <= 0 ? 'now' : `in ${timeTillPickFormatted}`}\``
   }
@@ -283,7 +285,8 @@ export function keyholderStats(
 
   // For each lock
   description += `**Locks** (Running Locks)\n`
-  if (lockCount > 0) individualLockStats.forEach(lock => (description += `\`${lock.count}\` ${lock.name || `<No Name>`} \`[${lock.fixed ? 'F' : 'V'}]\` \`[${lock.cumulative ? 'C' : 'NC'}]\`\n`))
+  if (lockCount > 0)
+    individualLockStats.forEach(lock => (description += `\`${lock.count}\` ${lock.name || `<No Name>`} \`[${lock.fixed ? 'F' : 'V'}]\` \`[${lock.cumulative ? 'C' : 'NC'}]\`\n`))
   else {
     description += `No active locks to display!`
   }

@@ -6,6 +6,7 @@
 - Fixed: CK lockee history command including fakes in total days over past 12 months locked time.
 - Fixed: Command case sensitivity.
 - Fixed: API Decision description update failing when empty string.
+- Fixed: CK stats lockee where Fixed locks showed the next pick text as now and it should not be.
 - Updated: CK Update command to work with new 1-5 calculated value API server side for KH Role.
 - Updated: CK Admin Refresh stats to display under maintenance message while a new course of action is determined for refreshing data manually.
 - Updated: CK Role counts command to show new distinguished role.
