@@ -44,7 +44,7 @@ export class MongoDB {
   } = { db: undefined, client: undefined, error: undefined }
   private DEBUG_DB: Logging.Debug
   private dbName = `${process.env.DB_NAME}`
-  private dbUrl = `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${this.dbName}`
+  private dbUrl = `mongodb${process.env.DB_SRV ? '+srv' : ''}://${process.env.DB_HOST}:${process.env.DB_PORT}/${this.dbName}`
   private dbOpts: MongoClientOptions = {
     useNewUrlParser: true,
     auth: {
