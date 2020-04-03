@@ -17,33 +17,31 @@ export namespace Decisions {
       })
       .required()
   }
-  export function updateOutcomeName() {
+  export function updateProps() {
     return joi
       .object()
       .keys({
         _id: joi.string().required(),
-        name: joi.string().required()
-      })
-      .required()
-  }
-  export function updateOutcomeDescription() {
-    return joi
-      .object()
-      .keys({
-        _id: joi.string().required(),
+        name: joi.string().required(),
         description: joi
           .string()
           .allow('')
-          .optional()
-      })
-      .required()
-  }
-  export function updateConsumeMode() {
-    return joi
-      .object()
-      .keys({
-        _id: joi.string().required(),
-        consumeMode: joi.string().required()
+          .required(),
+        enabled: joi.bool().required(),
+        serverWhitelist: joi
+          .array()
+          .allow([])
+          .required(),
+        userWhitelist: joi
+          .array()
+          .allow([])
+          .required(),
+        userBlacklist: joi
+          .array()
+          .allow([])
+          .required(),
+        consumeMode: joi.string().required(),
+        consumeReset: joi.number().required()
       })
       .required()
   }
@@ -64,7 +62,7 @@ export namespace Decisions {
       })
       .required()
   }
-  export function update() {
+  export function updateDecisionOutcome() {
     return joi
       .object()
       .keys({
@@ -87,12 +85,6 @@ export namespace Decisions {
   export function addDecision() {
     return joi.object().keys({
       name: joi.string().required()
-    })
-  }
-  export function enableDecision() {
-    return joi.object().keys({
-      _id: joi.string().required(),
-      enabled: joi.bool().required()
     })
   }
   export function resetConsumed() {

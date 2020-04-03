@@ -11,7 +11,7 @@ export function decisionLogLast5(decision: TrackedDecision, user: User) {
         decision.log.slice(0, 5).map(l => {
           return {
             name: new Date(parseInt(String(l._id).substring(0, 8), 16) * 1000).toUTCString(),
-            value: `> Run by: <@${l.callerID}>\n> Outcome: ${decision.options.find(o => String(o._id) === l.outcomeID).text.replace(/\n/g, '\n> ')}`
+            value: `> Run by: <@${l.callerID}>\n> Outcome: ${l.outcomeContent.replace(/\n/g, '\n> ')}`
           }
         })
       ),

@@ -107,6 +107,7 @@ export class TrackedDecisionLogEntry {
   public outcomeID: string
   public serverID?: string
   public channelID: string
+  public outcomeContent: string
 
   constructor(init?: Partial<TrackedDecisionLogEntry>) {
     Object.assign(this, init || {})

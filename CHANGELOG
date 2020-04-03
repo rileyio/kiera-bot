@@ -11,6 +11,8 @@
 - Updated: CK Admin Refresh stats to display under maintenance message while a new course of action is determined for refreshing data manually.
 - Updated: CK Role counts command to show new distinguished role.
 - Updated: CK stats lockee to show `Self Locked` instead of two quotes
+- Updated: Decision Outcome result now gets stored as well as outcome ID due to random value options.
+- Updated: Decision Properties update now updates all props except Outcomes which are still their own API calls.
 - Added: #19, #20 Markdown support for decision outcomes.
 - Added: #22 Description/Subtitle area to decisions.
 - Added: #18 Footer note with author's name.

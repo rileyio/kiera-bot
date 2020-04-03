@@ -5,6 +5,7 @@ import { validate } from '@/api/utils/validate'
 import { WebRouted, WebRoute } from '@/api/web-router'
 import { TrackedDecision, TrackedDecisionOption, TrackedDecisionLogEntry } from '@/objects/decision'
 import { ObjectID } from 'bson'
+import { TextChannel, Guild, Channel, User } from 'discord.js'
 
 export const Routes: Array<WebRoute> = [
   {
@@ -22,38 +23,10 @@ export const Routes: Array<WebRoute> = [
     middleware: [Middleware.validateSession]
   },
   {
-    controller: updateDecisionName,
+    controller: updateDecision,
     method: 'patch',
-    name: 'web-decision-update-name',
-    path: '/api/decision/name',
-    middleware: [Middleware.validateSession]
-  },
-  {
-    controller: updateDecisionDescription,
-    method: 'patch',
-    name: 'web-decision-update-description',
-    path: '/api/decision/description',
-    middleware: [Middleware.validateSession]
-  },
-  {
-    controller: updateDecisionConsumeMode,
-    method: 'patch',
-    name: 'web-decision-update-consume-mode',
-    path: '/api/decision/consumeMode',
-    middleware: [Middleware.validateSession]
-  },
-  {
-    controller: updateDecisionConsumeReset,
-    method: 'patch',
-    name: 'web-decision-update-consume-reset',
-    path: '/api/decision/consumeReset',
-    middleware: [Middleware.validateSession]
-  },
-  {
-    controller: enableDecision,
-    method: 'patch',
-    name: 'web-decision-update-enabled',
-    path: '/api/decision/enabled',
+    name: 'web-decision-update-props',
+    path: '/api/decision/props',
     middleware: [Middleware.validateSession]
   },
   {
@@ -109,6 +82,49 @@ export async function getDecision(routed: WebRouted) {
     })
 
     if (decision) {
+      const logLookup: Array<TrackedDecision> = await routed.Bot.DB.aggregate('decision', [
+        { $match: { _id: new ObjectID(v.o._id), authorID: routed.session.userID } },
+        { $project: { _id: { $toString: '$_id' }, name: 1, options: 1 } },
+        {
+          $lookup: {
+            from: 'decision-log',
+            localField: '_id',
+            foreignField: 'decisionID',
+            as: 'log'
+          }
+        },
+        { $unwind: '$log' },
+        { $sort: { 'log._id': -1 } },
+        { $limit: 20 },
+        {
+          $group: { _id: '$_id', name: { $first: '$name' }, options: { $first: '$options' }, log: { $push: '$log' } }
+        },
+        { $project: { _id: 1, name: 1, options: 1, log: 1 } }
+      ])
+
+      // Add to decision
+      decision.log = logLookup[0].log
+
+      // Map Names
+      decision.log = decision.log.map(d => {
+        d._id = new Date(parseInt(String(d._id).substring(0, 8), 16) * 1000).toUTCString()
+        var guild = null as Guild
+        var channel = null as Channel
+        var caller = null as User
+
+        try {
+          guild = routed.Bot.client.guilds.find(g => g.id === d.serverID)
+          // channel = routed.Bot.client.channels.find(c => c.id !== d.channelID)
+          caller = routed.Bot.client.users.find(u => u.id === d.callerID)
+
+          d.serverID = guild.name
+          // d.channelID = channel.
+          d.callerID = `${caller.username}#${caller.discriminator}`
+        } catch (error) {}
+
+        return d
+      })
+
       // Lookup usage count to append
       const used = await routed.Bot.DB.count<TrackedDecisionLogEntry>('decision-log', { decisionID: decision._id.toHexString() })
       decision.counter = used
@@ -151,7 +167,7 @@ export async function deleteDecision(routed: WebRouted) {
 }
 
 export async function updateDecisionOutcome(routed: WebRouted) {
-  const v = await validate(Validation.Decisions.update(), routed.req.body)
+  const v = await validate(Validation.Decisions.updateDecisionOutcome(), routed.req.body)
 
   if (v.valid) {
     const updateCount = await routed.Bot.DB.update(
@@ -174,8 +190,8 @@ export async function updateDecisionOutcome(routed: WebRouted) {
   return routed.next(new errors.BadRequestError())
 }
 
-export async function updateDecisionName(routed: WebRouted) {
-  const v = await validate(Validation.Decisions.updateOutcomeName(), routed.req.body)
+export async function updateDecision(routed: WebRouted) {
+  const v = await validate(Validation.Decisions.updateProps(), routed.req.body)
 
   if (v.valid) {
     const updateCount = await routed.Bot.DB.update(
@@ -183,53 +199,14 @@ export async function updateDecisionName(routed: WebRouted) {
       { authorID: routed.session.userID, _id: new ObjectID(v.o._id) },
       {
         $set: {
-          name: v.o.name
-        }
-      },
-      { atomic: true }
-    )
-
-    if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
-    return routed.res.send({ status: 'failed', success: false })
-  }
-
-  // On error
-  return routed.next(new errors.BadRequestError())
-}
-
-export async function updateDecisionDescription(routed: WebRouted) {
-  const v = await validate(Validation.Decisions.updateOutcomeDescription(), routed.req.body)
-
-  if (v.valid) {
-    const updateCount = await routed.Bot.DB.update(
-      'decision',
-      { authorID: routed.session.userID, _id: new ObjectID(v.o._id) },
-      {
-        $set: {
-          description: v.o.description
-        }
-      },
-      { atomic: true }
-    )
-
-    if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
-    return routed.res.send({ status: 'failed', success: false })
-  }
-
-  // On error
-  return routed.next(new errors.BadRequestError())
-}
-
-export async function updateDecisionConsumeMode(routed: WebRouted) {
-  const v = await validate(Validation.Decisions.updateConsumeMode(), routed.req.body)
-
-  if (v.valid) {
-    const updateCount = await routed.Bot.DB.update(
-      'decision',
-      { authorID: routed.session.userID, _id: new ObjectID(v.o._id) },
-      {
-        $set: {
-          consumeMode: v.o.consumeMode
+          name: v.o.name,
+          description: v.o.description || '',
+          enabled: v.o.enabled,
+          serverWhitelist: v.o.serverWhitelist || '',
+          userWhitelist: v.o.userWhitelist || '',
+          userBlacklist: v.o.userBlacklist || '',
+          consumeMode: v.o.consumeMode,
+          consumeReset: v.o.consumeReset
         }
       },
       { atomic: true }
@@ -318,29 +295,6 @@ export async function addDecision(routed: WebRouted) {
       })
     }
 
-    return routed.res.send({ status: 'failed', success: false })
-  }
-
-  // On error
-  return routed.next(new errors.BadRequestError())
-}
-
-export async function enableDecision(routed: WebRouted) {
-  const v = await validate(Validation.Decisions.enableDecision(), routed.req.body)
-
-  if (v.valid) {
-    const updateCount = await routed.Bot.DB.update(
-      'decision',
-      { authorID: routed.session.userID, _id: new ObjectID(v.o._id) },
-      {
-        $set: {
-          enabled: v.o.enabled
-        }
-      },
-      { atomic: true }
-    )
-
-    if (updateCount > 0) return routed.res.send({ status: 'updated', success: true })
     return routed.res.send({ status: 'failed', success: false })
   }
 

@@ -91,27 +91,13 @@ export async function runSavedDecision(routed: RouterRouted) {
 
     // If the outcomes pool is empty: Inform and stop there
     if (optionsPool.length === 0) {
-      if (decision.consumeMode === 'Temporarily Consume')
-        await routed.message.reply(`This decision roll has limiting enabled. There are no outcomes available at this time.`)
-      if (decision.consumeMode === 'Consume')
-        await routed.message.reply(`This decision roll has limiting enabled. There are no outcomes available anymore.`)
+      if (decision.consumeMode === 'Temporarily Consume') await routed.message.reply(`This decision roll has limiting enabled. There are no outcomes available at this time.`)
+      if (decision.consumeMode === 'Consume') await routed.message.reply(`This decision roll has limiting enabled. There are no outcomes available anymore.`)
       return true
     }
 
     const random = Random.int(0, optionsPool.length - 1)
     const outcome = optionsPool[random]
-
-    // Track in log
-    await routed.bot.DB.add(
-      'decision-log',
-      new TrackedDecisionLogEntry({
-        callerID: routed.user.id,
-        decisionID: String(decision._id),
-        outcomeID: String(outcome._id),
-        serverID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.guild.id,
-        channelID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.channel.id
-      })
-    )
 
     // Update Decision's Outcome to track consumed state (If something other than 'Basic' is set for the mode)
     if (decision.consumeMode !== 'Basic') {
@@ -123,7 +109,22 @@ export async function runSavedDecision(routed: RouterRouted) {
       )
     }
 
-    await routed.message.reply(decisionFromSaved(decision, outcome, { author: author }))
+    const outcomeEmbed = decisionFromSaved(decision, outcome, { author: author })
+    await routed.message.reply(outcomeEmbed)
+
+    // Track in log
+    await routed.bot.DB.add(
+      'decision-log',
+      new TrackedDecisionLogEntry({
+        callerID: routed.user.id,
+        decisionID: String(decision._id),
+        outcomeID: String(outcome._id),
+        serverID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.guild.id,
+        channelID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.channel.id,
+        outcomeContent: outcomeEmbed.embed.description
+      })
+    )
+
     return true
   }
   return false
