@@ -82,48 +82,52 @@ export async function getDecision(routed: WebRouted) {
     })
 
     if (decision) {
-      const logLookup: Array<TrackedDecision> = await routed.Bot.DB.aggregate('decision', [
-        { $match: { _id: new ObjectID(v.o._id), authorID: routed.session.userID } },
-        { $project: { _id: { $toString: '$_id' }, name: 1, options: 1 } },
-        {
-          $lookup: {
-            from: 'decision-log',
-            localField: '_id',
-            foreignField: 'decisionID',
-            as: 'log'
-          }
-        },
-        { $unwind: '$log' },
-        { $sort: { 'log._id': -1 } },
-        { $limit: 20 },
-        {
-          $group: { _id: '$_id', name: { $first: '$name' }, options: { $first: '$options' }, log: { $push: '$log' } }
-        },
-        { $project: { _id: 1, name: 1, options: 1, log: 1 } }
-      ])
+      try {
+        const logLookup: Array<TrackedDecision> = await routed.Bot.DB.aggregate('decision', [
+          { $match: { _id: new ObjectID(v.o._id), authorID: routed.session.userID } },
+          { $project: { _id: { $toString: '$_id' }, name: 1, options: 1 } },
+          {
+            $lookup: {
+              from: 'decision-log',
+              localField: '_id',
+              foreignField: 'decisionID',
+              as: 'log'
+            }
+          },
+          { $unwind: '$log' },
+          { $sort: { 'log._id': -1 } },
+          { $limit: 20 },
+          {
+            $group: { _id: '$_id', name: { $first: '$name' }, options: { $first: '$options' }, log: { $push: '$log' } }
+          },
+          { $project: { _id: 1, name: 1, options: 1, log: 1 } }
+        ])
 
-      // Add to decision
-      decision.log = logLookup[0].log
+        // Add to decision
+        decision.log = logLookup[0].log
 
-      // Map Names
-      decision.log = decision.log.map(d => {
-        d._id = new Date(parseInt(String(d._id).substring(0, 8), 16) * 1000).toUTCString()
-        var guild = null as Guild
-        var channel = null as Channel
-        var caller = null as User
+        // Map Names
+        decision.log = decision.log.map(d => {
+          d._id = new Date(parseInt(String(d._id).substring(0, 8), 16) * 1000).toUTCString()
+          var guild = null as Guild
+          var channel = null as Channel
+          var caller = null as User
 
-        try {
-          guild = routed.Bot.client.guilds.find(g => g.id === d.serverID)
-          // channel = routed.Bot.client.channels.find(c => c.id !== d.channelID)
-          caller = routed.Bot.client.users.find(u => u.id === d.callerID)
+          try {
+            guild = routed.Bot.client.guilds.find(g => g.id === d.serverID)
+            // channel = routed.Bot.client.channels.find(c => c.id !== d.channelID)
+            caller = routed.Bot.client.users.find(u => u.id === d.callerID)
 
-          d.serverID = guild.name
-          // d.channelID = channel.
-          d.callerID = `${caller.username}#${caller.discriminator}`
-        } catch (error) {}
+            d.serverID = guild.name
+            // d.channelID = channel.
+            d.callerID = `${caller.username}#${caller.discriminator}`
+          } catch (error) {}
 
-        return d
-      })
+          return d
+        })
+      } catch (error) {
+        console.log('No decision log to lookup or add')
+      }
 
       // Lookup usage count to append
       const used = await routed.Bot.DB.count<TrackedDecisionLogEntry>('decision-log', { decisionID: decision._id.toHexString() })
