@@ -41,7 +41,7 @@ export const Routes = ExportRoutes(
     commandTarget: 'none',
     controller: aboutStats,
     example: '{{prefix}}stats about',
-    name: 'stats-server',
+    name: 'stats-about',
     validate: '/stats:string/about:string',
     middleware: [],
     permissions: {
