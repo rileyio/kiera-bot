@@ -41,7 +41,7 @@ export const Routes = ExportRoutes(
     commandTarget: 'author',
     controller: unwhitelistServer,
     example: '{{prefix}}decision "id" unwhitelist server "serverID"',
-    name: 'decision-whitelist-server',
+    name: 'decision-unwhitelist-server',
     validate: '/decision:string/id=string/unwhitelist:string/server:string/serverid=string',
     middleware: [Middleware.isUserRegistered],
   },
