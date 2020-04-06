@@ -1,4 +1,4 @@
-import { MongoDB, MongoDBLoader } from '@/db'
+import { MongoDBLoader } from '@/db'
 import { EventEmitter } from 'events'
 import { performance } from 'perf_hooks'
 import { Bot } from '@/index'
@@ -22,7 +22,9 @@ export class DatabaseMonitor extends EventEmitter {
   }
 
   public async start() {
+    // If no DB is defined yet, start the MongoDBLoader to create one
     if (!this.Bot.DB) this.Bot.DB = await MongoDBLoader()
+    // Return DB Monitor & start first new connection
     return await this.monitor()
   }
 
@@ -33,6 +35,8 @@ export class DatabaseMonitor extends EventEmitter {
   public async monitor() {
     // Block dup
     if (this.isMonitorRunning) return
+
+    this.Bot.DEBUG.log('connecting to database...')
 
     this.isMonitorRunning = true
     this.monitorInterval = setInterval(async () => {
@@ -59,18 +63,18 @@ export class DatabaseMonitor extends EventEmitter {
         this.pingCount += 1
         this.pingFailedCount = 0 // reset
         success = true
-        // tslint:disable-next-line:no-console
+
         // console.log('***** ping', _ping, Math.round(this.pingTotalLatency / this.pingCount), 'ms')
       } else {
         this.pingFailedCount += 1
         success = false
-        // tslint:disable-next-line:no-console
+
         // console.log('$$$$$ ping FAILED')
       }
     } catch (error) {
       this.pingFailedCount += 1
       success = false
-      // tslint:disable-next-line:no-console
+
       // console.log('$$$$$ ping FAILED')
     }
     // Update flag to allow next loop to ping without blocking

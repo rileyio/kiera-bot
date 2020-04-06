@@ -21,7 +21,7 @@ export class WebAPI {
   protected readonly port: number = Number(process.env.API_PORT || 8234)
   protected readonly prefix: string = '/api'
   protected DEBUG_WEBAPI = Debug('WebAPI')
-  protected configuredRoutes: Array<WebRoute> = []
+  public configuredRoutes: Array<WebRoute> = []
 
   constructor(bot: Bot) {
     this.Bot = bot
@@ -41,14 +41,14 @@ export class WebAPI {
     this.server.use(cors.actual)
 
     // Setup routes
-    // tslint:disable-next-line:no-console
+
     this.configuredRoutes = webRouteLoader()
-    this.configuredRoutes.forEach(r => console.log(`api route:: [${r.method}] ${r.path}`))
+    // this.configuredRoutes.forEach(r => console.log(`api route:: [${r.method}] ${r.path}`))
     this.router = new WebRouter(this.Bot, this.server, this.configuredRoutes)
 
     // Setup SocketIO
     this.socket = SocketIO.listen(this.server.server)
-    this.socket.sockets.on('connection', socket => {
+    this.socket.sockets.on('connection', (socket) => {
       this.DEBUG_WEBAPI('socket connection')
       // socket.emit('news', { hello: 'world' });
       // socket.on('my other event', (data) => {
@@ -62,24 +62,24 @@ export class WebAPI {
   }
 
   public start() {
-    return new Promise<boolean>(r => {
+    return new Promise<boolean>((r) => {
       this.server.listen(this.port, () => {
         this.DEBUG_WEBAPI(`${this.server.name} listening at ${this.server.url}`)
         r(true)
       })
-    }).catch(error => {
+    }).catch((error) => {
       this.DEBUG_WEBAPI(`listening error.. unable to complete startup`)
       return false
     })
   }
 
   public close() {
-    return new Promise<boolean>(r => {
+    return new Promise<boolean>((r) => {
       this.server.close(() => {
         this.DEBUG_WEBAPI(`stopping WebAPI...`)
         r(true)
       })
-    }).catch(error => {
+    }).catch((error) => {
       this.DEBUG_WEBAPI(`error stopping the WebAPI`)
       return false
     })

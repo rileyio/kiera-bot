@@ -4,7 +4,7 @@ export async function DBPromise<T>(promise: Promise<T>, fallback: T) {
       return r
     })
   } catch (error) {
-    // tslint:disable-next-line:no-console
+    
     console.log('### DBPromise Caught')
     return fallback
   }

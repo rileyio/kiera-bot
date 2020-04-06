@@ -1,25 +1,25 @@
 const { version } = require('../package.json')
+const { startup } = require('./startup')
 import * as Discord from 'discord.js'
 import * as Task from '@/tasks'
-import { MsgTracker, MongoDB, MongoDBLoader } from '@/db'
+import * as Utils from '@/utils'
+import { MsgTracker, MongoDB } from '@/db'
 import { TrackedServer } from '@/objects/server'
 import { Router, routeLoader } from '@/router'
-import { Logging } from '@/utils'
 import { BotMonitor } from '@/monitor'
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
 import { Statistics } from '@/statistics'
 import { ServerStatisticType } from './objects/statistics'
 import { ChastiKey } from './integrations/ChastiKey'
-import { DISCORD_CLIENT_EVENTS } from '@/utils'
 
 export class Bot {
-  public client = new Discord.Client()
-  public DEBUG = new Logging.Debug('bot')
-  public DEBUG_MIDDLEWARE = new Logging.Debug('midddleware')
-  public DEBUG_MSG_INCOMING = new Logging.Debug('incoming')
-  public DEBUG_MSG_SCHEDULED = new Logging.Debug('scheduled')
-  public DEBUG_MSG_COMMAND = new Logging.Debug('command')
+  public client: Discord.Client
+  public DEBUG = new Utils.Logging.Debug('bot')
+  public DEBUG_MIDDLEWARE = new Utils.Logging.Debug('midddleware')
+  public DEBUG_MSG_INCOMING = new Utils.Logging.Debug('incoming')
+  public DEBUG_MSG_SCHEDULED = new Utils.Logging.Debug('scheduled')
+  public DEBUG_MSG_COMMAND = new Utils.Logging.Debug('command')
   public MsgTracker: MsgTracker
   public version: string
   public tokens: { bnet: string }
@@ -38,36 +38,35 @@ export class Bot {
   public Task: Task.TaskManager = new Task.TaskManager()
 
   // Bot msg router
-  public Router: Router = new Router(routeLoader(), this)
+  public Router: Router = new Router(routeLoader(this.DEBUG), this)
 
   // API Services
-  public Service = {
-    BattleNet: new BattleNet(),
-    ChastiKey: new ChastiKey()
-  }
+  public Service: {
+    BattleNet: BattleNet
+    ChastiKey: ChastiKey
+  } = { BattleNet: null, ChastiKey: null }
 
   // Statistics
   public Statistics: Statistics = new Statistics(this)
 
   public async start() {
-    this.DEBUG.log('getting things setup...')
     this.version = version
-    this.MsgTracker = new MsgTracker(this)
+    this.DEBUG.log(`initializing kiera-bot (${this.version})...`)
 
     ////////////////////////////////////////
-    ///// Database Loader //////////////////
+    // Bot Monitor /////////////////////////
     ////////////////////////////////////////
-    this.DB = await MongoDBLoader()
-
-    ////////////////////////////////////////
-    ///// Bot Monitor //////////////////////
-    ////////////////////////////////////////
-    // Start bot monitor & all bot dependant services
+    // Start bot monitor & critical services
     this.BotMonitor = new BotMonitor(this)
     await this.BotMonitor.start()
 
     ////////////////////////////////////////
-    ///// Background Tasks /////////////////
+    // Register bot services ///////////////
+    ////////////////////////////////////////
+    this.MsgTracker = new MsgTracker(this)
+
+    ////////////////////////////////////////
+    // Background Tasks ////////////////////
     ////////////////////////////////////////
     // Register background tasks
     this.Task.start(this, [
@@ -80,15 +79,51 @@ export class Bot {
     ])
 
     ////////////////////////////////////////
-    ///// Discord Event Monitor / Routing //
+    // Register 3rd party services /////////
     ////////////////////////////////////////
-    /// Event hndling for non-cached (messages from prior to restart) ///
+    this.Service.BattleNet = new BattleNet()
+    this.Service.ChastiKey = new ChastiKey()
+
+    ////////////////////////////////////////
+    // Setup API Services //////////////////
+    ////////////////////////////////////////
+    try {
+      /// Integrations / Services / 3rd party
+      await this.Service.BattleNet.setup(this)
+      await this.Service.ChastiKey.setup(this)
+      /// Reserved...
+      /// ...
+    } catch (error) {
+      console.log(`Error setting up a service!`, error)
+    }
+
+    ////////////////////////////////////////
+    // Print startup details ///////////////
+    ////////////////////////////////////////
+    console.log(
+      Utils.sb(startup, {
+        routes: this.BotMonitor.WebAPI.configuredRoutes.length,
+        commands: this.Router.routes.length,
+        guilds: this.client.guilds.cache.size,
+        users: this.client.users.cache.size,
+        ping: this.BotMonitor.DBMonitor.pingTotalLatency / this.BotMonitor.DBMonitor.pingCount
+      })
+    )
+
+    // ==========================================================================================
+    // => Start allowing incoming command routing from here down
+    // ==========================================================================================
+
+    ////////////////////////////////////////
+    // Discord Event Monitor / Routing /////
+    ////////////////////////////////////////
+    /// Event handling for non-cached (messages from prior to restart) ///
     this.client.on('raw' as any, async (event) => {
       if (event.t === null) return
       // Skip event types that are not mapped
       // this.DEBUG_MSG_INCOMING.log('raw:', event.t)
       // if (event.t === 'PRESENCE_UPDATE') console.log(event)
-      if (!DISCORD_CLIENT_EVENTS.hasOwnProperty(event.t)) return
+      if (!Utils.DISCORD_CLIENT_EVENTS.hasOwnProperty(event.t)) return
       await this.onMessageNonCachedReact(event)
     })
 
@@ -104,19 +139,6 @@ export class Bot {
     // this.client.on('messageReactionAdd', (react, user) => this.onMessageCachedReactionAdd(react, user))
     ///  Reaction out (Cached)  ///
     // this.client.on('messageReactionRemove', (react, user) => this.onMessageCachedReactionRemove(react, user))
-
-    ////////////////////////////////////////
-    ///// Setup API Services ///////////////
-    ////////////////////////////////////////
-    try {
-      /// Integrations / Services / 3rd party
-      await this.Service.BattleNet.setup(this)
-      await this.Service.ChastiKey.setup(this)
-      /// Reserved...
-      /// ...
-    } catch (error) {
-      console.log(`Error setting up a service!`, error)
-    }
   }
 
   public async onReady() {

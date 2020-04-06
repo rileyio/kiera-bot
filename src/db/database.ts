@@ -30,7 +30,7 @@ export type Collections =
   | 'users'
 
 export async function MongoDBLoader() {
-  return new Promise<MongoDB>(async ret => {
+  return new Promise<MongoDB>(async (ret) => {
     var db = new MongoDB()
     return ret(db)
   })
@@ -58,11 +58,10 @@ export class MongoDB {
         // Check if connection is active
         if (!this.connection.client.isConnected()) await this.newConnection()
         // Else reuse current connection
-        // tslint:disable-next-line:no-console
         // console.log('reuse db connection on', targetCollection)
       } else {
-        // tslint:disable-next-line:no-console
         // console.log('new db connection on', targetCollection)
+        this.DEBUG_DB.log('new db connection required!')
         await this.newConnection()
       }
     } catch (error) {
@@ -75,13 +74,14 @@ export class MongoDB {
   private async newConnection() {
     return new Promise((resolve, reject) => {
       const client = new MongoClient(this.dbUrl, this.dbOpts)
-      client.connect(err => {
+      client.connect((err) => {
         if (!err) {
           this.connection = { db: client.db(this.dbName), client: client, error: undefined }
+          this.DEBUG_DB.log('new db connection: database connected!')
           return resolve()
         } else {
-          // tslint:disable-next-line:no-console
-          console.log('>>>>> Failed to connect to db for query')
+          this.DEBUG_DB.log('>>> failed to connect to Database!')
+
           this.connection.error = err
           return reject(err)
         }
@@ -93,11 +93,10 @@ export class MongoDB {
     var status: boolean
     try {
       const connection = await this.connect()
-      // tslint:disable-next-line:no-console
+
       const pingStatus = await connection.db.command({ ping: 1 })
       status = pingStatus ? true : false
     } catch (error) {
-      // tslint:disable-next-line:no-console
       // console.log('###### Test error failed to connect')
       status = false
     }

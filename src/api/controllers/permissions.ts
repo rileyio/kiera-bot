@@ -43,13 +43,13 @@ export const Routes: Array<WebRoute> = [
 export async function getAll(routed: WebRouted) {
   const v = await validate(Validation.Permissions.getAll(), routed.req.body)
   // await validate(Validation.Permissions.getAll(), req.body)
-  // tslint:disable-next-line:no-console
+
   console.log(v)
   // this.DEBUG_WEBAPI('req params', v.o)
 
   if (v.valid) {
     // Get the same routes the router loader uses
-    const routes = routeLoader()
+    const routes = routed.Bot.Router.routes
     var query: any = {
       serverID: v.o.serverID
     }
@@ -83,9 +83,9 @@ export async function getAll(routed: WebRouted) {
     })
 
     // Map in the route examples & categories
-    permissions.map(p => {
+    permissions.map((p) => {
       // console.log(p)
-      const matchingRoute = routes.find(r => r.name === p.command)
+      const matchingRoute = routes.find((r) => r.name === p.command)
       if (matchingRoute) {
         // console.log(matchingRoute)
         p.example = sb(matchingRoute.example)

@@ -21,7 +21,7 @@ export async function isAuthenticatedOwner(routed: WebRouted) {
   try {
     // Verify token & payload
     var verify = jwt.verify(token, process.env.BOT_SECRET)
-    // tslint:disable-next-line:no-console
+    
     console.log('verify:', verify)
     return routed // PASS
   } catch (error) {

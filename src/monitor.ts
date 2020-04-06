@@ -1,15 +1,15 @@
+import * as Discord from 'discord.js'
 import { Bot } from '@/index'
 import { EventEmitter } from 'events'
 import { DatabaseMonitor } from './db/monitor'
 import { LiveStatistics } from './live-statistics'
-import { TextChannel } from 'discord.js'
 import { WebAPI } from './api/web-api'
 
 export class BotMonitor extends EventEmitter {
   private announcementsChannel: string = process.env.DISCORD_ANNOUNCEMENTS_CHANNEL
   private Bot: Bot
-  private DBMonitor: DatabaseMonitor
-  private WebAPI: WebAPI
+  public DBMonitor: DatabaseMonitor
+  public WebAPI: WebAPI
   public LiveStatistics: LiveStatistics
   public status = {
     discord: false,
@@ -27,7 +27,6 @@ export class BotMonitor extends EventEmitter {
 
   constructor(bot: Bot) {
     super()
-
     this.Bot = bot
     this.DBMonitor = new DatabaseMonitor(this.Bot)
     this.LiveStatistics = new LiveStatistics(this.Bot)
@@ -37,12 +36,13 @@ export class BotMonitor extends EventEmitter {
   }
 
   public async start() {
+    this.Bot.DEBUG.log('starting BotMonitor...')
+
     this.status.db = await this.DBMonitor.start()
     this.status.discord = await this.discordAPIReady()
     this.status.stats = await this.LiveStatistics.start()
     this.status.api = await this.WebAPI.start()
 
-    // tslint:disable-next-line:no-console
     console.log(`@@@@@ db: ${this.status.db}, stats: ${this.status.stats}, api: ${this.status.api}`)
 
     if (this.status.db && this.status.stats && this.status.api) this.unhealthyStartup = false
@@ -77,7 +77,6 @@ export class BotMonitor extends EventEmitter {
   private async tryUnhealthyRecovery() {
     // If recovery threshold is passed, just reboot the bot
     if (this.unhealthyRecoveryCount > 5) {
-      // tslint:disable-next-line:no-console
       console.log('⚠️ Killing service in 3 seconds')
 
       setTimeout(() => {
@@ -89,7 +88,7 @@ export class BotMonitor extends EventEmitter {
 
     if (this.unhealthyRecovering) return // block dups
     this.unhealthyRecovering = true
-    // tslint:disable-next-line:no-console
+
     console.log('------ trying an unhealty recovery of services - since most rely on the db')
     // Close the WebAPI if it was listening
     if (this.status.api) this.WebAPI.close()
@@ -105,11 +104,11 @@ export class BotMonitor extends EventEmitter {
     this.status.stats = await this.LiveStatistics.start()
     this.status.api = await this.WebAPI.start()
 
-    // tslint:disable-next-line:no-console
     console.log(`@@@@@ db: ${this.status.db}, stats: ${this.status.stats}, api: ${this.status.api}`)
+
     if (this.status.db && this.status.stats && this.status.api) {
       this.unhealthyRecovered = true
-      const channel = <TextChannel>this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel)
+      const channel = <Discord.TextChannel>this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel)
       await channel.send(`:hammer_pick: **Services Auto Restored:** I've successfully recovered myself :blush:`)
     } else {
       this.unhealthyRecovered = false
@@ -122,18 +121,22 @@ export class BotMonitor extends EventEmitter {
   }
 
   private async discordAPIReady() {
-    // tslint:disable-next-line:no-console
-    console.log('waiting for discord.js ready event')
+    // Create new Client
+    this.Bot.DEBUG.log('creating discord client...')
+    this.Bot.client = new Discord.Client()
+
+    // Waiting for Discord.js Ready Event to fire...
+    this.Bot.DEBUG.log('waiting for discord.js ready event...')
     return new Promise<boolean>(async (r) => {
       /// Client ready ///
-      // tslint:disable-next-line:no-console
+
       this.Bot.client.on('ready', () => {
-        console.log('+++++ on ready')
+        console.log('discord.js ready!')
         this.Bot.onReady()
         r(true)
       })
       /// Connect account ///
-      // tslint:disable-next-line:no-console
+
       await this.Bot.client.login(process.env.DISCORD_APP_TOKEN)
     })
   }
@@ -147,7 +150,7 @@ export class BotMonitor extends EventEmitter {
       maintainersMention += `<@${m}> `
     })
 
-    const channel = this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel) as TextChannel
+    const channel = this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel) as Discord.TextChannel
     await channel.send(`:warning: **Critical:** Bot Maintenance Required!
 
 One of the bot maintainers: ${maintainersMention} will need to address this issue.
@@ -169,7 +172,7 @@ Stats ............. ${this.status.stats ? '✓ Started' : '✕ Down'}\`\`\``)
 
     const t = Number(process.env.DB_MONITOR_PING_FAILED_THRESHOLD || 10)
     if (this.DBMonitor.pingFailedCount >= t) {
-      const channel = <TextChannel>this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel)
+      const channel = <Discord.TextChannel>this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel)
       if (this.unhealthyRecoveryCount === 0) await channel.send(`:warning: **Database Alert:** The Database has failed ${t} pings.. Will attempt to auto correct shortly..`)
 
       await this.tryUnhealthyRecovery()

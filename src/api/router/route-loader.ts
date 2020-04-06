@@ -16,7 +16,7 @@ export function webRouteLoader() {
       const _requiredFile: { Routes: Array<WebRoute> } = require(Path.join('../../../', routeFile.toString()))
       // Test if file returns undefined
       if (_requiredFile !== undefined) {
-        console.log(`webRouteLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map((r) => Array.isArray(r)).length}`)
+        // console.log(`webRouteLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map((r) => Array.isArray(r)).length}`)
 
         for (let index = 0; index < _requiredFile.Routes.length; index++) {
           const route = _requiredFile.Routes[index]

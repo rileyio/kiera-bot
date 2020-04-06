@@ -5,7 +5,6 @@ import { Collections } from '@/db'
 export class ChastiKeyAPIFetchAndStoreLegacy extends Task {
   public APIEndpoint: string
   public dbCollection: Collections
-  public isJSON: boolean = true
   public strip: string
 
   // Config for this task
@@ -18,11 +17,11 @@ export class ChastiKeyAPIFetchAndStoreLegacy extends Task {
     // Perform the scheduled task/job
     try {
       console.log(`### Task:Fetching => ${this.name}`)
-      const resp = await got(this.APIEndpoint, { json: <any>this.isJSON })
+      const resp = await got(this.APIEndpoint, { responseType: 'json' })
 
       // Only if resp contains data delete and attempt to save the new cache
       if (resp.statusCode === 200) {
-        await this.storeInDB(this.isJSON ? resp.body : JSON.parse(resp.body.replace(this.strip, '')))
+        await this.storeInDB(resp.body)
       }
 
       this.lastRun = Date.now()
