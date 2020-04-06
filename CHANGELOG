@@ -1,4 +1,6 @@
 6.0.0
+- Updated: Dependencies audit and update.
+- Removed: Old code from User object used primarily by Legacy permissions and decommissioned site - need to reevaluate remainin.
 
 5.1.0
 - Fixed: ChastiKey username changes should now properly update on the Kiera record side when a change is detected upon running a command.
