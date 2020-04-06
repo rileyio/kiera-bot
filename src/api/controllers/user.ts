@@ -25,13 +25,7 @@ export async function get(routed: WebRouted) {
       avatar: 1,
       username: 1,
       discriminator: 1,
-      guilds: 1,
       ChastiKey: 1
-    })
-
-    // Sort guilds
-    user.guilds.sort(g => {
-      return g.owner ? -1 : 1
     })
 
     return routed.res.send(user)

@@ -34,14 +34,6 @@ export namespace User {
           .min(2)
           .max(32)
           .required(),
-        locale: joi
-          .string()
-          .min(2)
-          .max(8)
-          .required(),
-        premium_type: joi.number().optional(),
-        mfa_enabled: joi.boolean().required(),
-        flags: joi.number().required(),
         avatar: joi
           .string()
           .alphanum()
@@ -61,14 +53,12 @@ export namespace User {
           .min(2)
           .max(24)
           .required(),
-        provider: joi.string().required(),
         accessToken: joi
           .string()
           .alphanum()
           .min(28)
           .max(30)
           .required(),
-        guilds: joi.array().required(),
         fetchedAt: joi.string().required()
       })
       .required()

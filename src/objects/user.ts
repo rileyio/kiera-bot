@@ -1,8 +1,5 @@
-import * as deepExtend from 'deep-extend'
-import * as jwt from 'jsonwebtoken'
-import { ObjectId } from 'bson'
+import { ObjectId, ObjectID } from 'bson'
 import { TrackedChastiKey } from '@/objects/chastikey'
-import { TrackedServer } from '@/objects/server'
 
 export class TrackedUser {
   public __notStored: boolean
@@ -10,23 +7,15 @@ export class TrackedUser {
   public accessToken: string
   public avatar: string = ''
   public discriminator: string = ''
-  public flags: number
   public id: string = ''
-  public isBot: boolean = false
-  public locale: string = 'enUS'
-  public mfa_enabled: boolean
-  public premium_type: number
-  public provider: string
   public username: string = ''
   public webToken: string
-
-  public guilds: Array<TrackedUserGuild>
 
   // ChastiKey Specific //
   public ChastiKey: TrackedChastiKey
 
   constructor(init: Partial<TrackedUser>) {
-    deepExtend(this, init)
+    Object.assign(this, init)
     this.ChastiKey = new TrackedChastiKey(init !== null ? init.ChastiKey : {})
   }
 
@@ -46,15 +35,6 @@ export interface TrackedUserQuery {
   id?: string
   username?: string
   discriminator?: string
-}
-
-export interface TrackedUserGuild {
-  owner: boolean
-  permissions: number
-  icon: string
-  id: string
-  name: string
-  fetchedAt: string
 }
 
 export class TrackedMutedUser {
