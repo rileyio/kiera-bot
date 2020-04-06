@@ -114,9 +114,9 @@ export async function getDecision(routed: WebRouted) {
           var caller = null as User
 
           try {
-            guild = routed.Bot.client.guilds.find(g => g.id === d.serverID)
+            guild = routed.Bot.client.guilds.cache.find(g => g.id === d.serverID)
             // channel = routed.Bot.client.channels.find(c => c.id !== d.channelID)
-            caller = routed.Bot.client.users.find(u => u.id === d.callerID)
+            caller = routed.Bot.client.users.cache.find(u => u.id === d.callerID)
 
             d.serverID = guild.name
             // d.channelID = channel.

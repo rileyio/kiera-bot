@@ -109,7 +109,7 @@ export class BotMonitor extends EventEmitter {
     console.log(`@@@@@ db: ${this.status.db}, stats: ${this.status.stats}, api: ${this.status.api}`)
     if (this.status.db && this.status.stats && this.status.api) {
       this.unhealthyRecovered = true
-      const channel = <TextChannel>this.Bot.client.channels.find(c => c.id === this.announcementsChannel)
+      const channel = <TextChannel>this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel)
       await channel.send(`:hammer_pick: **Services Auto Restored:** I've successfully recovered myself :blush:`)
     } else {
       this.unhealthyRecovered = false
@@ -124,7 +124,7 @@ export class BotMonitor extends EventEmitter {
   private async discordAPIReady() {
     // tslint:disable-next-line:no-console
     console.log('waiting for discord.js ready event')
-    return new Promise<boolean>(async r => {
+    return new Promise<boolean>(async (r) => {
       /// Client ready ///
       // tslint:disable-next-line:no-console
       this.Bot.client.on('ready', () => {
@@ -143,11 +143,11 @@ export class BotMonitor extends EventEmitter {
     var maintainersMention = ``
 
     // Build maintainers mentions
-    maintainers.forEach(m => {
+    maintainers.forEach((m) => {
       maintainersMention += `<@${m}> `
     })
 
-    const channel = <TextChannel>this.Bot.client.channels.find(c => c.id === this.announcementsChannel)
+    const channel = this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel) as TextChannel
     await channel.send(`:warning: **Critical:** Bot Maintenance Required!
 
 One of the bot maintainers: ${maintainersMention} will need to address this issue.
@@ -169,7 +169,7 @@ Stats ............. ${this.status.stats ? '✓ Started' : '✕ Down'}\`\`\``)
 
     const t = Number(process.env.DB_MONITOR_PING_FAILED_THRESHOLD || 10)
     if (this.DBMonitor.pingFailedCount >= t) {
-      const channel = <TextChannel>this.Bot.client.channels.find(c => c.id === this.announcementsChannel)
+      const channel = <TextChannel>this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel)
       if (this.unhealthyRecoveryCount === 0) await channel.send(`:warning: **Database Alert:** The Database has failed ${t} pings.. Will attempt to auto correct shortly..`)
 
       await this.tryUnhealthyRecovery()

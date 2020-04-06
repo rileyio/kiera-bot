@@ -27,14 +27,16 @@ export async function statsForUser(routed: RouterRouted) {
   // Check for stats disabled setting from user
   if (await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { userID, setting: StatisticsSettingType.UserDisableStats })) {
     routed.v.o.id !== undefined
-      ? await routed.message.reply(`This user has requested their stats be disabled - (Note: They may appear in channel or server statistics unless they've deleted all stored statistics.)`)
+      ? await routed.message.reply(
+          `This user has requested their stats be disabled - (Note: They may appear in channel or server statistics unless they've deleted all stored statistics.)`
+        )
       : await routed.message.reply(
           `You've disabled your stats, while in this state no new stats will be collected and this command will be disabled (Note: you may appear in Server or Channel statistics unless you delete all your user statistics.)`
         )
     return true // Stop here
   }
 
-  const member = await routed.message.guild.fetchMember(userID)
+  const member = await routed.message.guild.members.fetch(userID)
   const data = await routed.bot.DB.aggregate<{ name?: string; channelID: string; messages: number; reactions: number }>('stats-servers', [
     {
       $match: { $or: [{ type: ServerStatisticType.Message }, { type: ServerStatisticType.Reaction }], serverID: routed.message.guild.id, userID }
@@ -68,18 +70,18 @@ export async function statsForUser(routed: RouterRouted) {
   // Count number of channels
   const numberOfChannels = data.length
   const numberOfMessages = data
-    .map(c => {
+    .map((c) => {
       return c.messages
     })
     .reduce((prev, cur) => (cur += prev))
   const numberOfReactions = data
-    .map(c => {
+    .map((c) => {
       return c.reactions
     })
     .reduce((prev, cur) => (cur += prev))
 
   // Map User @ names
-  const mappedData = data.map(stat => {
+  const mappedData = data.map((stat) => {
     stat.name = Utils.Channel.buildChannelChatAt(stat.channelID)
     return stat
   })

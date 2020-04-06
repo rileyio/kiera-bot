@@ -15,7 +15,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision roll "id"',
     name: 'decision-run-saved',
     validate: '/decision:string/roll:string/id=string',
-    middleware: [Middleware.isUserRegistered]
+    middleware: [Middleware.isUserRegistered],
   },
   {
     type: 'message',
@@ -25,7 +25,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "Question here" "Option 1" "Option 2" "etc.."',
     name: 'decision-realtime',
     validate: '/decision:string/question=string/args...string',
-    middleware: [Middleware.isUserRegistered]
+    middleware: [Middleware.isUserRegistered],
   }
 )
 
@@ -36,13 +36,13 @@ export async function runSavedDecision(routed: RouterRouted) {
     const decision = new TrackedDecision(decisionFromDB)
 
     // Halt if user blacklist is triggered
-    if (decision.userBlacklist.findIndex(u => u === routed.user.id) > -1) {
+    if (decision.userBlacklist.findIndex((u) => u === routed.user.id) > -1) {
       return true // Stop here
     }
 
     // Halt if decision rolled on server is not whitelisted
     if (decision.serverWhitelist.length > 0) {
-      if (decision.serverWhitelist.findIndex(s => s === routed.message.guild.id) === -1) {
+      if (decision.serverWhitelist.findIndex((s) => s === routed.message.guild.id) === -1) {
         await routed.message.reply(`This decision roll (\`${decision._id.toString()}\`) cannot be used on this server!`)
         return true // Stop here
       }
@@ -55,13 +55,13 @@ export async function runSavedDecision(routed: RouterRouted) {
     }
 
     // Lookup author
-    const author = await routed.message.guild.fetchMember(decision.authorID, false)
+    const author = await routed.message.guild.members.fetch(decision.authorID)
     var optionsPool = []
 
     // When 'consumeMode' is Temporarily Consume, remove options from the pool depending on the setting
     if (decision.consumeMode === 'Temporarily Consume') {
       // Check timed decisions if they fall within the consume time (if set)
-      decision.options.forEach(d => {
+      decision.options.forEach((d) => {
         // Remove if criteria is met
         if (Date.now() - d.consumedTime <= decision.consumeReset * 1000) {
           // console.log(
@@ -80,7 +80,7 @@ export async function runSavedDecision(routed: RouterRouted) {
     // When 'consumeMode' is Consume, remove options from the pool
     if (decision.consumeMode === 'Consume') {
       // Check if consumed is 'true', if so remove it
-      decision.options.forEach(d => {
+      decision.options.forEach((d) => {
         // Remove if criteria is met
         if (!d.consumed) optionsPool.push(d)
       })
@@ -121,7 +121,7 @@ export async function runSavedDecision(routed: RouterRouted) {
         outcomeID: String(outcome._id),
         serverID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.guild.id,
         channelID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.channel.id,
-        outcomeContent: outcomeEmbed.embed.description
+        outcomeContent: outcomeEmbed.embed.description,
       })
     )
 

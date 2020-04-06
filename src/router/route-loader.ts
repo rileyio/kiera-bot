@@ -4,7 +4,7 @@ import { RouteConfiguration } from '@/router'
 
 export function routeLoader() {
   // Load routes from commands folder
-  const _routeFiles = glob.sync(['app/commands/**/*.js', '!app/commands/index.js', '!app/commands/admin.js'], { deep: true })
+  const _routeFiles = glob.sync(['app/commands/**/*.js', '!app/commands/index.js', '!app/commands/admin.js'], { deep: 5 })
 
   // Collection of routes
   var routes: Array<RouteConfiguration> = []

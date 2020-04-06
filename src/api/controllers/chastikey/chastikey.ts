@@ -153,7 +153,7 @@ export async function user(routed: WebRouted) {
     const ckUser = await routed.Bot.DB.get<UserData>('ck-users', { username: new RegExp(`${v.o.username}`, 'i') })
 
     // User's discord avatar (again, only if verified)
-    const discordUser = ckUser.discordID ? await routed.Bot.client.fetchUser(ckUser.discordID) : null
+    const discordUser = ckUser.discordID ? await routed.Bot.client.users.fetch(ckUser.discordID) : null
 
     // If user does not exist, fail
     if (!ckUser) {

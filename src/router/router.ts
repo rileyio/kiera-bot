@@ -75,8 +75,8 @@ export class Router {
     storedMessage = new TrackedMessage(storedMessage)
 
     // Update stored record if it gets this far with any react changes
-    // console.log('router sees:', message.reactions.array())
-    storedMessage.update('reactions', message.reactions.array())
+    // console.log('router sees:', message.reactions.cache.array())
+    storedMessage.update('reactions', message.reactions.cache.array())
     await this.bot.DB.update('messages', { _id: storedMessage._id }, storedMessage)
 
     // Ensure stored message has a route name to properly route it
@@ -205,7 +205,7 @@ export class Router {
         // If no commands are available, don't print the fallback (this typically means
         // the whole route has restrited coammnds)
         if (examples.length === 0) return // stop here
-        await message.channel.sendMessage(fallbackHelp(exampleUseOfCommand, examplesToAppend))
+        await message.channel.send(fallbackHelp(exampleUseOfCommand, examplesToAppend))
 
         // End routing
         // Track in an audit event
@@ -351,7 +351,7 @@ export class Router {
     var checks: ProcessedPermissions = {
       // Permissions of user
       hasAdministrator: !routed.isDM ? routed.message.member.hasPermission('ADMINISTRATOR') : false,
-      hasManageChannel: !routed.isDM ? routed.message.member.permissionsIn(routed.message.channel).hasPermission('MANAGE_CHANNELS') : false,
+      hasManageChannel: !routed.isDM ? routed.message.member.permissionsIn(routed.message.channel).has('MANAGE_CHANNELS') : false,
       hasManageGuild: !routed.isDM ? routed.message.member.hasPermission('MANAGE_GUILD') : false
     }
 

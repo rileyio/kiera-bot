@@ -1,3 +1,5 @@
+6.0.0
+
 5.1.0
 - Fixed: ChastiKey username changes should now properly update on the Kiera record side when a change is detected upon running a command.
 - Fixed: CK stats lockee removing card pick value when lock is of the fixed type.

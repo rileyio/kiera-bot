@@ -1,4 +1,4 @@
-import { Emoji } from 'discord.js'
+import { GuildEmoji } from 'discord.js'
 
 export class TrackedEmoji {
   public _id: string
@@ -11,7 +11,7 @@ export class TrackedEmoji {
   public roles: number
   public url: boolean
 
-  constructor(init: Partial<TrackedEmoji | Emoji>) {
+  constructor(init: Partial<TrackedEmoji | GuildEmoji>) {
     Object.assign(this, {
       id: init.id,
       animated: init.animated,

@@ -1,5 +1,5 @@
 import * as APIUrls from '@/api-urls'
-import * as got from 'got'
+import got from 'got'
 import { Bot } from '@/index'
 import { Logging } from '@/utils'
 import { ChastiKey as ChastiKeyAPI } from 'chastikey.js'
@@ -73,11 +73,14 @@ export class ChastiKey {
 
   // Legacy Requests (Some are unique to Kiera)
   public async verifyCKAccountCheck(params: { discordID?: string; username?: string }) {
-    const { body }: got.Response<ChastiKeyVerifyDiscordID> = await got(
+    const { body } = await got(
       params.discordID ? `${APIUrls.ChastiKey.VerifyDiscordID}?discord_id=${params.discordID}` : `${APIUrls.ChastiKey.VerifyDiscordID}?username=${params.username}`,
-      { json: true }
+      {
+        responseType: 'json'
+      }
     )
-    const resp = new ChastiKeyVerifyDiscordID(body)
+
+    const resp = new ChastiKeyVerifyDiscordID(body as ChastiKeyVerifyDiscordID)
     this.trackUsage()
     return resp
   }
@@ -89,8 +92,9 @@ export class ChastiKey {
     postData.append('username', username)
     postData.append('discriminator', discriminator)
 
-    const { body }: got.Response<string> = await got.post(APIUrls.ChastiKey.DiscordAuth, { body: postData } as any)
-    const resp = new ChastiKeyVerifyResponse(JSON.parse(body))
+    const { body } = await got.post(APIUrls.ChastiKey.DiscordAuth, { body: postData } as any)
+    const resp = new ChastiKeyVerifyResponse(JSON.parse(body as string))
+    
     this.trackUsage()
     return resp
   }

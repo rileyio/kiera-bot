@@ -5,16 +5,19 @@ export function hasRole(role: string | Array<string>) {
     // If its a DM, stop processing
     if (routed.message.channel.type === 'dm') return
 
-    routed.bot.DEBUG_MIDDLEWARE.log(`user's roles`, routed.message.member.roles.array().map(r => r.name.toLocaleLowerCase()))
+    routed.bot.DEBUG_MIDDLEWARE.log(
+      `user's roles`,
+      routed.message.member.roles.cache.array().map((r) => r.name.toLocaleLowerCase())
+    )
 
     // Test if its an array
     if (Array.isArray(role)) {
       var contains = false
 
-      role.forEach(r => {
+      role.forEach((r) => {
         // Skip further processing if a positive match is found
         if (contains) return
-        contains = routed.message.member.roles.array().find(sr => sr.name.toLocaleLowerCase() === r) !== undefined
+        contains = routed.message.member.roles.cache.array().find((sr) => sr.name.toLocaleLowerCase() === r) !== undefined
 
         routed.bot.DEBUG_MIDDLEWARE.log('hasRole', r, contains)
       })
@@ -25,8 +28,8 @@ export function hasRole(role: string | Array<string>) {
     }
 
     // Test if its a single string
-    if (routed.message.member.roles.array().find(r => r.name.toLocaleLowerCase() === role)) {
-      routed.bot.DEBUG_MIDDLEWARE.log('hasRole', role, routed.message.member.roles.array().find(r => r.name.toLocaleLowerCase() === role) !== undefined)
+    if (routed.message.member.roles.cache.array().find((r) => r.name.toLocaleLowerCase() === role)) {
+      routed.bot.DEBUG_MIDDLEWARE.log('hasRole', role, routed.message.member.roles.cache.array().find((r) => r.name.toLocaleLowerCase() === role) !== undefined)
 
       return routed
     }

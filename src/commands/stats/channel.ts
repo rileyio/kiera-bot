@@ -52,7 +52,7 @@ export async function statsForChannel(routed: RouterRouted) {
 
   // Map User @ names
   const mappedData = data
-    .map(stat => {
+    .map((stat) => {
       stat.name = Utils.User.buildUserChatAt(stat.userID, Utils.User.UserRefType.snowflake)
       return stat
     })
@@ -60,11 +60,11 @@ export async function statsForChannel(routed: RouterRouted) {
     .slice(0, 10)
 
   // Fetch channel details
-  const channelDetails = routed.bot.client.channels.find(c => c.id === channelID) as TextChannel
+  const channelDetails = routed.bot.client.channels.cache.find((c) => c.id === channelID) as TextChannel
 
   await routed.message.channel.send(
     statsChannel({
-      serverIcon: routed.message.guild.iconURL,
+      serverIcon: routed.message.guild.iconURL(),
       name: channelDetails.name,
       created: channelDetails.createdTimestamp,
       members: channelDetails.members.size,

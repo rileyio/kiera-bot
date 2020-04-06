@@ -60,7 +60,7 @@ export const Routes = ExportRoutes(
 )
 
 export async function mute(routed: RouterRouted) {
-  const muteRole = routed.message.guild.roles.find(r => r.name === 'Temporary Mute')
+  const muteRole = routed.message.guild.roles.cache.find((r) => r.name === 'Temporary Mute')
   const regex = XRegex('^((?<username>(?!@|#|:|`).*)\\#(?<discriminator>[0-9]{4,5}))$', 'i')
   const match = XRegex.exec(routed.v.o.user, regex)
   const username = match['username']
@@ -72,7 +72,7 @@ export async function mute(routed: RouterRouted) {
     return true
   }
 
-  const targetUser = routed.message.guild.members.find(m => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
+  const targetUser = routed.message.guild.members.cache.find((m) => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
 
   // Could not find user
   if (!targetUser) {
@@ -105,7 +105,7 @@ export async function mute(routed: RouterRouted) {
     mutedById: routed.user.id,
     mutedByUsername: routed.user.username,
     mutedByDiscriminator: routed.user.discriminator,
-    roles: targetUser.roles.map(r => {
+    roles: targetUser.roles.cache.map((r) => {
       return { id: r.id, name: r.name }
     })
   })
@@ -114,17 +114,17 @@ export async function mute(routed: RouterRouted) {
   await routed.bot.DB.add('muted-users', mutedUserRecord)
 
   // Now assign the user the mute role removing all previous as well
-  await targetUser.removeRoles(targetUser.roles)
-  await targetUser.addRole(muteRole)
+  await targetUser.roles.remove(targetUser.roles.cache)
+  await targetUser.roles.add(muteRole)
 
   await routed.message.channel.send(
-    `:mute: **Muted User**\nUser = \`${routed.v.o.user}\`\nReason = \`${mutedUserRecord.reason}\`\nRoles Preserved = \`${mutedUserRecord.roles.map(r => r.name).join(' ')}\``
+    `:mute: **Muted User**\nUser = \`${routed.v.o.user}\`\nReason = \`${mutedUserRecord.reason}\`\nRoles Preserved = \`${mutedUserRecord.roles.map((r) => r.name).join(' ')}\``
   )
   return true
 }
 
 export async function unMute(routed: RouterRouted) {
-  const muteRole = routed.message.guild.roles.find(r => r.name === 'Temporary Mute')
+  const muteRole = routed.message.guild.roles.cache.find((r) => r.name === 'Temporary Mute')
   const regex = XRegex('^((?<username>(?!@|#|:|`).*)\\#(?<discriminator>[0-9]{4,5}))$', 'i')
   const match = XRegex.exec(routed.v.o.user, regex)
   const username = match['username']
@@ -136,7 +136,7 @@ export async function unMute(routed: RouterRouted) {
     return true
   }
 
-  const targetUser = routed.message.guild.members.find(m => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
+  const targetUser = routed.message.guild.members.cache.find((m) => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
 
   // Could not find user
   if (!targetUser) {
@@ -151,7 +151,9 @@ export async function unMute(routed: RouterRouted) {
   }
 
   // Query user's Mute record in Kiera's DB
-  const mutedUserRecord = new TrackedMutedUser(await routed.bot.DB.get<TrackedMutedUser>('muted-users', { id: targetUser.id, active: true }))
+  const mutedUserRecord = new TrackedMutedUser(
+    await routed.bot.DB.get<TrackedMutedUser>('muted-users', { id: targetUser.id, active: true })
+  )
 
   if (!mutedUserRecord._id) {
     await routed.message.reply('Could not find an active mute record for this user!')
@@ -173,23 +175,23 @@ export async function unMute(routed: RouterRouted) {
   )
 
   // Now remove the user's mute role adding back all previous roles
-  await targetUser.removeRole(muteRole)
-  await targetUser.addRoles(mutedUserRecord.roles.map(r => r.id))
+  await targetUser.roles.remove(muteRole)
+  await targetUser.roles.add(mutedUserRecord.roles.map((r) => r.id))
 
   await routed.message.channel.send(
-    `:mute: **UnMuted User**\nUser = \`${routed.v.o.user}\`\nReason = \`${mutedUserRecord.reason}\`\nRoles Restored = \`${mutedUserRecord.roles.map(r => r.name).join(' ')}\``
+    `:mute: **UnMuted User**\nUser = \`${routed.v.o.user}\`\nReason = \`${mutedUserRecord.reason}\`\nRoles Restored = \`${mutedUserRecord.roles.map((r) => r.name).join(' ')}\``
   )
   return true
 }
 
 export async function activeMutes(routed: RouterRouted) {
   const mutedRecordsRaw = await routed.bot.DB.getMultiple<TrackedMutedUser>('muted-users', { serverID: routed.message.guild.id, active: true })
-  const mutedRecords = mutedRecordsRaw.map(m => new TrackedMutedUser(m))
+  const mutedRecords = mutedRecordsRaw.map((m) => new TrackedMutedUser(m))
 
   var response = `:mute: **Muted Users List**\n`
   response += '```'
-  mutedRecords.forEach(m => {
-    const userOnServer = routed.message.guild.members.find(u => u.id === m.id)
+  mutedRecords.forEach((m) => {
+    const userOnServer = routed.message.guild.members.cache.find((u) => u.id === m.id)
     const dateFormatted = new Date(m.timestamp)
     // If still on the server
     if (userOnServer)
@@ -226,7 +228,7 @@ export async function lookupMutes(routed: RouterRouted) {
     return true
   }
 
-  const targetUser = routed.message.guild.members.find(m => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
+  const targetUser = routed.message.guild.members.cache.find((m) => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
   const mutedRecordsRaw = await routed.bot.DB.getMultiple<TrackedMutedUser>('muted-users', { serverID: routed.message.guild.id, id: targetUser.id })
 
   // Could not find user
@@ -241,19 +243,21 @@ export async function lookupMutes(routed: RouterRouted) {
     return true
   }
 
-  const mutedRecords = mutedRecordsRaw.map(m => new TrackedMutedUser(m))
+  const mutedRecords = mutedRecordsRaw.map((m) => new TrackedMutedUser(m))
 
   var response = `:mute: **Muted User Lookup**\n`
   response += '```'
-  mutedRecords.forEach(m => {
+  mutedRecords.forEach((m) => {
     const dateFormatted = new Date(m.timestamp)
     // If still on the server
     if (targetUser)
-      response += `${targetUser.user.username}#${targetUser.user.discriminator} (${m.active ? `Active` : 'Not-Active'})\n  ## Muted: ${dateFormatted.toUTCString()}\n  ## Reason: ${m.reason}\n\n`
-    else
-      response += `${m.username}#${m.discriminator} (${m.active ? `Active` : 'Not-Active'}) __(user left the server)__\n  ## Muted: ${dateFormatted.toUTCString()}\n  ## Reason: ${m.reason} ${
-        !m.active ? `## Unmuted: ${m.removedAt}` : ``
+      response += `${targetUser.user.username}#${targetUser.user.discriminator} (${m.active ? `Active` : 'Not-Active'})\n  ## Muted: ${dateFormatted.toUTCString()}\n  ## Reason: ${
+        m.reason
       }\n\n`
+    else
+      response += `${m.username}#${m.discriminator} (${m.active ? `Active` : 'Not-Active'}) __(user left the server)__\n  ## Muted: ${dateFormatted.toUTCString()}\n  ## Reason: ${
+        m.reason
+      } ${!m.active ? `## Unmuted: ${m.removedAt}` : ``}\n\n`
   })
   response += '```'
 

@@ -51,8 +51,8 @@
 //       for (let guildIndex = 0; guildIndex < guilds.length; guildIndex++) {
 //         const guild = guilds[guildIndex]
 //         const guildMembers = guild.members.array()
-//         const role = guild.roles.find(r => r.name === this.eventRole)
-//         const usersWithRoleAlready = role.members.filter(m => m.roles.find(r => r.name === this.eventRole) !== undefined).array()
+//         const role = guild.roles.cache.find(r => r.name === this.eventRole)
+//         const usersWithRoleAlready = role.members.filter(m => m.roles.cache.find(r => r.name === this.eventRole) !== undefined).array()
 
 //         console.log(`Event Role Monitor::Guild = ${guild.name} (${guild.members.size}), Role = ${this.eventRole}, Users w/Role = ${usersWithRoleAlready.length}`)
 

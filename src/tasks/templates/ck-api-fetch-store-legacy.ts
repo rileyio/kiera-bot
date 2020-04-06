@@ -1,4 +1,4 @@
-import got = require('got')
+import got from 'got'
 import { Task } from '@/objects/task'
 import { Collections } from '@/db'
 

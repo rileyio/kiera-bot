@@ -188,7 +188,7 @@ export async function handleReact(routed: RouterRouted) {
     storedPoll = new TrackedPoll(storedPoll)
     // Stop if poll is expired/closed
     if (!storedPoll.isOpen) {
-      await routed.user.sendMessage(Utils.sb(Utils.en.poll.pollExpired))
+      await routed.user.send(Utils.sb(Utils.en.poll.pollExpired))
       return true // Stop here
     }
 
@@ -199,7 +199,7 @@ export async function handleReact(routed: RouterRouted) {
       // Update in DB
       const updateCount = await routed.bot.DB.update<TrackedPoll>('polls', { messageID: new ObjectID(routed.trackedMessage._id) }, storedPoll)
 
-      if (updateCount > 0) await routed.user.sendMessage(Utils.sb(Utils.en.poll.pollVoteCast))
+      if (updateCount > 0) await routed.user.send(Utils.sb(Utils.en.poll.pollVoteCast))
       return true // Stop here
     } else {
       var deleteCount = await routed.bot.DB.update<TrackedPoll>(
@@ -213,7 +213,7 @@ export async function handleReact(routed: RouterRouted) {
         { atomic: true }
       )
 
-      if (deleteCount > 0) await routed.user.sendMessage(Utils.sb(Utils.en.poll.pollVoteRemoved))
+      if (deleteCount > 0) await routed.user.send(Utils.sb(Utils.en.poll.pollVoteRemoved))
       return true // Stop here
     }
   }
@@ -247,7 +247,7 @@ export async function startPoll(routed: RouterRouted) {
     1
 
     // Print message to chat for members to vote upon
-    const messageSent = (await routed.message.channel.sendMessage(poll(storedPoll))) as Message
+    const messageSent = (await routed.message.channel.send(poll(storedPoll))) as Message
 
     // Track Message
     const messageID = await routed.bot.MsgTracker.trackNewMsg(messageSent, { reactionRoute: 'poll-react-vote' })
@@ -331,7 +331,7 @@ export async function pickRandomVote(routed: RouterRouted) {
 
     const randomReaction = storedPoll.pickRandomVote(routed.v.o.emoji)
 
-    await routed.message.channel.sendMessage(
+    await routed.message.channel.send(
       Utils.sb(Utils.en.poll.pollRandomVoteSelected, {
         by: Utils.User.buildUserWrappedSnowflake(randomReaction.authorID),
         emoji: randomReaction.vote

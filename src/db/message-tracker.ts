@@ -45,7 +45,7 @@ export class MsgTracker {
             // Flags
             flagTrack: true,
             // React tracking
-            reactions: message.reactions.array(),
+            reactions: message.reactions.cache.array(),
             reactionRoute: message.reactionRoute
           })
         )
@@ -63,7 +63,7 @@ export class MsgTracker {
         // Flags
         flagTrack: true,
         // React tracking
-        reactions: message.reactions.array(),
+        reactions: message.reactions.cache.array(),
         reactionRoute: message.reactionRoute
       })
     )
@@ -85,7 +85,7 @@ export class MsgTracker {
     const now = Date.now()
 
     // Check for any messages past the memory threshold
-    var toCleanupArray = this.msgTrackingArr.filter(msg => {
+    var toCleanupArray = this.msgTrackingArr.filter((msg) => {
       // Calculate message age
       const age = Math.round(now - msg.messageCreatedAt)
       if (age > msg.storageKeepInMemFor) {
@@ -144,7 +144,7 @@ export class MsgTracker {
 
     for (const key in messagesByChannel) {
       const channelids = messagesByChannel[key]
-      const channel = <TextChannel>this.Bot.client.channels.find(ch => ch.id === key)
+      const channel = <TextChannel>this.Bot.client.channels.cache.find((ch) => ch.id === key)
       await channel.bulkDelete(channelids)
       // Remove from memory tracking too
       for (let index = 0; index < channelids.length; index++) {
@@ -160,7 +160,7 @@ export class MsgTracker {
 
   private async removeMemTrackedMsg(id: string, keepInDB: boolean = true) {
     // Find msg id's index
-    const foundMsgIndex = this.msgTrackingArr.findIndex(msg => msg.id === id)
+    const foundMsgIndex = this.msgTrackingArr.findIndex((msg) => msg.id === id)
     // Remove msg from tracking
     this.msgTrackingArr.splice(foundMsgIndex, 1)
     if (!keepInDB) await this.Bot.DB.remove('messages', { id: id })

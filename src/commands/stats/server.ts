@@ -75,7 +75,7 @@ export async function statsByTopChannels(routed: RouterRouted) {
 
   // Map channel names
   const mappedData = data
-    .map(stat => {
+    .map((stat) => {
       stat.name = Utils.Channel.buildChannelChatAt(stat.channelID)
       return stat
     })
@@ -84,7 +84,7 @@ export async function statsByTopChannels(routed: RouterRouted) {
 
   await routed.message.channel.send(
     statsTopServerChannels({
-      serverIcon: routed.message.guild.iconURL,
+      serverIcon: routed.message.guild.iconURL(),
       data: mappedData
     })
   )
@@ -180,7 +180,7 @@ export async function serverStats(routed: RouterRouted) {
   const mappedChannelData = topChannelsByMsgCount
     // Limit to just the top 5
     .slice(0, 5)
-    .map(stat => {
+    .map((stat) => {
       stat.name = Utils.Channel.buildChannelChatAt(stat.channelID)
       return stat
     })
@@ -189,7 +189,7 @@ export async function serverStats(routed: RouterRouted) {
   const mappedUserData = topUsersByMsgCount
     // Limit to just the top 5
     .slice(0, 5)
-    .map(stat => {
+    .map((stat) => {
       stat.name = Utils.User.buildUserChatAt(stat.userID, Utils.User.UserRefType.snowflake)
       return stat
     })
@@ -198,19 +198,19 @@ export async function serverStats(routed: RouterRouted) {
   const mappedUserReactionsData = topUsersByReactionsCount
     // Limit to just the top 5
     .slice(0, 5)
-    .map(stat => {
+    .map((stat) => {
       stat.name = Utils.User.buildUserChatAt(stat.userID, Utils.User.UserRefType.snowflake)
       return stat
     })
 
   // Map Users Joined
-  const mappedUsersJoined = usersJoinedAndLeft.find(s => s.type === ServerStatisticType.UserJoined) || { type: ServerStatisticType.UserJoined, count: 0 }
-  const mappedUsersLeft = usersJoinedAndLeft.find(s => s.type === ServerStatisticType.UserLeft) || { type: ServerStatisticType.UserLeft, count: 0 }
+  const mappedUsersJoined = usersJoinedAndLeft.find((s) => s.type === ServerStatisticType.UserJoined) || { type: ServerStatisticType.UserJoined, count: 0 }
+  const mappedUsersLeft = usersJoinedAndLeft.find((s) => s.type === ServerStatisticType.UserLeft) || { type: ServerStatisticType.UserLeft, count: 0 }
 
   await routed.message.channel.send(
     statsServer({
       serverAgeTimestamp: routed.message.guild.createdTimestamp,
-      serverIcon: routed.message.guild.iconURL,
+      serverIcon: routed.message.guild.iconURL(),
       memberCount: routed.message.guild.memberCount,
       usersJoined: mappedUsersJoined.count,
       usersLeft: mappedUsersLeft.count,
@@ -223,7 +223,10 @@ export async function serverStats(routed: RouterRouted) {
 
 export async function aboutStats(routed: RouterRouted) {
   // Get states
-  const statsDisabledServer = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { serverID: routed.message.guild.id, setting: StatisticsSettingType.ServerDisableStats })
+  const statsDisabledServer = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', {
+    serverID: routed.message.guild.id,
+    setting: StatisticsSettingType.ServerDisableStats
+  })
   const statsDisabledUser = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { userID: routed.user.id, setting: StatisticsSettingType.UserDisableStats })
   // Get user total stats count
   const statsCount = await routed.bot.DB.count<ServerStatistic>('stats-servers', { userID: routed.user.id })

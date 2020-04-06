@@ -83,7 +83,7 @@ export class Bot {
     ///// Discord Event Monitor / Routing //
     ////////////////////////////////////////
     /// Event hndling for non-cached (messages from prior to restart) ///
-    this.client.on('raw', async event => {
+    this.client.on('raw' as any, async (event) => {
       if (event.t === null) return
       // Skip event types that are not mapped
       // this.DEBUG_MSG_INCOMING.log('raw:', event.t)
@@ -93,13 +93,13 @@ export class Bot {
     })
 
     /// Incoming message router ///
-    this.client.on('message', async msg => await this.onMessage(msg))
+    this.client.on('message', async (msg) => await this.onMessage(msg))
     ///Server connect/disconnect///
-    this.client.on('guildCreate', async guild => this.onGuildCreate(guild))
-    this.client.on('guildDelete', async guild => this.onGuildDelete(guild))
-    this.client.on('guildUpdate', async guild => this.onGuildCreate(guild))
-    this.client.on('guildMemberAdd', member => this.onUserJoined(member))
-    this.client.on('guildMemberRemove', member => this.onUserLeft(member))
+    this.client.on('guildCreate', async (guild) => this.onGuildCreate(guild))
+    this.client.on('guildDelete', async (guild) => this.onGuildDelete(guild))
+    this.client.on('guildUpdate', async (guild) => this.onGuildCreate(guild))
+    this.client.on('guildMemberAdd', (member) => this.onUserJoined(member))
+    this.client.on('guildMemberRemove', (member) => this.onUserLeft(member))
     ///   Reaction in (Cached)  ///
     // this.client.on('messageReactionAdd', (react, user) => this.onMessageCachedReactionAdd(react, user))
     ///  Reaction out (Cached)  ///
@@ -121,19 +121,8 @@ export class Bot {
 
   public async onReady() {
     this.DEBUG.log(`### Logged in as ${this.client.user.tag}!`)
-    var guilds = this.client.guilds.array()
-
-    // Only try processing these if the DB is active
-    if (this.BotMonitor.status.db) {
-      for (let index = 0; index < guilds.length; index++) {
-        const guild = guilds[index]
-        // this.DEBUG.log(`===> connecting to server => ${guild.name}`)
-        await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
-      }
-
-      // Setup Audit Log Channel
-      this.auditLogChannel = this.client.channels.find(c => c.id === process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
-    }
+    // Setup Audit Log Channel
+    this.auditLogChannel = this.client.channels.cache.find((c) => c.id === process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
   }
 
   private async onMessage(message: Discord.Message) {
@@ -160,12 +149,12 @@ export class Bot {
   }
 
   private async onMessageNonCachedReact(event: { t: Discord.WSEventType; d: any }) {
-    const user = this.client.users.get(event.d.user_id)
-    const channel = this.client.channels.get(event.d.channel_id) || (await user.createDM())
+    const user = this.client.users.cache.get(event.d.user_id)
+    const channel = this.client.channels.cache.get(event.d.channel_id) as Discord.TextChannel
     // Skip firing events for cached messages as these will already be properly handled
     // if ((<Discord.TextChannel>channel).messages.has(event.d.message_id)) return
     // Query channel for message as its not chached
-    const message = await (<Discord.TextChannel>channel).fetchMessage(event.d.message_id)
+    const message = await channel.messages.fetch(event.d.message_id)
     // Handling for custome/server emoji
     const emojiKey = event.d.emoji.id ? `${event.d.emoji.name}:${event.d.emoji.id}` : event.d.emoji.name
     this.DEBUG_MSG_INCOMING.log('emojiKey', emojiKey)
@@ -175,11 +164,11 @@ export class Bot {
     if (event.t === 'MESSAGE_REACTION_REMOVE') return await this.onMessageCachedReactionRemove(message, emojiKey, user)
   }
 
-  private onUserJoined(member: Discord.GuildMember) {
+  private onUserJoined(member: Discord.GuildMember | Discord.PartialGuildMember) {
     this.Statistics.trackServerStatistic(member.guild.id, null, member.user.id, ServerStatisticType.UserJoined)
   }
 
-  private onUserLeft(member: Discord.GuildMember) {
+  private onUserLeft(member: Discord.GuildMember | Discord.PartialGuildMember) {
     this.Statistics.trackServerStatistic(member.guild.id, null, member.user.id, ServerStatisticType.UserLeft)
   }
 }

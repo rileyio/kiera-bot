@@ -49,7 +49,7 @@ export async function otl(routed: WebRouted) {
   storedSession = new TrackedSession(storedSession)
 
   // Valid at this point
-  const user = await routed.Bot.client.fetchUser(storedSession.userID)
+  const user = await routed.Bot.client.users.fetch(storedSession.userID)
 
   // If valid, generate a session token for use with Kiera
   const newSessionToken = jwt.sign({ discordID: user.id, userID: storedSession.userID, username: user.username, discriminator: user.discriminator }, process.env.BOT_SECRET, { expiresIn: '7d' })

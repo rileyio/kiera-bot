@@ -34,9 +34,9 @@ export class TrackedServer {
       ownerID: init.ownerID,
       memberCount: init.memberCount,
       joinedTimestamp: init.joinedTimestamp,
-      emojis: isTracked ? (<TrackedServer>init).emojis.map(emoji => new TrackedEmoji(emoji)) : (<Guild>init).emojis.array().map(emoji => new TrackedEmoji(emoji)),
-      channels: isTracked ? (<TrackedServer>init).channels.map(channel => new TrackedChannel(channel)) : (<Guild>init).channels.array().map(channel => new TrackedChannel(channel)),
-      roles: isTracked ? (<TrackedServer>init).roles.map(role => new TrackedRole(role)) : (<Guild>init).roles.array().map(role => new TrackedRole(role))
+      emojis: isTracked ? (<TrackedServer>init).emojis.map(emoji => new TrackedEmoji(emoji)) : (<Guild>init).emojis.cache.array().map(emoji => new TrackedEmoji(emoji)),
+      channels: isTracked ? (<TrackedServer>init).channels.map(channel => new TrackedChannel(channel)) : (<Guild>init).channels.cache.array().map(channel => new TrackedChannel(channel)),
+      roles: isTracked ? (<TrackedServer>init).roles.map(role => new TrackedRole(role)) : (<Guild>init).roles.cache.array().map(role => new TrackedRole(role))
     })
   }
 }

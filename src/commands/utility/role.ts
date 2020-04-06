@@ -48,7 +48,7 @@ export async function displayRoles(routed: RouterRouted) {
   var longestName = 0
   var largestNumber = 0
 
-  var roles = routed.message.guild.roles.array().map(r => {
+  var roles = routed.message.guild.roles.cache.array().map((r) => {
     // Track current longest name & largest member count number
     if (longestName < r.name.length) longestName = r.name.length
     if (largestNumber < String(r.members || 0).length) largestNumber = String(r.members || 0).length
@@ -73,7 +73,7 @@ export async function displayRoles(routed: RouterRouted) {
 
   message += `\`\`\``
 
-  roles.forEach(r => {
+  roles.forEach((r) => {
     message += `(${r.position < 10 ? `0` + r.position : r.position}) ${r.name} ${Array.from(Array(longestName + 3 - r.name.length)).join('.')} [${r.members}]\n`
   })
 
@@ -101,7 +101,7 @@ export async function displayRoles(routed: RouterRouted) {
  * @param {RouterRouted} routed
  */
 export async function displayRoleRange(routed: RouterRouted) {
-  const roles = routed.message.guild.roles.array().map(r => {
+  const roles = routed.message.guild.roles.cache.array().map((r) => {
     return { name: r.name, hexColor: r.hexColor, members: r.members.size, position: r.position }
   })
 
@@ -148,7 +148,7 @@ export async function displayRolesLike(routed: RouterRouted) {
   var longestName = 0
   var largestNumber = 0
 
-  const roles = routed.message.guild.roles.array().map(r => {
+  const roles = routed.message.guild.roles.cache.array().map((r) => {
     // Track current longest name & largest member count number
     if (longestName < r.name.length) longestName = r.name.length
     if (largestNumber < String(r.members || 0).length) largestNumber = String(r.members || 0).length
@@ -157,7 +157,7 @@ export async function displayRolesLike(routed: RouterRouted) {
   })
 
   // Splice out only what the user wants
-  const slicedRoles = roles.filter(r => {
+  const slicedRoles = roles.filter((r) => {
     const regex = new RegExp(`(${routed.v.o.name})`, 'i')
     var matched = regex.test(r.name)
 
@@ -206,7 +206,7 @@ export async function displayRolesLike(routed: RouterRouted) {
  * @param {RouterRouted} routed
  */
 export async function displayRole(routed: RouterRouted) {
-  const role = routed.message.guild.roles.array().find(r => r.name.toLocaleLowerCase().replace(' ', '') === routed.v.o.name.toLocaleLowerCase().replace(' ', ''))
+  const role = routed.message.guild.roles.cache.array().find((r) => r.name.toLocaleLowerCase().replace(' ', '') === routed.v.o.name.toLocaleLowerCase().replace(' ', ''))
 
   // If Role was found: Show details about it
   if (role) {

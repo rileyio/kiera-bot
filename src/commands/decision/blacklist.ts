@@ -13,7 +13,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "id" unblacklist user "userSnowflake"',
     name: 'decision-unblacklist-user',
     validate: '/decision:string/id=string/unblacklist:string/user:string/user=string',
-    middleware: [Middleware.isUserRegistered]
+    middleware: [Middleware.isUserRegistered],
   },
   {
     type: 'message',
@@ -23,7 +23,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "id" blacklist user "userSnowflake"',
     name: 'decision-blacklist-user',
     validate: '/decision:string/id=string/blacklist:string/user:string/user=string',
-    middleware: [Middleware.isUserRegistered]
+    middleware: [Middleware.isUserRegistered],
   },
   {
     type: 'message',
@@ -33,7 +33,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "id" blacklisted users',
     name: 'decision-blacklist-show',
     validate: '/decision:string/id=string/blacklisted:string/users:string',
-    middleware: [Middleware.isUserRegistered]
+    middleware: [Middleware.isUserRegistered],
   },
   {
     type: 'message',
@@ -43,7 +43,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "id" unwhitelist server "serverID"',
     name: 'decision-whitelist-server',
     validate: '/decision:string/id=string/unwhitelist:string/server:string/serverid=string',
-    middleware: [Middleware.isUserRegistered]
+    middleware: [Middleware.isUserRegistered],
   },
   {
     type: 'message',
@@ -53,7 +53,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "id" whitelist server "serverID"',
     name: 'decision-whitelist-server',
     validate: '/decision:string/id=string/whitelist:string/server:string/serverid=string',
-    middleware: [Middleware.isUserRegistered]
+    middleware: [Middleware.isUserRegistered],
   }
 )
 
@@ -62,12 +62,12 @@ export async function blacklistUser(routed: RouterRouted) {
 
   if (decisionFromDB) {
     // Check if user snowflake passed is valid
-    const user: User = await routed.bot.client
-      .fetchUser(routed.v.o.user, false)
-      .then(u => {
+    const user: User = await routed.bot.client.users
+      .fetch(routed.v.o.user, false)
+      .then((u) => {
         return u
       })
-      .catch(e => {
+      .catch((e) => {
         return null
       })
     const userExists = !!user
@@ -84,7 +84,7 @@ export async function blacklistUser(routed: RouterRouted) {
     const decision = new TrackedDecision(decisionFromDB)
 
     // Check if user snowflake is already in blacklist/whitelist
-    const isAlreadyBlacklisted = decision.userBlacklist.findIndex(u => u === routed.v.o.user) > -1
+    const isAlreadyBlacklisted = decision.userBlacklist.findIndex((u) => u === routed.v.o.user) > -1
 
     // When user is NOT blacklisted add them
     if (!isAlreadyBlacklisted) {
@@ -111,12 +111,12 @@ export async function unblacklistUser(routed: RouterRouted) {
 
   if (decisionFromDB) {
     // Check if user snowflake passed is valid
-    const user: User = await routed.bot.client
-      .fetchUser(routed.v.o.user, false)
-      .then(u => {
+    const user: User = await routed.bot.client.users
+      .fetch(routed.v.o.user, false)
+      .then((u) => {
         return u
       })
-      .catch(e => {
+      .catch((e) => {
         return null
       })
     const userExists = !!user
@@ -133,7 +133,7 @@ export async function unblacklistUser(routed: RouterRouted) {
     const decision = new TrackedDecision(decisionFromDB)
 
     // Check if user snowflake is already in blacklist/whitelist
-    const isAlreadyBlacklisted = decision.userBlacklist.findIndex(u => u === routed.v.o.user) > -1
+    const isAlreadyBlacklisted = decision.userBlacklist.findIndex((u) => u === routed.v.o.user) > -1
 
     // When user is NOT blacklisted let the caller know
     if (!isAlreadyBlacklisted) {
@@ -141,7 +141,7 @@ export async function unblacklistUser(routed: RouterRouted) {
     } else {
       // Remove user from blacklist
       decision.userBlacklist.splice(
-        decision.userBlacklist.findIndex(u => u === user.id),
+        decision.userBlacklist.findIndex((u) => u === user.id),
         1
       )
 
@@ -168,12 +168,12 @@ export async function showUserBlacklist(routed: RouterRouted) {
     if (decision.userBlacklist.length > 0) {
       for (var i = 0; i < decision.userBlacklist.length; i++) {
         const uid = decision.userBlacklist[i]
-        const user: User = await routed.bot.client
-          .fetchUser(uid, false)
-          .then(u => {
+        const user: User = await routed.bot.client.users
+          .fetch(uid, false)
+          .then((u) => {
             return u
           })
-          .catch(u => {
+          .catch((u) => {
             return null
           })
 
@@ -204,7 +204,7 @@ export async function whitelistServer(routed: RouterRouted) {
     const decision = new TrackedDecision(decisionFromDB)
 
     // Check if server id is already in the whitelist
-    const isAlreadyWhitelisted = decision.serverWhitelist.findIndex(s => s === routed.v.o.serverid) > -1
+    const isAlreadyWhitelisted = decision.serverWhitelist.findIndex((s) => s === routed.v.o.serverid) > -1
 
     // When server id is NOT whitelisted add it
     if (!isAlreadyWhitelisted) {
@@ -234,7 +234,7 @@ export async function unwhitelistServer(routed: RouterRouted) {
     const decision = new TrackedDecision(decisionFromDB)
 
     // Check if server id is already in the whitelist
-    const isAlreadyWhitelisted = decision.serverWhitelist.findIndex(s => s === routed.v.o.serverid) > -1
+    const isAlreadyWhitelisted = decision.serverWhitelist.findIndex((s) => s === routed.v.o.serverid) > -1
 
     // When server id is NOT whitelisted add it
     if (!isAlreadyWhitelisted) {
@@ -242,7 +242,7 @@ export async function unwhitelistServer(routed: RouterRouted) {
     } else {
       // Remove user from blacklist
       decision.serverWhitelist.splice(
-        decision.serverWhitelist.findIndex(s => s === routed.v.o.serverid),
+        decision.serverWhitelist.findIndex((s) => s === routed.v.o.serverid),
         1
       )
 
