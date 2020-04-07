@@ -22,8 +22,11 @@ export class Bot {
   public DEBUG_MSG_COMMAND = new Utils.Logging.Debug('command')
   public MsgTracker: MsgTracker
   public version: string
-  public tokens: { bnet: string }
-  public auditLogChannel: Discord.TextChannel
+
+  public channel: { auditLog: Discord.TextChannel; announcementsChannel: Discord.TextChannel } = {
+    auditLog: null,
+    announcementsChannel: null
+  }
 
   // Audit Manager
   public Audit: Audit = new Audit(this)
@@ -143,8 +146,10 @@ export class Bot {
 
   public async onReady() {
     this.DEBUG.log(`### Logged in as ${this.client.user.tag}!`)
-    // Setup Audit Log Channel
-    this.auditLogChannel = this.client.channels.cache.find((c) => c.id === process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
+
+    // Setup Bot utilized channels
+    this.channel.auditLog = this.client.channels.cache.find((c) => c.id === process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
+    this.channel.announcementsChannel = this.client.channels.cache.find((c) => c.id === process.env.DISCORD_ANNOUNCEMENTS_CHANNEL) as Discord.TextChannel
   }
 
   private async onMessage(message: Discord.Message) {

@@ -16,8 +16,8 @@ export const Routes = ExportRoutes({
   middleware: [Middleware.isCKVerified],
   permissions: {
     defaultEnabled: true,
-    serverOnly: true,
-  },
+    serverOnly: true
+  }
 })
 
 /**
@@ -31,7 +31,7 @@ export async function update(routed: RouterRouted) {
     verify: { start: 0, end: 0 },
     lockee: { start: 0, end: 0 },
     locktober: { start: 0, end: 0 },
-    keyholder: { start: 0, end: 0 },
+    keyholder: { start: 0, end: 0 }
   }
 
   // Check if user calling this command is targeting a different user
@@ -96,7 +96,7 @@ export async function update(routed: RouterRouted) {
   const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({
     username: queryBy === 'Username' ? queryValue : undefined,
     discordid: queryBy === 'Snowflake' ? queryValue : undefined,
-    showDeleted: true,
+    showDeleted: true
   })
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -111,7 +111,7 @@ export async function update(routed: RouterRouted) {
   // Get Data from new API
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
     username: queryBy === 'Username' ? queryValue : undefined,
-    discordid: queryBy === 'Snowflake' ? queryValue : undefined,
+    discordid: queryBy === 'Snowflake' ? queryValue : undefined
   })
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -159,7 +159,7 @@ export async function update(routed: RouterRouted) {
     devotedLockeeBlue: undefined,
     experiencedLockeeBlue: undefined,
     intermediateLockeeBlue: undefined,
-    noviceLockeeBlue: undefined,
+    noviceLockeeBlue: undefined
   }
   // User Roles
   var discordUserHasRole = {
@@ -178,7 +178,7 @@ export async function update(routed: RouterRouted) {
     devotedLockeeBlue: false,
     experiencedLockeeBlue: false,
     intermediateLockeeBlue: false,
-    noviceLockeeBlue: false,
+    noviceLockeeBlue: false
   }
 
   // Loop once finding roles for the above variables
@@ -450,7 +450,7 @@ export async function update(routed: RouterRouted) {
     action: 'performance',
     category: 'n/a',
     type: 'status',
-    result: `${Math.round(updatePerformance.locktober.end - updatePerformance.locktober.start)}ms`,
+    result: `${Math.round(updatePerformance.locktober.end - updatePerformance.locktober.start)}ms`
   })
 
   ///////////////////////////////////////
@@ -479,7 +479,7 @@ export async function update(routed: RouterRouted) {
         changesImplemented.push({ action: 'added', category: 'keyholder', type: 'role', result: 'Renowned Keyholder' })
 
         // Print in Audit log
-        await routed.bot.auditLogChannel.send(
+        await routed.bot.channel.auditLog.send(
           `:robot: **ChastiKey Keyholder Level Up**\nUpgraded to = \`Renowned Keyholder\`\nServer = \`${discordUser.guild.name}\`\nTo = \`@${
             discordUser.nickname || discordUser.user.username
           }#${discordUser.user.discriminator}\``
@@ -510,7 +510,7 @@ export async function update(routed: RouterRouted) {
         changesImplemented.push({ action: 'added', category: 'keyholder', type: 'role', result: 'Distinguished Keyholder' })
 
         // Print in Audit log
-        await routed.bot.auditLogChannel.send(
+        await routed.bot.channel.auditLog.send(
           `:robot: **ChastiKey Keyholder Level Up**\nUpgraded to = \`Distinguished Keyholder\`\nServer = \`${discordUser.guild.name}\`\nTo = \`@${
             discordUser.nickname || discordUser.user.username
           }#${discordUser.user.discriminator}\``
@@ -541,7 +541,7 @@ export async function update(routed: RouterRouted) {
         changesImplemented.push({ action: 'added', category: 'keyholder', type: 'role', result: 'Established Keyholder' })
 
         // Print in Audit log
-        await routed.bot.auditLogChannel.send(
+        await routed.bot.channel.auditLog.send(
           `:robot: **ChastiKey Keyholder Level Up**\nUpgraded to = \`Established Keyholder\`\nServer = \`${discordUser.guild.name}\`\nTo = \`@${
             discordUser.nickname || discordUser.user.username
           }#${discordUser.user.discriminator}\``
@@ -572,7 +572,7 @@ export async function update(routed: RouterRouted) {
         changesImplemented.push({ action: 'added', category: 'keyholder', type: 'role', result: 'Keyholder' })
 
         // Print in Audit log
-        await routed.bot.auditLogChannel.send(
+        await routed.bot.channel.auditLog.send(
           `:robot: **ChastiKey Keyholder Level Up**\nUpgraded to = \`Keyholder\`\nServer = \`${discordUser.guild.name}\`\nTo = \`@${
             discordUser.nickname || discordUser.user.username
           }#${discordUser.user.discriminator}\``
@@ -606,7 +606,7 @@ export async function update(routed: RouterRouted) {
     action: 'performance',
     category: 'n/a',
     type: 'status',
-    result: `${Math.round(updatePerformance.keyholder.end - updatePerformance.keyholder.start)}ms`,
+    result: `${Math.round(updatePerformance.keyholder.end - updatePerformance.keyholder.start)}ms`
   })
   // * Performance End: Full * //
   updatePerformance.full.end = performance.now()

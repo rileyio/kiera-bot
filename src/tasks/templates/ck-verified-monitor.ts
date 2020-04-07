@@ -50,7 +50,7 @@ export class ChastiKeyVerifiedRoleMonitor extends Task {
               await member.roles.add(role)
               await this.sleep(100)
               // Print in Audit log
-              await this.Bot.auditLogChannel.send(
+              await this.Bot.channel.auditLog.send(
                 `:robot: **CK Verified Role Monitor**\nGiving verified role = \`${role.name}\`\nServer = \`${guild.name}\`\nTo = \`@${member.nickname || member.user.username}#${
                   member.user.discriminator
                 }\``
@@ -67,7 +67,7 @@ export class ChastiKeyVerifiedRoleMonitor extends Task {
               await member.roles.remove(role)
               await this.sleep(100)
               //Print in Audit log
-              await this.Bot.auditLogChannel.send(
+              await this.Bot.channel.auditLog.send(
                 `:robot: **CK Verified Role Monitor**\nRemoving verified role = \`${role.name}\`\nServer = \`${guild.name}\`\nFrom = \`@${member.nickname || member.user.username}#${
                   member.user.discriminator
                 }\``

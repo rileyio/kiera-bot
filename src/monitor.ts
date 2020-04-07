@@ -6,7 +6,6 @@ import { LiveStatistics } from './live-statistics'
 import { WebAPI } from './api/web-api'
 
 export class BotMonitor extends EventEmitter {
-  private announcementsChannel: string = process.env.DISCORD_ANNOUNCEMENTS_CHANNEL
   private Bot: Bot
   public DBMonitor: DatabaseMonitor
   public WebAPI: WebAPI
@@ -15,7 +14,6 @@ export class BotMonitor extends EventEmitter {
     discord: false,
     db: false,
     api: false,
-    router: false,
     stats: false
   }
 
@@ -108,8 +106,7 @@ export class BotMonitor extends EventEmitter {
 
     if (this.status.db && this.status.stats && this.status.api) {
       this.unhealthyRecovered = true
-      const channel = <Discord.TextChannel>this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel)
-      await channel.send(`:hammer_pick: **Services Auto Restored:** I've successfully recovered myself :blush:`)
+      await this.Bot.channel.announcementsChannel.send(`:hammer_pick: **Services Auto Restored:** I've successfully recovered myself :blush:`)
     } else {
       this.unhealthyRecovered = false
       // If unhealthy, alert an admin (Only if Discord was able to actually connect)
@@ -150,8 +147,7 @@ export class BotMonitor extends EventEmitter {
       maintainersMention += `<@${m}> `
     })
 
-    const channel = this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel) as Discord.TextChannel
-    await channel.send(`:warning: **Critical:** Bot Maintenance Required!
+    await this.Bot.channel.announcementsChannel.send(`:warning: **Critical:** Bot Maintenance Required!
 
 One of the bot maintainers: ${maintainersMention} will need to address this issue.
 
@@ -160,7 +156,6 @@ Depending on which services are struggling some to all bot functionality may be 
 Help! I've fallen, and I can't get up..
 
 API ............... ${this.status.api ? '✓ Started' : '✕ Down'}
-Command Router .... Coming Soon
 Database: ......... ${this.status.db ? '✓ Connected' : '✕ Disconnected'}
 Discord ........... ✓ If it wasn't how would you be seeing this 😉
 Stats ............. ${this.status.stats ? '✓ Started' : '✕ Down'}\`\`\``)
@@ -172,8 +167,8 @@ Stats ............. ${this.status.stats ? '✓ Started' : '✕ Down'}\`\`\``)
 
     const t = Number(process.env.DB_MONITOR_PING_FAILED_THRESHOLD || 10)
     if (this.DBMonitor.pingFailedCount >= t) {
-      const channel = <Discord.TextChannel>this.Bot.client.channels.cache.find((c) => c.id === this.announcementsChannel)
-      if (this.unhealthyRecoveryCount === 0) await channel.send(`:warning: **Database Alert:** The Database has failed ${t} pings.. Will attempt to auto correct shortly..`)
+      if (this.unhealthyRecoveryCount === 0)
+        await this.Bot.channel.announcementsChannel.send(`:warning: **Database Alert:** The Database has failed ${t} pings.. Will attempt to auto correct shortly..`)
 
       await this.tryUnhealthyRecovery()
     }
