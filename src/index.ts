@@ -109,7 +109,8 @@ export class Bot {
         commands: this.Router.routes.length,
         guilds: this.client.guilds.cache.size,
         users: this.client.users.cache.size,
-        ping: this.BotMonitor.DBMonitor.pingTotalLatency / this.BotMonitor.DBMonitor.pingCount
+        ping: this.BotMonitor.DBMonitor.pingTotalLatency / this.BotMonitor.DBMonitor.pingCount,
+        user: this.client.user.tag
       })
     )
 
@@ -145,8 +146,6 @@ export class Bot {
   }
 
   public async onReady() {
-    this.DEBUG.log(`### Logged in as ${this.client.user.tag}!`)
-
     // Setup Bot utilized channels
     this.channel.auditLog = this.client.channels.cache.find((c) => c.id === process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
     this.channel.announcementsChannel = this.client.channels.cache.find((c) => c.id === process.env.DISCORD_ANNOUNCEMENTS_CHANNEL) as Discord.TextChannel
