@@ -25,9 +25,9 @@ export namespace Decisions {
         name: joi.string().required(),
         description: joi.string().allow('').required(),
         enabled: joi.bool().required(),
-        serverWhitelist: joi.array().allow([]).required(),
-        userWhitelist: joi.array().allow([]).required(),
-        userBlacklist: joi.array().allow([]).required(),
+        serverWhitelist: joi.array().empty().required(),
+        userWhitelist: joi.array().empty().required(),
+        userBlacklist: joi.array().empty().required(),
         consumeMode: joi.string().required(),
         consumeReset: joi.number().required()
       })
