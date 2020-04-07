@@ -28,7 +28,7 @@ export function webRouteLoader() {
     }
   })
 
-  console.log(`webRouteLoader() => routes loaded: ${routes.length}`)
+  // console.log(`webRouteLoader() => routes loaded: ${routes.length}`)
 
   return routes
 }

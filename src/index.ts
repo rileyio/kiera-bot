@@ -32,7 +32,7 @@ export class Bot {
   }
 
   // Audit Manager
-  public Audit: Audit = new Audit(this)
+  public Audit: Audit
 
   // Service Monitors
   public BotMonitor: BotMonitor
@@ -41,41 +41,44 @@ export class Bot {
   public DB: MongoDB
 
   // Background tasks v0-4
-  public Task: Task.TaskManager = new Task.TaskManager()
+  public Task: Task.TaskManager
 
   // Bot msg router
-  public Router: CommandRouter = new CommandRouter(routeLoader(this.Log.Router), this)
+  public Router: CommandRouter
 
   // API Services
-  public Service: {
-    BattleNet: BattleNet
-    ChastiKey: ChastiKey
-  } = { BattleNet: null, ChastiKey: null }
+  public Service: { BattleNet: BattleNet; ChastiKey: ChastiKey } = {
+    BattleNet: null,
+    ChastiKey: null
+  }
 
   // Statistics
-  public Statistics: Statistics = new Statistics(this)
+  public Statistics: Statistics
 
   public async start() {
     this.version = version
     this.Log.Bot.log(`initializing kiera-bot (${this.version})...`)
 
     ////////////////////////////////////////
-    // Bot Monitor /////////////////////////
-    ////////////////////////////////////////
-    // Start bot monitor & critical services
-    this.BotMonitor = new BotMonitor(this)
-    await this.BotMonitor.start()
-
-    ////////////////////////////////////////
     // Register bot services ///////////////
     ////////////////////////////////////////
+    this.Audit = new Audit(this)
+    this.BotMonitor = new BotMonitor(this)
+    this.Router = new CommandRouter(routeLoader(this.Log.Router), this)
     this.MsgTracker = new MsgTracker(this)
+    this.Statistics = new Statistics(this)
+    this.Task = new Task.TaskManager(this)
+
+    ////////////////////////////////////////
+    // Bot Monitor - Sync //////////////////
+    ////////////////////////////////////////
+    await this.BotMonitor.start()
 
     ////////////////////////////////////////
     // Background Tasks ////////////////////
     ////////////////////////////////////////
     // Register background tasks
-    this.Task.start(this, [
+    this.Task.start([
       new Task.ChastiKeyAPIUsers(),
       new Task.ChastiKeyAPIRunningLocks(),
       new Task.ChastiKeyAPILocktober(),
@@ -113,7 +116,8 @@ export class Bot {
         guilds: this.client.guilds.cache.size,
         users: this.client.users.cache.size,
         ping: this.BotMonitor.DBMonitor.pingTotalLatency / this.BotMonitor.DBMonitor.pingCount,
-        user: this.client.user.tag
+        user: this.client.user.tag,
+        version: this.version
       })
     )
 

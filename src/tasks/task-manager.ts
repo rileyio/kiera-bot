@@ -13,9 +13,11 @@ export class TaskManager {
     }
   })
 
-  public async start(bot: Bot, tasks: Array<Task>) {
+  constructor(bot: Bot) {
     this.Bot = bot
+  }
 
+  public async start(tasks: Array<Task>) {
     // Start Agenda Queue
     await this.Agenda.start()
 

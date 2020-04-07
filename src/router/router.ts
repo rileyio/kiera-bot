@@ -29,8 +29,8 @@ export class CommandRouter {
     })
 
     this.routes = routes.map((r) => new MessageRoute(r))
-    this.bot.Log.Router.log(`routes configured = ${this.routes.filter((r) => r.type === 'message').length}`)
-    this.bot.Log.Router.log(`reacts configured = ${this.routes.filter((r) => r.type === 'reaction').length}`)
+    // this.bot.Log.Router.log(`routes configured = ${this.routes.filter((r) => r.type === 'message').length}`)
+    // this.bot.Log.Router.log(`reacts configured = ${this.routes.filter((r) => r.type === 'reaction').length}`)
   }
 
   /**

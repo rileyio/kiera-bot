@@ -31,7 +31,7 @@ export function routeLoader(DEBUG: Logging.Debug) {
     }
   })
 
-  console.log(`routeLoader() => routes loaded: ${routes.length}`)
+  // console.log(`routeLoader() => routes loaded: ${routes.length}`)
 
   return routes
 }

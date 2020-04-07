@@ -41,8 +41,6 @@ export class BotMonitor extends EventEmitter {
     this.status.stats = await this.LiveStatistics.start()
     this.status.api = await this.WebAPI.start()
 
-    console.log(`@@@@@ db: ${this.status.db}, stats: ${this.status.stats}, api: ${this.status.api}`)
-
     if (this.status.db && this.status.stats && this.status.api) this.unhealthyStartup = false
     else this.unhealthyStartup = true
 
@@ -101,8 +99,6 @@ export class BotMonitor extends EventEmitter {
     this.status.db = await this.DBMonitor.start()
     this.status.stats = await this.LiveStatistics.start()
     this.status.api = await this.WebAPI.start()
-
-    console.log(`@@@@@ db: ${this.status.db}, stats: ${this.status.stats}, api: ${this.status.api}`)
 
     if (this.status.db && this.status.stats && this.status.api) {
       this.unhealthyRecovered = true
