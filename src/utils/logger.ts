@@ -7,6 +7,10 @@ export namespace Logging {
     public readonly name: string
     private _debug: _Debug.IDebugger
     private _winston: _Winston.Logger
+    private consoleFormat = _Winston.format.printf(({ level, message, label, timestamp }) => {
+      return `${message}`
+    })
+
     /**
      * Override set at startup
      * @private
@@ -24,7 +28,10 @@ export namespace Logging {
 
       var loggerProps = {
         level: process.env.BOT_LOGGING || 'debug',
-        transports: [new _Winston.transports.File({ filename: `./logs/${this.name}.log` }), new _Winston.transports.Console({ format: _Winston.format.simple() })],
+        transports: [
+          new _Winston.transports.File({ filename: `./logs/${this.name}.log` }),
+          new _Winston.transports.Console({ format: _Winston.format.combine(this.consoleFormat) })
+        ],
         format: _Winston.format.combine(_Winston.format.timestamp(), _Winston.format.json())
       }
 
@@ -57,7 +64,7 @@ export namespace Logging {
       //     break;
       // }
 
-      this._winston.info(args.map(a => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
+      this._winston.info(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
     }
   }
 }
