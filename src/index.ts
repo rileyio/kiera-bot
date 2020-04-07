@@ -20,6 +20,7 @@ export class Bot {
     Bot: new Utils.Logging.Debug('bot'),
     Command: new Utils.Logging.Debug('command'),
     Database: new Utils.Logging.Debug('database'),
+    Integration: new Utils.Logging.Debug('integration'),
     Router: new Utils.Logging.Debug('command-router'),
     Scheduled: new Utils.Logging.Debug('scheduled')
   }
@@ -91,7 +92,7 @@ export class Bot {
     // Register 3rd party services /////////
     ////////////////////////////////////////
     this.Service.BattleNet = new BattleNet()
-    this.Service.ChastiKey = new ChastiKey()
+    this.Service.ChastiKey = new ChastiKey(this)
 
     ////////////////////////////////////////
     // Setup API Services //////////////////
@@ -99,7 +100,7 @@ export class Bot {
     try {
       /// Integrations / Services / 3rd party
       await this.Service.BattleNet.setup(this)
-      await this.Service.ChastiKey.setup(this)
+      await this.Service.ChastiKey.setup()
       /// Reserved...
       /// ...
     } catch (error) {
