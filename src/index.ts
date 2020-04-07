@@ -5,7 +5,7 @@ import * as Task from '@/tasks'
 import * as Utils from '@/utils'
 import { MsgTracker, MongoDB } from '@/db'
 import { TrackedServer } from '@/objects/server'
-import { Router, routeLoader } from '@/router'
+import { CommandRouter, routeLoader } from '@/router'
 import { BotMonitor } from '@/monitor'
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
@@ -41,7 +41,7 @@ export class Bot {
   public Task: Task.TaskManager = new Task.TaskManager()
 
   // Bot msg router
-  public Router: Router = new Router(routeLoader(this.DEBUG), this)
+  public Router: CommandRouter = new CommandRouter(routeLoader(this.DEBUG), this)
 
   // API Services
   public Service: {

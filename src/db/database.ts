@@ -1,4 +1,3 @@
-import * as Agenda from 'agenda'
 import { MongoClient, MongoClientOptions, Cursor, Db, MongoError, CollectionInsertManyOptions } from 'mongodb'
 import { Logging } from '@/utils'
 

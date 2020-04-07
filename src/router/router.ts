@@ -15,7 +15,7 @@ const prefix = process.env.BOT_MESSAGE_PREFIX
  * @export
  * @class Router
  */
-export class Router {
+export class CommandRouter {
   public bot: Bot
   public routes: Array<MessageRoute>
 

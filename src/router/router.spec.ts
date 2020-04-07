@@ -1,13 +1,13 @@
 import test from 'ava'
-import { MessageRoute, Router } from '@/router'
+import { MessageRoute, CommandRouter } from '@/router'
 import { Bot } from '@/index'
 import { setTickerType } from '@/commands/chastikey/ticker'
 
-var router: Router
+var router: CommandRouter
 var bot: Bot = new Bot()
 
-test('Utils:Router', t => {
-  router = new Router(
+test('Utils:CommandRouter', (t) => {
+  router = new CommandRouter(
     [
       {
         type: 'message',
@@ -36,7 +36,7 @@ test('Utils:Router', t => {
   t.pass()
 })
 
-test('Utils:Router:Route => Generate Route', t => {
+test('Utils:CommandRouter:Route => Generate Route', (t) => {
   const r = new MessageRoute({
     type: 'message',
     category: 'Info',
