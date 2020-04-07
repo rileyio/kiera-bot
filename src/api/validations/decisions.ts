@@ -5,7 +5,7 @@ export namespace Decisions {
     return joi
       .object()
       .keys({
-        _id: joi.string().required()
+        _id: joi.string().length(24).required()
       })
       .required()
   }
@@ -23,23 +23,11 @@ export namespace Decisions {
       .keys({
         _id: joi.string().required(),
         name: joi.string().required(),
-        description: joi
-          .string()
-          .allow('')
-          .required(),
+        description: joi.string().allow('').required(),
         enabled: joi.bool().required(),
-        serverWhitelist: joi
-          .array()
-          .allow([])
-          .required(),
-        userWhitelist: joi
-          .array()
-          .allow([])
-          .required(),
-        userBlacklist: joi
-          .array()
-          .allow([])
-          .required(),
+        serverWhitelist: joi.array().allow([]).required(),
+        userWhitelist: joi.array().allow([]).required(),
+        userBlacklist: joi.array().allow([]).required(),
         consumeMode: joi.string().required(),
         consumeReset: joi.number().required()
       })
