@@ -7,6 +7,9 @@ export namespace Logging {
     public readonly name: string
     private _debug: _Debug.IDebugger
     private _winston: _Winston.Logger
+    private fileFormat = _Winston.format.printf(({ level, message, label, timestamp }) => {
+      return `${timestamp} ${level} ${message}`
+    })
     private consoleFormat = _Winston.format.printf(({ level, message, label, timestamp }) => {
       return `${message}`
     })
@@ -32,7 +35,7 @@ export namespace Logging {
           new _Winston.transports.File({ filename: `./logs/${this.name}.log` }),
           new _Winston.transports.Console({ format: _Winston.format.combine(this.consoleFormat) })
         ],
-        format: _Winston.format.combine(_Winston.format.timestamp(), _Winston.format.json())
+        format: _Winston.format.combine(_Winston.format.timestamp(), this.fileFormat)
       }
 
       // If console.opts is set to false, don't add it
@@ -49,22 +52,19 @@ export namespace Logging {
     }
 
     public log(...args: Array<any>) {
-      // switch (args.length) {
-      //   case 1:
-      //     this._debug(Utils.sb(args[0]))
-      //     break;
-      //   case 2:
-      //     this._debug(Utils.sb(args[0]), Utils.sb(args[1]))
-      //     break;
-      //   case 3:
-      //     this._debug(Utils.sb(args[0]), Utils.sb(args[1]), Utils.sb(args[2]))
-      //     break;
-      //   default:
-      //     this._debug(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '))
-      //     break;
-      // }
-
       this._winston.info(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
+    }
+
+    public warn(...args: Array<any>) {
+      this._winston.warn(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
+    }
+
+    public error(...args: Array<any>) {
+      this._winston.error(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
+    }
+
+    public debug(...args: Array<any>) {
+      this._winston.debug(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
     }
   }
 }

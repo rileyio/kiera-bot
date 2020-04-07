@@ -23,7 +23,7 @@ export class DatabaseMonitor extends EventEmitter {
 
   public async start() {
     // If no DB is defined yet, start the MongoDBLoader to create one
-    if (!this.Bot.DB) this.Bot.DB = await MongoDBLoader()
+    if (!this.Bot.DB) this.Bot.DB = await MongoDBLoader(this.Bot)
     // Return DB Monitor & start first new connection
     return await this.monitor()
   }

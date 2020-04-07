@@ -1,5 +1,6 @@
 import { MongoClient, MongoClientOptions, Cursor, Db, MongoError, CollectionInsertManyOptions } from 'mongodb'
 import { Logging } from '@/utils'
+import { Bot } from '..'
 
 export * from './promise'
 export * from './message-tracker'
@@ -28,26 +29,26 @@ export type Collections =
   | 'stats-bot'
   | 'users'
 
-export async function MongoDBLoader() {
+export async function MongoDBLoader(bot: Bot) {
   return new Promise<MongoDB>(async (ret) => {
-    var db = new MongoDB()
+    var db = new MongoDB(bot || undefined)
     return ret(db)
   })
 }
 
 export class MongoDB {
+  private Bot: Partial<Bot>
   private connection: {
     db: Db
     client: MongoClient
     error: MongoError
   } = { db: undefined, client: undefined, error: undefined }
-  private DEBUG_DB: Logging.Debug
   private dbName = `${process.env.DB_NAME}`
   private dbUrl = process.env.DB_STRING
   private dbOpts: MongoClientOptions = { useNewUrlParser: true, useUnifiedTopology: true, readPreference: 'primary' }
 
-  constructor() {
-    this.DEBUG_DB = new Logging.Debug(`database`, { console: false })
+  constructor(bot: Bot) {
+    this.Bot = bot
   }
 
   public async connect() {
@@ -60,7 +61,7 @@ export class MongoDB {
         // console.log('reuse db connection on', targetCollection)
       } else {
         // console.log('new db connection on', targetCollection)
-        this.DEBUG_DB.log('new db connection required!')
+        this.Bot.Log.Database.log('new db connection required!')
         await this.newConnection()
       }
     } catch (error) {
@@ -76,10 +77,10 @@ export class MongoDB {
       client.connect((err) => {
         if (!err) {
           this.connection = { db: client.db(this.dbName), client: client, error: undefined }
-          this.DEBUG_DB.log('new db connection: database connected!')
+          this.Bot.Log.Database.log('new db connection: database connected!')
           return resolve()
         } else {
-          this.DEBUG_DB.log('>>> failed to connect to Database!')
+          this.Bot.Log.Database.error('>>> failed to connect to Database!')
 
           this.connection.error = err
           return reject(err)
@@ -92,11 +93,11 @@ export class MongoDB {
     var status: boolean
     try {
       const connection = await this.connect()
-
       const pingStatus = await connection.db.command({ ping: 1 })
       status = pingStatus ? true : false
+      this.Bot.Log.Database.debug(`ping success!`)
     } catch (error) {
-      // console.log('###### Test error failed to connect')
+      this.Bot.Log.Database.warn(`ping failed!`)
       status = false
     }
     return status
@@ -110,11 +111,11 @@ export class MongoDB {
    */
   public async add<T>(targetCollection: Collections, record: T, opts?: {}) {
     const insertOptions = Object.assign({}, opts)
-    this.DEBUG_DB.log(`.add =>`, targetCollection)
+    this.Bot.Log.Database.debug(`[${targetCollection}].add =>`, targetCollection)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const results = await collection.insertOne(record)
-    this.DEBUG_DB.log(`.add results => inserted: ${results.insertedCount}, id: ${results.insertedId}`)
+    this.Bot.Log.Database.debug(`[${targetCollection}].add results => inserted: ${results.insertedCount}, id: ${results.insertedId}`)
     // connection.client.close()
     return results.result.n === 1 ? results.insertedId : null
   }
@@ -126,11 +127,11 @@ export class MongoDB {
    * @memberof DB
    */
   public async addMany<T>(targetCollection: Collections, record: T[], opts?: CollectionInsertManyOptions) {
-    this.DEBUG_DB.log(`.add =>`, targetCollection)
+    this.Bot.Log.Database.debug(`.add =>`, targetCollection)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const results = await collection.insertMany(record, opts)
-    this.DEBUG_DB.log(`.add results => inserted: ${results.insertedCount}`)
+    this.Bot.Log.Database.debug(`[${targetCollection}].add results => inserted: ${results.insertedCount}`)
     // connection.client.close()
     return results.result.n === 1 ? results.insertedCount : null
   }
@@ -142,10 +143,10 @@ export class MongoDB {
    * @memberof DB
    */
   public async verify<T>(targetCollection: Collections, query: string | Partial<T>) {
-    this.DEBUG_DB.log(`.verify => in`, targetCollection)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const results = await collection.find<T>(typeof query === 'string' ? { id: query } : query)
+    this.Bot.Log.Database.debug(`[${targetCollection}].verify => ${results.count()}`, query)
     return (await results.count()) > 0
   }
 
@@ -161,7 +162,7 @@ export class MongoDB {
     const collection = connection.db.collection(targetCollection)
     const deletionMethod = deleteOptions.deleteOne ? 'deleteOne' : 'deleteMany'
     const result = await collection[deletionMethod](typeof query === 'string' ? { id: query } : query)
-    this.DEBUG_DB.log(`.update results => removed: ${result.result.n}`)
+    this.Bot.Log.Database.debug(`[${targetCollection}].update results => removed: ${result.result.n}`)
     // connection.client.close()
     return result.result.n
   }
@@ -175,14 +176,14 @@ export class MongoDB {
    * @memberof DB
    */
   public async update<T>(targetCollection: Collections, query: Partial<T>, update: any, opts?: { upsert?: boolean; updateOne?: boolean; atomic?: boolean }) {
-    // this.DEBUG_DB.log(`.update =>`, query, update)
+    // this.Bot.Log.Database.debug(`.update =>`, query, update)
     const uopts = Object.assign({ atomic: false, upsert: false, updateOne: true }, opts)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const result = uopts.updateOne
       ? await collection.updateOne(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
       : await collection.updateMany(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
-    this.DEBUG_DB.log(`.update results =>`, result.result.n)
+    this.Bot.Log.Database.debug(`[${targetCollection}].update results =>`, result.result.n)
     // connection.client.close()
     return result.result.n
   }
@@ -198,11 +199,11 @@ export class MongoDB {
    * @memberof DB
    */
   public async get<T>(targetCollection: Collections, query: any, returnFields?: { [key: string]: number }) {
-    this.DEBUG_DB.log(`.get => ${targetCollection}`)
+    this.Bot.Log.Database.debug(`[${targetCollection}].get => ${targetCollection}`)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const result = await collection.findOne<T>(query, returnFields ? { projection: returnFields } : undefined)
-    this.DEBUG_DB.log(`.get results [${targetCollection}] =>`, result ? true : false)
+    this.Bot.Log.Database.debug(`[${targetCollection}].get results =>`, result ? true : false)
     // connection.client.close()
     return <T>result
   }
@@ -218,7 +219,7 @@ export class MongoDB {
    * @memberof DB
    */
   public async getLatest<T>(targetCollection: Collections, query: any, opts: { returnFields?: { [key: string]: number }; limit?: number } = {}) {
-    this.DEBUG_DB.log(`.getLatest => ${targetCollection}`)
+    this.Bot.Log.Database.debug(`[${targetCollection}].getLatest => ${targetCollection}`)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const result = collection
@@ -226,7 +227,7 @@ export class MongoDB {
       .sort({ _id: -1 })
       .limit(opts.hasOwnProperty('limit') ? opts.limit : 1)
       .project(opts.hasOwnProperty('returnFields') ? opts.returnFields : undefined)
-    this.DEBUG_DB.log(`.get results [${targetCollection}] =>`, result ? true : false)
+    this.Bot.Log.Database.debug(`[${targetCollection}].get results =>`, result ? true : false)
     // connection.client.close()
     return await (<Cursor<T>>result).toArray()
   }
@@ -242,31 +243,31 @@ export class MongoDB {
    * @memberof DB
    */
   public async getMultiple<T>(targetCollection: Collections, query: any, returnFields?: { [key: string]: number }) {
-    this.DEBUG_DB.log(`.getMultiple => ${targetCollection}`)
+    this.Bot.Log.Database.debug(`[${targetCollection}].getMultiple => ${targetCollection}`)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const result = await collection.find<T>(query, returnFields ? { projection: returnFields } : undefined)
-    this.DEBUG_DB.log(`.getMultiple results [${targetCollection}] =>`, await result.count())
+    this.Bot.Log.Database.debug(`[${targetCollection}].getMultiple results =>`, await result.count())
     // connection.client.close()
     return (<Cursor<T>>result).toArray()
   }
 
   public async count<T>(targetCollection: Collections, query: Partial<T>, options?: any) {
-    this.DEBUG_DB.log(`.count => ${targetCollection}`)
+    this.Bot.Log.Database.debug(`[${targetCollection}].count => ${targetCollection}`)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection, options)
     const result = await collection.countDocuments(query)
-    this.DEBUG_DB.log(`.count results [${targetCollection}] =>`, result)
+    this.Bot.Log.Database.debug(`[${targetCollection}].count results =>`, result)
     // connection.client.close()
     return <number>result
   }
 
   public async aggregate<T>(targetCollection: Collections, query: any) {
-    this.DEBUG_DB.log(`.aggregate => ${targetCollection}`)
+    this.Bot.Log.Database.debug(`[${targetCollection}].aggregate => ${targetCollection}`)
     const connection = await this.connect()
     const collection = connection.db.collection(targetCollection)
     const result = collection.aggregate(query)
-    // this.DEBUG_DB.log(`.aggregate results [${targetCollection}] =>`, result)
+    // this.Bot.Log.Database.debug(`.aggregate results =>`, result)
     // connection.client.close()
     return (await result.toArray()) as Array<T>
   }
