@@ -36,7 +36,7 @@ export class DatabaseMonitor extends EventEmitter {
     // Block dup
     if (this.isMonitorRunning) return
 
-    this.Bot.DEBUG.log('connecting to database...')
+    this.Bot.Log.Database.log('connecting to database...')
 
     this.isMonitorRunning = true
     this.monitorInterval = setInterval(async () => {

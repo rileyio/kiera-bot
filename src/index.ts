@@ -15,11 +15,14 @@ import { ChastiKey } from './integrations/ChastiKey'
 
 export class Bot {
   public client: Discord.Client
-  public DEBUG = new Utils.Logging.Debug('bot')
-  public DEBUG_MIDDLEWARE = new Utils.Logging.Debug('midddleware')
-  public DEBUG_MSG_INCOMING = new Utils.Logging.Debug('incoming')
-  public DEBUG_MSG_SCHEDULED = new Utils.Logging.Debug('scheduled')
-  public DEBUG_MSG_COMMAND = new Utils.Logging.Debug('command')
+  public Log = {
+    API: new Utils.Logging.Debug('api'),
+    Bot: new Utils.Logging.Debug('bot'),
+    Command: new Utils.Logging.Debug('command'),
+    Database: new Utils.Logging.Debug('database'),
+    Router: new Utils.Logging.Debug('command-router'),
+    Scheduled: new Utils.Logging.Debug('scheduled')
+  }
   public MsgTracker: MsgTracker
   public version: string
 
@@ -41,7 +44,7 @@ export class Bot {
   public Task: Task.TaskManager = new Task.TaskManager()
 
   // Bot msg router
-  public Router: CommandRouter = new CommandRouter(routeLoader(this.DEBUG), this)
+  public Router: CommandRouter = new CommandRouter(routeLoader(this.Log.Router), this)
 
   // API Services
   public Service: {
@@ -54,7 +57,7 @@ export class Bot {
 
   public async start() {
     this.version = version
-    this.DEBUG.log(`initializing kiera-bot (${this.version})...`)
+    this.Log.Bot.log(`initializing kiera-bot (${this.version})...`)
 
     ////////////////////////////////////////
     // Bot Monitor /////////////////////////
@@ -164,14 +167,14 @@ export class Bot {
   }
 
   private async onGuildCreate(guild: Discord.Guild) {
-    this.DEBUG.log('Joined a new server: ' + guild.name)
+    this.Log.Bot.log('Joined a new server: ' + guild.name)
     // Save some info about the server in db
     await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
   }
 
   private async onGuildDelete(guild: Discord.Guild) {
     await this.DB.remove('servers', { id: guild.id })
-    this.DEBUG.log('Left a guild: ' + guild.name)
+    this.Log.Bot.log('Left a guild: ' + guild.name)
   }
 
   private async onMessageNonCachedReact(event: { t: Discord.WSEventType; d: any }) {
@@ -183,7 +186,6 @@ export class Bot {
     const message = await channel.messages.fetch(event.d.message_id)
     // Handling for custome/server emoji
     const emojiKey = event.d.emoji.id ? `${event.d.emoji.name}:${event.d.emoji.id}` : event.d.emoji.name
-    this.DEBUG_MSG_INCOMING.log('emojiKey', emojiKey)
     // Emit to handle in the regular handling used for cached messages
     // this.client.emit(DISCORD_CLIENT_EVENTS[event.t], reaction, user)
     if (event.t === 'MESSAGE_REACTION_ADD') return await this.onMessageCachedReactionAdd(message, emojiKey, user)

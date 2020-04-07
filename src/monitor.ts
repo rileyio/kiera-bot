@@ -34,7 +34,7 @@ export class BotMonitor extends EventEmitter {
   }
 
   public async start() {
-    this.Bot.DEBUG.log('starting BotMonitor...')
+    this.Bot.Log.Bot.log('starting BotMonitor...')
 
     this.status.db = await this.DBMonitor.start()
     this.status.discord = await this.discordAPIReady()
@@ -119,11 +119,11 @@ export class BotMonitor extends EventEmitter {
 
   private async discordAPIReady() {
     // Create new Client
-    this.Bot.DEBUG.log('creating discord client...')
+    this.Bot.Log.Bot.log('creating discord client...')
     this.Bot.client = new Discord.Client()
 
     // Waiting for Discord.js Ready Event to fire...
-    this.Bot.DEBUG.log('waiting for discord.js ready event...')
+    this.Bot.Log.Bot.log('waiting for discord.js ready event...')
     return new Promise<boolean>(async (r) => {
       /// Client ready ///
 

@@ -23,14 +23,14 @@ export class CommandRouter {
     this.bot = bot
     // Alert if duplicate route name is detected
     var _dupRouteCheck = {}
-    routes.forEach(r => {
-      if (_dupRouteCheck[r.name] !== undefined) this.bot.DEBUG.log(`!! Duplicate route name detected ${r.name}`)
+    routes.forEach((r) => {
+      if (_dupRouteCheck[r.name] !== undefined) this.bot.Log.Router.log(`!! Duplicate route name detected ${r.name}`)
       else _dupRouteCheck[r.name] = 1
     })
 
-    this.routes = routes.map(r => new MessageRoute(r))
-    this.bot.DEBUG.log(`routes configured = ${this.routes.filter(r => r.type === 'message').length}`)
-    this.bot.DEBUG.log(`reacts configured = ${this.routes.filter(r => r.type === 'reaction').length}`)
+    this.routes = routes.map((r) => new MessageRoute(r))
+    this.bot.Log.Router.log(`routes configured = ${this.routes.filter((r) => r.type === 'message').length}`)
+    this.bot.Log.Router.log(`reacts configured = ${this.routes.filter((r) => r.type === 'reaction').length}`)
   }
 
   /**
@@ -47,7 +47,7 @@ export class CommandRouter {
     // Debug value set in .env
     if (process.env.BOT_BLOCK_REACTS === 'true') return // Should be set if 2 instances of bot are running
     // console.log('user', user)
-    this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming reaction <@${user.id}> reaction:${reaction} ${direction}`)
+    this.bot.Log.Router.log(`Router -> incoming reaction <@${user.id}> reaction:${reaction} ${direction}`)
     // console.log('reaction', reaction)
     // Block my own messages
     if (user.id === this.bot.client.user.id) {
@@ -83,10 +83,10 @@ export class CommandRouter {
     if (!storedMessage.reactionRoute) return
 
     // Find route to send this message reaction upon
-    const route = this.routes.find(r => {
+    const route = this.routes.find((r) => {
       return r.name === storedMessage.reactionRoute && r.type === 'reaction'
     })
-    this.bot.DEBUG_MSG_COMMAND.log('Router -> Route:', route)
+    this.bot.Log.Router.log('Router -> Route:', route)
 
     // Stop routing if no route match
     if (!route) return
@@ -119,7 +119,7 @@ export class CommandRouter {
       mwareProcessed += 1
     }
 
-    this.bot.DEBUG_MSG_COMMAND.log(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
+    this.bot.Log.Router.log(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
 
     // Stop execution of route if middleware is halted
     if (mwareProcessed === mwareCount) {
@@ -166,32 +166,32 @@ export class CommandRouter {
 
     // When the Bot Command Prefix is present
     if (containsPrefix) {
-      this.bot.DEBUG_MSG_COMMAND.log(`Router -> incoming message: '${message.content}'`)
+      this.bot.Log.Router.log(`Router -> incoming message: '${message.content}'`)
 
       // Split message by args (spaces/quoted values)
       const args = Utils.getArgs(message.content)
 
       // Find appropriate routes based on prefix command
-      const routes = this.routes.filter(r => String(r.command).toLowerCase() === args[0].toLowerCase())
-      this.bot.DEBUG_MSG_COMMAND.log(`Router -> Routes by '${args[0]}' command: ${routes.length}`)
+      const routes = this.routes.filter((r) => String(r.command).toLowerCase() === args[0].toLowerCase())
+      this.bot.Log.Router.log(`Router -> Routes by '${args[0]}' command: ${routes.length}`)
 
       // If no routes matched, stop here
       if (routes.length === 0) return
 
       // Try to find a route
       var examples = []
-      const route = routes.find(r => {
+      const route = routes.find((r) => {
         // Add to examples
         if (r.permissions.restricted === false) examples.push(r.example)
         else {
-          this.bot.DEBUG_MSG_COMMAND.log(`Router -> Examples for command like '${args[0]}' Restricted!`)
+          this.bot.Log.Router.log(`Router -> Examples for command like '${args[0]}' Restricted!`)
         }
         return r.test(message.content) === true
       })
 
       // Stop if there's no specific route found
       if (route === undefined) {
-        this.bot.DEBUG_MSG_COMMAND.log(`Router -> Failed to match '${message.content}' to a route - ending routing`)
+        this.bot.Log.Router.log(`Router -> Failed to match '${message.content}' to a route - ending routing`)
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
         // Provide some feedback about the failed command(s)
         var exampleUseOfCommand = Utils.sb(Utils.en.error.commandExactMatchFailedOptions, { command: args[0] })
@@ -225,7 +225,7 @@ export class CommandRouter {
       } // End of no routes
 
       // Process route
-      this.bot.DEBUG_MSG_COMMAND.log('Router -> Route:', route)
+      this.bot.Log.Router.log('Router -> Route:', route)
 
       // Normal routed behaviour
       var routed: RouterRouted = new RouterRouted({
@@ -241,7 +241,7 @@ export class CommandRouter {
 
       // Process Permissions
       routed.permissions = await this.processPermissions(routed)
-      this.bot.DEBUG_MSG_COMMAND.log('Router -> Permissions Check Results:', routed.permissions)
+      this.bot.Log.Router.log('Router -> Permissions Check Results:', routed.permissions)
 
       if (!routed.permissions.pass) {
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
@@ -294,7 +294,7 @@ export class CommandRouter {
         mwareProcessed += 1
       }
 
-      this.bot.DEBUG_MSG_COMMAND.log(`Router -> Route middleware processed: ${mwareProcessed} /${mwareCount}`)
+      this.bot.Log.Router.log(`Router -> Route middleware processed: ${mwareProcessed} /${mwareCount}`)
 
       // Stop execution of route if middleware is completed
       if (mwareProcessed === mwareCount) {
@@ -307,7 +307,9 @@ export class CommandRouter {
           this.bot.Audit.NewEntry({
             name: routed.route.name,
             details: routed.message.content,
-            guild: routed.isDM ? { id: 'dm', name: 'dm', channel: 'dm' } : { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
+            guild: routed.isDM
+              ? { id: 'dm', name: 'dm', channel: 'dm' }
+              : { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
             owner: routed.message.author.id,
             runtime: routerStats.performance,
             successful: true,
@@ -364,7 +366,7 @@ export class CommandRouter {
 
     // [IF: Required user ID] Verify that the user calling is allowd to access (mostly legacy commands)
     if (routed.route.permissions.restrictedTo.length > 0) {
-      if (routed.route.permissions.restrictedTo.findIndex(snowflake => snowflake === routed.message.author.id) > -1) {
+      if (routed.route.permissions.restrictedTo.findIndex((snowflake) => snowflake === routed.message.author.id) > -1) {
         checks.outcome = 'Pass'
         checks.pass = true
         return checks // stop here

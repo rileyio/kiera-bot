@@ -65,11 +65,11 @@ export async function registerUser(routed: RouterRouted) {
     const userAt = Utils.User.buildUserChatAt(user, userArgType)
 
     await routed.message.reply(`:white_check_mark: You're now registered! ^_^`)
-    routed.bot.DEBUG_MSG_COMMAND.log(`!register ${userAt}`)
+    routed.bot.Log.Command.log(`!register ${userAt}`)
   } else {
     await routed.message.reply(`You're already registered! :wink:`)
     const userAt = Utils.User.buildUserChatAt(routed.message.author.id, userArgType)
-    routed.bot.DEBUG_MSG_COMMAND.log(`!register ${userAt} - user already registered`)
+    routed.bot.Log.Command.log(`!register ${userAt} - user already registered`)
   }
 
   return true

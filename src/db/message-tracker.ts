@@ -89,7 +89,7 @@ export class MsgTracker {
       // Calculate message age
       const age = Math.round(now - msg.messageCreatedAt)
       if (age > msg.storageKeepInMemFor) {
-        this.Bot.DEBUG_MSG_SCHEDULED.log(`mem cleanup => id:${msg.id} createdAt:${msg.messageCreatedAt} age:${age}`)
+        this.Bot.Log.Scheduled.log(`mem cleanup => id:${msg.id} createdAt:${msg.messageCreatedAt} age:${age}`)
         return true
       }
     })
@@ -139,7 +139,7 @@ export class MsgTracker {
     // Only pring to debug if the previous was not 0
     if (this.msgDeletionPreviousCount > 0) {
       // Process cleanup
-      this.Bot.DEBUG_MSG_SCHEDULED.log(`Cleanup found [${messagesFound}] to delete from chat`)
+      this.Bot.Log.Scheduled.log(`Cleanup found [${messagesFound}] to delete from chat`)
     }
 
     for (const key in messagesByChannel) {
@@ -164,6 +164,6 @@ export class MsgTracker {
     // Remove msg from tracking
     this.msgTrackingArr.splice(foundMsgIndex, 1)
     if (!keepInDB) await this.Bot.DB.remove('messages', { id: id })
-    this.Bot.DEBUG_MSG_SCHEDULED.log(`deleted old message in mem id:${id}`)
+    this.Bot.Log.Scheduled.log(`deleted old message in mem id:${id}`)
   }
 }

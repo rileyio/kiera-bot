@@ -1,8 +1,8 @@
-import * as Middleware from '@/middleware';
-import * as Utils from '@/utils';
+import * as Middleware from '@/middleware'
+import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
-import { MessageAttachment } from 'discord.js';
-import { TrackedUser } from '@/objects/user';
+import { MessageAttachment } from 'discord.js'
+import { TrackedUser } from '@/objects/user'
 
 export const Routes = ExportRoutes(
   {
@@ -13,9 +13,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck ticker set type 2',
     name: 'ck-set-tickerType',
     validate: '/ck:string/ticker:string/set:string/type:string/number=number',
-    middleware: [
-      Middleware.isCKVerified
-    ],
+    middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -29,9 +27,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck ticker set date 2019-01-27',
     name: 'ck-set-tickerDate',
     validate: '/ck:string/ticker:string/set:string/date:string/number=string',
-    middleware: [
-      Middleware.isCKVerified
-    ],
+    middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -45,9 +41,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck ticker set rating show',
     name: 'ck-set-ratingDisplay',
     validate: '/ck:string/ticker:string/set:string/rating:string/state=string',
-    middleware: [
-      Middleware.isCKVerified
-    ],
+    middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -61,9 +55,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck ticker',
     name: 'ck-get-ticker',
     validate: '/ck:string/ticker:string/type?=number',
-    middleware: [
-      Middleware.isCKVerified
-    ],
+    middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: false,
       serverOnly: false
@@ -72,9 +64,9 @@ export const Routes = ExportRoutes(
 )
 /**
  * Sets user's Ticker Type
- * 
+ *
  * Defaults to: `2` Lockee
- * 
+ *
  * @export
  * @param {RouterRouted} routed
  */
@@ -86,15 +78,15 @@ export async function setTickerType(routed: RouterRouted) {
     case 1:
       newTickerType = 1
       newTickerTypeAsString = 'Keyholder'
-      break;
+      break
     case 2:
       newTickerType = 2
       newTickerTypeAsString = 'Lockee'
-      break;
+      break
     case 3:
       newTickerType = 3
       newTickerTypeAsString = 'Both'
-      break;
+      break
 
     default:
       // Invalid number, stop the routing
@@ -109,13 +101,11 @@ export async function setTickerType(routed: RouterRouted) {
   const updateResult = await routed.bot.DB.update('users', { id: routed.user.id }, user)
 
   if (updateResult > 0) {
-    await routed.message.author
-      .send(`:white_check_mark: ChastiKey Ticker type now set to: \`${newTickerTypeAsString}\``)
-    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set type ${newTickerTypeAsString}`)
+    await routed.message.author.send(`:white_check_mark: ChastiKey Ticker type now set to: \`${newTickerTypeAsString}\``)
+    routed.bot.Log.Command.log(`{{prefix}}ck ticker set type ${newTickerTypeAsString}`)
     return true
-  }
-  else {
-    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set type ${newTickerTypeAsString} -> update unsuccessful!`)
+  } else {
+    routed.bot.Log.Command.log(`{{prefix}}ck ticker set type ${newTickerTypeAsString} -> update unsuccessful!`)
     return false
   }
 }
@@ -126,13 +116,12 @@ export async function setTickerDate(routed: RouterRouted) {
     await routed.bot.DB.update('users', { id: routed.user.id }, { $set: { 'ChastiKey.ticker.date': routed.v.o.number } }, { atomic: true })
 
     await routed.message.author.send(`:white_check_mark: ChastiKey Start Date now set to: \`${routed.v.o.number}\``)
-    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set date ${routed.v.o.number}`)
+    routed.bot.Log.Command.log(`{{prefix}}ck ticker set date ${routed.v.o.number}`)
 
     return true
-  }
-  else {
+  } else {
     await routed.message.author.send(`Failed to set ChastiKey Start Date format must be like: \`2019-01-26\``)
-    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set date ${routed.v.o.number}`)
+    routed.bot.Log.Command.log(`{{prefix}}ck ticker set date ${routed.v.o.number}`)
 
     return true
   }
@@ -141,25 +130,29 @@ export async function setTickerDate(routed: RouterRouted) {
 export async function setTickerRatingDisplay(routed: RouterRouted) {
   // True or False sent
   if (routed.v.o.state.toLowerCase() === 'show' || routed.v.o.state.toLowerCase() === 'hide') {
-    await routed.bot.DB.update('users', { id: routed.user.id },
+    await routed.bot.DB.update(
+      'users',
+      { id: routed.user.id },
       { $set: { 'ChastiKey.ticker.showStarRatingScore': `show` ? routed.v.o.state === 'show' : false } },
-      { atomic: true })
+      { atomic: true }
+    )
 
     await routed.message.reply(`:white_check_mark: ChastiKey Rating Display now ${routed.v.o.state === 'show' ? '`shown`' : '`hidden`'}`)
-    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set rating ${routed.v.o.state}`)
+    routed.bot.Log.Command.log(`{{prefix}}ck ticker set rating ${routed.v.o.state}`)
 
     return true
-  }
-  else {
+  } else {
     await routed.message.reply(`Failed to set ChastiKey Rating Display, format must be like: \`show\``)
-    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck ticker set rating ${routed.v.o.state}`)
+    routed.bot.Log.Command.log(`{{prefix}}ck ticker set rating ${routed.v.o.state}`)
 
     return true
   }
 }
 
 export async function getTicker(routed: RouterRouted) {
-  const user = new TrackedUser(await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id }))
+  const user = new TrackedUser(
+    await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
+  )
 
   // If the user has passed a type as an argument, use that over what was saved as their default
   if (routed.v.o.type !== undefined) {
@@ -180,13 +173,9 @@ export async function getTicker(routed: RouterRouted) {
       files: [new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey))]
     })
     return true
-  }
-  else {
+  } else {
     await routed.message.channel.send(Utils.sb(Utils.en.chastikey.incorrectTickerTimer), {
-      files: [
-        Utils.ChastiKey.generateTickerURL(user.ChastiKey, 1),
-        Utils.ChastiKey.generateTickerURL(user.ChastiKey, 2)
-      ]
+      files: [Utils.ChastiKey.generateTickerURL(user.ChastiKey, 1), Utils.ChastiKey.generateTickerURL(user.ChastiKey, 2)]
     })
     return true
   }

@@ -20,7 +20,7 @@ export class BattleNet {
     this.Bot = bot
     // Check DB for Blizzard Access token
     const storedAcceessToken = await this.Bot.DB.get<TrackedBotSetting>('settings', { key: 'bot.bnet.api.accessToken' })
-    this.DEBUG_BNET.log(`🎮 BattleNet -> Token Stored = ${JSON.stringify(storedAcceessToken)}`)
+    this.DEBUG_BNET.log(`🎮 BattleNet -> Token Stored!`)
 
     // [ Only when DB record is missing ] If Access token is missing fetch one
     if (!storedAcceessToken) {

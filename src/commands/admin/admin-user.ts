@@ -35,7 +35,7 @@ export async function removeUser(routed: RouterRouted) {
   if (removed === 0) return true // Stop here if nothing is removed
   // Process command
   await routed.message.reply(`:white_check_mark: Removing user ${Utils.User.buildUserChatAt(user, userArgType)} from db`)
-  routed.bot.DEBUG_MSG_COMMAND.log(`!admin user delete ${Utils.User.buildUserChatAt(user, userArgType)}`)
+  routed.bot.Log.Command.log(`!admin user delete ${Utils.User.buildUserChatAt(user, userArgType)}`)
 
   return true
 }

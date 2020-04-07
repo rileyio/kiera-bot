@@ -22,6 +22,6 @@ export const Routes = ExportRoutes({
  * @param {RouterRouted} routed
  */
 export async function purgeChannelMessages(routed: RouterRouted) {
-  await Utils.Channel.cleanTextChat(<TextChannel>routed.message.channel, routed.bot.DEBUG_MSG_SCHEDULED)
+  await Utils.Channel.cleanTextChat(<TextChannel>routed.message.channel, routed.bot.Log.Scheduled)
   return true
 }

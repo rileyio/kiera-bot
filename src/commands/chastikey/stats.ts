@@ -327,12 +327,12 @@ export async function setKHAverageDisplay(routed: RouterRouted) {
     await routed.bot.DB.update('users', { id: routed.user.id }, { $set: { 'ChastiKey.preferences.keyholder.showAverage': `show` ? routed.v.o.state === 'show' : false } }, { atomic: true })
 
     await routed.message.reply(`:white_check_mark: ChastiKey Preference: \`Display keyholder time average\` is now ${routed.v.o.state === 'show' ? '`shown`' : '`hidden`'}`)
-    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck keyholder set average show ${routed.v.o.state}`)
+    routed.bot.Log.Command.log(`{{prefix}}ck keyholder set average show ${routed.v.o.state}`)
 
     return true
   } else {
     await routed.message.reply(`Failed to set ChastiKey Rating Display, format must be like: \`show\``)
-    routed.bot.DEBUG_MSG_COMMAND.log(`{{prefix}}ck keyholder set average show ${routed.v.o.state}`)
+    routed.bot.Log.Command.log(`{{prefix}}ck keyholder set average show ${routed.v.o.state}`)
 
     return true
   }
