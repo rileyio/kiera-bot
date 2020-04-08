@@ -19,7 +19,7 @@ export class Bot {
     API: new Utils.Logging.Debug('api'),
     Bot: new Utils.Logging.Debug('bot'),
     Command: new Utils.Logging.Debug('command'),
-    Database: new Utils.Logging.Debug('database'),
+    Database: new Utils.Logging.Debug('database', { console: false }),
     Integration: new Utils.Logging.Debug('integration'),
     Router: new Utils.Logging.Debug('command-router'),
     Scheduled: new Utils.Logging.Debug('scheduled')
@@ -110,7 +110,7 @@ export class Bot {
     ////////////////////////////////////////
     // Print startup details ///////////////
     ////////////////////////////////////////
-    console.log(
+    this.Log.Bot.log(
       Utils.sb(startup, {
         routes: this.BotMonitor.WebAPI.configuredRoutes.length,
         commands: this.Router.routes.length,
