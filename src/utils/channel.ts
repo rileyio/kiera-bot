@@ -17,19 +17,6 @@ export namespace Channel {
   }
 
   /**
-   * Get channel from a collection
-   * @export
-   * @template T
-   * @param {Discord.Collection<string, Discord.Channel>} channelCollection
-   * @param {string} channelId
-   * @returns
-   */
-  export function getTextChannel(channelCollection: Discord.Collection<string, Discord.Channel>, channelId: string) {
-    const channel = channelCollection.array().find((ch) => ch.id === channelId)
-    return <Discord.TextChannel>channel
-  }
-
-  /**
    * Deletes a message from a textChannel
    * @export
    * @param {*} textChannel
