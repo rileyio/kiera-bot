@@ -1,13 +1,13 @@
 import { Bot } from '@/index'
-import { BotStatistics, BotStatistic, ServerStatistic } from './objects/statistics'
+import { BotStatistics, BotStatistic } from './objects/statistics'
 import { EventEmitter } from 'events'
 import * as Helper from './utils/stats'
 
 export class LiveStatistics extends EventEmitter {
   private uptimeInterval: NodeJS.Timer
   private dbUpdateInterval: NodeJS.Timer
-  private _Bot: Bot
-  public Bot = new BotStatistics()
+  private Bot: Bot
+  public BotStatistics = new BotStatistics()
 
   // Ticker states
   private uptimeTickerRunning = false
@@ -15,7 +15,7 @@ export class LiveStatistics extends EventEmitter {
 
   constructor(bot: Bot) {
     super()
-    this._Bot = bot
+    this.Bot = bot
   }
 
   public async start() {
@@ -35,43 +35,43 @@ export class LiveStatistics extends EventEmitter {
   public increment(stat: BotStatistic, valueOverride?: number) {
     switch (stat) {
       case 'discord-api-calls':
-        this.Bot.discordAPICalls += 1
+        this.BotStatistics.discordAPICalls += 1
         break
       case 'messages-seen':
-        this.Bot.messages.seen += 1
+        this.BotStatistics.messages.seen += 1
         break
       case 'messages-sent':
-        this.Bot.messages.sent += 1
+        this.BotStatistics.messages.sent += 1
         break
       case 'messages-tracked':
-        this.Bot.messages.tracked += 1
+        this.BotStatistics.messages.tracked += 1
         break
       case 'commands-routed':
-        this.Bot.commands.routed += 1
+        this.BotStatistics.commands.routed += 1
         break
       case 'commands-completed':
-        this.Bot.commands.completed += 1
+        this.BotStatistics.commands.completed += 1
         break
       case 'commands-invalid':
-        this.Bot.commands.invalid += 1
+        this.BotStatistics.commands.invalid += 1
         break
       case 'dms-received':
-        this.Bot.dms.received += 1
+        this.BotStatistics.dms.received += 1
         break
       case 'dms-sent':
-        this.Bot.dms.sent += 1
+        this.BotStatistics.dms.sent += 1
         break
       case 'users-online':
-        valueOverride !== undefined ? (this.Bot.users.online = valueOverride) : (this.Bot.users.online += 1)
+        valueOverride !== undefined ? (this.BotStatistics.users.online = valueOverride) : (this.BotStatistics.users.online += 1)
         break
       case 'users-total':
-        valueOverride !== undefined ? (this.Bot.users.total = valueOverride) : (this.Bot.users.total += 1)
+        valueOverride !== undefined ? (this.BotStatistics.users.total = valueOverride) : (this.BotStatistics.users.total += 1)
         break
       case 'users-registered':
-        valueOverride !== undefined ? (this.Bot.users.registered = valueOverride) : (this.Bot.users.registered += 1)
+        valueOverride !== undefined ? (this.BotStatistics.users.registered = valueOverride) : (this.BotStatistics.users.registered += 1)
         break
       case 'servers-total':
-        valueOverride !== undefined ? (this.Bot.servers.total = valueOverride) : (this.Bot.servers.total += 1)
+        valueOverride !== undefined ? (this.BotStatistics.servers.total = valueOverride) : (this.BotStatistics.servers.total += 1)
         break
 
       default:
@@ -81,14 +81,14 @@ export class LiveStatistics extends EventEmitter {
 
   public async loadExisting() {
     // Ensure db records exist
-    if (!(await this._Bot.DB.verify('stats-bot', { name: this.Bot.name }))) {
-      await this._Bot.DB.add('stats-bot', this.Bot)
+    if (!(await this.Bot.DB.verify('stats-bot', { name: this.BotStatistics.name }))) {
+      await this.Bot.DB.add('stats-bot', this.BotStatistics)
     }
 
     // Get existing stats from DB
-    const botStats = await this._Bot.DB.get<BotStatistics>('stats-bot', {})
+    const botStats = await this.Bot.DB.get<BotStatistics>('stats-bot', {})
     // Init stats
-    this.Bot.startup(botStats)
+    this.BotStatistics.startup(botStats)
 
     // Start tickers
     this.uptimeTicker()
@@ -100,7 +100,7 @@ export class LiveStatistics extends EventEmitter {
     if (!this.uptimeTickerRunning) {
       this.uptimeTickerRunning = true
       this.uptimeInterval = setInterval(() => {
-        this.Bot.uptime = Date.now() - this.Bot.startTimestamp
+        this.BotStatistics.uptime = Date.now() - this.BotStatistics.startTimestamp
       }, 1000)
     }
   }
@@ -113,20 +113,20 @@ export class LiveStatistics extends EventEmitter {
         if (process.env.BOT_BLOCK_STATS === 'true') return // block stats saving
         await this.updatePeriodicStats()
 
-        await this._Bot.DB.update(
+        await this.Bot.DB.update(
           'stats-bot',
           {
-            name: this.Bot.name
+            name: this.BotStatistics.name
           },
-          this.Bot
+          this.BotStatistics
         )
       }, 10000)
     }
   }
 
   private async updatePeriodicStats() {
-    const userStats = await Helper.fetchUserCounts(this._Bot)
-    this.Bot.users = userStats
+    this.BotStatistics.users = await Helper.fetchUserCounts(this.Bot)
+    this.BotStatistics.servers = await Helper.fetchGuildStats(this.Bot)
   }
 
   private emitUpdate(event: 'statsReady' | 'statsNotReady') {

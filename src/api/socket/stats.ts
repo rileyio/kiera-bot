@@ -8,5 +8,5 @@ export function stats(Bot: Bot, socket: SocketIO.Server) {
 }
 
 export function heartBeat(Bot: Bot, socket: SocketIO.Server) {
-  socket.emit('heartbeat', { stats: Bot.BotMonitor.LiveStatistics.Bot })
+  socket.emit('heartbeat', { stats: Bot.BotMonitor.LiveStatistics.BotStatistics })
 }

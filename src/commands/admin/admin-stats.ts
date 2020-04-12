@@ -15,7 +15,7 @@ export const Routes = ExportRoutes({
 })
 
 export async function getBotStats(routed: RouterRouted) {
-  const stats = routed.bot.BotMonitor.LiveStatistics.Bot
+  const stats = routed.bot.BotMonitor.LiveStatistics.BotStatistics
   var sec = Math.floor(stats.uptime / 1000)
   var min = Math.floor(sec / 60)
   sec = sec % 60
