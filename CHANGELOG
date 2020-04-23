@@ -1,4 +1,5 @@
 6.0.0
+- Fixed: Mod Mute not working on users of the same role or higher than Kiera's role position + excluding @everyone and Nitro Booster for being unmanaged roles.
 - Updated: Dependencies audit and update.
 - Removed: Old code from User object used primarily by Legacy permissions and decommissioned site - need to reevaluate remainin.
 

@@ -65,6 +65,7 @@ export async function mute(routed: RouterRouted) {
   const match = XRegex.exec(routed.v.o.user, regex)
   const username = match['username']
   const discriminator = match['discriminator']
+  const kieraInGuild = routed.message.guild.members.cache.find((u) => u.id === routed.bot.client.user.id)
 
   // Error in username passed
   if (!username || !discriminator) {
@@ -95,6 +96,35 @@ export async function mute(routed: RouterRouted) {
     return true
   }
 
+  // Does user have a role above Kiera?
+  const rolesAboveKiera = targetUser.roles.cache.array().filter((r) => {
+    return r.position >= kieraInGuild.roles.highest.position
+  })
+  const hasRolesAboveKiera = rolesAboveKiera.length >= 0
+
+  if (hasRolesAboveKiera) {
+    // Let user calling this command know that there's roles that cannot be removed due to those roles
+    // holding the same or higher position than Kiera
+    await routed.message.reply(`Failed to make mute changes`)
+  }
+
+  // Now assign the user the mute role removing all previous as well
+  // Remove the conflicting roles from the collection being updated
+  var rolesToRemove = hasRolesAboveKiera ? targetUser.roles.cache.filter((r) => rolesAboveKiera.findIndex((rr) => rr.id === r.id) === -1).array() : targetUser.roles.cache.array()
+  // Remove @everyone
+  rolesToRemove.splice(
+    rolesToRemove.findIndex((rr) => rr.name === '@everyone' || rr.name === 'Nitro Booster'),
+    1
+  )
+
+  try {
+    await targetUser.roles.remove(rolesToRemove.map((r) => r.id))
+    await targetUser.roles.add(muteRole)
+  } catch (error) {
+    console.log(`Failed to make mute changes`, error)
+    await routed.message.reply(`Failed to make mute changes`)
+  }
+
   const mutedUserRecord = new TrackedMutedUser({
     id: targetUser.id,
     username: targetUser.user.username,
@@ -105,17 +135,13 @@ export async function mute(routed: RouterRouted) {
     mutedById: routed.user.id,
     mutedByUsername: routed.user.username,
     mutedByDiscriminator: routed.user.discriminator,
-    roles: targetUser.roles.cache.map((r) => {
+    roles: rolesToRemove.map((r) => {
       return { id: r.id, name: r.name }
     })
   })
 
   // Store a record of the muted user's info into Kiera's DB for later if/when unmuted to return roles
   await routed.bot.DB.add('muted-users', mutedUserRecord)
-
-  // Now assign the user the mute role removing all previous as well
-  await targetUser.roles.remove(targetUser.roles.cache)
-  await targetUser.roles.add(muteRole)
 
   await routed.message.channel.send(
     `:mute: **Muted User**\nUser = \`${routed.v.o.user}\`\nReason = \`${mutedUserRecord.reason}\`\nRoles Preserved = \`${mutedUserRecord.roles.map((r) => r.name).join(' ')}\``
