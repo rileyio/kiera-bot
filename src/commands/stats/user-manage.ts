@@ -2,6 +2,7 @@ import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { StatisticsSetting, StatisticsSettingType, ServerStatisticType, ServerStatistic } from '@/objects/statistics'
 import { CollectorFilter, Message, TextChannel } from 'discord.js'
+import { promptUserInput, promptUserConfirm } from '@/utils/prompt'
 
 export const Routes = ExportRoutes(
   {
@@ -73,15 +74,14 @@ export async function deleteUserStats(routed: RouterRouted) {
   const count = await routed.bot.DB.count('stats-servers', { userID: routed.user.id })
 
   if (count > 0) {
-    await routed.message.reply('To confirm deleting all stats pertaining to your account, send **`yes`** in the next 60 seconds!')
+    const confirmed = await promptUserConfirm(routed, {
+      expectedValidResponse: 'yes',
+      deleteResponseAtEnd: true,
+      firstMessage: 'To confirm deleting all stats pertaining to your account, send **`yes`** in the next 60 seconds!',
+      onTimeoutErrorMessage: 'Your account Stats Deletion Cancelled! Reply not received before timeout (1 minute).'
+    })
 
-    try {
-      // Filter to watch for the correct user & text to be sent (+ remove any whitespace)
-      const filter: CollectorFilter = (response: Message) => response.content.toLowerCase().replace(' ', '') === 'yes' && response.author.id === routed.user.id
-      // Message collector w/Filter - Wait up to a max of 1 min for exactly 1 reply from the required user
-      const collected = await routed.message.channel.awaitMessages(filter, { max: 1, time: 60000, errors: ['time'] })
-      // Delete the previous message at this stage
-      await Utils.Channel.deleteMessage(routed.message.channel as TextChannel, collected.first().id)
+    if (confirmed) {
       // Upon valid message collection, begin deletion - notify user
       const pleaseWaitMessage = (await routed.message.reply('Confirmation Received! Your Stats Deletion in progress... please wait')) as Message
       // Delete from DB
@@ -95,8 +95,7 @@ export async function deleteUserStats(routed: RouterRouted) {
       // Delete the previous message at this stage
       await Utils.Channel.deleteMessage(routed.message.channel as TextChannel, pleaseWaitMessage.id)
       await routed.message.reply(`Stats \`(count: ${removed})\` for your account have been deleted!`)
-    } catch (error) {
-      await routed.message.channel.send(`Your account Stats Deletion Cancelled! Reply not received before timeout (1 minute).`)
+      return true // Stop here
     }
   }
   // Nothing to delete - notify caller

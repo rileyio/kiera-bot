@@ -97,32 +97,67 @@ export async function mute(routed: RouterRouted) {
   }
 
   // Does user have a role above Kiera?
-  const rolesAboveKiera = targetUser.roles.cache.array().filter((r) => {
-    return r.position >= kieraInGuild.roles.highest.position
+  const untouchableRoles = targetUser.roles.cache.array().filter((r) => {
+    return r.position >= kieraInGuild.roles.highest.position || r.name === 'Nitro Booster'
   })
-  const hasRolesAboveKiera = rolesAboveKiera.length >= 0
+  const hasUntouchableRoles = untouchableRoles.length > 0
 
-  if (hasRolesAboveKiera) {
+  if (hasUntouchableRoles) {
     // Let user calling this command know that there's roles that cannot be removed due to those roles
-    // holding the same or higher position than Kiera
-    await routed.message.reply(`Failed to make mute changes`)
+    // holding the same or higher position than Kiera or the Nitro Booster role which is Discord managed
+    await routed.message.reply(`The following roles cannot be managed by this command & Kiera:\n\`\`\`${untouchableRoles.join(', ')}\`\`\``)
   }
 
   // Now assign the user the mute role removing all previous as well
   // Remove the conflicting roles from the collection being updated
-  var rolesToRemove = hasRolesAboveKiera ? targetUser.roles.cache.filter((r) => rolesAboveKiera.findIndex((rr) => rr.id === r.id) === -1).array() : targetUser.roles.cache.array()
-  // Remove @everyone
+  var rolesToRemove = hasUntouchableRoles ? targetUser.roles.cache.filter((r) => untouchableRoles.findIndex((rr) => rr.id === r.id) === -1).array() : targetUser.roles.cache.array()
+  // Remove @everyone as this is unmanagable
   rolesToRemove.splice(
-    rolesToRemove.findIndex((rr) => rr.name === '@everyone' || rr.name === 'Nitro Booster'),
+    rolesToRemove.findIndex((rr) => rr.name === '@everyone'),
     1
   )
+
+  // Ask for a reason to record
+  const reason = await Utils.promptUserInput(routed, {
+    // deleteFirstMessageAtEnd: true,
+    // deleteResponseAtEnd: true,
+    firstMessage: `What is the reason for this mute? Enter your reason within the next 5 minutes in as many lines as required (edit not saved!) or when you're satisfied with your input send a simple message with \`:end\``
+  })
+
+  // Merge all reason input text
+  const reasonCombined = reason.map((r) => r.cleanContent).join('\n')
+
+  // Ask for how long to apply this mute
+  const muteLength = await Utils.promptUserInput(routed, {
+    firstMessage: 'How long should this mute last? Enter a time in hours.',
+    maxToCollect: 1
+  })
+  const muteLenthString = muteLength.first().cleanContent
+  const muteLengthIsNumber = Number.isInteger(parseInt(muteLenthString))
+
+  // Confirm action before proceeding
+  const confirmed = await Utils.promptUserConfirm(routed, {
+    expectedValidResponse: 'yes',
+    expectedValidCancel: 'no',
+    deleteFirstMessageAtEnd: true,
+    deleteResponseAtEnd: true,
+    firstMessage: 'Are you sure you wish to apply this mute? Reply with **yes** to confirm within the next 60 seconds.',
+    onTimeoutErrorMessage: 'Cancelled Mute'
+  })
+
+  if (!confirmed) {
+    await routed.message.reply(`Cancelled Mute`)
+    return true // Stop here
+  }
 
   try {
     await targetUser.roles.remove(rolesToRemove.map((r) => r.id))
     await targetUser.roles.add(muteRole)
   } catch (error) {
-    console.log(`Failed to make mute changes`, error)
-    await routed.message.reply(`Failed to make mute changes`)
+    await routed.message.reply(
+      `Failed to make mute changes due to a critical issue! This may require further investigation. If you need support on this please visit https://kierabot.xyz/support`
+    )
+    console.log(`Mod:Mute => Failed to make mute changes`, error)
   }
 
   const mutedUserRecord = new TrackedMutedUser({
@@ -131,10 +166,11 @@ export async function mute(routed: RouterRouted) {
     discriminator: targetUser.user.discriminator,
     nickname: targetUser.nickname,
     serverID: routed.message.guild.id,
-    reason: routed.v.o.reason || '<blank>',
+    reason: routed.v.o.reason || reasonCombined || '<blank>',
     mutedById: routed.user.id,
     mutedByUsername: routed.user.username,
     mutedByDiscriminator: routed.user.discriminator,
+    removeAt: muteLengthIsNumber ? Date.now() + parseFloat(muteLenthString) * 3600000 : undefined,
     roles: rolesToRemove.map((r) => {
       return { id: r.id, name: r.name }
     })
@@ -143,9 +179,13 @@ export async function mute(routed: RouterRouted) {
   // Store a record of the muted user's info into Kiera's DB for later if/when unmuted to return roles
   await routed.bot.DB.add('muted-users', mutedUserRecord)
 
-  await routed.message.channel.send(
-    `:mute: **Muted User**\nUser = \`${routed.v.o.user}\`\nReason = \`${mutedUserRecord.reason}\`\nRoles Preserved = \`${mutedUserRecord.roles.map((r) => r.name).join(' ')}\``
-  )
+  // Reponse to command caller
+  var response = `:mute: **Muted User**\nUser = \`${routed.v.o.user}\`\nReason = \`${mutedUserRecord.reason}\`\nRoles Preserved = \`${mutedUserRecord.roles
+    .map((r) => r.name)
+    .join(', ')}\``
+  response += muteLengthIsNumber ? `\nMute Length = \`${muteLenthString} hrs\`` : ''
+
+  await routed.message.channel.send(response)
   return true
 }
 

@@ -3,7 +3,7 @@ import { Logging } from '@/utils'
 
 export namespace Channel {
   /**
-   * Deletes all mess ages in a given channel
+   * Deletes all messages in a given channel
    * @export
    * @param {Discord.TextChannel} channel
    */
@@ -11,6 +11,20 @@ export namespace Channel {
     var messages: Discord.Collection<string, Discord.Message>
     do {
       messages = await channel.messages.fetch({ limit: 100 })
+      DEBUG.log(`bulk channel message cleanup, deleting batch of ${messages.size} messages`)
+      await channel.bulkDelete(messages)
+    } while (messages.size > 0)
+  }
+
+  /**
+   * Deletes all messages in a given channel provided by message ID
+   * @export
+   * @param {Discord.TextChannel} channel
+   * @param {Discord.Collection<string, Discord.Message>} messages
+   * @param {Logging.Debug} DEBUG
+   */
+  export async function deleteSpecificMessages(channel: Discord.TextChannel, messages: Discord.Collection<string, Discord.Message>, DEBUG: Logging.Debug) {
+    do {
       DEBUG.log(`bulk channel message cleanup, deleting batch of ${messages.size} messages`)
       await channel.bulkDelete(messages)
     } while (messages.size > 0)
