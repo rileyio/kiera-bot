@@ -4,7 +4,7 @@ export function stats(Bot: Bot, socket: SocketIO.Server) {
   // Emit stats periodically
   setInterval(() => {
     heartBeat(Bot, socket)
-  }, 10000)
+  }, 2000)
 }
 
 export function heartBeat(Bot: Bot, socket: SocketIO.Server) {

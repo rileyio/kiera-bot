@@ -1,4 +1,3 @@
-import * as joi from '@hapi/joi'
 import * as jwt from 'jsonwebtoken'
 import { WebRouted } from '@/api/web-router'
 import { TrackedUser } from '@/objects/user'
@@ -21,7 +20,7 @@ export async function isAuthenticatedOwner(routed: WebRouted) {
   try {
     // Verify token & payload
     var verify = jwt.verify(token, process.env.BOT_SECRET)
-    
+
     console.log('verify:', verify)
     return routed // PASS
   } catch (error) {
@@ -75,4 +74,15 @@ export async function validateSession(routed: WebRouted) {
   console.log('ValidateSession => Session not found!')
   routed.res.send(401, 'Unauthorized')
   return // FAIL
+}
+
+export async function validateWebSecret(routed: WebRouted) {
+  const secret = String(routed.req.header('secret'))
+
+  // When Valid
+  if (secret === process.env.BOT_WEB_APP_SERVER_SECRET) {
+    return routed
+  }
+  // When Invalid
+  return
 }

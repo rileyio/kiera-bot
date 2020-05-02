@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken'
 import * as Middleware from '@/api/middleware'
 import * as Validation from '@/api/validations'
-import { WebRouted, WebRoute } from '../web-router'
+import { WebRouted, WebRoute } from '@/api/web-router'
 import { TrackedSession } from '@/objects/session'
 import { validate } from '@/api/utils/validate'
 import { TrackedUser } from '@/objects/user'
@@ -52,7 +52,9 @@ export async function otl(routed: WebRouted) {
   const user = await routed.Bot.client.users.fetch(storedSession.userID)
 
   // If valid, generate a session token for use with Kiera
-  const newSessionToken = jwt.sign({ discordID: user.id, userID: storedSession.userID, username: user.username, discriminator: user.discriminator }, process.env.BOT_SECRET, { expiresIn: '7d' })
+  const newSessionToken = jwt.sign({ discordID: user.id, userID: storedSession.userID, username: user.username, discriminator: user.discriminator }, process.env.BOT_SECRET, {
+    expiresIn: '7d'
+  })
 
   // Get Kiera User Record
   const kieraUser = new TrackedUser(await routed.Bot.DB.get('users', { id: storedSession.userID }))
