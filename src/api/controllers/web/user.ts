@@ -9,7 +9,7 @@ export const Routes: Array<WebRoute> = [
   {
     controller: get,
     method: 'post',
-    name: 'user-get',
+    name: 'web-user-get',
     path: '/api/user',
     middleware: [Middleware.validateSession]
   }
