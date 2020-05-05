@@ -9,8 +9,6 @@ export async function fetchUserCounts(Bot: Bot) {
 
   // Get totals from Discord
   Bot.client.guilds.forEach(guild => {
-    // Block guilds   'from bot.statistics.ignoreGuilds'
-    if ((<Array<string>>skipGuildsInDB.value).includes(guild.id)) return // Skip this guild
     totalUsers += guild.memberCount
     totalUsersOnline += guild.members.filter(m => m.presence.status !== 'offline').array().length
   })
