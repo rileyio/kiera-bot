@@ -137,7 +137,9 @@ export async function getKeyholderStats(routed: RouterRouted) {
   // Get user's current ChastiKey username from users collection or by the override
   var user = routed.v.o.user
     ? new TrackedUser(
-        await routed.bot.DB.get<TrackedUser>('users', { $or: [{ id: String(keyholderData.data.discordID) || 123 }, { 'ChastiKey.username': new RegExp(`^${keyholderData.data.username}$`, 'i') }] })
+        await routed.bot.DB.get<TrackedUser>('users', {
+          $or: [{ id: String(keyholderData.data.discordID) || 123 }, { 'ChastiKey.username': new RegExp(`^${keyholderData.data.username}$`, 'i') }]
+        })
       ) ||
       // Fallback: Create a mock record
       new TrackedUser(<any>{
@@ -150,7 +152,9 @@ export async function getKeyholderStats(routed: RouterRouted) {
           ticker: { showStarRatingScore: true }
         }
       })
-    : await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
+    : new TrackedUser(
+        await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
+      )
 
   // If the requested user has never keyheld
   if (keyholderData.data.timestampFirstKeyheld === 0) {
@@ -324,7 +328,12 @@ export async function getKeyholderLockees(routed: RouterRouted) {
 export async function setKHAverageDisplay(routed: RouterRouted) {
   // True or False sent
   if (routed.v.o.state.toLowerCase() === 'show' || routed.v.o.state.toLowerCase() === 'hide') {
-    await routed.bot.DB.update('users', { id: routed.user.id }, { $set: { 'ChastiKey.preferences.keyholder.showAverage': `show` ? routed.v.o.state === 'show' : false } }, { atomic: true })
+    await routed.bot.DB.update(
+      'users',
+      { id: routed.user.id },
+      { $set: { 'ChastiKey.preferences.keyholder.showAverage': `show` ? routed.v.o.state === 'show' : false } },
+      { atomic: true }
+    )
 
     await routed.message.reply(`:white_check_mark: ChastiKey Preference: \`Display keyholder time average\` is now ${routed.v.o.state === 'show' ? '`shown`' : '`hidden`'}`)
     routed.bot.Log.Command.log(`{{prefix}}ck keyholder set average show ${routed.v.o.state}`)

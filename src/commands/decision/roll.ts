@@ -5,6 +5,7 @@ import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import { ObjectID } from 'bson'
 import { decisionFromSaved, decisionRealtime } from '@/embedded/decision-embed'
 import { TrackedDecisionLogEntry } from '@/objects/decision'
+import { GuildMember } from 'discord.js'
 
 export const Routes = ExportRoutes(
   {
@@ -15,7 +16,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision roll "id"',
     name: 'decision-run-saved',
     validate: '/decision:string/roll:string/id=string',
-    middleware: [Middleware.isUserRegistered],
+    middleware: [Middleware.isUserRegistered]
   },
   {
     type: 'message',
@@ -25,7 +26,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "Question here" "Option 1" "Option 2" "etc.."',
     name: 'decision-realtime',
     validate: '/decision:string/question=string/args...string',
-    middleware: [Middleware.isUserRegistered],
+    middleware: [Middleware.isUserRegistered]
   }
 )
 
@@ -55,7 +56,22 @@ export async function runSavedDecision(routed: RouterRouted) {
     }
 
     // Lookup author
-    const author = await routed.message.guild.members.fetch(decision.authorID)
+    var authorName: string
+    var authorAvatar: string
+    var authorID: string
+
+    try {
+      const authorLookup = await routed.message.guild.members.fetch(decision.authorID)
+
+      authorName = `${authorLookup.nickname || authorLookup.user.username}#${authorLookup.user.discriminator}`
+      authorAvatar = authorLookup.user.avatar
+      authorID = authorLookup.user.id
+    } catch (error) {
+      authorName = decision.authorID
+      authorAvatar = ''
+      authorID = decision.authorID
+    }
+
     var optionsPool = []
 
     // When 'consumeMode' is Temporarily Consume, remove options from the pool depending on the setting
@@ -109,7 +125,7 @@ export async function runSavedDecision(routed: RouterRouted) {
       )
     }
 
-    const outcomeEmbed = decisionFromSaved(decision, outcome, { author: author })
+    const outcomeEmbed = decisionFromSaved(decision, outcome, { name: authorName, avatar: authorAvatar, id: authorID })
     await routed.message.reply(outcomeEmbed)
 
     // Track in log
@@ -121,7 +137,7 @@ export async function runSavedDecision(routed: RouterRouted) {
         outcomeID: String(outcome._id),
         serverID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.guild.id,
         channelID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.channel.id,
-        outcomeContent: outcomeEmbed.embed.description,
+        outcomeContent: outcomeEmbed.embed.description
       })
     )
 

@@ -3,6 +3,10 @@
 - Updated: Dependencies audit and update.
 - Removed: Old code from User object used primarily by Legacy permissions and decommissioned site - need to reevaluate remainin.
 
+5.1.1
+- Fixed: Decision Roll not working on servers where the roll author is not present #28
+- Fixed: CK Stats Keyholder not working, no response from kiera #26
+
 5.1.0
 - Fixed: ChastiKey username changes should now properly update on the Kiera record side when a change is detected upon running a command.
 - Fixed: CK stats lockee removing card pick value when lock is of the fixed type.
