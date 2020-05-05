@@ -5,6 +5,7 @@ import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import { ObjectID } from 'bson'
 import { decisionFromSaved, decisionRealtime } from '@/embedded/decision-embed'
 import { TrackedDecisionLogEntry } from '@/objects/decision'
+import { GuildMember } from 'discord.js'
 
 export const Routes = ExportRoutes(
   {
@@ -55,7 +56,29 @@ export async function runSavedDecision(routed: RouterRouted) {
     }
 
     // Lookup author
-    const author = await routed.message.guild.fetchMember(decision.authorID, false)
+    var authorName: string
+    var authorAvatar: string
+    var authorID: string
+
+    try {
+      const authorLookup = await routed.message.guild.fetchMember(decision.authorID, false)
+
+      if (authorLookup) {
+        authorName = `${authorLookup.nickname || authorLookup.user.username}#${authorLookup.user.discriminator}`
+        authorAvatar = authorLookup.user.avatar
+        authorID = authorLookup.user.id
+      } else {
+        const fallbackLookup = await routed.bot.client.fetchUser(decision.authorID, false)
+        authorName = `${fallbackLookup.username}#${fallbackLookup.discriminator}`
+        authorAvatar = fallbackLookup.avatar
+        authorID = fallbackLookup.id
+      }
+    } catch (error) {
+      authorName = decision.authorID
+      authorAvatar = ''
+      authorID = decision.authorID
+    }
+
     var optionsPool = []
 
     // When 'consumeMode' is Temporarily Consume, remove options from the pool depending on the setting
@@ -109,7 +132,7 @@ export async function runSavedDecision(routed: RouterRouted) {
       )
     }
 
-    const outcomeEmbed = decisionFromSaved(decision, outcome, { author: author })
+    const outcomeEmbed = decisionFromSaved(decision, outcome, { name: authorName, avatar: authorAvatar, id: authorID })
     await routed.message.reply(outcomeEmbed)
 
     // Track in log

@@ -1,16 +1,15 @@
 import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import * as Utils from '@/utils'
-import { GuildMember } from 'discord.js'
 
-export function decisionFromSaved(decision: TrackedDecision, option: TrackedDecisionOption, additional: { author: GuildMember }) {
+export function decisionFromSaved(decision: TrackedDecision, option: TrackedDecisionOption, author: { name: string; avatar: string; id: string }) {
   var _embed = {
     embed: {
       title: `${decision.name}`,
       description: `${decision.description}`,
       color: 14553782,
       footer: {
-        icon_url: `https://cdn.discordapp.com/avatars/${additional.author.user.id}/${additional.author.user.avatar}`,
-        text: `Created by: ${additional.author.nickname || additional.author.user.username}#${additional.author.user.discriminator}`
+        icon_url: `https://cdn.discordapp.com/avatars/${author.id}/${author.avatar}`,
+        text: `Created by: ${author.name}`
       }
     }
   }
