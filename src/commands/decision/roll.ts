@@ -63,16 +63,9 @@ export async function runSavedDecision(routed: RouterRouted) {
     try {
       const authorLookup = await routed.message.guild.fetchMember(decision.authorID, false)
 
-      if (authorLookup) {
-        authorName = `${authorLookup.nickname || authorLookup.user.username}#${authorLookup.user.discriminator}`
-        authorAvatar = authorLookup.user.avatar
-        authorID = authorLookup.user.id
-      } else {
-        const fallbackLookup = await routed.bot.client.fetchUser(decision.authorID, false)
-        authorName = `${fallbackLookup.username}#${fallbackLookup.discriminator}`
-        authorAvatar = fallbackLookup.avatar
-        authorID = fallbackLookup.id
-      }
+      authorName = `${authorLookup.nickname || authorLookup.user.username}#${authorLookup.user.discriminator}`
+      authorAvatar = authorLookup.user.avatar
+      authorID = authorLookup.user.id
     } catch (error) {
       authorName = decision.authorID
       authorAvatar = ''
