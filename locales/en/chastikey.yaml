@@ -1,0 +1,43 @@
+chastikey:
+  # Administrative Tasks
+  admin:
+    refreshTriggered: "Manual stats refresh triggered.."
+
+  # Errors
+  error:
+    userNotFoundRemote: "User could not be found on the ChastiKey server."
+    userNotFound: "User not found! The owner of the ChastiKey account must `{{prefix}}ck verify` in order to proceed with calling this command upon them."
+    userLookupErrorOrNotFound: >-
+      Could not complete lookup! Some of the possible reasons:
+        - A user with that username may not exist.
+        - The user may have changed their username in the ChastiKey App.
+    keyholderOrAboveRoleRequired: "Calling this command for another user requires you hold the Keyholder or above role."
+
+  # Ticker
+  ticker:
+    invalidOverrideType: "Invalid override type, please use: (1) Keyholder, (2) Lockee, (3) Both"
+    incorrectTimer: "*Does something look incorrect? Please contact **Kevin** the developer of ChastiKey if any numbers appear incorrect*"
+
+  # Stats
+  stats:
+    lockeeOrKeyholderRequired: "You'll need to supply a type with that command such as `{{prefix}}ck stats lockee` `{{prefix}}ck stats keyholder`"
+    keyholderNoLocks: "The requested user seems to not have any active locks or past lockees, there will be no stats to display"
+    userRequestedNoStats: "This user has requested their stats remain private"
+    lockeeStatsMissing: >-
+      There seems to be an error finding this user's stats (`{{user}}`), here are some common issues:
+      - Has not opened (ChastiKey) the App in >=2 week, if this is the case the app will need to be opened & wait ~15-30 minutes for the stats to refresh.
+      - The user does not participate in locking.
+    lockeeStatsHistorical: "Check your DMs from Kiera for the detailed output."
+
+  # Verify
+  verify:
+    NotSuccessfulUsingReason: "{{reason}}"
+    DMInstructions: |-
+      Scan this code with the ChastiKey App like loading a lock (within the next 5 minutes), this will verify your Discord Account to ChastiKey.
+      If your ChastiKey account is new in the last 15-30 minutes, it may take this long for Kiera to receive all the required data.
+    CkeckYourDMs: "Check your DMs from Kiera for further instructions."
+    FastForward: "Your account has been verified! Some data may still take **up to 15 minutes** to be cached and fully accessable."
+    PreviouslyCompleted: "Your account has already been verified! If there are any issues with this please reachout to @emma#1366"
+    VerifyReq2: |-
+      This command requires your account be verified with ChastiKey using the following command: 
+      `!ck verify`\n\nIf you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `!ck verify` again."

@@ -7,6 +7,7 @@ import { fallbackHelp } from '@/embedded/fallback-help'
 import { ProcessedPermissions } from './route-permissions'
 import { ServerStatisticType } from '../objects/statistics'
 import { MessageRoute, RouteConfiguration, RouterRouted, RouterStats } from '../objects/router'
+import { TrackedUser } from '@/objects/user'
 
 const prefix = process.env.BOT_MESSAGE_PREFIX
 
@@ -92,6 +93,7 @@ export class CommandRouter {
     if (!route) return
 
     var routed = new RouterRouted({
+      author: user,
       bot: this.bot,
       reaction: {
         snowflake: user.id,
@@ -101,8 +103,7 @@ export class CommandRouter {
       route: route,
       state: direction,
       trackedMessage: storedMessage,
-      type: 'reaction',
-      user: user
+      type: 'reaction'
     })
 
     // Process middleware
@@ -227,15 +228,19 @@ export class CommandRouter {
       // Process route
       this.bot.Log.Router.log('Router -> Route:', route)
 
+      // Lookup Kiera User in DB
+      const kieraUser = await this.bot.DB.get<TrackedUser>('users', { id: message.author.id })
+
       // Normal routed behaviour
       var routed: RouterRouted = new RouterRouted({
         args: args,
+        author: message.author,
         bot: this.bot,
         isDM: message.channel.type === 'dm',
         message: message,
         route: route,
         type: 'message',
-        user: message.author,
+        user: kieraUser,
         routerStats: routerStats
       })
 

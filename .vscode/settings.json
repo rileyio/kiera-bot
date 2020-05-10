@@ -23,5 +23,11 @@
     "text",
     "typescriptreact",
     "yml"
-  ]
+  ],
+  "i18n-ally.localesPaths": [
+    "locales",
+    "app/lang",
+    "src/lang"
+  ],
+  "i18n-ally.keystyle": "nested"
 }

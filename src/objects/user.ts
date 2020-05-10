@@ -10,6 +10,7 @@ export class TrackedUser {
   public id: string = ''
   public username: string = ''
   public webToken: string
+  public locale: string
 
   // ChastiKey Specific //
   public ChastiKey: TrackedChastiKey

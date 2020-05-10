@@ -89,7 +89,7 @@ export async function getLockeeStats(routed: RouterRouted) {
   // If the lookup is upon someone else with no data, return the standard response
   if (lockeeData.response.status !== 200) {
     // Notify in chat what the issue could be
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.userLookupErrorOrNotFound, { user: routed.v.o.user }))
+    await routed.message.reply(routed.$render('chastikey.error.userLookupErrorOrNotFound'))
     return true // Stop here
   }
 

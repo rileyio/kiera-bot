@@ -44,6 +44,16 @@ export const Routes = ExportRoutes(
         '146439529824256000' // Emma#1366
       ]
     }
+  },
+  {
+    type: 'message',
+    category: 'User',
+    commandTarget: 'author',
+    controller: setUserLocale,
+    example: '{{prefix}}user set locale fr',
+    name: 'user-locale-set',
+    validate: '/user:string/set:string/locale:string/name=string',
+    middleware: [Middleware.isUserRegistered]
   }
 )
 
@@ -107,5 +117,10 @@ export async function destroyAPIAuthKey(routed: RouterRouted) {
 
   await routed.message.author.send(`:exclamation: Your authkey \`${routed.v.o.authkey}\` is now deactivated!`)
 
+  return true
+}
+
+export async function setUserLocale(routed: RouterRouted) {
+  await routed.bot.DB.update<TrackedUser>('users', { id: routed.author.id }, { $set: { locale: routed.v.o.name } }, { atomic: true })
   return true
 }

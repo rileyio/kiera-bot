@@ -56,6 +56,9 @@ export class Bot {
   // Statistics
   public Statistics: Statistics
 
+  // Response Strings Renderer
+  public Response: Utils.ResponseRenderer
+
   public async start() {
     this.version = version
     this.Log.Bot.log(`initializing kiera-bot (${this.version})...`)
@@ -106,6 +109,11 @@ export class Bot {
     } catch (error) {
       console.log(`Error setting up a service!`, error)
     }
+
+    ////////////////////////////////////////
+    // Response Renderer ///////////////////
+    ////////////////////////////////////////
+    this.Response = new Utils.ResponseRenderer()
 
     ////////////////////////////////////////
     // Print startup details ///////////////

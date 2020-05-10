@@ -4,6 +4,7 @@ import { RouteConfigurationCategory, RouteActionUserTarget, Validate, ProcessedP
 import { Bot } from '@/index'
 import { TrackedMessage } from './message'
 import * as XRegExp from 'xregexp'
+import { TrackedUser } from './user'
 
 /**
  * Discord Command Route
@@ -124,6 +125,7 @@ export class MessageRoute {
  */
 export class RouterRouted {
   public args: Array<string>
+  public author: User
   public bot: Bot
   public isDM: boolean
   public message: Message
@@ -137,7 +139,7 @@ export class RouterRouted {
   public state: 'added' | 'removed'
   public trackedMessage: TrackedMessage
   public type: 'message' | 'reaction'
-  public user: User
+  public user: TrackedUser
   public v: {
     valid: boolean
     validated: ValidationType[]
@@ -147,6 +149,7 @@ export class RouterRouted {
   constructor(init: Partial<RouterRouted>) {
     // Object.assign(this, init)
     this.args = init.args
+    this.author = init.author
     this.bot = init.bot
     this.isDM = init.isDM
     this.message = init.message
@@ -165,5 +168,9 @@ export class RouterRouted {
     this.user = init.user
     // Generate v.*
     this.v = this.route.validation.validateArgs(this.args)
+  }
+
+  public $render<T>(key: string, data?: T) {
+    return this.bot.Response.render(this.user ? this.user.locale : 'en', key, data)
   }
 }

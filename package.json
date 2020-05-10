@@ -45,10 +45,12 @@
     "chastikey.js": "^2.4.0",
     "crypto-js": "^4.0.0",
     "discord.js": "^12.1.1",
+    "dot-prop": "^5.2.0",
     "dotenv": "^8.2.0",
     "fast-glob": "^3.2.2",
     "form-data": "^3.0.0",
     "got": "^10.7.0",
+    "handlebars": "^4.7.6",
     "jsonwebtoken": "^8.5.1",
     "module-alias": "^2.2.2",
     "mongodb": "^3.5.5",
@@ -57,7 +59,8 @@
     "restify": "^8.5.1",
     "restify-cors-middleware": "^1.1.1",
     "socket.io": "^2.3.0",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "yaml": "^1.9.2"
   },
   "devDependencies": {
     "@types/agenda": "^2.0.6",
