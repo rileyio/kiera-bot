@@ -46,14 +46,34 @@ const cardsEmoji = {
 
 export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRating: boolean }, routerStats: RouterStats) {
   var fields: Array<{ name: string; value: string }> = []
+  var locks = lockeeData.getLocked
 
-  lockeeData.getLocked.forEach((l, i) => {
-    if (i > 19) return // Skip, there can only be 20 locks in the db, this means theres an issue server side
-    fields.push(lockEntry(i, l, fields.length))
-  })
+  locks
+    .filter((l, i) => i < 5) // Only process first 5 locks
+    .forEach((l, i) => {
+      if (i > 5) return // Stop here with new fields @ lock #5
+      fields.push(lockEntry(i, l, fields.length))
+    })
 
-  // When no locks are active, add a different field to indicate this
+  // If there are more than 5 locks
+  if (locks.length > 5) {
+    var additionalLocksField = {
+      name: `There are ${locks.length - 5} additional lock(s)`,
+      value: `To view one of these use the lockee command again supplying the lock ID at the end.\n\n**Lock IDs:**\n`
+    }
+
+    locks
+      .filter((l, i) => i >= 5) // Process beyond lock #5 with a list of lock IDs
+      .forEach((l) => {
+        additionalLocksField.value += `${l.lockID}\n`
+      })
+
+    // Add to existing locks fields array
+    fields.push(additionalLocksField)
+  }
+
   if (fields.length === 0) {
+    // When no locks are active, add a different field to indicate this
     fields.push({
       name: 'No active locks',
       value: `To see any additional stats a lock must be active.\n Time Since Last Lock \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.timeSinceLastLocked, true)}\``
@@ -104,7 +124,7 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
  * @param {number} totalExpected
  * @returns
  */
-function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number) {
+function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number): { name: string; value: string } {
   const cumulative = lock.cumulative === 1 ? 'Cumulative' : 'Non-Cumulative'
 
   // Calculate human readable time for lock from seconds
@@ -123,7 +143,7 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number) {
   }
 
   // Calculate count and Prep discard pile
-  var discardPile = lock.discardPile.split(',').filter(c => c !== '')
+  var discardPile = lock.discardPile.split(',').filter((c) => c !== '')
 
   // If the cardpile is above 15 cards remove the last 5 (oldest 5)
   if (totalExpected <= 1 && discardPile.length > 5) {
@@ -136,7 +156,7 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number) {
   var discardPileStr = ``
 
   // Map each card from Array , to the correct discord Emoji & ID
-  discardPile.forEach(card => {
+  discardPile.forEach((card) => {
     if (card !== '') discardPileStr += `${cardsEmoji[card]}`
   })
 
@@ -188,9 +208,9 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number) {
       value += `${cardsEmoji.DoubleUp} \`${lock.doubleUpCards}\``
       // Reset Up cards
       value += `${cardsEmoji.Reset} \`${lock.resetCards}\``
+    } else {
+      value += `\nDetails \`Hidden\`.`
     }
-  } else {
-    value += `\nDetails \`Fixed\`.`
   }
 
   return {
@@ -225,10 +245,10 @@ export function keyholderStats(
   var numberOfTurns = 0
   var individualLockStats: Array<{ name: string; count: number; fixed: boolean; cumulative: boolean }> = []
 
-  activeLocks.forEach(l => {
+  activeLocks.forEach((l) => {
     // Add to avg and count for calculation
     var locksTotal = l.locks.reduce((currentVal, lock) => {
-      if (lockLookedAt.findIndex(li => li === lock.secondsLocked) === -1) {
+      if (lockLookedAt.findIndex((li) => li === lock.secondsLocked) === -1) {
         lockLookedAt.push(lock.secondsLocked)
         // Count lock types & other cumulatives
         numberOfVar += !lock.fixed ? 1 : 0
@@ -236,10 +256,10 @@ export function keyholderStats(
         numberOfTurns += !lock.fixed ? lock.noOfTurns : 0
 
         // Track individual lock stats
-        if (individualLockStats.findIndex(_l => _l.name === lock.sharedLockName) === -1) {
+        if (individualLockStats.findIndex((_l) => _l.name === lock.sharedLockName) === -1) {
           individualLockStats.push({ name: lock.sharedLockName, count: 1, fixed: lock.fixed, cumulative: lock.cumulative })
         } else {
-          individualLockStats.find(_l => _l.name === lock.sharedLockName).count += 1
+          individualLockStats.find((_l) => _l.name === lock.sharedLockName).count += 1
         }
 
         // Only look at if the value is a positive value (to skip over problem causing values)
@@ -286,7 +306,7 @@ export function keyholderStats(
   // For each lock
   description += `**Locks** (Running Locks)\n`
   if (lockCount > 0)
-    individualLockStats.forEach(lock => (description += `\`${lock.count}\` ${lock.name || `<No Name>`} \`[${lock.fixed ? 'F' : 'V'}]\` \`[${lock.cumulative ? 'C' : 'NC'}]\`\n`))
+    individualLockStats.forEach((lock) => (description += `\`${lock.count}\` ${lock.name || `<No Name>`} \`[${lock.fixed ? 'F' : 'V'}]\` \`[${lock.cumulative ? 'C' : 'NC'}]\`\n`))
   else {
     description += `No active locks to display!`
   }
@@ -337,7 +357,7 @@ export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatisti
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
         text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
       },
-      fields: data.map(lockee => {
+      fields: data.map((lockee) => {
         return {
           name: lockee._id,
           value: `Active Locks: \`${lockee.count}\`\nUnique Keyholders: \`${lockee.uniqueKHCount}\`\n\`\`\`${lockee.keyholders.sort().join(', ')}\`\`\``
@@ -361,7 +381,7 @@ export function keyholderLockees(data: Array<TrackedKeyholderLockeesStatistics>,
     return 0
   })
 
-  const lockeeNames = data.map(l => l._id)
+  const lockeeNames = data.map((l) => l._id)
 
   return {
     embed: {
