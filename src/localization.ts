@@ -13,6 +13,14 @@ export default class Localization {
     }
   } = {}
 
+  public get langs(): string {
+    return `[${Object.keys(this.loaded).join(', ')}]`
+  }
+
+  public get stringsCount(): number {
+    return this.countStrings(this.loaded.en.strings)
+  }
+
   constructor() {
     // Load Localization Files into Memory for better performance times on responses
     try {
@@ -21,6 +29,8 @@ export default class Localization {
       console.error('ResponseRenderer.templateLoader() => Fatal error!')
     }
   }
+
+  private countStrings = (o: object): number => Object.keys(o).reduce((t, k) => (typeof o[k] === 'object' ? (t += this.countStrings(o[k])) : (t += 1)), 0)
 
   private templateLoader() {
     // Load lang strings from folder
@@ -45,8 +55,6 @@ export default class Localization {
         console.log(`ResponseRenderer.templateLoader() [ERROR] => ${locFile.toString()}, ${e.message}`)
       }
     })
-
-    console.log('Locales Loaded:', Object.keys(this.loaded))
   }
 
   private yamlFileParse(filePath: string, data: string) {
