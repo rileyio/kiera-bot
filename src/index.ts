@@ -126,6 +126,8 @@ export class Bot {
         guilds: this.client.guilds.cache.size,
         users: this.client.users.cache.size,
         ping: this.BotMonitor.DBMonitor.pingTotalLatency / this.BotMonitor.DBMonitor.pingCount,
+        langs: this.Localization.langs,
+        strings: this.Localization.stringsCount,
         user: this.client.user.tag,
         version: this.version
       })
