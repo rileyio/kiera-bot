@@ -40,4 +40,6 @@ chastikey:
     PreviouslyCompleted: "Your account has already been verified! If there are any issues with this please reachout to @emma#1366"
     VerifyReq2: |-
       This command requires your account be verified with ChastiKey using the following command: 
-      `!ck verify`\n\nIf you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `!ck verify` again."
+      `!ck verify`
+      
+      If you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `!ck verify` again."
