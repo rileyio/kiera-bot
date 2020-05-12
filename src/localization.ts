@@ -6,7 +6,7 @@ import * as dotProp from 'dot-prop'
 // TODO: Remove following later - using for Local & rendering setup
 import { sb } from '@/utils'
 
-export class ResponseRenderer {
+export default class Localization {
   private loaded: {
     [locale: string]: {
       strings: { [key: string]: string }
@@ -24,7 +24,7 @@ export class ResponseRenderer {
 
   private templateLoader() {
     // Load lang strings from folder
-    const localizationFiles = glob.sync(['locales/**/*.yaml'], { deep: 5 })
+    const localizationFiles = glob.sync(['locales/**/*.yml'], { deep: 5 })
 
     // Load each file using the name as the root key
     localizationFiles.forEach((locFile) => {

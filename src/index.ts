@@ -3,6 +3,7 @@ const { startup } = require('./startup')
 import * as Discord from 'discord.js'
 import * as Task from '@/tasks'
 import * as Utils from '@/utils'
+import Localization from '@/localization'
 import { MsgTracker, MongoDB } from '@/db'
 import { TrackedServer } from '@/objects/server'
 import { CommandRouter, routeLoader } from '@/router'
@@ -57,7 +58,7 @@ export class Bot {
   public Statistics: Statistics
 
   // Response Strings Renderer
-  public Response: Utils.ResponseRenderer
+  public Localization: Localization
 
   public async start() {
     this.version = version
@@ -113,7 +114,7 @@ export class Bot {
     ////////////////////////////////////////
     // Response Renderer ///////////////////
     ////////////////////////////////////////
-    this.Response = new Utils.ResponseRenderer()
+    this.Localization = new Localization()
 
     ////////////////////////////////////////
     // Print startup details ///////////////
