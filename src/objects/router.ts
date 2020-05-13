@@ -171,6 +171,6 @@ export class RouterRouted {
   }
 
   public $render<T>(key: string, data?: T) {
-    return this.bot.Localization.render(this.user ? this.user.locale : 'en', key, data)
+    return this.bot.Localization.$render(this.user ? this.user.locale : 'en', key, data)
   }
 }

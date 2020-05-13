@@ -69,7 +69,7 @@ export namespace ChastiKey {
     )
 
     // Notify in chat that the user has requested their stats not be public
-    const response = (await routed.message.reply(Utils.sb(Utils.en.chastikey.userRequestedNoStats))) as Message
+    const response = (await routed.message.reply(routed.$render('ChastiKey.Stats.UserRequestedNoStats'))) as Message
     // Track incoming message and delete for the target user's privacy
     await routed.bot.MsgTracker.trackMsg(
       new TrackedMessage({

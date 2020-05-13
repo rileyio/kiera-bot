@@ -27,22 +27,18 @@ export const Routes = ExportRoutes({
  * @param {RouterRouted} routed
  */
 export async function forceStatsReload(routed: RouterRouted) {
-  await routed.message.reply('This command is currently under maintenance.')
+  await routed.message.reply(routed.$render('Generic.Warn.CommandUnderMaintenance'))
 
-  // await routed.message.channel.send(
-  //   Utils.sb(Utils.en.chastikey.adminRefreshStats, {
-  //     seconds: (routed.v.o.seconds || 5000) / 1000
-  //   })
-  // )
+  return true
 
-  // // Update in db
+  await routed.message.channel.send(
+    routed.$render('ChastiKey.Admin.RefreshTriggered', {
+      seconds: (routed.v.o.seconds || 5000) / 1000
+    })
+  )
+
+  // Update in db
   // await routed.bot.DB.update<TrackedBotSetting>('settings', { key: /^bot\.task\.chastikey\.api\.fetch/i }, { lastUpdatd: Date.now(), value: 0 }, { updateOne: false })
-
-  // // Update in TaskManager
-  // Object.keys(routed.bot.Task.registered).forEach(taskName => {
-  //   if (!/^ChastiKeyAPI/.test(taskName)) return // skip this task
-  //   ;(<ChastiKeyAPIFetchAndStore>routed.bot.Task.registered[taskName]).previousRefresh = 0
-  // })
 
   // Successful end
   return true

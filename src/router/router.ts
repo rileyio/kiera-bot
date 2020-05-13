@@ -195,7 +195,7 @@ export class CommandRouter {
         this.bot.Log.Router.log(`Router -> Failed to match '${message.content}' to a route - ending routing`)
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
         // Provide some feedback about the failed command(s)
-        var exampleUseOfCommand = Utils.sb(Utils.en.error.commandExactMatchFailedOptions, { command: args[0] })
+        var exampleUseOfCommand = routed.$render('Generic.Error.CommandExactMatchFailedOptions', { command: args[0] })
         var examplesToAppend = ``
         for (let index = 0; index < examples.length; index++) {
           const example = examples[index]
@@ -253,7 +253,7 @@ export class CommandRouter {
 
         if (routed.permissions.outcome === 'FailedServerOnlyRestriction') {
           // Send message in response
-          await routed.message.reply(Utils.sb(Utils.en.error.commandDisabledInChannel, { command: routed.message.content }))
+          await routed.message.reply(routed.$render('Generic.Error.CommandDisabledInChannel', { command: routed.message.content }))
 
           // Track in an audit event
           this.bot.Audit.NewEntry({

@@ -40,7 +40,7 @@ export async function update(routed: RouterRouted) {
     const khRole = routed.message.guild.roles.cache.find((r) => r.name.toLowerCase() === 'keyholder')
     // User calling this command must be higher than the khRole to call update upon another user than themself
     if (routed.message.member.roles.highest.position < khRole.position) {
-      await routed.message.reply(Utils.sb(Utils.en.chastikey.keyholderOrAboveRoleRequired))
+      await routed.message.reply(routed.$render('ChastiKey.Error.KeyholderOrAboveRoleRequired'))
       return false // Stop the user here
     }
   }
@@ -88,7 +88,7 @@ export async function update(routed: RouterRouted) {
 
   // If target user does not have a record on the server
   if ((!user._id && targetUserType === 'CKUsername') || targetUserType === 'Snowflake') {
-    await routed.message.reply(Utils.sb(Utils.en.chastikey.userNotFound))
+    await routed.message.reply(routed.$render('ChastiKey.Error.UserNotFound'))
     return false // Stop here
   }
 

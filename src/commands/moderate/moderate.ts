@@ -261,7 +261,7 @@ export async function activeMutes(routed: RouterRouted) {
     const dateFormatted = new Date(m.timestamp)
     // If still on the server
     if (userOnServer)
-      response += Utils.sb(Utils.en.mod.mutedListEntryUser, {
+      response += routed.$render('Moderate.Mute.ListEntryUser', {
         username: userOnServer.user.username,
         discriminator: userOnServer.user.discriminator,
         dateFormatted: dateFormatted.toUTCString(),
@@ -269,7 +269,7 @@ export async function activeMutes(routed: RouterRouted) {
         mutedBy: Utils.User.buildUserChatAt(new TrackedUser({ username: m.mutedByUsername, discriminator: m.mutedByDiscriminator }), Utils.User.UserRefType.usernameFull)
       })
     else
-      response += Utils.sb(Utils.en.mod.mutedListEntryUser, {
+      response += routed.$render('Moderate.Mute.ListEntryUser', {
         username: m.username,
         discriminator: m.discriminator,
         dateFormatted: dateFormatted.toUTCString(),

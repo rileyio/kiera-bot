@@ -1,6 +1,6 @@
-chastikey:
-  error:
-    userLookupErrorOrNotFound: >-
+ChastiKey:
+  Error:
+    UserLookupErrorOrNotFound: >-
       Impossible de terminer la recherche! Certaines des raisons possibles:
         - Un utilisateur avec ce nom d'utilisateur peut ne pas exister.
         - L'utilisateur peut avoir changé son nom d'utilisateur dans l'application

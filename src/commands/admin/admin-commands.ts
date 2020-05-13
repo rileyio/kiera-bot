@@ -52,7 +52,7 @@ export async function listCommandCategories(routed: RouterRouted) {
   var longestName = 0
   var largestNumber = 0
 
-  routed.bot.Router.routes.forEach(route => {
+  routed.bot.Router.routes.forEach((route) => {
     // Track category and how many times its seen across all commands
     categories[route.category] === undefined ? (categories[route.category] = { count: 1 }) : (categories[route.category].count += 1)
 
@@ -78,10 +78,12 @@ export async function listCommandCategories(routed: RouterRouted) {
 
   // Add each command category's name & total
   categoryNames.forEach((catName, index) => {
-    responseString += `${catName} ${Array.from(Array(longestName + 3 - catName.length)).join('.')} Commands: ${categories[catName].count}${index < categoryNames.length - 1 ? '\n' : ''}`
+    responseString += `${catName} ${Array.from(Array(longestName + 3 - catName.length)).join('.')} Commands: ${categories[catName].count}${
+      index < categoryNames.length - 1 ? '\n' : ''
+    }`
   })
 
-  await routed.message.reply(Utils.sb(Utils.en.admin.commandCategoriesList, { categories: responseString }))
+  await routed.message.reply(routed.$render('Admin.CommandCategoriesList', { categories: responseString }))
   return true // Successful
 }
 
@@ -98,7 +100,7 @@ export async function listCategoryCommands(routed: RouterRouted) {
   var largestNumber = 0
 
   // Get commands under this category
-  routed.bot.Router.routes.forEach(route => {
+  routed.bot.Router.routes.forEach((route) => {
     if (route.category.toLowerCase() === routed.v.o.category.toLowerCase()) {
       // Track command name, example, and if it's restricted
       commands.push({
@@ -127,10 +129,12 @@ export async function listCategoryCommands(routed: RouterRouted) {
 
   // Add each command category's name & total
   commands.forEach((command, index) => {
-    responseString += `${command.name} ${Array.from(Array(longestName + 3 - command.name.length)).join('.')} Example: ${Utils.sb(command.example)}${index < commands.length - 1 ? '\n' : ''}`
+    responseString += `${command.name} ${Array.from(Array(longestName + 3 - command.name.length)).join('.')} Example: ${Utils.sb(command.example)}${
+      index < commands.length - 1 ? '\n' : ''
+    }`
   })
 
-  await routed.message.reply(Utils.sb(Utils.en.admin.commandCategoryCommands, { category: routed.v.o.category, commands: responseString }))
+  await routed.message.reply(routed.$render('Admin.CommandCategoryCommands', { category: routed.v.o.category, commands: responseString }))
   return true // Successful
 }
 

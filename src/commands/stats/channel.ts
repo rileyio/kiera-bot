@@ -25,7 +25,7 @@ export async function statsForChannel(routed: RouterRouted) {
 
   // Check for stats disabled setting on channel
   if (await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { channelID, setting: StatisticsSettingType.ChannelDisableStats })) {
-    await routed.message.reply(Utils.sb(Utils.en.stats.channelStatsDisabledInfo))
+    await routed.message.reply(routed.$render('Stats.Channel.DisabledInfo'))
 
     return true // Stop here
   }

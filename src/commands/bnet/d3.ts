@@ -1,5 +1,4 @@
 import { RouterRouted, ExportRoutes } from '@/router'
-import { sb, en } from '@/utils'
 
 export const Routes = ExportRoutes(
   {
@@ -58,7 +57,7 @@ export async function d3CurrentSeasonLookup(routed: RouterRouted) {
     })
   } catch (error) {
     routed.bot.Service.BattleNet.DEBUG_BNET.log('BattleNet -> Error:', error.message)
-    if (error.response.data.status === 'nok') await routed.message.reply(sb(en.bnet.bnetCharacterNotFound))
+    if (error.response.data.status === 'nok') await routed.message.reply(routed.$render('BattleNet.Error.CharacterNotFound'))
   }
 
   return true
@@ -84,7 +83,7 @@ export async function d3ProfileLookup(routed: RouterRouted) {
           text: 'Fetched at'
         },
 
-        fields: data.heroes.map(hero => {
+        fields: data.heroes.map((hero) => {
           return {
             name: `id: \`${hero.id}\``,
             value: `Name: **${hero.name}**\n Level: \`${hero.level}\` | Paragon: ${hero.paragonLevel}\nClass: \`${hero.class}\``
@@ -94,7 +93,7 @@ export async function d3ProfileLookup(routed: RouterRouted) {
     })
   } catch (error) {
     routed.bot.Service.BattleNet.DEBUG_BNET.log('BattleNet -> Error:', error.message)
-    if (error.response.data.status === 'nok') await routed.message.reply(sb(en.bnet.bnetCharacterNotFound))
+    if (error.response.data.status === 'nok') await routed.message.reply(routed.$render('BattleNet.Error.CharacterNotFound'))
   }
 
   return true

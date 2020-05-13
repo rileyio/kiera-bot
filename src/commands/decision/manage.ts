@@ -76,7 +76,7 @@ export async function newDecision(routed: RouterRouted) {
   const updated = await routed.bot.DB.add('decision', decision)
 
   if (updated) {
-    await routed.message.reply(sb(en.decision.newQuestionAdded, { id: decision._id }))
+    await routed.message.reply(routed.$render('Decision.Edit.NewQuestionAdded', { id: decision._id }))
     return true
   }
   return false
@@ -156,7 +156,7 @@ export async function setDecisionConsumeMode(routed: RouterRouted) {
         await routed.bot.DB.update('decision', { _id: decision._id }, { $set: { consumeMode: 'Consume' } }, { atomic: true })
         break
       default:
-        await routed.message.reply(Utils.sb(Utils.en.decision.setModeOptions))
+        await routed.message.reply(routed.$render('Decision.Edit.SetModeOptions'))
         return false
     }
 

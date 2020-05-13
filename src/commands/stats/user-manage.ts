@@ -55,7 +55,7 @@ export async function diableUserStats(routed: RouterRouted) {
     })
   )
 
-  await routed.message.reply(Utils.sb(Utils.en.stats.userStatsNowDisabled))
+  await routed.message.reply(routed.$render('Stats.User.StatsDisabled'))
   return true
 }
 
@@ -65,7 +65,7 @@ export async function enableUserStats(routed: RouterRouted) {
     setting: StatisticsSettingType.UserDisableStats
   })
 
-  if (removed > 0) await routed.message.reply(Utils.sb(Utils.en.stats.userStatsNowEnabled))
+  if (removed > 0) await routed.message.reply(routed.$render('Stats.User.StatsEnabled'))
   return true
 }
 

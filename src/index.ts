@@ -120,7 +120,7 @@ export class Bot {
     // Print startup details ///////////////
     ////////////////////////////////////////
     this.Log.Bot.log(
-      Utils.sb(startup, {
+      this.Localization.$render(process.env.BOT_LOCALE, 'System.Startup', {
         routes: this.BotMonitor.WebAPI.configuredRoutes.length,
         commands: this.Router.routes.length,
         guilds: this.client.guilds.cache.size,

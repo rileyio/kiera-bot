@@ -1,0 +1,262 @@
+Admin:
+  BotManualRestart: "Bot restarting in `{{seconds}}` seconds.."
+  CommandCategoriesList: >-
+    The following is a breakdown of how many commands are under each command category. If you wish to drill deeper or find a command's name to set restrictions/get info, simply type: {{prefix}}admin command category Fun`.
+
+    ```
+    {{categories}}
+    ```
+  CommandCategoryCommands: >-
+    The following commands are available under the {{category}} category:
+
+    ```
+    {{commands}}
+    ```
+
+BattleNet:
+  Error:
+    CharacterNotFound: Character Not Found!
+
+ChastiKey:
+  # Administrative Tasks
+  Admin:
+    RefreshTriggered: Manual stats refresh triggered..
+
+  # Errors
+  Error:
+    UserNotFound: User not found! The owner of the ChastiKey account must `{{prefix}}ck verify` in order to proceed with calling this command upon them.
+    UserLookupErrorOrNotFound: >-
+      Could not complete lookup! Some of the possible reasons:
+        - A user with that username may not exist.
+        - The user may have changed their username in the ChastiKey App.
+    KeyholderOrAboveRoleRequired: "Calling this command for another user requires you hold the Keyholder or above role."
+
+  # Ticker
+  Ticker:
+    InvalidOverrideType: "Invalid override type, please use: (1) Keyholder, (2) Lockee, (3) Both"
+    IncorrectTimer: "*Does something look incorrect? Please contact **Kevin** the developer of ChastiKey if any numbers appear incorrect*"
+
+  # Stats
+  Stats:
+    KeyholderNoLocks: "The requested user seems to not have any active locks or past lockees, there will be no stats to display"
+    UserRequestedNoStats: "This user has requested their stats remain private"
+
+  # Verify
+  Verify:
+    NotSuccessfulUsingReason: "{{reason}}"
+    DMInstructions: |-
+      Scan this code with the ChastiKey App like loading a lock (within the next 5 minutes), this will verify your Discord Account to ChastiKey.
+      If your ChastiKey account is new in the last 15-30 minutes, it may take this long for Kiera to receive all the required data.
+    CkeckYourDMs: Check your DMs from Kiera for further instructions.
+    FastForward: Your account has been verified! Some data may still take **up to 15 minutes** to be cached and fully accessable.
+    PreviouslyCompleted: Your account has already been verified! If there are any issues with this please reachout to @emma#1366
+    VerifyRequired: |-
+      This command requires your account be verified with ChastiKey using the following command: 
+      `!ck verify`
+
+      If you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `!ck verify` again."
+
+Decision:
+  Edit:
+    NewQuestionAdded: |-
+      New question added (id: {{id}}`)
+      Enter your options using `!decision {{id}} add "Decision result here"`
+      Roll for an outcome using `!decision roll {{id}}`
+    SetModeOptions: |-
+      Mode options available are:
+      > `0` = Basic (No limiting enabled)
+      > `1` = Temporarily Consume 
+          (Make sure to set in seconds the reset time, Example: {{prefix}}decision "id" consume reset 60`)
+      > `2` = Consume
+          (Once the outcome has been used it will be out of rotation unless the author resets, Reset using: {{prefix}}decision "id" consume reset`)
+
+Generic:
+  Info:
+    UserNotRegistered: You'll need to register with the bot first using `{{prefix}}register`
+  Error:
+    CommandExactMatchFailedOptions: "***Hint:** You can type:* `{{prefix}}help {{command}}`, Here are some examples using this command:"
+    CommandDisabledInChannel: The command `{{command}}` is not allowed in this channel.
+    HelpCommandMissing: Unfortunately there's no help text for this command yet.
+  Warn:
+    CommandUnderMaintenance: This command is currently under maintenance.
+
+Moderate:
+  Mute:
+    ListEntryUser: |-
+      {{username}}#{{discriminator}}
+        ## Muted: {{dateFormatted}}
+        ## Reason: {{reason}}
+        ## Muted By: {{mutedBy}}
+
+    ListEntryUserLeftServer: |-
+      {{username}}#{{discriminator}} __(user left the server)__
+       ## Muted: {{dateFormatted}}
+       ## Reason: {{reason}}
+       ## Muted By: {{mutedBy}}
+
+Poll:
+  New: |-
+    New Poll ID:
+      `{{id}}`
+
+    The following parameters may be modified to finish setting up your poll:
+      - public (Default: true) **`true`** | **`false`** - Allows the poll to be viewed on the website
+      - open (Default: true) **`true`** | **`false`** - Allows user votes to count on the poll
+      - question: `{{question}}`
+
+    Use the following commands to edit the above values:
+      `{{prefix}}poll edit {{id}} open false`
+      `{{prefix}}poll edit {{id}} public false`
+      `{{prefix}}poll edit {{id}} title "Add a title here"`
+      `{{prefix}}poll edit {{id}} question "Your edited text here"`
+      `{{prefix}}poll edit {{id}} footer "Add a footer here"`
+
+    To begin the poll use (this will print the message people actually vote on):
+    `{{prefix}}poll start {{id}}`
+
+    To stop the poll use:
+      `{{prefix}}poll stop {{id}}`
+
+  Edit:
+    OptionAdded: |-
+      Poll option has been added!
+        Emoji: {{emoji}} 
+        Description: {{description}}
+
+      To remove this option use: "{{prefix}}poll remove option {{id}} {{optionID}}"
+    OptionRemoved: Poll option {{optionID}} removed!
+
+  Error:
+    NotFoundInDB: Could not find that poll in the Database!
+    OptionNotFound: Poll option {{optionID}} could not be found!
+    PropertyNotFound: Could not find the specified poll property!
+    PropertyUpdated: |-
+      Poll ID `{{id}}` property `{{property}}` updated!
+
+      **From:** `{{from}}` 🡒 **To:** `{{to}}`
+
+  Interaction:
+    VoteCast: Vote Cast!
+    VoteRemoved: Vote Retracted!
+
+  Info:
+    Expired: Vote **not** cast! Poll has expired.
+    RandomVoteSelected: "Randomly selected: {{emoji}} by: {{by}}"
+    Ended: The current poll has ended!
+
+  Warn:
+    DifferentAuthorID: Only the Poll's author may call {{prefix}} this command!
+
+Stats:
+  Info:
+    About: |-
+      Below you'll find information on what's considered a statistic by Kiera:
+
+      This Server Has Stats: `{{serverState}}`
+      Your Stats are Currently: `{{userState}}`
+      Your Stats Entries (From all servers): `{{count}}`
+
+      **These statistics consist of:**
+        - Date & Time
+        - Server ID
+        - Channel ID
+        - User ID
+        - Type of statistic (Action seen, Example: Message, Server Join, Reaction, Name of Command used, etc)
+        - If its a Kiera command it will contain only the command name & the success state
+
+      **These Statistics do not contain:**
+        - Message body (nothing that's contained within the message body, Text, Image, URL, etc)
+        - Message ID
+        - The outcome body of any commands
+        - User or Nicknames
+        - Anything in DMs where Kiera is not present
+
+      **About Disabling Statistics:**
+        - At the User level: None of these stats will be recorded (inc: Server or Channel)
+        - At the Channel level: No stats on the channel or users will be recorded within that channel
+        - At the Server level: No stats recorded on the server (inc: Channel or User)
+
+  Channel:
+    Disabled: |-
+      All stats have now been **Disabled** for this channel.
+
+      - If you wish to delete all recorded stats to date you can run the following command `{{prefix}}stats delete channel`.
+      - Disabling alone stops new logging going forward only.
+      - When channel statistics are disabled but not deleted they may still appear on Server or User statistics.
+      - The `{{prefix}}stats channel` command will now be disabled for this channel.
+
+      For more information about Statistics, see the `{{prefix}}stats about` command output.
+
+    Enabled: |-
+      Stats are now **Enabled** for this channel.
+
+      For more information about Statistics, see the `{{prefix}}stats about` command output.
+
+    DeletionConfirm: To confirm deleting all stats pertaining to this channel, send **`yes`** in the next 60 seconds!
+    DeletionConfirmReceived: Confirmation Received! Channel Stats Deletion in progress... please wait
+    DeletionDeleted: "Stats `(count: {{count}})` for this channel have been deleted!"
+    DeletionCancelled: Channel Stats Deletion Cancelled! Reply not received before timeout (1 minute).
+    DeletionNoStats: There are no stats stored for this channel!
+    DisabledInfo: "This Channel has requested stats be disabled - (Note: It may appear in server or user statistics unless all stored statistics for the channel are deleted.)"
+
+  Server:
+    Disabled: |-
+      All stats have now been **Disabled** for this server.\n\n
+      - If you wish to delete all recorded stats to date you can run the following command `{{prefix}}stats delete server`.
+      - Disabling alone stops new logging going forward only.
+      - When server statistics are disabled but not deleted they may still appear on Channel or User statistics.
+      - The `{{prefix}}stats server` command will now be disabled for this server.
+
+      For more information about Statistics, see the `{{prefix}}stats about` command output.
+
+    Enabled: |-
+      Stats are now **Enabled** for this server.
+
+      For more information about Statistics, see the `{{prefix}}stats about` command output.
+
+    DeletionConfirm: To confirm deleting all stats pertaining to this server, send **`yes`** in the next 60 seconds!
+    DeletionConfirmReceived: Confirmation Received! Channel Stats Deletion in progress... please wait
+    DeletionDeleted: "Stats `(count: {{count}})` for this channel have been deleted!"
+    DeletionCancelled: Server Stats Deletion Cancelled! Reply not received before timeout (1 minute).
+    DeletionNoStats: There are no stats stored for this channel!
+    DisabledInfo: "This Server has requested stats be disabled - (Note: It may appear in server or user statistics unless all stored statistics for the channel are deleted.)"
+
+  User:
+    Disabled: |-
+      All stats have now been Disabled for your account (across all servers where Kiera is present).
+
+      - If you wish to delete all recorded stats to date you can run the following command `{{prefix}}stats delete user`.
+      - Disabling alone stops new logging going forward only.
+      - When user statistics are disabled but not deleted your statistics may still appear on Channels or Servers in total counts.
+      - The `{{prefix}}stats user` command will now be disabled for your profile.
+      - What's not disabled with this command:
+        - Your personal Kiera usage audit log which can be found for your account @ https://kierabot.xyz (Your commands ran, success, etc)
+        - Other commands such as the Decision log or places where that are not purely statistics
+
+      For more information about Statistics, see the `{{prefix}}stats about` command output.
+
+    Enabled: |-
+      Stats are now Enabled again for your account (across all servers where Kiera is present).
+
+      For more information about Statistics, see the `{{prefix}}stats about` command output.
+
+System:
+  Startup: |+
+    :::::::::::::::::::::::::::::::::::::::::
+    --------------> Kiera Bot <--------------
+    :::::::::::::::::::::::::::::::::::::::::
+       
+    Version: {{version}}
+    Discord Bot: {{user}}
+       
+    Localization Languages: {{langs}}
+    Localization Strings: {{strings}}
+       
+    API Routes: {{routes}}
+    Commands: {{commands}}
+    Guilds: {{guilds}}
+    Users: {{users}}
+       
+    Database Ping: {{ping}}ms
+       
+    =========================================

@@ -232,7 +232,7 @@ export async function aboutStats(routed: RouterRouted) {
   const statsCount = await routed.bot.DB.count<ServerStatistic>('stats-servers', { userID: routed.user.id })
 
   await routed.message.reply(
-    Utils.sb(Utils.en.stats.aboutStats, {
+    routed.$render('Stats.Info.About', {
       serverState: statsDisabledServer ? 'Disabled' : 'Enabled',
       userState: statsDisabledUser ? 'Disabled' : 'Enabled',
       count: statsCount

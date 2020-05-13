@@ -20,6 +20,6 @@ export async function isCKVerified(routed: RouterRouted) {
   // Verified!!
   if (ckUser.userID !== undefined || kieraUser.ChastiKey.isVerified) return routed // No need to hault if this passes
   // Fallback, user not yet registered
-  await routed.message.reply(Utils.sb(Utils.en.chastikey.verifyVerifyReq2))
+  await routed.message.reply(routed.$render('ChastiKey.Verify.VerifyRequired'))
   return // Returns nothing which halts going any further
 }

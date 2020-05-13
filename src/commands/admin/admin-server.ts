@@ -97,7 +97,7 @@ export async function versionCheck(routed: RouterRouted) {
 
 export async function forceRestart(routed: RouterRouted) {
   await routed.message.channel.send(
-    Utils.sb(Utils.en.admin.botManualRestart, {
+    routed.$render('Admin.BotManualRestart', {
       seconds: (routed.v.o.seconds || 5000) / 1000
     })
   )

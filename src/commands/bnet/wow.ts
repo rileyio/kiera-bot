@@ -1,5 +1,4 @@
 import { RouterRouted, ExportRoutes } from '@/router'
-import { sb, en } from '@/utils'
 
 const BlizzardWoWClassID = {
   1: 'Warrior',
@@ -145,7 +144,7 @@ export async function wowCharacterProfile(routed: RouterRouted) {
     })
   } catch (error) {
     routed.bot.Service.BattleNet.DEBUG_BNET.log('BattleNet -> Error:', error.message)
-    if (error.response.data.status === 'nok') await routed.message.reply(sb(en.bnet.bnetCharacterNotFound))
+    if (error.response.data.status === 'nok') await routed.message.reply(routed.$render('BattleNet.Error.CharacterNotFound'))
   }
 
   return true

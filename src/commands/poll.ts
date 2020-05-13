@@ -94,7 +94,7 @@ export async function voteNew(routed: RouterRouted) {
   )
 
   await routed.message.reply(
-    Utils.sb(Utils.en.poll.newPollCreated, {
+    routed.$render('Poll.New', {
       id: insertedRecordID,
       question: routed.v.o.question
     })
@@ -144,7 +144,7 @@ export async function voteEdit(routed: RouterRouted) {
 
       // Default catch and return message - Stop here
       default:
-        await routed.message.reply(Utils.sb(Utils.en.poll.pollPropertyNotFound))
+        await routed.message.reply(routed.$render('Poll.Error.PropertyNotFound'))
         return false // Stop here
     }
 
@@ -154,7 +154,7 @@ export async function voteEdit(routed: RouterRouted) {
     // Update successful
     if (updateCount > 0)
       await routed.message.reply(
-        Utils.sb(Utils.en.poll.pollPropertyUpdated, {
+        Utils.sb(routed.$render('Poll.Error.PropertyUpdated'), {
           id: routed.v.o.id,
           property: routed.v.o.property,
           from: _previousValue,
@@ -165,7 +165,7 @@ export async function voteEdit(routed: RouterRouted) {
     return true
   } else {
     // Can't find poll in DB
-    await routed.message.reply(Utils.sb(Utils.en.poll.pollNotFoundInDB))
+    await routed.message.reply(routed.$render('Poll.Error.NotFoundInDB'))
     return false
   }
 }
@@ -188,7 +188,7 @@ export async function handleReact(routed: RouterRouted) {
     storedPoll = new TrackedPoll(storedPoll)
     // Stop if poll is expired/closed
     if (!storedPoll.isOpen) {
-      await routed.author.send(Utils.sb(Utils.en.poll.pollExpired))
+      await routed.author.send(routed.$render('Poll.Info.Expired'))
       return true // Stop here
     }
 
@@ -199,7 +199,7 @@ export async function handleReact(routed: RouterRouted) {
       // Update in DB
       const updateCount = await routed.bot.DB.update<TrackedPoll>('polls', { messageID: new ObjectID(routed.trackedMessage._id) }, storedPoll)
 
-      if (updateCount > 0) await routed.author.send(Utils.sb(Utils.en.poll.pollVoteCast))
+      if (updateCount > 0) await routed.author.send(routed.$render('Poll.Interaction.VoteCast'))
       return true // Stop here
     } else {
       var deleteCount = await routed.bot.DB.update<TrackedPoll>(
@@ -213,7 +213,7 @@ export async function handleReact(routed: RouterRouted) {
         { atomic: true }
       )
 
-      if (deleteCount > 0) await routed.author.send(Utils.sb(Utils.en.poll.pollVoteRemoved))
+      if (deleteCount > 0) await routed.author.send(routed.$render('Poll.Interaction.VoteRemoved'))
       return true // Stop here
     }
   }
@@ -241,7 +241,7 @@ export async function startPoll(routed: RouterRouted) {
 
     // Only allow the author to startPoll on their own
     if (storedPoll.authorID !== routed.message.author.id) {
-      await routed.message.reply(Utils.sb(Utils.en.poll.pollDifferentAuthorID))
+      await routed.message.reply(routed.$render('Poll.Warn.DifferentAuthorID'))
       return false // Stop Here
     }
     1
@@ -260,7 +260,7 @@ export async function startPoll(routed: RouterRouted) {
     await routed.bot.DB.update<TrackedPoll>('polls', { _id: new ObjectID(routed.v.o.id) }, storedPoll)
     // await routed.message.reply('```json\n' + JSON.stringify(storedPoll, null, 2) + '```')
   } else {
-    await routed.message.reply(Utils.sb(Utils.en.poll.pollNotFoundInDB))
+    await routed.message.reply(routed.$render('Poll.Error.NotFoundInDB'))
   }
 
   return true
@@ -286,12 +286,12 @@ export async function stopPoll(routed: RouterRouted) {
 
     // Only allow the author to stopPoll on their own
     if (storedPoll.authorID !== routed.message.author.id) {
-      await routed.message.reply(Utils.sb(Utils.en.poll.pollDifferentAuthorID))
+      await routed.message.reply(routed.$render('Poll.Warn.DifferentAuthorID'))
       return false // Stop Here
     }
 
     // Print message to chat informing users the poll has concluded
-    await routed.message.reply(Utils.sb(Utils.en.poll.pollEnded))
+    await routed.message.reply(routed.$render('Poll.Info.Ended'))
 
     // Update open status
     storedPoll.isOpen = false
@@ -299,7 +299,7 @@ export async function stopPoll(routed: RouterRouted) {
     // Update in db
     await routed.bot.DB.update<TrackedPoll>('polls', { _id: new ObjectID(routed.v.o.id) }, storedPoll)
   } else {
-    await routed.message.reply(Utils.sb(Utils.en.poll.pollNotFoundInDB))
+    await routed.message.reply(routed.$render('Poll.Error.NotFoundInDB'))
   }
 
   return true
@@ -325,20 +325,20 @@ export async function pickRandomVote(routed: RouterRouted) {
 
     // Only allow the author to call on their own
     if (storedPoll.authorID !== routed.message.author.id) {
-      await routed.message.reply(Utils.sb(Utils.en.poll.pollDifferentAuthorID))
+      await routed.message.reply(routed.$render('Poll.Warn.DifferentAuthorID'))
       return false // Stop Here
     }
 
     const randomReaction = storedPoll.pickRandomVote(routed.v.o.emoji)
 
     await routed.message.channel.send(
-      Utils.sb(Utils.en.poll.pollRandomVoteSelected, {
+      routed.$render('Poll.Info.RandomVoteSelected', {
         by: Utils.User.buildUserWrappedSnowflake(randomReaction.authorID),
         emoji: randomReaction.vote
       })
     )
   } else {
-    await routed.message.reply(Utils.sb(Utils.en.poll.pollNotFoundInDB))
+    await routed.message.reply(routed.$render('Poll.Error.NotFoundInDB'))
   }
 
   return true
@@ -364,7 +364,7 @@ export async function addOption(routed: RouterRouted) {
 
     // Only allow the author to call on their own
     if (storedPoll.authorID !== routed.message.author.id) {
-      await routed.message.reply(Utils.sb(Utils.en.poll.pollDifferentAuthorID))
+      await routed.message.reply(routed.$render('Poll.Warn.DifferentAuthorID'))
       return false // Stop Here
     }
 
@@ -374,7 +374,7 @@ export async function addOption(routed: RouterRouted) {
     await routed.bot.DB.update<TrackedPoll>('polls', { _id: new ObjectID(routed.v.o.id) }, storedPoll)
 
     await routed.message.reply(
-      Utils.sb(Utils.en.poll.pollOptionAdded, {
+      routed.$render('Poll.Edit.OptionAdded', {
         id: routed.v.o.id,
         optionID: optionID,
         emoji: routed.v.o.emoji,
@@ -406,7 +406,7 @@ export async function removeOption(routed: RouterRouted) {
 
     // Only allow the author to call on their own
     if (storedPoll.authorID !== routed.message.author.id) {
-      await routed.message.reply(Utils.sb(Utils.en.poll.pollDifferentAuthorID))
+      await routed.message.reply(routed.$render('Poll.Warn.DifferentAuthorID'))
       return false // Stop Here
     }
 
@@ -420,7 +420,7 @@ export async function removeOption(routed: RouterRouted) {
     // If there was no vote option to remove: inform the user
     if (!deleteCount) {
       await routed.message.reply(
-        Utils.sb(Utils.en.poll.pollOptionNotFound, {
+        routed.$render('Poll.Error.OptionNotFound', {
           optionID: routed.v.o.optionID
         })
       )
@@ -428,7 +428,7 @@ export async function removeOption(routed: RouterRouted) {
     }
 
     await routed.message.reply(
-      Utils.sb(Utils.en.poll.pollOptionRemoved, {
+      routed.$render('Poll.Edit.OptionRemoved', {
         optionID: routed.v.o.optionID
       })
     )

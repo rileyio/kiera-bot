@@ -61,7 +61,7 @@ export default class Localization {
     try {
       const fromPath = String(filePath)
         .split('/')
-        .map((s) => s.replace(/\.|yaml/g, ''))
+        .map((s) => s.replace(/\.|yml/g, ''))
 
       const lang = fromPath[1]
       const strings = YAML.parse(data)
@@ -73,7 +73,7 @@ export default class Localization {
     }
   }
 
-  public render<T>(locale: string, key: string, data?: T) {
+  public $render<T>(locale: string, key: string, data?: T) {
     const targetString: string = dotProp.get(this.loaded[locale].strings, key)
     // Check if string is translated - if not: fallback to en
     if (targetString) {

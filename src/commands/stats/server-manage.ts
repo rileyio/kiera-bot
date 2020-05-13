@@ -61,7 +61,7 @@ export async function disableServerStats(routed: RouterRouted) {
     })
   )
 
-  await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsDisabled))
+  await routed.message.reply(routed.$render('Stats.Server.Disabled'))
   return true
 }
 
@@ -71,7 +71,7 @@ export async function enableServerStats(routed: RouterRouted) {
     setting: StatisticsSettingType.ServerDisableStats
   })
 
-  if (removed > 0) await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsEnabled))
+  if (removed > 0) await routed.message.reply(routed.$render('Stats.Server.Enabled'))
   return true
 }
 
@@ -80,7 +80,7 @@ export async function deleteServerStats(routed: RouterRouted) {
   const count = await routed.bot.DB.count('stats-servers', { serverID: routed.message.guild.id })
 
   if (count > 0) {
-    await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsDeletionConfirm))
+    await routed.message.reply(routed.$render('Stats.Server.DeletionConfirm'))
 
     try {
       // Filter to watch for the correct user & text to be sent (+ remove any whitespace)
@@ -90,18 +90,18 @@ export async function deleteServerStats(routed: RouterRouted) {
       // Delete the previous message at this stage
       await Utils.Channel.deleteMessage(routed.message.channel as TextChannel, collected.first().id)
       // Upon valid message collection, begin deletion - notify user
-      const pleaseWaitMessage = (await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsDeletionConfirmReceived))) as Message
+      const pleaseWaitMessage = (await routed.message.reply(routed.$render('Stats.Server.DeletionConfirmReceived'))) as Message
       // Delete from DB
       const removed = await routed.bot.DB.remove('stats-servers', { serverID: routed.message.guild.id }, { deleteOne: false })
       // Delete the previous message at this stage
       await Utils.Channel.deleteMessage(routed.message.channel as TextChannel, pleaseWaitMessage.id)
-      await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsDeletionDeleted, { count: removed }))
+      await routed.message.reply(routed.$render('Stats.Server.DeletionDeleted', { count: removed }))
     } catch (error) {
-      await routed.message.channel.send(Utils.sb(Utils.en.stats.serverStatsDeletionCancelled))
+      await routed.message.channel.send(routed.$render('Stats.Server.DeletionCancelled'))
     }
   }
   // Nothing to delete - notify caller
-  else await routed.message.reply(Utils.sb(Utils.en.stats.serverStatsDeletionNoStats))
+  else await routed.message.reply(routed.$render('Stats.Server.DeletionCancelled'))
 
   return true
 }
