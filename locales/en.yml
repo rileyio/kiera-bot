@@ -56,12 +56,27 @@ ChastiKey:
 
       If you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `!ck verify` again."
 
-Command:
+Help:
   Admin:
     ChannelPurge:
-      Description: "Purge Channel Contents (Warning: This will delete everything in the channel)"
+      Description: "Purge all messages in channel"
+    ChastiKeyRefresh:
+      Description: Trigger refresh of ChastiKey data cache
+    CommandCategories:
+      Description: Retrieve list of command categories
+    CategoryCommands:
+      Description: Retrieve list of categories commands
+    CommandRestrict:
+      Description: Restrict Command usage
+    CheckPermissions:
+      Description: Check Yours and Kiera's permissions
+    BotVersion:
+      Description: Display current Kiera version
+    BotPing:
+      Description: Check Kiera's Ping/Latency
+    BotRestart:
+      Description: Restart Kiera Bot application
     
-
 Decision:
   Edit:
     NewQuestionAdded: |-

@@ -1,5 +1,4 @@
 import * as Middleware from '@/middleware'
-import * as Utils from '@/utils'
 import { performance } from 'perf_hooks'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { TrackedMessage } from '@/objects/message'
@@ -9,6 +8,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Info',
     controller: versionCheck,
+    description: 'Help.Admin.BotVersion.Description',
     example: '{{prefix}}version',
     name: 'admin-version',
     validate: '/version:string',
@@ -18,6 +18,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Info',
     controller: pingPong,
+    description: 'Help.Admin.BotPing.Description',
     example: '{{prefix}}ping',
     name: 'admin-ping',
     validate: '/ping:string',
@@ -27,6 +28,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Admin',
     controller: forceRestart,
+    description: 'Help.Admin.BotRestart.Description',
     example: '{{prefix}}restart bot',
     name: 'root-restart-bot',
     permissions: {

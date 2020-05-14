@@ -4,6 +4,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'Admin',
   controller: checkPermissions,
+  description: 'Help.Admin.CheckPermissions.Description',
   example: '{{prefix}}check permissions',
   name: 'admin-check-permissions',
   validate: '/check:string/permissions:string/user?=string',

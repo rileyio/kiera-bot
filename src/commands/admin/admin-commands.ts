@@ -6,6 +6,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Admin',
     controller: listCommandCategories,
+    description: 'Help.Admin.CommandCategories.Description',
     example: '{{prefix}}admin commands',
     name: 'admin-command-categories',
     validate: '/admin:string/commands:string',
@@ -17,6 +18,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Admin',
     controller: listCategoryCommands,
+    description: 'Help.Admin.CategoryCommands.Description',
     example: '{{prefix}}admin category Fun',
     name: 'admin-category-commands',
     validate: '/admin:string/commands:string/category:string/category=string',
@@ -28,6 +30,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Admin',
     controller: commandRestrict,
+    description: 'Help.Admin.CommandRestrict',
     example: '{{prefix}}admin restrict command 8ball',
     name: 'admin-command-restrict',
     validate: '/admin:string/commands:string/category:string/category=string',
@@ -135,4 +138,7 @@ export async function listCategoryCommands(routed: RouterRouted) {
   return true // Successful
 }
 
-export async function commandRestrict() {}
+export async function commandRestrict(routed: RouterRouted) {
+  await routed.message.reply(routed.$render('Generic.Warn.CommandUnderMaintenance'))
+  return true // Successful
+}

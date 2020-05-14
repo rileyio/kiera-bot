@@ -4,6 +4,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'ChastiKey',
   controller: forceStatsReload,
+  description: 'Help.Admin.ChastiKeyRefresh.Description',
   example: '{{prefix}}admin ck stats refresh',
   name: 'admin-ck-stats-stats',
   permissions: {
