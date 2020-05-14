@@ -190,12 +190,18 @@ export class CommandRouter {
         return r.test(message.content) === true
       })
 
+      // Lookup Kiera User in DB
+      const kieraUser = new TrackedUser(
+        await this.bot.DB.get<TrackedUser>('users', { id: message.author.id })
+      )
+
       // Stop if there's no specific route found
       if (route === undefined) {
         this.bot.Log.Router.log(`Router -> Failed to match '${message.content}' to a route - ending routing`)
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
+
         // Provide some feedback about the failed command(s)
-        var exampleUseOfCommand = routed.$render('Generic.Error.CommandExactMatchFailedOptions', { command: args[0] })
+        var exampleUseOfCommand = this.bot.Localization.$render(kieraUser.locale, 'Generic.Error.CommandExactMatchFailedOptions', { command: args[0] })
         var examplesToAppend = ``
         for (let index = 0; index < examples.length; index++) {
           const example = examples[index]
@@ -227,9 +233,6 @@ export class CommandRouter {
 
       // Process route
       this.bot.Log.Router.log('Router -> Route:', route)
-
-      // Lookup Kiera User in DB
-      const kieraUser = await this.bot.DB.get<TrackedUser>('users', { id: message.author.id })
 
       // Normal routed behaviour
       var routed: RouterRouted = new RouterRouted({
