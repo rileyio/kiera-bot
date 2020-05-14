@@ -237,10 +237,10 @@ Stats:
       For more information about Statistics, see the `{{prefix}}stats about` command output.
 
     DeletionConfirm: To confirm deleting all stats pertaining to this server, send **`yes`** in the next 60 seconds!
-    DeletionConfirmReceived: Confirmation Received! Channel Stats Deletion in progress... please wait
-    DeletionDeleted: "Stats `(count: {{count}})` for this channel have been deleted!"
+    DeletionConfirmReceived: Confirmation Received! Server Stats Deletion in progress... please wait
+    DeletionDeleted: "Stats `(count: {{count}})` for this Server have been deleted!"
     DeletionCancelled: Server Stats Deletion Cancelled! Reply not received before timeout (1 minute).
-    DeletionNoStats: There are no stats stored for this channel!
+    DeletionNoStats: There are no stats stored for this Server!
     DisabledInfo: "This Server has requested stats be disabled - (Note: It may appear in server or user statistics unless all stored statistics for the channel are deleted.)"
 
   User:
