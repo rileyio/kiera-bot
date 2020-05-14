@@ -8,7 +8,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Stats',
-    commandTarget: 'none',
     controller: statsByTopChannels,
     example: '{{prefix}}stats top channels',
     name: 'stats-top-channels',
@@ -23,7 +22,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Stats',
-    commandTarget: 'none',
     controller: serverStats,
     example: '{{prefix}}stats server',
     name: 'stats-server',
@@ -38,7 +36,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Stats',
-    commandTarget: 'none',
     controller: aboutStats,
     example: '{{prefix}}stats about',
     name: 'stats-about',

@@ -5,7 +5,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Admin',
-    commandTarget: 'none',
     controller: listCommandCategories,
     example: '{{prefix}}admin commands',
     name: 'admin-command-categories',
@@ -17,7 +16,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Admin',
-    commandTarget: 'none',
     controller: listCategoryCommands,
     example: '{{prefix}}admin category Fun',
     name: 'admin-category-commands',
@@ -29,7 +27,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Admin',
-    commandTarget: 'none',
     controller: commandRestrict,
     example: '{{prefix}}admin restrict command 8ball',
     name: 'admin-command-restrict',

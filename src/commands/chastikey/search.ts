@@ -7,7 +7,6 @@ import { UserData } from 'chastikey.js/app/objects'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'ChastiKey',
-  commandTarget: 'none',
   controller: search,
   example: '{{prefix}}ck search UsernameHere',
   name: 'ck-search-username',

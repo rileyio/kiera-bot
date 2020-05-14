@@ -3,7 +3,6 @@ import { RouterRouted, ExportRoutes } from '@/router'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'Admin',
-  commandTarget: 'none',
   controller: checkPermissions,
   example: '{{prefix}}check permissions',
   name: 'admin-check-permissions',

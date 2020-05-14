@@ -7,7 +7,6 @@ import { TextChannel } from 'discord.js'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'Stats',
-  commandTarget: 'none',
   controller: statsForChannel,
   example: '{{prefix}}stats channel',
   name: 'stats-channels',

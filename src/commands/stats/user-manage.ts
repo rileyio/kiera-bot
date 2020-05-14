@@ -8,7 +8,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Stats',
-    commandTarget: 'none',
     controller: diableUserStats,
     example: '{{prefix}}stats disable user',
     name: 'stats-disable-user',
@@ -21,7 +20,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Stats',
-    commandTarget: 'none',
     controller: enableUserStats,
     example: '{{prefix}}stats enable user',
     name: 'stats-enable-user',
@@ -34,7 +32,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Stats',
-    commandTarget: 'none',
     controller: deleteUserStats,
     example: '{{prefix}}stats delete user',
     name: 'stats-delete-user',

@@ -8,7 +8,6 @@ import { TrackedUser } from '@/objects/user'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'ChastiKey',
-  commandTarget: 'none',
   controller: history,
   example: '{{prefix}}ck lockee history',
   name: 'ck-lockee-history',

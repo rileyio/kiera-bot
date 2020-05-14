@@ -8,7 +8,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Moderate',
-    commandTarget: 'none',
     controller: mute,
     example: '{{prefix}}mod mute emma#1366',
     name: 'mod-mute-user',
@@ -21,7 +20,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Moderate',
-    commandTarget: 'none',
     controller: unMute,
     example: '{{prefix}}mod unmute emma#1366',
     name: 'mod-unmute-user',
@@ -34,7 +32,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Moderate',
-    commandTarget: 'none',
     controller: activeMutes,
     example: '{{prefix}}mod list muted',
     name: 'mod-muted-list',
@@ -47,7 +44,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Moderate',
-    commandTarget: 'none',
     controller: lookupMutes,
     example: '{{prefix}}mod lookup mute emma#1366',
     name: 'mod-mute-lookup-list',

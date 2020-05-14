@@ -7,7 +7,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Stats',
-    commandTarget: 'none',
     controller: disableChannelStats,
     example: '{{prefix}}stats disable channel',
     name: 'stats-disable-channel',
@@ -21,7 +20,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Stats',
-    commandTarget: 'none',
     controller: enableChannelStats,
     example: '{{prefix}}stats enable channel',
     name: 'stats-enable-channel',
@@ -35,7 +33,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Stats',
-    commandTarget: 'none',
     controller: deleteChannelStats,
     example: '{{prefix}}stats delete channel',
     name: 'stats-delete-channel',
