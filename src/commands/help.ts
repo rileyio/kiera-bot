@@ -6,7 +6,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Info',
-    commandTarget: 'author',
     controller: commandHelp,
     example: '{{prefix}}help poll',
     name: 'help-command',
@@ -16,7 +15,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Info',
-    commandTarget: 'author',
     controller: genericFallback,
     example: '{{prefix}}help',
     name: 'help',

@@ -21,7 +21,6 @@ test('Utils:CommandRouter', (t) => {
       {
         type: 'message',
         category: 'Info',
-        commandTarget: 'author',
         controller: setTickerType,
         example: '{{prefix}}ck ticker set type 2',
         name: 'ticker-set-type',
@@ -38,7 +37,6 @@ test('Utils:CommandRouter:Route => Generate Route', (t) => {
   const r = new MessageRoute({
     type: 'message',
     category: 'Info',
-    commandTarget: 'author',
     controller: setTickerType,
     example: '{{prefix}}ck ticker set type 2',
     name: 'ticker-set-type',

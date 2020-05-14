@@ -7,6 +7,7 @@ export const Routes = ExportRoutes({
   category: 'Admin',
   commandTarget: 'none',
   controller: purgeChannelMessages,
+  description: 'Command.Admin.ChannelPurge.Description',
   example: '{{prefix}}admin channel purge',
   name: 'admin-channel-purge',
   permissions: {

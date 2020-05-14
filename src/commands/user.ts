@@ -8,7 +8,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'User',
-    commandTarget: 'author',
     controller: registerUser,
     example: '{{prefix}}register',
     name: 'register',
@@ -18,7 +17,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'User',
-    commandTarget: 'author',
     controller: registerAPIAuthKey,
     example: '{{prefix}}user key new',
     name: 'user-api-authkey-create',
@@ -33,7 +31,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'User',
-    commandTarget: 'author',
     controller: destroyAPIAuthKey,
     example: '{{prefix}}user key destroy user:1:123abc',
     name: 'user-api-authkey-destroy',
@@ -48,7 +45,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'User',
-    commandTarget: 'author',
     controller: setUserLocale,
     example: '{{prefix}}user set locale fr',
     name: 'user-locale-set',

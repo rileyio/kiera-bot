@@ -8,7 +8,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: unblacklistUser,
     example: '{{prefix}}decision "id" unblacklist user "userSnowflake"',
     name: 'decision-unblacklist-user',
@@ -18,7 +17,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: blacklistUser,
     example: '{{prefix}}decision "id" blacklist user "userSnowflake"',
     name: 'decision-blacklist-user',
@@ -28,7 +26,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: showUserBlacklist,
     example: '{{prefix}}decision "id" blacklisted users',
     name: 'decision-blacklist-show',
@@ -38,7 +35,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: unwhitelistServer,
     example: '{{prefix}}decision "id" unwhitelist server "serverID"',
     name: 'decision-unwhitelist-server',
@@ -48,7 +44,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: whitelistServer,
     example: '{{prefix}}decision "id" whitelist server "serverID"',
     name: 'decision-whitelist-server',

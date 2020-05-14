@@ -8,7 +8,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: setTickerType,
     example: '{{prefix}}ck ticker set type 2',
     name: 'ck-set-tickerType',
@@ -22,7 +21,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: setTickerDate,
     example: '{{prefix}}ck ticker set date 2019-01-27',
     name: 'ck-set-tickerDate',
@@ -36,7 +34,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: setTickerRatingDisplay,
     example: '{{prefix}}ck ticker set rating show',
     name: 'ck-set-ratingDisplay',
@@ -50,7 +47,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: getTicker,
     example: '{{prefix}}ck ticker',
     name: 'ck-get-ticker',

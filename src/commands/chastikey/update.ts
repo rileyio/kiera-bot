@@ -8,7 +8,6 @@ import { performance } from 'perf_hooks'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'ChastiKey',
-  commandTarget: 'author',
   controller: update,
   example: '{{prefix}}ck update',
   name: 'ck-update',

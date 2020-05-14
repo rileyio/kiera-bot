@@ -9,7 +9,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: getLockeeStats,
     example: '{{prefix}}ck stats lockee',
     name: 'ck-get-stats-lockee',
@@ -23,7 +22,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: getKeyholderStats,
     example: '{{prefix}}ck stats keyholder UsernameHere',
     name: 'ck-get-stats-keyholder',
@@ -37,7 +35,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: getCheckLockeeMultiLocked,
     example: '{{prefix}}ck check multilocked KeyHolderName',
     name: 'ck-check-multilocked',
@@ -51,7 +48,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: getKeyholderLockees,
     example: '{{prefix}}ck keyholder lockees',
     name: 'ck-keyholder-lockees',
@@ -65,7 +61,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: setKHAverageDisplay,
     example: '{{prefix}}ck keyholder set average show',
     name: 'ck-set-kh-average-display',

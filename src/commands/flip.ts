@@ -5,7 +5,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'argument',
     controller: flip,
     example: '{{prefix}}flip',
     name: 'flip-coin',

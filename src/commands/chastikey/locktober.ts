@@ -6,7 +6,6 @@ import { TrackedBotSetting } from '@/objects/setting'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'ChastiKey',
-  commandTarget: 'author',
   controller: statsLocktober,
   example: '{{prefix}}ck stats locktober',
   name: 'ck-stats-locktober',

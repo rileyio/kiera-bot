@@ -9,7 +9,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: setUsername,
     example: '{{prefix}}ck username MyUsername',
     name: 'ck-set-username',
@@ -24,7 +23,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: recoverCombos,
     example: '{{prefix}}ck recover combos 5',
     name: 'ck-account-recover-combos',
@@ -38,7 +36,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'author',
     controller: verifyAccount,
     example: '{{prefix}}ck verify',
     name: 'ck-account-verify',
@@ -52,7 +49,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'none',
     controller: roleCounts,
     example: '{{prefix}}ck role counts',
     name: 'ck-role-counts',
@@ -66,7 +62,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'none',
     controller: extSessionOld,
     example: '{{prefix}}ck ext session',
     name: 'ck-ext-session-OLD',
@@ -81,7 +76,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    commandTarget: 'none',
     controller: extSession,
     example: '{{prefix}}ck web',
     name: 'ck-ext-session',

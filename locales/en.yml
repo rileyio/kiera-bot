@@ -56,6 +56,12 @@ ChastiKey:
 
       If you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `!ck verify` again."
 
+Command:
+  Admin:
+    ChannelPurge:
+      Description: "Purge Channel Contents (Warning: This will delete everything in the channel)"
+    
+
 Decision:
   Edit:
     NewQuestionAdded: |-

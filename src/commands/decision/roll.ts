@@ -11,7 +11,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: runSavedDecision,
     example: '{{prefix}}decision roll "id"',
     name: 'decision-run-saved',
@@ -21,7 +20,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: runRealtimeDecision,
     example: '{{prefix}}decision "Question here" "Option 1" "Option 2" "etc.."',
     name: 'decision-realtime',

@@ -12,7 +12,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: newDecision,
     example: '{{prefix}}decision new "name"',
     name: 'decision-new',
@@ -22,7 +21,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: newDecisionEntry,
     example: '{{prefix}}decision "id" add "Your decision entry here"',
     name: 'decision-new-option',
@@ -32,7 +30,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: setDecisionConsumeMode,
     example: '{{prefix}}decision "id" consume mode 0',
     name: 'decision-set-consume-mode',
@@ -42,7 +39,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: setConsumeReset,
     example: '{{prefix}}decision "id" consume reset 0',
     name: 'decision-set-consume-reset',
@@ -52,7 +48,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'author',
     controller: generateNewDecisionID,
     example: '{{prefix}}decision "oldID" new id',
     name: 'decision-new-decision-id',

@@ -7,7 +7,6 @@ import { decisionLogLast5 } from '@/embedded/decision-log'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'Fun',
-  commandTarget: 'author',
   controller: fetchDecisionLog,
   example: '{{prefix}}decision log id',
   name: 'decision-log',

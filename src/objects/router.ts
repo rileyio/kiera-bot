@@ -15,7 +15,6 @@ import { TrackedUser } from './user'
 export interface RouteConfiguration {
   category: RouteConfigurationCategory
   command?: string
-  commandTarget: RouteActionUserTarget
   controller: Function | void
   description?: string
   example?: string

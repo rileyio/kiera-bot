@@ -4,7 +4,6 @@ import { eightBallResult } from '@/embedded/8ball-embed'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'Fun',
-  commandTarget: 'argument',
   controller: eightBall,
   example: '{{prefix}}8ball',
   name: '8ball',
