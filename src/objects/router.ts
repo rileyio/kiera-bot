@@ -17,8 +17,8 @@ export interface RouteConfiguration {
   command?: string
   commandTarget: RouteActionUserTarget
   controller: Function | void
+  description?: string
   example?: string
-  help?: string
   middleware?: Array<(routed: RouterRouted) => Promise<RouterRouted | void>>
   name: string
   permissions?: {

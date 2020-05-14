@@ -15,7 +15,6 @@ test('Utils:CommandRouter', (t) => {
         commandTarget: 'argument',
         controller: () => {},
         example: '{{prefix}}duration @user#0000 time 10',
-        help: 'duration',
         name: 'duration-set-time',
         validate: '/command:string/user=user/action/time=number'
       },
@@ -25,7 +24,6 @@ test('Utils:CommandRouter', (t) => {
         commandTarget: 'author',
         controller: setTickerType,
         example: '{{prefix}}ck ticker set type 2',
-        help: 'ck',
         name: 'ticker-set-type',
         validate: '/command:string/subroute:string/action:string/action2:string/type=number'
       }
@@ -43,7 +41,6 @@ test('Utils:CommandRouter:Route => Generate Route', (t) => {
     commandTarget: 'author',
     controller: setTickerType,
     example: '{{prefix}}ck ticker set type 2',
-    help: 'ck',
     name: 'ticker-set-type',
     validate: '/command:string/subroute:string/action:string/action2:string/type=number'
   })
