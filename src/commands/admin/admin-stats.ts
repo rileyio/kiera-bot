@@ -3,7 +3,6 @@ import { RouterRouted, ExportRoutes } from '@/router'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'Info',
-  commandTarget: 'argument',
   controller: getBotStats,
   example: '{{prefix}}admin stats',
   name: 'admin-stats',

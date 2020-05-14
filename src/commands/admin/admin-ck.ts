@@ -3,7 +3,6 @@ import { RouterRouted, ExportRoutes } from '@/router'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'ChastiKey',
-  commandTarget: 'argument',
   controller: forceStatsReload,
   example: '{{prefix}}admin ck stats refresh',
   name: 'admin-ck-stats-stats',

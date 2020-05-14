@@ -5,7 +5,6 @@ import { rollDie, rollDice } from '@/embedded/roll-embed'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'Fun',
-  commandTarget: 'argument',
   controller: roll,
   example: '{{prefix}}roll',
   name: 'roll-die',

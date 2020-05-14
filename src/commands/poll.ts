@@ -9,7 +9,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'argument',
     controller: voteNew,
     example: '{{prefix}}poll new "Is Kiera the cat cute?"',
     name: 'poll-new',
@@ -18,7 +17,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'argument',
     controller: voteEdit,
     example: '{{prefix}}poll edit 5cfcf44614e8a64034ca89f3 public false',
     name: 'poll-edit',
@@ -27,7 +25,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'argument',
     controller: startPoll,
     example: '{{prefix}}poll start 5cfcf44614e8a64034ca89f3',
     name: 'poll-start',
@@ -36,7 +33,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'argument',
     controller: stopPoll,
     example: '{{prefix}}poll stop 5cfcf44614e8a64034ca89f3',
     name: 'poll-stop',
@@ -45,7 +41,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'argument',
     controller: pickRandomVote,
     example: '{{prefix}}poll pick random 5cfcf44614e8a64034ca89f3 :thumbsup:',
     name: 'poll-pick-random-vote',
@@ -54,7 +49,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'argument',
     controller: addOption,
     example: '{{prefix}}poll add option 5cfcf44614e8a64034ca89f3 :thumbsup: "Optional description here"',
     name: 'poll-add-option',
@@ -63,7 +57,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
-    commandTarget: 'argument',
     controller: removeOption,
     example: '{{prefix}}poll add option 5cfcf44614e8a64034ca89f3 :thumbsup:',
     name: 'poll-remove-option',
@@ -72,7 +65,6 @@ export const Routes = ExportRoutes(
   {
     type: 'reaction',
     category: 'Fun',
-    commandTarget: 'controller-decision',
     controller: handleReact,
     name: 'poll-react-vote'
   }

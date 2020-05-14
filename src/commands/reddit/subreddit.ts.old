@@ -8,7 +8,7 @@
 //   {
 //     type: 'message',
 //     category: 'Reddit',
-//     commandTarget: 'argument',
+//     ,
 //     controller: searchSubreddits,
 //     example: '{{prefix}}reddit search "Cat Pictures"',
 //     name: 'reddit-search-subreddits',

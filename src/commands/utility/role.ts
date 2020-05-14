@@ -4,7 +4,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Utility',
-    commandTarget: 'argument',
     controller: displayRoles,
     example: '{{prefix}}util roles show',
     name: 'util-roles-stats',
@@ -13,7 +12,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Utility',
-    commandTarget: 'argument',
     controller: displayRoleRange,
     example: '{{prefix}}util roles show 0 to 10',
     name: 'util-role-stats',
@@ -22,7 +20,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Utility',
-    commandTarget: 'argument',
     controller: displayRolesLike,
     example: '{{prefix}}util roles show like RolesContainingWord',
     name: 'util-role-stats-bystring-search',
@@ -31,7 +28,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Utility',
-    commandTarget: 'argument',
     controller: displayRole,
     example: '{{prefix}}util role show RoleNameHere',
     name: 'util-role-specific-stats',

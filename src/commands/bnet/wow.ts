@@ -68,7 +68,6 @@ const BlizzardWoWClassFaction = {
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'BNet',
-  commandTarget: 'argument',
   controller: wowCharacterProfile,
   example: '{{prefix}}wow character us stormreaver thejaydox',
   name: 'bnet-wow-character',

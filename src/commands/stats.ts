@@ -3,7 +3,6 @@ import { RouterRouted, ExportRoutes } from '@/router'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'Info',
-  commandTarget: 'argument',
   controller: commandUsageStats,
   example: '{{prefix}}stats commands',
   name: 'stats-commands',

@@ -8,7 +8,6 @@ import { statsUser } from '@/embedded/stats-user'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'Stats',
-  commandTarget: 'none',
   controller: statsForUser,
   example: '{{prefix}}stats user',
   name: 'stats-user',

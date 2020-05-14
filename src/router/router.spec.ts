@@ -12,7 +12,6 @@ test('Utils:CommandRouter', (t) => {
       {
         type: 'message',
         category: 'Info',
-        commandTarget: 'argument',
         controller: () => {},
         example: '{{prefix}}duration @user#0000 time 10',
         name: 'duration-set-time',

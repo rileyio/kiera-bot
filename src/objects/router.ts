@@ -73,7 +73,6 @@ export class MessageRoute {
 
   public category: string
   public command: string
-  public commandTarget: RouteActionUserTarget = 'none' // Default to none
   public controller: (routed: RouterRouted) => Promise<Boolean>
   public example: string
   public help: string
