@@ -5,7 +5,6 @@ import { TextChannel } from 'discord.js'
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'Admin',
-  commandTarget: 'none',
   controller: purgeChannelMessages,
   description: 'Command.Admin.ChannelPurge.Description',
   example: '{{prefix}}admin channel purge',
