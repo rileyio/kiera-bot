@@ -241,7 +241,7 @@ Stats:
     DeletionDeleted: "Stats `(count: {{count}})` for this Server have been deleted!"
     DeletionCancelled: Server Stats Deletion Cancelled! Reply not received before timeout (1 minute).
     DeletionNoStats: There are no stats stored for this Server!
-    DisabledInfo: "This Server has requested stats be disabled - (Note: It may appear in server or user statistics unless all stored statistics for the channel are deleted.)"
+    DisabledInfo: "This Server has requested stats be disabled - (Note: It may appear in Channel or User statistics unless all stored statistics for the channel are deleted.)"
 
   User:
     Disabled: |-
