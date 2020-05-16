@@ -124,7 +124,7 @@ export class Bot {
         routes: this.BotMonitor.WebAPI.configuredRoutes.length,
         commands: this.Router.routes.length,
         guilds: this.client.guilds.cache.size,
-        users: this.client.users.cache.size,
+        users: await this.DB.count('users', {}),
         ping: this.BotMonitor.DBMonitor.pingTotalLatency / this.BotMonitor.DBMonitor.pingCount,
         langs: this.Localization.langs,
         strings: this.Localization.stringsCount,
