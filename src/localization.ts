@@ -2,6 +2,7 @@ import * as YAML from 'yaml'
 import * as fs from 'fs'
 import * as glob from 'fast-glob'
 import * as dotProp from 'dot-prop'
+import * as Handlebars from 'handlebars'
 
 // TODO: Remove following later - using for Local & rendering setup
 import { sb } from '@/utils'
@@ -80,6 +81,8 @@ export default class Localization {
       return sb(targetString, data)
     }
     // Fallback: en
-    return sb(dotProp.get(this.loaded['en'].strings, key), data)
+    // return sb(dotProp.get(this.loaded['en'].strings, key), data)
+    const templ = Handlebars.compile(dotProp.get(this.loaded['en'].strings, key))
+    return templ(data)
   }
 }
