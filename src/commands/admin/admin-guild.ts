@@ -9,12 +9,12 @@ export const Routes = ExportRoutes({
   name: 'admin-check-permissions',
   validate: '/check:string/permissions:string/user?=string',
   permissions: {
-    defaultEnabled: true,
-  },
+    defaultEnabled: true
+  }
 })
 
 export async function checkPermissions(routed: RouterRouted) {
-  const botUser = await routed.bot.client.guilds.cache.find((g) => g.id === routed.message.guild.id).members.cache.find((u) => u.id === routed.bot.client.user.id)
+  const botUser = routed.message.guild.member(routed.bot.client.user.id)
   const requestingUser = routed.message.member
 
   await routed.message.reply(`\`\`\`json
@@ -28,7 +28,7 @@ ${JSON.stringify(
         MANAGE_MESSAGES: botUser.hasPermission('MANAGE_MESSAGES'),
         USE_EXTERNAL_EMOJIS: botUser.hasPermission('USE_EXTERNAL_EMOJIS'),
         READ_MESSAGE_HISTORY: botUser.hasPermission('READ_MESSAGE_HISTORY'),
-        SEND_TTS_MESSAGES: botUser.hasPermission('SEND_TTS_MESSAGES'),
+        SEND_TTS_MESSAGES: botUser.hasPermission('SEND_TTS_MESSAGES')
       },
       guild: {
         ADMINISTRATOR: botUser.hasPermission('ADMINISTRATOR'),
@@ -41,8 +41,8 @@ ${JSON.stringify(
         MANAGE_NICKNAMES: botUser.hasPermission('MANAGE_NICKNAMES'),
         MANAGE_ROLES: botUser.hasPermission('MANAGE_ROLES'),
         MANAGE_EMOJIS: botUser.hasPermission('MANAGE_EMOJIS'),
-        VIEW_AUDIT_LOG: botUser.hasPermission('VIEW_AUDIT_LOG'),
-      },
+        VIEW_AUDIT_LOG: botUser.hasPermission('VIEW_AUDIT_LOG')
+      }
     },
     user: {
       channel: {
@@ -54,7 +54,7 @@ ${JSON.stringify(
         READ_MESSAGE_HISTORY: requestingUser.hasPermission('READ_MESSAGE_HISTORY'),
         SEND_MESSAGES: requestingUser.hasPermission('SEND_MESSAGES'),
         SEND_TTS_MESSAGES: requestingUser.hasPermission('SEND_TTS_MESSAGES'),
-        VIEW_CHANNEL: requestingUser.hasPermission('VIEW_CHANNEL'),
+        VIEW_CHANNEL: requestingUser.hasPermission('VIEW_CHANNEL')
       },
       guild: {
         ADMINISTRATOR: requestingUser.hasPermission('ADMINISTRATOR'),
@@ -67,9 +67,9 @@ ${JSON.stringify(
         MANAGE_NICKNAMES: requestingUser.hasPermission('MANAGE_NICKNAMES'),
         MANAGE_ROLES: requestingUser.hasPermission('MANAGE_ROLES'),
         MANAGE_EMOJIS: requestingUser.hasPermission('MANAGE_EMOJIS'),
-        VIEW_AUDIT_LOG: requestingUser.hasPermission('VIEW_AUDIT_LOG'),
-      },
-    },
+        VIEW_AUDIT_LOG: requestingUser.hasPermission('VIEW_AUDIT_LOG')
+      }
+    }
   },
   null,
   2
