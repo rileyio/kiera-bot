@@ -40,6 +40,42 @@ ChastiKey:
   Stats:
     KeyholderNoLocks: "The requested user seems to not have any active locks or past lockees, there will be no stats to display"
     UserRequestedNoStats: "This user has requested their stats remain private"
+    Lockee:
+      Title: "{{#if isVerified}}{{{verifiedEmoji}}}{{/if}} `{{username}}` - ChastiKey Lockee Statistics - Active Stats"
+      AdditionalLocksField: There are {{count}} additional lock(s).
+      NoActiveLocks: No active locks
+      NoActiveLocksTimeSinceLast: |-
+        To see any additional stats a lock must be active.
+        Time Since Last Lock `{{time}}`
+      MainStats: |-
+        {{#if showAvgRating}}Avg Rating `{{avgRating}}` | # Ratings `{{ratings}}`{{/if}}
+        Locked for `{{lockedFor}}` months to date | `{{locksCompleted}}` locks completed
+        Longest (completed) `{{longestLockCompleted}}`
+        Average Time Locked (overall) `{{avgTimeLocked}}`
+        Last Active in ChastiKey App `{{lastActiveInApp}}` ago
+        Joined `{{joinedDate}}` (`{{joinedDaysAgo}}` days ago)
+        {{#if isVerified}}Verified to {{{verifiedTo}}}{{/if}}
+      LockStats: |-
+        Keyholder **`{{#if isSelfLocked}}Self Locked{{else}}{{keyholderName}}{{/if}}`** Status `Locked` 
+        Locked `{{lockedTime}}`
+        Total time frozen `{{totalTimeFrozen}}`
+        {{#unless isFixed}}
+          {{#if hasPickedCard}}
+            Last Pick `{{lastPickedTime}}` ago
+          {{else}}
+            Last Pick `has yet to pick`
+          {{/if}}
+          {{#if showNextPick}}
+            Next pick `{{#if nextPickNow}}now{{else}}{{nextPickTime}}{{/if}}`
+          {{/if}}
+          Details {{#if isCumulative}}Cumulative{{else}}Non-Cumulative{{/if}} regularity `{{regularity}}` with `{{turnsMade}}` turns made.
+          The last (`{{discardPileLength}}`) cards discarded: 
+          {{{discardPile}}}
+          {{#unless isHidden}}
+            Cards Remaining
+            {{{cardsRemaining}}}
+          {{/unless}}
+        {{/unless}}
 
   # Verify
   Verify:
@@ -76,7 +112,7 @@ Help:
       Description: Check Kiera's Ping/Latency
     BotRestart:
       Description: Restart Kiera Bot application
-    
+
 Decision:
   Edit:
     NewQuestionAdded: |-

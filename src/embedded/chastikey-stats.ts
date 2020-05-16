@@ -1,5 +1,5 @@
 import * as Utils from '@/utils'
-import { RouterStats } from '@/router'
+import { RouterStats, RouterRouted } from '@/router'
 import { LockeeDataLock, LockeeDataResponse, UserData, KeyholderData } from 'chastikey.js/app/objects'
 
 export interface TrackedSharedKeyholderStatistics {
@@ -26,7 +26,8 @@ export interface TrackedKeyholderLockeesStatistics {
 
 const indicatorEmoji = {
   Frozen: `<:frozenlock:539233483537645568>`,
-  Hidden: `<:hiddencircle:474973202607767562>`
+  Hidden: `<:hiddencircle:474973202607767562>`,
+  TrustedKH: `<:trustkeyholder:474975187310346240>`
 }
 
 const cardsEmoji = {
@@ -44,7 +45,7 @@ const cardsEmoji = {
   Freeze: `<:1_:601169050294419476>`
 }
 
-export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRating: boolean }, routerStats: RouterStats) {
+export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRating: boolean }, routed: RouterRouted) {
   var fields: Array<{ name: string; value: string }> = []
   var locks = lockeeData.getLocked
 
@@ -52,14 +53,14 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
     .filter((l, i) => i < 5) // Only process first 5 locks
     .forEach((l, i) => {
       if (i > 5) return // Stop here with new fields @ lock #5
-      fields.push(lockEntry(i, l, fields.length))
+      fields.push(lockEntry(i, l, fields.length, routed))
     })
 
   // If there are more than 5 locks
   if (locks.length > 5) {
     var additionalLocksField = {
-      name: `There are ${locks.length - 5} additional lock(s)`,
-      value: `To view one of these use the lockee command again supplying the lock ID at the end.\n\n**Lock IDs:**\n`
+      name: routed.$render('ChastiKey.Stats.Lockee.AdditionalLocksField', { count: locks.length - 5 }),
+      value: `...`
     }
 
     locks
@@ -75,33 +76,41 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
   if (fields.length === 0) {
     // When no locks are active, add a different field to indicate this
     fields.push({
-      name: 'No active locks',
-      value: `To see any additional stats a lock must be active.\n Time Since Last Lock \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.timeSinceLastLocked, true)}\``
+      name: routed.$render('ChastiKey.Stats.Lockee.NoActiveLocks'),
+      value: routed.$render('ChastiKey.Stats.Lockee.NoActiveLocksTimeSinceLast', { time: Utils.Date.calculateHumanTimeDDHHMM(lockeeData.timeSinceLastLocked, true) })
     })
   }
 
-  var dateJoinedDaysAgo = lockeeData.data.joined !== '-' ? `(${Math.round((Date.now() - new Date(lockeeData.data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)` : ''
-  var description = `Locked for \`${Math.round((lockeeData.data.cumulativeSecondsLocked / 2592000) * 100) / 100}\` months to date | \`${
-    lockeeData.data.totalNoOfCompletedLocks
-  }\` locks completed`
-  // Only show the ratings if the user has > 5 & if the user has specified they want to show the rating
-  if (lockeeData.data.noOfRatings > 4 && options.showRating) description += `\nAvg Rating \`${lockeeData.data.averageRating}\` | # Ratings \`${lockeeData.data.noOfRatings}\``
-  description += `\nLongest (completed) \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.data.longestCompletedLockInSeconds, true)}\``
-  description += `\nAverage Time Locked (overall) \`${Utils.Date.calculateHumanTimeDDHHMM(lockeeData.data.averageTimeLockedInSeconds, true)}\``
-  description += `\nLast Active in ChastiKey App \`${Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lockeeData.data.timestampLastActive, true)}\` ago`
-  description += `\nJoined \`${lockeeData.data.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}`
-  // Only Show verified @User if the user is verified
-  if (lockeeData.data.discordID) description += `\nVerified to ${Utils.User.buildUserChatAt(lockeeData.data.discordID, Utils.User.UserRefType.snowflake)}`
+  var description = routed.$render('ChastiKey.Stats.Lockee.MainStats', {
+    lockedFor: Math.round((lockeeData.data.cumulativeSecondsLocked / 2592000) * 100) / 100,
+    locksCompleted: lockeeData.data.totalNoOfCompletedLocks,
+    // Only show the ratings if the user has > 5 & if the user has specified they want to show the rating
+    showAvgRating: lockeeData.data.noOfRatings > 4 && options.showRating,
+    avgRating: lockeeData.data.averageRating,
+    ratings: lockeeData.data.noOfRatings,
+    longestLockCompleted: Utils.Date.calculateHumanTimeDDHHMM(lockeeData.data.longestCompletedLockInSeconds, true),
+    avgTimeLocked: Utils.Date.calculateHumanTimeDDHHMM(lockeeData.data.averageTimeLockedInSeconds, true),
+    lastActiveInApp: Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lockeeData.data.timestampLastActive, true),
+    joinedDate: lockeeData.data.joined.substr(0, 10),
+    joinedDaysAgo: lockeeData.data.joined !== '-' ? `${Math.round((Date.now() - new Date(lockeeData.data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago` : '',
+    // Only Show verified @User if the user is verified
+    isVerified: lockeeData.data.discordID ? true : false,
+    verifiedTo: Utils.User.buildUserChatAt(lockeeData.data.discordID, Utils.User.UserRefType.snowflake)
+  })
 
   const messageBlock = {
     embed: {
-      title: `${lockeeData.data.discordID ? '<:verified:625628727820288000> ' : ''}\`${lockeeData.data.username}\` - ChastiKey Lockee Statistics - Active Stats`,
+      title: routed.$render('ChastiKey.Stats.Lockee.Title', {
+        isVerified: lockeeData.data.discordID ? true : false,
+        verifiedEmoji: '<:verified:625628727820288000> ',
+        username: lockeeData.data.username
+      }),
       description: description,
       color: 9125611,
       timestamp: Date.now(),
       footer: {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Retrieved by Kiera`
+        text: `Runtime ${routed.routerStats.performance}ms :: Requested By ${routed.routerStats.user} :: Retrieved by Kiera`
       },
       // thumbnail: {
       //   url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
@@ -110,10 +119,8 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
     }
   }
 
-  const messageBlockStrLength = JSON.stringify(messageBlock).length
-
-  console.log('Lockee block length:', messageBlockStrLength)
-
+  // Left in for debugging locally
+  console.log('Lockee block length:', JSON.stringify(messageBlock).length)
   return messageBlock
 }
 
@@ -124,9 +131,7 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
  * @param {number} totalExpected
  * @returns
  */
-function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number): { name: string; value: string } {
-  const cumulative = lock.cumulative === 1 ? 'Cumulative' : 'Non-Cumulative'
-
+function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number, routed: RouterRouted): { name: string; value: string } {
   // Calculate human readable time for lock from seconds
   const timeLocked = Utils.Date.calculateHumanTimeDDHHMM(lock.isLocked ? lock.totalTimeLocked : lock.timestampUnlocked - lock.timestampLocked, true)
 
@@ -160,62 +165,60 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number): 
     if (card !== '') discardPileStr += `${cardsEmoji[card]}`
   })
 
-  // When the lock has a name
-  if (lock.lockName !== '') {
-    var name = `Active Lock ${index + 1} (\`${lock.lockName}\`)`
-  } else {
-    var name = `Active Lock ${index + 1}`
-  }
-
+  // Build Title/Name section for lock
+  var name = `:lock:`
   name += ` ${lock.cardInfoHidden || lock.timerHidden ? indicatorEmoji.Hidden : ''}`
   name += ` ${lock.lockFrozenByKeyholder || lock.lockFrozenByCard ? (lock.lockFrozenByKeyholder ? indicatorEmoji.Frozen : cardsEmoji.Freeze) : ''}`
-  name += ` ${lock.isTrustedKeyholder ? `<:trustkeyholder:474975187310346240>` : ''}`
+  name += ` ${lock.isTrustedKeyholder ? indicatorEmoji.TrustedKH : ''}`
 
-  var value = `Keyholder **\`${lock.lockedBy !== '' ? lock.lockedBy : 'Self Locked'}\`** Status **\`Locked\`** **\`${timeLocked}\`**`
+  // When the lock has a name
+  if (lock.lockName !== '') name += ` \`${lock.lockName}\``
 
-  // If lock has frozen time
-  if (lock.totalTimeFrozen > 0) value += `\nTotal time frozen \`${Utils.Date.calculateHumanTimeDDHHMM(lock.totalTimeFrozen, true)}\``
-  // If a last/next pick time is known
-  if (!lock.isFixed) {
-    if (lock.timestampLastPicked > 0) value += `\nLast Pick \`${Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lock.timestampLastPicked, true)}\` ago`
-    else value += `\nLast Pick \`has yet to pick\``
-  }
-  if (lock.timestampNextPick > 0 && !lock.isFixed) {
-    const timeTillPickFormatted = Utils.Date.calculateHumanTimeDDHHMM(lock.timestampNextPick - Date.now() / 1000, true)
-    value += `\nNext pick \`${lock.timestampNextPick - Date.now() / 1000 <= 0 ? 'now' : `in ${timeTillPickFormatted}`}\``
-  }
-
+  // Build Remaining cards string
+  var remaining = ``
   // When its a variable lock
-  if (lock.fixed === 0) {
-    value += `\nDetails \`${cumulative}\` regularity \`${regularity}\` with \`${lock.noOfTurns}\` turns made.`
-
-    if (totalExpected < 6) value += `\nThe last (${discardPile.length}) cards discarded:\n${discardPileStr}`
-    else value += `\n${discardPileStr}`
-
-    if (lock.cardInfoHidden === 0) {
-      // Extra space
-      value += `\n\nCards Remaining:`
-
-      // Green cards
-      value += `${cardsEmoji.Green} \`${lock.greenCards}\` `
-      // Red cards
-      value += `${cardsEmoji.Red} \`${lock.redCards}\` `
-      // Yellow cards
-      value += `${cardsEmoji.Yellow} \`${lock.yellowCards}\` `
-      // Freeze Up cards
-      value += `${cardsEmoji.Freeze} \`${lock.freezeCards}\` `
-      // Double Up cards
-      value += `${cardsEmoji.DoubleUp} \`${lock.doubleUpCards}\``
-      // Reset Up cards
-      value += `${cardsEmoji.Reset} \`${lock.resetCards}\``
-    } else {
-      value += `\nDetails \`Hidden\`.`
-    }
+  if (lock.fixed === 0 && lock.cardInfoHidden === 0) {
+    // Extra space
+    // Green cards
+    remaining += `${cardsEmoji.Green} \`${lock.greenCards}\` `
+    // Red cards
+    remaining += `${cardsEmoji.Red} \`${lock.redCards}\` `
+    // Yellow cards
+    remaining += `${cardsEmoji.Yellow} \`${lock.yellowCards}\` `
+    // Freeze Up cards
+    remaining += `${cardsEmoji.Freeze} \`${lock.freezeCards}\` `
+    // Double Up cards
+    remaining += `${cardsEmoji.DoubleUp} \`${lock.doubleUpCards}\``
+    // Reset Up cards
+    remaining += `${cardsEmoji.Reset} \`${lock.resetCards}\``
   }
+
+  var valueReplacement = routed.$render('ChastiKey.Stats.Lockee.LockStats', {
+    isFixed: lock.isFixed,
+    isFrozen: lock.totalTimeFrozen > 0,
+    isSelfLocked: lock.lockedBy === '',
+    isCumulative: lock.cumulative === 1,
+    isHidden: lock.cardInfoHidden === 1,
+    isLockNamed: lock.lockName !== '',
+    keyholderName: lock.lockedBy,
+    lockedTime: timeLocked,
+    totalTimeFrozen: Utils.Date.calculateHumanTimeDDHHMM(lock.totalTimeFrozen, true),
+    lastPickedTime: Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lock.timestampLastPicked, true),
+    hasPickedCard: lock.timestampLastPicked > 0,
+    showNextPick: lock.timestampNextPick > 0 && !lock.isFixed,
+    nextPickNow: lock.timestampNextPick - Date.now() / 1000 <= 0,
+    nextPickTime: Utils.Date.calculateHumanTimeDDHHMM(lock.timestampNextPick - Date.now() / 1000, true),
+    regularity: regularity,
+    turnsMade: lock.noOfTurns,
+    discardPileLength: discardPile.length,
+    discardPile: discardPileStr,
+    cardsRemaining: remaining
+  })
+  var value = ``
 
   return {
     name: name,
-    value: value
+    value: valueReplacement
   }
 }
 

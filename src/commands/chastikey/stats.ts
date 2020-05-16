@@ -104,7 +104,7 @@ export async function getLockeeStats(routed: RouterRouted) {
         await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
 
   // Generate compiled stats
-  await routed.message.channel.send(lockeeStats(lockeeData, { showRating: kieraUser.ChastiKey.ticker.showStarRatingScore }, routed.routerStats))
+  await routed.message.channel.send(lockeeStats(lockeeData, { showRating: kieraUser.ChastiKey.ticker.showStarRatingScore }, routed))
 
   return true
 }
