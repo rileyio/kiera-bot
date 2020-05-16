@@ -61,9 +61,6 @@ export class LiveStatistics extends EventEmitter {
       case 'dms-sent':
         this.BotStatistics.dms.sent += 1
         break
-      case 'users-online':
-        valueOverride !== undefined ? (this.BotStatistics.users.online = valueOverride) : (this.BotStatistics.users.online += 1)
-        break
       case 'users-total':
         valueOverride !== undefined ? (this.BotStatistics.users.total = valueOverride) : (this.BotStatistics.users.total += 1)
         break

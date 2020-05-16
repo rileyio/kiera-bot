@@ -10,7 +10,6 @@ export type BotStatistic =
   | 'commands-invalid'
   | 'dms-received'
   | 'dms-sent'
-  | 'users-online'
   | 'users-total'
   | 'users-registered'
   | 'servers-total'
@@ -37,7 +36,6 @@ export class BotStatistics {
     sent: 0
   }
   public users = {
-    online: 0,
     total: 0,
     registered: 0
   }
