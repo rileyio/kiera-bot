@@ -92,7 +92,7 @@ export class ServerStatistic {
   public type: ServerStatisticType
   // Command Specific
   public command?: {
-    name: string,
+    name: string
     successful: boolean
   }
 
