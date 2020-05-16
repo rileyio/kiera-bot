@@ -166,8 +166,8 @@ export class Bot {
 
   public async onReady() {
     // Setup Bot utilized channels
-    this.channel.auditLog = this.client.channels.cache.find((c) => c.id === process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
-    this.channel.announcementsChannel = this.client.channels.cache.find((c) => c.id === process.env.DISCORD_ANNOUNCEMENTS_CHANNEL) as Discord.TextChannel
+    this.channel.auditLog = this.client.channels.cache.get(process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
+    this.channel.announcementsChannel = this.client.channels.cache.get(process.env.DISCORD_ANNOUNCEMENTS_CHANNEL) as Discord.TextChannel
   }
 
   private async onMessage(message: Discord.Message) {
