@@ -1,0 +1,261 @@
+Stats:
+  Info:
+    About: |-
+      Du findest hier weitere Informationen darüber, welche Statistiken Keira sammelt:
+      
+      Dieser Server hat Statistiken: `{{serverState}}`
+      Deine Statistiken sind aktuell: `{{userState}}`
+      Deine Statistik-Einträge (von allen Servern): `{{count}}`
+      
+      **Diese Statistiken bestehen aus:**
+        - Datum & Uhrzeit
+        - Server ID
+        - Kanal ID
+        - Benutzer ID
+        - Typ der Statistik (Aktion gesehen, Beispiele: Nachricht, dem Server beigetreten, Reaktion, Name des benutzten Befehls, etc)
+        - Wenn es sich um einen Kiera-Befehl handelt, so wird nur der Name des Befehls, und ob dieser erfoglreich ausgeführt wurde, gespeichert.
+      
+      **Diese Statistiken enthalten nicht:**
+        - Nachrichteninhalt (nichts was sich im Nachrichteninhalt befindet, unter anderem Text, Bilder, Links, etc)
+        - Nachricht ID
+        - Der Antworteinhalt von irgendwelchen Befehlen
+        - Benutzer oder Nicknahmen
+        - Irgendetwas in Direktnachrichten, wo Kiera nicht vorhanden ist
+      
+      **Über das Deaktivieren von Statistiken:**
+        - Auf dem Benutzer-Level: Keine Statistiken werden gespeichert (beinhaltet sowohl Server wie auch Kanäle)
+        - Auf dem Kanal-Level: Keine Statistiken zu diesem Kanal oder den Benutzern im Kanal werden gesammelt.
+        - Auf dem Server-Level: Keine Statistiken werden auf diesem Server gespeichert (Beinhaltet Kanäle und Benutzer)
+  Channel:
+    DeletionCancelled: Raum Statistik Löschung abgebrochen! Bestätigung nicht innerhalb von 60 Sekunden erfolgt.
+    DeletionConfirm: Um zu bestätigen, dass alle diesen Raum betreffenden Statistiken gelöscht werden, senden sie bitte **`Ja`** innerhalb der nächsten 60 Sekunden!
+    DeletionConfirmReceived: "Bestätigung erhalten! Löschung der Raumstatistiken wird durchgeführt... \nBitte warten"
+    DeletionDeleted: "Statistiken `(count: {{count}})` für diesen Kanal wurden gelöscht!"
+    DeletionNoStats: Für diesen Raum sind keine Statistiken vorhanden!
+    Disabled: |-
+      Alle Statistiken wurden für diesem Raum **deaktiviert**.
+      
+      - Wenn du möchtest, dass alle gespeicherten Statistiken gelöscht werden, die Keira in diesem Kanal bis heute gesammelt hat, dann verwende: `{{prefix}}stats delete channel`.
+      - Die Deaktivierung führt nur dazu, dass keine neuen Statistiken in diesem Kanal gesammelt werden.
+      - Wenn Statistiken nur deaktiviert wurden und nicht gelöscht, 
+      - The `{{prefix}}stats channel` command will now be disabled for this channel.
+      
+      For more information about Statistics, see the `{{prefix}}stats about` command output.
+    DisabledInfo: "Für diesen Raum sind Statistiken auf Anfrage deaktiviert worden."
+    Enabled: |-
+      Statistiken sind für diesen Raum ab jetzt **aktiviert**.
+      
+      Um mehr Informationen über Statistiken zu erfahren, sieh dir die Ausgabe dieses Befehls an: `{{prefix}}stats about`.
+  Server:
+    DeletionCancelled: Löschung der Server Statistiken abgebrochen! Bestätigung nicht innerhalb von 60 Sekunden erhalten.
+    DeletionConfirm: Um alle Statistiken von diesem Server zu löschen, sende **`Ja`** innerhalb von 60 Sekunden!
+    DeletionConfirmReceived: "Bestätigung erhalten! Löschen der Server Statistiken wird durchgeführt...\nBitte warten"
+    DeletionDeleted: "Statistiken `(count: {{count}}` für diesen Server wurden gelöscht!"
+    DeletionNoStats: Für diesen Server befinden sich keine Statistiken in der Datenbank!
+    Disabled: |-
+      Für diesen Server sind nun alle Statistiken **deaktiviert**.
+      
+      -Wenn du alle aufgezeichneten Daten löschen möchtest, nutze den Befehl `{{prefix}}stats delete server`.
+      -Das deaktivieren stoppt das Aufzeichnen von weiteren Daten.
+      -Wenn die server Statistiken nicht gelöscht werden, können die Statistiken möglicherweise aufgerufen werden. 
+      -Der Befehl `{{prefix}}stats server` ist für diesen Server deaktiviert.
+      
+      
+      Für mehr Informationen über Statistiken nutze bitte den Befehl `{{prefix}}stats about`
+    DisabledInfo: "Statistiken sind nun für diesen Server deaktiviert."
+    Enabled: |-
+      Statistiken sind jetzt für diesen Server **aktiviert**
+      
+      Für mehr Informationen nutze bitte den `{{prefix}}stats about` Befehl.
+  User:
+    Disabled: |-
+      Alle Statistiken sind für deinen Account deaktiviert (Auf allen Servern auf denen Kiera anwesend ist).
+      
+      -Wenn du alle aufgezeichneten Statistiken löschen möchtest, nutze den Befehl `{{prefix}}stats delete user`.
+      -Wenn die Benutzer Statistiken nicht gelöscht werden, können die Statistiken möglicherweise aufgerufen werden.
+      -Der Befehl `{{prefix}}stats user` ist  nun für deinen Benutzer deaktiviert.
+      -Was mit diesem Befehl NICHT deaktiviert wird:
+        -Das persönliche Nutzen vom Kiera Audit Log kann für deinen Account welches du auf der Webseite https://kierabot.xyz (Deine Befehle, Fortschritt etc...) 
+      -Andere Befehle wir zum Beispiel Decision logs oder andere Statistiken
+      
+      
+      Für mehr informationen sieh in `{{prefix}}stats about` nach. 
+    Enabled: |-
+      Statistiken für diesen Benutzer sind wieder aktiviert (auf allen Servern auf denen Kiera anwesend ist).
+      
+      Für mehr Informationen über Statistiken benutze bitte den `{{prefix}}stats about` Befehl
+Admin:
+  BotManualRestart: "Bot startet in `{{seconds}}` neu."
+  CommandCategoriesList: >-
+    Hier ist eine Übersicht darüber, wie viele Befehle sich unter welcher Kategorie befinden. Wenn du mehr über einen Befehl erfahren möchtest, wie etwa der Name um Beschränkungen zu setzen oder weitere Informationen abzufragen, nutze `{{prefix}}admin command category Fun`.
+    
+    ```
+    {{categories}}
+    ```
+  CommandCategoryCommands: >-
+    Folgende Befehle befinden sich in der Kategorie "{{category}}":
+    
+    ```
+    {{commands}}
+    ```
+BattleNet:
+  Error:
+    CharacterNotFound: Dieser Buchstabe wurde nicht gefunden!
+ChastiKey:
+  # Verify
+  Verify:
+    CkeckYourDMs: Bitte überprüfe deine Direktnachrichten, um weitere Instruktionen zu erhalten
+    DMInstructions: |-
+      Scanne diesen Code mit der ChastiKey-App, wie wenn du ein Schloss laden würdest (in den nächsten 5 Minuten). Dies verifiziert deinen Discord-Account mit deiner ChastiKey-App.
+      Wenn dein ChastiKey-Account in den letzten 15-30 Minuten erstellt wurde, kann es ähnlich lange dauern, bis Kiera alle erforderlichen Daten empfangen hat.
+    FastForward: Dein Account wurde verifiziert! Es kann allerdings noch **bis zu 15 Minuten** dauern, bis alle Daten korrekt zwischengespeichert und verfügbar sind.
+    NotSuccessfulUsingReason: "Die Verifizierung hat leider nicht funktioniert. Begründung: {{reason}}"
+    # 1366`
+    PreviouslyCompleted: Dein Account wurde bereits verifiziert! Wenn es damit irgendwelche Probleme gibt, melde dich bitte bei `Emma#1366`
+    VerifyRequired: |-
+      Um diesen Befehl nutzen zu können, muss der Benutzer verifiziert sein. 
+      Bitte benutze hierfür den Befehl:
+      `!ck verify`
+      
+      Wenn du dies in den letzten 15 Minuten gemacht hast, kannst du den Vorgang mit dem erneuten eingeben von `!ck verify` beschleunigen.
+  # Ticker
+  Ticker:
+    IncorrectTimer: "*Scheint etwas nicht korrekt? Bitte kontaktiere **Kevin**, der Entwickler von ChastiKey wenn irgendwelche Statistiken falsch erscheinen*"
+    InvalidOverrideType: "Inkorrekter Überschreibungs-Typ, bitte nutze: (1) Keyholder, (2) Lockee, (3) Beide"
+  # Stats
+  Stats:
+    KeyholderNoLocks: "Dieser Benutzer hat bisher noch keine aktiven Lock als Keyholder, oder noch keine vergangenen Lockees, deshalb gibt es keine darstellbaren Daten."
+    UserRequestedNoStats: "Dieser Benutzer möchte, dass seine Statistiken privat bleiben."
+  # Errors
+  Error:
+    KeyholderOrAboveRoleRequired: "Hierfür wird die Keyholder-Rolle oder höher benötigt."
+    UserLookupErrorOrNotFound: >-
+      Die Abfrage konnte nicht ausgeführt werden! Mögliche Gründe hierfür sind:
+      - Es existiert kein Benutzer mit diesem Benutzernamen.
+      - Der Benutzer hat möglicherweise seinen Benutzernamen in der ChastiKey-App geändert.
+    UserNotFound: Der Benutzer wurde nicht gefunden! Der Besitzer des ChastiKey Kontos muss den `{{prefix}}ck verify` ausführen, um sich zu verifizieren.
+  # Administrative Tasks
+  Admin:
+    RefreshTriggered: Manuelle Aktualisierung der Statistiken wurde gestartet.
+Generic:
+  Error:
+    CommandDisabledInChannel: Der `{{command}}` Befehl ist in diesem Raum nicht erlaubt.
+    CommandExactMatchFailedOptions: "***Tipp:** Du kannst:* `{{prefix}}help {{command}}` verwenden, Hier sind einige Beispiele, die diesen Befehl verwenden:"
+    HelpCommandMissing: Leider ist für diesen Befehl noch kein Hilfstext verfügbar.
+  Warn:
+    CommandUnderMaintenance: Dieser Befehl ist aufgrund von Wartungsarbeiten vorübergehend nicht verfügbar.
+  Info:
+    UserNotRegistered: Du musst dich erst bei dem Bot registrieren. Verwende dazu `{{prefix}}register`
+Help:
+  Admin:
+    ChannelPurge:
+      Description: "Bereinige alle Nachrichten in diesem Raum"
+    ChastiKeyRefresh:
+      Description: Aktualisierung des Chastikey Cache auslösen
+    CommandCategories:
+      Description: ""
+    CategoryCommands:
+      Description: ""
+    CommandRestrict:
+      Description: Verwendung von Befehlen einschränken
+    CheckPermissions:
+      Description: Überprüfe deine und die Berechtigungen von Kiera
+    BotVersion:
+      Description: Zeige die Aktuelle Version von Kiera an
+    BotPing:
+      Description: Überprüfe den Ping/ die Latenz von Kiera
+    BotRestart:
+      Description: Neustart von Kiera
+Poll:
+  Warn:
+    DifferentAuthorID: Nur der Ersteller dieser Umfrage darf den {{prefix}} Befehl aufrufen!
+  Info:
+    Ended: Die aktuelle Umfrage wurde beendet!
+    Expired: Die Stimme wurde **nicht** gewertet. Diese Abstimmung ist abgelaufen.
+    RandomVoteSelected: "Zufällig gewählt: {{emoji}} von: {{by}}"
+  New: |-
+    Neue Umfrage ID:
+      `{{id}}`
+    
+    Die folgenden Paramter können modifiziert werden, um die Erstellung der Umfrage abzuschliessen:
+      - public (Standard: true) **`true`** | **`false`** - Erlaubt es, die Umfrage auf der Webseite anzusehen
+      - open (Default: true) **`true`** | **`false`** - Erlaubt es Benutzern, bei der Umfrage abzustimmen
+      - question: `{{question}}`
+    
+    Nutze die folgenden Befehle, um die Parameter von oben zu verändern:
+      `{{prefix}}poll edit {{id}} open false`
+      `{{prefix}}poll edit {{id}} public false`
+      `{{prefix}}poll edit {{id}} title "Füge einen Titel hinzu"`
+      `{{prefix}}poll edit {{id}} question "Der bearbeitete Text hier"`
+      `{{prefix}}poll edit {{id}} footer "Füge einen Footer hinzu"`
+    
+    Um die Umfrage zu starten nutze (dies zeigt die Nachricht an, auf welcher die Benutzer abstimmen können):
+    `{{prefix}}poll start {{id}}`
+    
+    Um die Umfrage zu stoppen nutze:
+      `{{prefix}}poll stop {{id}}`
+  Error:
+    NotFoundInDB: Diese Umfrage wurde in der Datenbank nicht gefunden.
+    OptionNotFound: Die Umfrageoption {{optionID}} wurde nicht gefunden.
+    PropertyNotFound: Die angegebene Umfrageeigenschaft wurde nicht gefunden.
+    PropertyUpdated: |-
+      Umfrage ID `{{id}}` Eigenschaft `{{property}}` aktualisiert!
+      
+      **Von:** `{{from}}` 🡒 **Zu:** `{{to}}`
+  Edit:
+    OptionAdded: |-
+      Diese Auswahl wurde hinzugefügt!
+      Emoji: {{emoji}}
+      Beschreibung: {{description}}
+      
+      Um diese Auswahl zu benutzen benutze: "{{prefix}}
+    OptionRemoved: Die Umfrageoption {{optionID}} wurde entfernt!
+  Interaction:
+    VoteCast: Stimme abgegeben!
+    VoteRemoved: Stimme zurückgezogen!
+Moderate:
+  Mute:
+    ListEntryUser: |-
+      {{Username}}#{{discriminator}}
+      ## Gestummt: {{dateFormatted}}
+      ## Grund: {{reason}}
+      ## Gestummt von: {{mutedBy}}
+    ListEntryUserLeftServer: |-
+      {{username}}#{{discriminator}}__(Benutzer hat den Server verlassen)
+      ## Gestummt: {{dateFormatted}}
+      ## Grund: {{reason}}
+      ## Gestummt von: {{mutedBy}}
+Decision:
+  Edit:
+    NewQuestionAdded: |-
+      Neue Frage hinzugefügt (id: {{id}}`)
+      Gib deine Ergebnisse ein mit `!decision {{id}} add "Ergebnis der Entscheidung hier"`
+      Würfle ein Ergebnis mit `!decision roll {{id}}`
+    SetModeOptions: |-
+      Modus-Optionen verfügbar:
+      > `0` = Standard (Keine limite)
+      > `1` = Temporärer Verzehr (consume)
+          (Stelle sicher, dass du die Reset-Zeit in Skunden setzst, Beispiel: {{prefix}}decision "id" consume reset 60`)
+      > `2` = Verzehr (consume)
+          (Sobald dieses Ergebnis verwendet wurde, wird es aus der Rotation entfernt, bis der Author es zurücksetzt. Zurücksetzen mit: {{prefix}}decision "id" consume reset`)
+System:
+  # This is so technical, i would leave it like that, because there would be no major  changes to it
+  Startup: |+
+    :::::::::::::::::::::::::::::::::::::::::
+    --------------> Kiera Bot <--------------
+    :::::::::::::::::::::::::::::::::::::::::
+    
+    Version: {{version}}
+    Discord Bot: {{user}}
+    
+    Localization Languages: {{langs}}
+    Localization Strings: {{strings}}
+    
+    API Routes: {{routes}}
+    Commands: {{commands}}
+    Guilds: {{guilds}}
+    Users: {{users}}
+    
+    Database Ping: {{ping}}ms
+    
+    =========================================
