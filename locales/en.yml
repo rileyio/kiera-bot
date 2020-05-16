@@ -112,6 +112,23 @@ Help:
       Description: Check Kiera's Ping/Latency
     BotRestart:
       Description: Restart Kiera Bot application
+    BotStatistics:
+      Description: General Bot running statistcs
+    DeleteUser:
+      Description: Removes User from Kiera's Database
+  BattleNet:
+    D3CurrentSeason:
+      Description: Retrieve current Diablo 3 Active Season
+    D3ProfileLookup:
+      Description: Retrieve Diablo 3 user profile
+  ChastiKey:
+    RecoverCombinations:
+      Description: Retrieve your completed lock combinations
+    Verify:
+      Description: Link Discord account with ChastiKey App account
+    RoleCounts:
+      Description: List of ChastiKey Discord Roles & statistics
+
 
 Decision:
   Edit:

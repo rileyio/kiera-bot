@@ -4,6 +4,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'Info',
   controller: getBotStats,
+  description: 'Help.Admin.BotStatistics.Description',
   example: '{{prefix}}admin stats',
   name: 'admin-stats',
   permissions: {

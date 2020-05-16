@@ -6,6 +6,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'Admin',
   controller: removeUser,
+  description: 'Help.Admin.DeleteUser.Description',
   example: '{{prefix}}admin user delete @user#0000',
   name: 'admin-user-delete',
   permissions: {

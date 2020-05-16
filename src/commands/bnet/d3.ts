@@ -5,6 +5,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'BNet',
     controller: d3CurrentSeasonLookup,
+    description: 'Help.BattleNet.D3CurrentSeason.Description',
     example: '{{prefix}}d3 season current',
     name: 'bnet-d3-season-current',
     validate: '/d3:string/season:string/current:string'
@@ -13,6 +14,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'BNet',
     controller: d3ProfileLookup,
+    description: 'Help.BattleNet.D3ProfileLookup.Description',
     example: '{{prefix}}d3 profile BattleTag#1234',
     name: 'bnet-d3-profile',
     validate: '/d3:string/profile:string/battletag=string'
