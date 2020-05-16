@@ -75,10 +75,13 @@ export default class Localization {
   }
 
   public $render<T>(locale: string, key: string, data?: T) {
-    const targetString: string = dotProp.get(this.loaded[locale].strings, key)
-    // Check if string is translated - if not: fallback to en
-    if (targetString) {
-      return sb(targetString, data)
+    // Check if locale exists
+    if (dotProp.has(this.loaded[locale], key)) {
+      const targetString: string = dotProp.get(this.loaded[locale].strings, key)
+      // Check if string is translated - if not: fallback to en
+      if (targetString) {
+        return sb(targetString, data)
+      }
     }
     // Fallback: en
     // return sb(dotProp.get(this.loaded['en'].strings, key), data)
