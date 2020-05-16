@@ -116,7 +116,13 @@ export class BotMonitor extends EventEmitter {
   private async discordAPIReady() {
     // Create new Client
     this.Bot.Log.Bot.log('creating discord client...')
-    this.Bot.client = new Discord.Client()
+
+    // Set intents
+    const intents = new Discord.Intents(Number(process.env.DISCORD_PERMISSION) || 201845952)
+    this.Bot.Log.Bot.log('intents set from bit permission:', intents.toArray())
+
+    //
+    this.Bot.client = new Discord.Client({ ws: { intents: intents.toArray() } })
 
     // Waiting for Discord.js Ready Event to fire...
     this.Bot.Log.Bot.log('waiting for discord.js ready event...')
