@@ -9,20 +9,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    controller: setUsername,
-    example: '{{prefix}}ck username MyUsername',
-    name: 'ck-set-username',
-    validate: '/ck:string/username:string/ckusername=string',
-    middleware: [],
-    permissions: {
-      defaultEnabled: true,
-      serverOnly: false,
-      restricted: true
-    }
-  },
-  {
-    type: 'message',
-    category: 'ChastiKey',
     controller: recoverCombos,
     example: '{{prefix}}ck recover combos 5',
     name: 'ck-account-recover-combos',
@@ -57,20 +43,6 @@ export const Routes = ExportRoutes(
     permissions: {
       defaultEnabled: true,
       serverOnly: true
-    }
-  },
-  {
-    type: 'message',
-    category: 'ChastiKey',
-    controller: extSessionOld,
-    example: '{{prefix}}ck ext session',
-    name: 'ck-ext-session-OLD',
-    validate: '/ck:string/ext:string/session:string',
-    middleware: [Middleware.isCKVerified],
-    permissions: {
-      defaultEnabled: true,
-      serverOnly: false,
-      restricted: true
     }
   },
   {
@@ -348,10 +320,6 @@ function roundedDisplay(perc: number) {
   // When less than 10 add leading 0 before returning
   if (Number(moddedPerc) < 10) moddedPerc = `0${moddedPerc}`
   return moddedPerc
-}
-
-export async function extSessionOld(routed: RouterRouted) {
-  await routed.message.reply(`:information_source: Deprecated command (\`${routed.message.content}\`), please use \`!ck web\``)
 }
 
 export async function extSession(routed: RouterRouted) {
