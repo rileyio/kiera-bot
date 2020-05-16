@@ -194,7 +194,7 @@ export class Bot {
   }
 
   private async onMessageNonCachedReact(event: { t: Discord.WSEventType; d: any }) {
-    const user = this.client.users.cache.get(event.d.user_id)
+    const user = await this.client.users.fetch(event.d.user_id)
     const channel = this.client.channels.cache.get(event.d.channel_id) as Discord.TextChannel
     // Skip firing events for cached messages as these will already be properly handled
     // if ((<Discord.TextChannel>channel).messages.has(event.d.message_id)) return

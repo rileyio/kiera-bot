@@ -186,7 +186,7 @@ export async function handleReact(routed: RouterRouted) {
 
     // Add / Remove react
     if (routed.state === 'added') {
-      storedPoll.addVote(routed.user.id, routed.message.guild.id, routed.reaction.reaction)
+      storedPoll.addVote(routed.author.id, routed.message.guild.id, routed.reaction.reaction)
 
       // Update in DB
       const updateCount = await routed.bot.DB.update<TrackedPoll>('polls', { messageID: new ObjectID(routed.trackedMessage._id) }, storedPoll)
@@ -198,10 +198,10 @@ export async function handleReact(routed: RouterRouted) {
         'polls',
         <any>{
           messageID: new ObjectID(routed.trackedMessage._id),
-          'votes.authorID': routed.user.id,
+          'votes.authorID': routed.author.id,
           'votes.vote': routed.reaction.reaction
         },
-        { $pull: { votes: { authorID: routed.user.id, vote: routed.reaction.reaction } } },
+        { $pull: { votes: { authorID: routed.author.id, vote: routed.reaction.reaction } } },
         { atomic: true }
       )
 
