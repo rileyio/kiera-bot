@@ -128,7 +128,15 @@ Help:
       Description: Link Discord account with ChastiKey App account
     RoleCounts:
       Description: List of ChastiKey Discord Roles & statistics
-
+  Moderate:
+    MuteUser:
+      Description: Apply `Tempoary Mute` role to user & preserve roles
+    UnmuteUser:
+      Description: Unmute previously Muted user & restoring roles
+    MuteListMuted:
+      Description: List currently muted users
+    MuteLookup:
+      Description: Lookup user's active mute
 
 Decision:
   Edit:
@@ -151,22 +159,66 @@ Generic:
     CommandExactMatchFailedOptions: "***Hint:** You can type:* `{{prefix}}help {{command}}`, Here are some examples using this command:"
     CommandDisabledInChannel: The command `{{command}}` is not allowed in this channel.
     HelpCommandMissing: Unfortunately there's no help text for this command yet.
+    Internal: Failed to complete command due to an internal issue! This may require further investigation. If you need support on this please visit https://kierabot.xyz/support
+
   Warn:
     CommandUnderMaintenance: This command is currently under maintenance.
 
 Moderate:
-  Mute:
-    ListEntryUser: |-
-      {{username}}#{{discriminator}}
-        ## Muted: {{dateFormatted}}
-        ## Reason: {{reason}}
-        ## Muted By: {{mutedBy}}
+  Error:
+    CouldNotFindUserSnowflake: Could not find the requested user, make sure you're searching based off their Discord Snowflake ID.
+    CouldNotFindActiveMuteForUser: Could not find an active mute record for this user.
+    CannotCallCommandOnSelf: Cannot use this command upon yourself!
 
-    ListEntryUserLeftServer: |-
-      {{username}}#{{discriminator}} __(user left the server)__
+  Mute:
+    ListLookup: ":mute: **Muted Users List**"
+    EntryLookup: ":mute: **Muted User Lookup**"
+    AlreadyMuted: This user already has an active mute being tracked.
+    RolesUnableToManage: |-
+      The following roles cannot be managed by this command & Kiera:
+      ```
+      {{untouchableRoles}}
+      ```
+    ReasonForMutePrompt: What is the reason for this mute? Enter your reason within the next 5 minutes in as many lines as required (edit not saved!) or when you're satisfied with your input send a simple message with `:end`
+    LengthForMutePrompt: How long should this mute last? Enter a time in hours.
+    ConfirmMutePrompt: Are you sure you wish to apply this mute? Reply with **yes** to confirm within the next 60 seconds.
+    CancelledMute: Cancelled Mute
+    ListEntryUser: |+
+      @{{username}}#{{discriminator}} id:{{id}}
+        ## Muted: {{dateFormatted}}
+        ## Remove: {{removeAt}}
+        ## Muted By: {{mutedBy}}
+        ## Reason: {{reason}}
+
+    ListEntryUserLeftServer: |+
+      @{{username}}#{{discriminator}} id:{{id}} __(user left the server)__
        ## Muted: {{dateFormatted}}
-       ## Reason: {{reason}}
+       ## Remove: {{removeAt}}
        ## Muted By: {{mutedBy}}
+       ## Reason: {{reason}}
+
+    New: |+
+      :mute: **Muted User**
+      ```
+      @{{username}}#{{discriminator}} id:{{id}}
+        ## Muted By: {{mutedBy}}
+        ## Remove: {{removeAt}}
+        ## Roles Preserved {{rolesPreserved}}
+        ## Reason: {{reason}}
+      ```
+
+  Unmute: 
+    EntryUnmute: |-
+      :mute: **UnMuted User**
+      ```
+      @{{username}}#{{discriminator}} id:{{id}}
+        ## Muted: {{dateFormatted}}
+        ## Muted By: {{mutedBy}}
+        ## Remove: {{removeAt}}
+        ## Removed: {{removedAt}}
+        ## Reason: {{reason}}
+        ## Roles Restored: {{rolesRestored}}
+      ```
 
 Poll:
   New: |-

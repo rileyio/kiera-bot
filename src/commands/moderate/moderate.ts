@@ -1,5 +1,4 @@
 import * as Middleware from '@/middleware'
-import * as XRegex from 'xregexp'
 import * as Utils from '@/utils'
 import { ExportRoutes, RouterRouted } from '@/router'
 import { TrackedMutedUser, TrackedUser } from '@/objects/user'
@@ -9,7 +8,8 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Moderate',
     controller: mute,
-    example: '{{prefix}}mod mute emma#1366',
+    description: 'Help.Moderate.MuteUser',
+    example: '{{prefix}}mod mute 526039977247899649',
     name: 'mod-mute-user',
     validate: '/mod:string/mute:string/user=string/reason?=string',
     middleware: [Middleware.isModerator],
@@ -21,7 +21,8 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Moderate',
     controller: unMute,
-    example: '{{prefix}}mod unmute emma#1366',
+    description: 'Help.Moderate.UnmuteUser',
+    example: '{{prefix}}mod unmute 526039977247899649',
     name: 'mod-unmute-user',
     validate: '/mod:string/unmute:string/user=string',
     middleware: [Middleware.isModerator],
@@ -33,6 +34,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Moderate',
     controller: activeMutes,
+    description: 'Help.Moderate.MuteListMuted',
     example: '{{prefix}}mod list muted',
     name: 'mod-muted-list',
     validate: '/mod:string/list:string/muted:string',
@@ -45,7 +47,8 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Moderate',
     controller: lookupMutes,
-    example: '{{prefix}}mod lookup mute emma#1366',
+    description: 'Help.Moderate.MuteLookup',
+    example: '{{prefix}}mod lookup mute 526039977247899649',
     name: 'mod-mute-lookup-list',
     validate: '/mod:string/lookup:string/mute:string/user=string',
     middleware: [Middleware.isModerator],
@@ -57,29 +60,18 @@ export const Routes = ExportRoutes(
 
 export async function mute(routed: RouterRouted) {
   const muteRole = routed.message.guild.roles.cache.find((r) => r.name === 'Temporary Mute')
-  const regex = XRegex('^((?<username>(?!@|#|:|`).*)\\#(?<discriminator>[0-9]{4,5}))$', 'i')
-  const match = XRegex.exec(routed.v.o.user, regex)
-  const username = match['username']
-  const discriminator = match['discriminator']
-  const kieraInGuild = routed.message.guild.members.cache.find((u) => u.id === routed.bot.client.user.id)
-
-  // Error in username passed
-  if (!username || !discriminator) {
-    await routed.message.reply('This command requires a Username & Discriminator, like this (__But with no @__) `emma#1366`')
-    return true
-  }
-
-  const targetUser = routed.message.guild.members.cache.find((m) => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
+  const kieraInGuild = routed.message.guild.members.cache.get(routed.bot.client.user.id)
+  const targetUser = await routed.message.guild.members.fetch(routed.v.o.user)
 
   // Could not find user
   if (!targetUser) {
-    await routed.message.reply(`Could not find the requested user, make sure you're searching based off their username and not nickname.`)
+    await routed.message.reply(routed.$render('Moderate.Error.CouldNotFindUserSnowflake'))
     return true
   }
 
   // Block trying to call upon yourself
-  if (targetUser.id === routed.user.id) {
-    await routed.message.reply('Cannot call the command upon yourself!')
+  if (targetUser.id === routed.author.id) {
+    await routed.message.reply(routed.$render('Moderate.Error.CannotCallCommandOnSelf'))
     return true
   }
 
@@ -88,7 +80,7 @@ export async function mute(routed: RouterRouted) {
 
   // If they already have one active, let the caller of this command know
   if (hasActiveMuteAlready) {
-    await routed.message.reply('This user already has an active mute being tracked!')
+    await routed.message.reply(routed.$render('Moderate.Mute.AlreadyMuted'))
     return true
   }
 
@@ -101,7 +93,7 @@ export async function mute(routed: RouterRouted) {
   if (hasUntouchableRoles) {
     // Let user calling this command know that there's roles that cannot be removed due to those roles
     // holding the same or higher position than Kiera or the Nitro Booster role which is Discord managed
-    await routed.message.reply(`The following roles cannot be managed by this command & Kiera:\n\`\`\`${untouchableRoles.join(', ')}\`\`\``)
+    await routed.message.reply(routed.$render('Moderate.Mute.RolesUnableToManage', { untouchableRoles: untouchableRoles.join(', ') }))
   }
 
   // Now assign the user the mute role removing all previous as well
@@ -117,7 +109,7 @@ export async function mute(routed: RouterRouted) {
   const reason = await Utils.promptUserInput(routed, {
     // deleteFirstMessageAtEnd: true,
     // deleteResponseAtEnd: true,
-    firstMessage: `What is the reason for this mute? Enter your reason within the next 5 minutes in as many lines as required (edit not saved!) or when you're satisfied with your input send a simple message with \`:end\``
+    firstMessage: routed.$render('Moderate.Mute.ReasonForMutePrompt')
   })
 
   // Merge all reason input text
@@ -125,7 +117,7 @@ export async function mute(routed: RouterRouted) {
 
   // Ask for how long to apply this mute
   const muteLength = await Utils.promptUserInput(routed, {
-    firstMessage: 'How long should this mute last? Enter a time in hours.',
+    firstMessage: routed.$render('Moderate.Mute.LengthForMutePrompt'),
     maxToCollect: 1
   })
   const muteLenthString = muteLength.first().cleanContent
@@ -137,12 +129,12 @@ export async function mute(routed: RouterRouted) {
     expectedValidCancel: 'no',
     deleteFirstMessageAtEnd: true,
     deleteResponseAtEnd: true,
-    firstMessage: 'Are you sure you wish to apply this mute? Reply with **yes** to confirm within the next 60 seconds.',
-    onTimeoutErrorMessage: 'Cancelled Mute'
+    firstMessage: routed.$render('Moderate.Mute.ConfirmMutePrompt'),
+    onTimeoutErrorMessage: routed.$render('Moderate.Mute.CancelledMute')
   })
 
   if (!confirmed) {
-    await routed.message.reply(`Cancelled Mute`)
+    await routed.message.reply(routed.$render('Moderate.Mute.CancelledMute'))
     return true // Stop here
   }
 
@@ -150,9 +142,7 @@ export async function mute(routed: RouterRouted) {
     await targetUser.roles.remove(rolesToRemove.map((r) => r.id))
     await targetUser.roles.add(muteRole)
   } catch (error) {
-    await routed.message.reply(
-      `Failed to make mute changes due to a critical issue! This may require further investigation. If you need support on this please visit https://kierabot.xyz/support`
-    )
+    await routed.message.reply(routed.$render('Generic.Error.Internal'))
     console.log(`Mod:Mute => Failed to make mute changes`, error)
   }
 
@@ -163,7 +153,7 @@ export async function mute(routed: RouterRouted) {
     nickname: targetUser.nickname,
     serverID: routed.message.guild.id,
     reason: routed.v.o.reason || reasonCombined || '<blank>',
-    mutedById: routed.user.id,
+    mutedById: routed.author.id,
     mutedByUsername: routed.user.username,
     mutedByDiscriminator: routed.user.discriminator,
     removeAt: muteLengthIsNumber ? Date.now() + parseFloat(muteLenthString) * 3600000 : undefined,
@@ -176,39 +166,39 @@ export async function mute(routed: RouterRouted) {
   await routed.bot.DB.add('muted-users', mutedUserRecord)
 
   // Reponse to command caller
-  var response = `:mute: **Muted User**\nUser = \`${routed.v.o.user}\`\nReason = \`${mutedUserRecord.reason}\`\nRoles Preserved = \`${mutedUserRecord.roles
-    .map((r) => r.name)
-    .join(', ')}\``
-  response += muteLengthIsNumber ? `\nMute Length = \`${muteLenthString} hrs\`` : ''
-
-  await routed.message.channel.send(response)
+  await routed.message.channel.send(
+    routed.$render('Moderate.Mute.New', {
+      id: targetUser.id,
+      username: targetUser.user.username,
+      discriminator: targetUser.user.discriminator,
+      removeAt: new Date(mutedUserRecord.removeAt).toUTCString(),
+      reason: mutedUserRecord.reason,
+      mutedBy: Utils.User.buildUserChatAt(
+        new TrackedUser({ username: mutedUserRecord.mutedByUsername, discriminator: mutedUserRecord.mutedByDiscriminator }),
+        Utils.User.UserRefType.usernameFull
+      ),
+      rolesPreserved: mutedUserRecord.roles.map((r) => r.name).join(' ')
+    })
+  )
   return true
 }
 
 export async function unMute(routed: RouterRouted) {
   const muteRole = routed.message.guild.roles.cache.find((r) => r.name === 'Temporary Mute')
-  const regex = XRegex('^((?<username>(?!@|#|:|`).*)\\#(?<discriminator>[0-9]{4,5}))$', 'i')
-  const match = XRegex.exec(routed.v.o.user, regex)
-  const username = match['username']
-  const discriminator = match['discriminator']
-
-  // Error in username passed
-  if (!username || !discriminator) {
-    await routed.message.reply('This command requires a Username & Discriminator, like this (__But with no @__) `emma#1366`')
-    return true
-  }
-
-  const targetUser = routed.message.guild.members.cache.find((m) => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
+  const targetUser = await routed.message.guild.members
+    .fetch(routed.v.o.user)
+    .then((u) => u)
+    .catch((e) => null)
 
   // Could not find user
   if (!targetUser) {
-    await routed.message.reply(`Could not find the requested user, make sure you're searching based off their username and not nickname.`)
+    await routed.message.reply(routed.$render('Moderate.Error.CouldNotFindUserSnowflake'))
     return true
   }
 
   // Block trying to call upon yourself
-  if (targetUser.id === routed.user.id) {
-    await routed.message.reply('Cannot call the command upon yourself!')
+  if (targetUser.id === routed.author.id) {
+    await routed.message.reply(routed.$render('Moderate.Error.CannotCallCommandOnSelf'))
     return true
   }
 
@@ -218,7 +208,7 @@ export async function unMute(routed: RouterRouted) {
   )
 
   if (!mutedUserRecord._id) {
-    await routed.message.reply('Could not find an active mute record for this user!')
+    await routed.message.reply(routed.$render('Moderate.Error.CouldNotFindActiveMuteForUser'))
     return true
   }
 
@@ -229,7 +219,7 @@ export async function unMute(routed: RouterRouted) {
     {
       $set: {
         active: false,
-        removedBy: routed.user.id,
+        removedBy: routed.author.id,
         removedAt: Date.now()
       }
     },
@@ -241,8 +231,36 @@ export async function unMute(routed: RouterRouted) {
   await targetUser.roles.add(mutedUserRecord.roles.map((r) => r.id))
 
   await routed.message.channel.send(
-    `:mute: **UnMuted User**\nUser = \`${routed.v.o.user}\`\nReason = \`${mutedUserRecord.reason}\`\nRoles Restored = \`${mutedUserRecord.roles.map((r) => r.name).join(' ')}\``
+    targetUser
+      ? routed.$render('Moderate.Unmute.EntryUnmute', {
+          id: targetUser.id,
+          username: targetUser.user.username,
+          discriminator: targetUser.user.discriminator,
+          dateFormatted: new Date(mutedUserRecord.timestamp).toUTCString(),
+          removeAt: new Date(mutedUserRecord.removeAt).toUTCString(),
+          removedAt: new Date(Date.now()).toUTCString(),
+          reason: mutedUserRecord.reason,
+          mutedBy: Utils.User.buildUserChatAt(
+            new TrackedUser({ username: mutedUserRecord.mutedByUsername, discriminator: mutedUserRecord.mutedByDiscriminator }),
+            Utils.User.UserRefType.usernameFull
+          ),
+          rolesRestored: mutedUserRecord.roles.map((r) => r.name).join(' ')
+        })
+      : routed.$render('Moderate.Unmute.EntryUnmute', {
+          id: mutedUserRecord.id,
+          username: mutedUserRecord.username,
+          discriminator: mutedUserRecord.discriminator,
+          dateFormatted: new Date(mutedUserRecord.timestamp).toUTCString(),
+          removeAt: new Date(mutedUserRecord.removeAt).toUTCString(),
+          removedAt: new Date(Date.now()).toUTCString(),
+          reason: mutedUserRecord.reason,
+          mutedBy: Utils.User.buildUserChatAt(
+            new TrackedUser({ username: mutedUserRecord.mutedByUsername, discriminator: mutedUserRecord.mutedByDiscriminator }),
+            Utils.User.UserRefType.usernameFull
+          )
+        })
   )
+
   return true
 }
 
@@ -250,76 +268,87 @@ export async function activeMutes(routed: RouterRouted) {
   const mutedRecordsRaw = await routed.bot.DB.getMultiple<TrackedMutedUser>('muted-users', { serverID: routed.message.guild.id, active: true })
   const mutedRecords = mutedRecordsRaw.map((m) => new TrackedMutedUser(m))
 
-  var response = `:mute: **Muted Users List**\n`
+  var response = ``
+  response += routed.$render('Moderate.Mute.ListLookup')
   response += '```'
-  mutedRecords.forEach((m) => {
-    const userOnServer = routed.message.guild.members.cache.find((u) => u.id === m.id)
-    const dateFormatted = new Date(m.timestamp)
+
+  for (let index = 0; index < mutedRecords.length; index++) {
+    const m = mutedRecords[index]
+
+    const userOnServer = await routed.message.guild.members.fetch(m.id)
     // If still on the server
-    if (userOnServer)
+    if (userOnServer) {
       response += routed.$render('Moderate.Mute.ListEntryUser', {
+        id: m.id,
         username: userOnServer.user.username,
         discriminator: userOnServer.user.discriminator,
-        dateFormatted: dateFormatted.toUTCString(),
+        dateFormatted: new Date(m.timestamp).toUTCString(),
+        removeAt: new Date(m.removeAt).toUTCString(),
         reason: m.reason,
         mutedBy: Utils.User.buildUserChatAt(new TrackedUser({ username: m.mutedByUsername, discriminator: m.mutedByDiscriminator }), Utils.User.UserRefType.usernameFull)
       })
-    else
+    } else {
       response += routed.$render('Moderate.Mute.ListEntryUser', {
+        id: m.id,
         username: m.username,
         discriminator: m.discriminator,
-        dateFormatted: dateFormatted.toUTCString(),
+        dateFormatted: new Date(m.timestamp).toUTCString(),
+        removeAt: new Date(m.removeAt).toUTCString(),
         reason: m.reason,
         mutedBy: Utils.User.buildUserChatAt(new TrackedUser({ username: m.mutedByUsername, discriminator: m.mutedByDiscriminator }), Utils.User.UserRefType.usernameFull)
       })
-  })
+    }
+  }
+
   response += '```'
 
   await routed.message.reply(response)
 }
 
 export async function lookupMutes(routed: RouterRouted) {
-  const regex = XRegex('^((?<username>(?!@|#|:|`).*)\\#(?<discriminator>[0-9]{4,5}))$', 'i')
-  const match = XRegex.exec(routed.v.o.user, regex)
-  const username = match['username']
-  const discriminator = match['discriminator']
-
-  // Error in username passed
-  if (!username || !discriminator) {
-    await routed.message.reply('This command requires a Username & Discriminator, like this (__But with no @__) `emma#1366`')
-    return true
-  }
-
-  const targetUser = routed.message.guild.members.cache.find((m) => m.user.username.toLocaleLowerCase() === username.toLocaleLowerCase() && m.user.discriminator === discriminator)
+  const targetUser = await routed.message.guild.members.fetch(routed.v.o.user)
   const mutedRecordsRaw = await routed.bot.DB.getMultiple<TrackedMutedUser>('muted-users', { serverID: routed.message.guild.id, id: targetUser.id })
 
   // Could not find user
   if (!mutedRecordsRaw) {
-    await routed.message.reply(`Could not find the requested user, make sure you're searching based off their username and not nickname.`)
+    await routed.message.reply(routed.$render('Moderate.Error.CouldNotFindUserSnowflake'))
     return true
   }
 
   // Block trying to call upon yourself
-  if (targetUser.id === routed.user.id) {
-    await routed.message.reply('Cannot call the command upon yourself!')
+  if (targetUser.id === routed.author.id) {
+    await routed.message.reply(routed.$render('Moderate.Error.CannotCallCommandOnSelf'))
     return true
   }
 
   const mutedRecords = mutedRecordsRaw.map((m) => new TrackedMutedUser(m))
 
-  var response = `:mute: **Muted User Lookup**\n`
+  var response = ``
+  response += routed.$render('Moderate.Mute.EntryLookup')
   response += '```'
   mutedRecords.forEach((m) => {
-    const dateFormatted = new Date(m.timestamp)
     // If still on the server
-    if (targetUser)
-      response += `${targetUser.user.username}#${targetUser.user.discriminator} (${m.active ? `Active` : 'Not-Active'})\n  ## Muted: ${dateFormatted.toUTCString()}\n  ## Reason: ${
-        m.reason
-      }\n\n`
-    else
-      response += `${m.username}#${m.discriminator} (${m.active ? `Active` : 'Not-Active'}) __(user left the server)__\n  ## Muted: ${dateFormatted.toUTCString()}\n  ## Reason: ${
-        m.reason
-      } ${!m.active ? `## Unmuted: ${m.removedAt}` : ``}\n\n`
+    if (targetUser) {
+      response += routed.$render('Moderate.Mute.ListEntryUser', {
+        id: m.id,
+        username: targetUser.user.username,
+        discriminator: targetUser.user.discriminator,
+        dateFormatted: new Date(m.timestamp).toUTCString(),
+        removeAt: new Date(m.removeAt).toUTCString(),
+        reason: m.reason,
+        mutedBy: Utils.User.buildUserChatAt(new TrackedUser({ username: m.mutedByUsername, discriminator: m.mutedByDiscriminator }), Utils.User.UserRefType.usernameFull)
+      })
+    } else {
+      response += routed.$render('Moderate.Mute.ListEntryUser', {
+        id: m.id,
+        username: m.username,
+        discriminator: m.discriminator,
+        dateFormatted: new Date(m.timestamp).toUTCString(),
+        removeAt: new Date(m.removeAt).toUTCString(),
+        reason: m.reason,
+        mutedBy: Utils.User.buildUserChatAt(new TrackedUser({ username: m.mutedByUsername, discriminator: m.mutedByDiscriminator }), Utils.User.UserRefType.usernameFull)
+      })
+    }
   })
   response += '```'
 

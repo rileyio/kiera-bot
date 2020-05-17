@@ -83,9 +83,6 @@ export default class Localization {
         return sb(targetString, data)
       }
     }
-    else {
-      console.log('Locale not available')
-    }
     // Fallback: en
     // return sb(dotProp.get(this.loaded['en'].strings, key), data)
     const templ = Handlebars.compile(dotProp.get(this.loaded['en'].strings, key))

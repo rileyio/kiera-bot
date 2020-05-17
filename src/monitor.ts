@@ -123,6 +123,7 @@ export class BotMonitor extends EventEmitter {
 
     // Create new Discord Client
     this.Bot.client = new Discord.Client({ ws: { intents: intents.toArray() } })
+    // this.Bot.client = new Discord.Client()
 
     // Waiting for Discord.js Ready Event to fire...
     this.Bot.Log.Bot.log('waiting for discord.js ready event...')
