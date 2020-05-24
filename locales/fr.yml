@@ -5,3 +5,11 @@ ChastiKey:
         - Un utilisateur avec ce nom d'utilisateur peut ne pas exister.
         - L'utilisateur peut avoir changé son nom d'utilisateur dans l'application
         ChastiKey.
+Decision:
+  Edit:
+    ConfirmResetAllConsumedFlags: Pour confirmer la réinitialisation de tous les drapeaux consommés pour cette décision, envoyez ** `oui` ** dans les 60 prochaines secondes!
+
+Generic:
+  Word:
+    UppercaseYes: "Oui"
+    UppercaseNo: "Non"

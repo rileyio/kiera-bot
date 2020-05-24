@@ -8,6 +8,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'Fun',
   controller: fetchDecisionLog,
+  description: 'Help.Decision.Log.Description',
   example: '{{prefix}}decision log id',
   name: 'decision-log',
   validate: '/decision:string/log:string/id=string',

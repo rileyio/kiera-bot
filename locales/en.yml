@@ -128,6 +128,33 @@ Help:
       Description: Link Discord account with ChastiKey App account
     RoleCounts:
       Description: List of ChastiKey Discord Roles & statistics
+  Decision:
+    UnblacklistUser:
+      Description: Remove user from Decision's Blacklist
+    BlacklistUser:
+      Description: Add user to Decision's Blacklist
+    ShowUserBlacklist:
+      Description: List users on Decision's Blacklist
+    UnwhitelistServer:
+      Description: Remove server from Decision's Server Whitelist
+    WhitelistServer:
+      Description: Add server to Decision's Whitelist
+    Log:
+      Description: Fetch the last 5 decision log entries
+    New:
+      Description: Create new Decision roll
+    NewEntry:
+      Description: Add new outcome to Decision roll
+    SetConsumeMode:
+      Description: Set consume mode for Decision roll
+    ResetConsumed:
+      Description: Set reset frequency (in seconds) of consumed Decision outcomes
+    GenerateNewID:
+      Description: Create a new Decision unique ID for your roll
+    Roll:
+      Description: Roll premade Decision
+    RollRealtime:
+      Description: Create & Roll a 1 time Decision roll
   Moderate:
     MuteUser:
       Description: Apply `Tempoary Mute` role to user & preserve roles
@@ -141,7 +168,7 @@ Help:
 Decision:
   Edit:
     NewQuestionAdded: |-
-      New question added (id: {{id}}`)
+      New Decision roll added (id: `{{id}}`)
       Enter your options using `!decision {{id}} add "Decision result here"`
       Roll for an outcome using `!decision roll {{id}}`
     SetModeOptions: |-
@@ -151,7 +178,17 @@ Decision:
           (Make sure to set in seconds the reset time, Example: {{prefix}}decision "id" consume reset 60`)
       > `2` = Consume
           (Once the outcome has been used it will be out of rotation unless the author resets, Reset using: {{prefix}}decision "id" consume reset`)
-
+    NewEntry: Decision entry added {{added}}
+    NewIDAssigned: |-
+      A new Decision ID has been assigned to `{{oldID}}`
+      New Decision ID: **`{{newID}}`**
+    ConsumeModeSet: "Decision consume mode now set to: `{{change}}`"
+    SetConsumeReset: "Decision consume mode reset is not set to: {{value}}"
+    AllConsumedOutcomesReset: All decision outcome consumed flags have been reset!
+    AllConsumedOutcomesResetTo: All decision outcome consumed flags have been reset & the reset time is now `{{value}}`
+    ConfirmResetAllConsumedOutcomes: To confirm resetting all consumed Outcomes for this decision, send **`yes`** in the next 60 seconds!
+    ConfirmResetAllConsumedOutcomesReceived: Confirmation Received! Resetting all consumed flags for this decision... please wait
+    CancelledResetAllConsumedFlags: Decision outcome consumed flag reset cancelled! Reply not received before timeout (1 minute).
 Generic:
   Info:
     UserNotRegistered: You'll need to register with the bot first using `{{prefix}}register`
@@ -163,6 +200,10 @@ Generic:
 
   Warn:
     CommandUnderMaintenance: This command is currently under maintenance.
+
+  Word:
+    UppercaseYes: "Yes"
+    UppercaseNo: "No"
 
 Moderate:
   Error:
@@ -207,7 +248,7 @@ Moderate:
         ## Reason: {{reason}}
       ```
 
-  Unmute: 
+  Unmute:
     EntryUnmute: |-
       :mute: **UnMuted User**
       ```

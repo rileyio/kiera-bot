@@ -1,10 +1,8 @@
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
-import { TrackedUser } from '@/objects/user'
 import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import { ObjectID } from 'bson'
-import { sb, en } from '@/utils'
 import { TrackedDecisionLogEntry } from '@/objects/decision'
 import { CollectorFilter, Message, TextChannel } from 'discord.js'
 
@@ -13,6 +11,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: newDecision,
+    description: 'Help.Decision.New.Description',
     example: '{{prefix}}decision new "name"',
     name: 'decision-new',
     validate: '/decision:string/new:string/name=string',
@@ -22,6 +21,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: newDecisionEntry,
+    description: 'Help.Decision.NewEntry.Description',
     example: '{{prefix}}decision "id" add "Your decision entry here"',
     name: 'decision-new-option',
     validate: '/decision:string/id=string/add:string/text=string',
@@ -31,6 +31,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: setDecisionConsumeMode,
+    description: 'Help.Decision.SetConsumeMode.Description',
     example: '{{prefix}}decision "id" consume mode 0',
     name: 'decision-set-consume-mode',
     validate: '/decision:string/id=string/consume:string/mode:string/setting=number',
@@ -40,6 +41,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: setConsumeReset,
+    description: 'Help.Decision.ResetConsumed.Description',
     example: '{{prefix}}decision "id" consume reset 0',
     name: 'decision-set-consume-reset',
     validate: '/decision:string/id=string/consume:string/reset:string/value?=number',
@@ -49,6 +51,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: generateNewDecisionID,
+    description: 'Help.Decision.GenerateNewID.Description',
     example: '{{prefix}}decision "oldID" new id',
     name: 'decision-new-decision-id',
     validate: '/decision:string/oldid=string/new:string/id:string',
@@ -88,7 +91,7 @@ export async function newDecisionEntry(routed: RouterRouted) {
     var decision = new TrackedDecision(decisionFromDB)
     decision.options.push(new TrackedDecisionOption({ text: routed.v.o.text }))
     await routed.bot.DB.update('decision', { _id: decision._id }, decision)
-    await routed.message.reply(`Decision entry added \`${routed.v.o.text}\``)
+    await routed.message.reply(routed.$render('Decision.Edit.NewEntry', { added: routed.v.o.text }))
     return true
   }
   return false
@@ -124,7 +127,7 @@ export async function generateNewDecisionID(routed: RouterRouted) {
     )
 
     // Notify user via DM of the new ID
-    await routed.message.author.send(`A new Decision ID has been assigned to \`${oldID.toString()}\`\n\nNew Decision ID: **\`${newID.toString()}\`**`)
+    await routed.message.author.send(routed.$render('Decision.Edit.NewIDAssigned', { oldID: oldID.toString(), newID: newID.toString() }))
     return true
   }
 
@@ -156,7 +159,7 @@ export async function setDecisionConsumeMode(routed: RouterRouted) {
     }
 
     // If it gets this far confirm change
-    await routed.message.reply(`Decision consume mode now set (\`${routed.v.o.setting}\`)!`)
+    await routed.message.reply(routed.$render('Decision.Edit.ConsumeModeSet', { change: routed.v.o.setting }))
 
     return true
   }
@@ -174,13 +177,11 @@ export async function setConsumeReset(routed: RouterRouted) {
   if (decisionFromDB) {
     var decision = new TrackedDecision(decisionFromDB)
 
-    console.log('Value:', routed.v.o.value)
-
     // When a number ( >0 ) is passed as the value
     if (routed.v.o.value > 0 || Number.isNaN(Number(routed.v.o.value)) === false) {
       await routed.bot.DB.update('decision', { _id: decision._id }, { $set: { consumeReset: Number(routed.v.o.value) } }, { atomic: true })
       // If it gets this far confirm change
-      await routed.message.reply(`Decision consume mode reset now set (\`${routed.v.o.value}\`)!`)
+      await routed.message.reply(routed.$render('Decision.Edit.SetConsumeReset', { value: routed.v.o.value }))
       return true
     }
 
@@ -196,23 +197,24 @@ export async function setConsumeReset(routed: RouterRouted) {
         { atomic: true }
       )
 
-      await routed.message.reply(`All decision outcome consumed flags have been reset & the reset time is now \`${routed.v.o.value}\`!`)
+      await routed.message.reply(routed.$render('Decision.Edit.AllConsumedOutcomesResetTo', { value: routed.v.o.value }))
       return true
     }
 
     // When nothing is passed as the value
     if (routed.v.o.value === undefined) {
-      await routed.message.reply('To confirm resetting all consumed flags for this decision, send **`yes`** in the next 60 seconds!')
+      await routed.message.reply(routed.$render('Decision.Edit.ConfirmResetAllConsumedOutcomes'))
 
       try {
         // Filter to watch for the correct user & text to be sent (+ remove any whitespace)
-        const filter: CollectorFilter = (response: Message) => response.content.toLowerCase().replace(' ', '') === 'yes' && response.author.id === routed.user.id
+        const filter: CollectorFilter = (response: Message) =>
+          response.content.toLowerCase().replace(' ', '') === routed.$render('Generic.Word.UppercaseYes').toLowerCase() && response.author.id === routed.user.id
         // Message collector w/Filter - Wait up to a max of 1 min for exactly 1 reply from the required user
         const collected = await routed.message.channel.awaitMessages(filter, { max: 1, time: 60000, errors: ['time'] })
         // Delete the previous message at this stage
         await Utils.Channel.deleteMessage(routed.message.channel as TextChannel, collected.first().id)
         // Upon valid message collection, begin deletion - notify user
-        const pleaseWaitMessage = (await routed.message.reply('Confirmation Received! Resetting all consumed flags for this decision... please wait')) as Message
+        const pleaseWaitMessage = (await routed.message.reply(routed.$render('Decision.Edit.ConfirmResetAllConsumedOutcomesReceived'))) as Message
         // Reset all options consumed properties
         await routed.bot.DB.update(
           'decision',
@@ -222,10 +224,10 @@ export async function setConsumeReset(routed: RouterRouted) {
         )
         // Delete the previous message at this stage
         await Utils.Channel.deleteMessage(routed.message.channel as TextChannel, pleaseWaitMessage.id)
-        await routed.message.reply(`All decision outcome consumed flags have been reset!`)
+        await routed.message.reply(routed.$render('Decision.Edit.AllConsumedOutcomesReset'))
         return true
       } catch (error) {
-        await routed.message.channel.send(`Decision outcome consumed flag reset cancelled! Reply not received before timeout (1 minute).`)
+        await routed.message.channel.send(routed.$render('Decision.Edit.CancelledResetAllConsumedFlags'))
       }
     }
   }
