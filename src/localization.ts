@@ -74,7 +74,10 @@ export default class Localization {
     }
   }
 
-  public $render<T>(locale: string, key: string, data?: T) {
+  public $render<T>(locale: string, key: string, fallback?: boolean | object | T): string
+  public $render<T>(locale: string, key: string, data?: boolean | object | T) {
+    // Check if its fallback being passed for the 3rd arg
+    if (typeof data === 'boolean' && data === false) return
     // Check if locale exists
     if (this.loaded[locale]) {
       const targetString: string = dotProp.get(this.loaded[locale].strings, key)
@@ -87,5 +90,27 @@ export default class Localization {
     // return sb(dotProp.get(this.loaded['en'].strings, key), data)
     const templ = Handlebars.compile(dotProp.get(this.loaded['en'].strings, key))
     return templ(data)
+  }
+
+  public $localeExists(locale: string) {
+    return !!this.loaded[locale]
+  }
+
+  public $localeStringExists(locale: string, key: string) {
+    return !!dotProp.get(this.loaded[locale].strings, key)
+  }
+
+  public $locales() {
+    return Object.keys(this.loaded)
+      .map((l) =>
+        this.$localeStringExists(l, 'Locale.Code')
+          ? `\`${this.$render(l, 'Locale.Code', l === 'en' ? undefined : false)}\` - (\`${this.$render(l, 'Locale.Language', l === 'en' ? undefined : false)}\`) ${this.$render(
+              l,
+              'Locale.ShortDescription',
+              l === 'en' ? undefined : false
+            )}`
+          : ''
+      )
+      .join('\n')
   }
 }

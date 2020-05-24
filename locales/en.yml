@@ -1,3 +1,31 @@
+Locale:
+  Name: English
+  Language: English
+  Code: en
+  ShortDescription: International English and the default for Kiera.
+  Description: |-
+    "Generic English usage and the default for Kiera.
+
+    Contributors to this locale:
+      - Emma <gh: rileyIO, discord: emma#1366>
+
+    If you wish to contribute to this locale or help translate those you're fluent in, please contact `emma#1366` to confirm and request access to the target language: https://kierabot.xyz/translate Not all languages are listed, if there's one not preset, let Emma know and it will be added."
+  Error:
+    DoesNotExist: |-
+      That locale code (`{{locale}}`) does not match any that are available for Kiera. Try one of the following: 
+      {{{locales}}}
+    NoneSpecified: |-
+      Please select one of the following available locales:
+      {{{locales}}}
+  Success:
+    Set: |-
+      Locale `{{locale}}` set successfully! All responses (that are translated) will now appear in English.
+
+      Contributors to this locale:
+        - Emma <gh: rileyIO, discord: emma#1366>
+
+      If you wish to contribute to this Localization please reachout to emma#1366 and request access to that locale at: https://kierabot.xyz/translate
+
 Admin:
   BotManualRestart: "Bot restarting in `{{seconds}}` seconds.."
   CommandCategoriesList: >-
