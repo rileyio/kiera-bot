@@ -84,24 +84,48 @@ Stats:
       Statistiken für diesen Benutzer sind wieder aktiviert (auf allen Servern auf denen Kiera anwesend ist).
       
       Für mehr Informationen über Statistiken benutze bitte den `{{prefix}}stats about` Befehl
-Admin:
-  BotManualRestart: "Bot startet in `{{seconds}}` neu."
-  CommandCategoriesList: >-
-    Hier ist eine Übersicht darüber, wie viele Befehle sich unter welcher Kategorie befinden. Wenn du mehr über einen Befehl erfahren möchtest, wie etwa der Name um Beschränkungen zu setzen oder weitere Informationen abzufragen, nutze `{{prefix}}admin command category Fun`.
-    
-    ```
-    {{categories}}
-    ```
-  CommandCategoryCommands: >-
-    Folgende Befehle befinden sich in der Kategorie "{{category}}":
-    
-    ```
-    {{commands}}
-    ```
-BattleNet:
-  Error:
-    CharacterNotFound: Dieser Buchstabe wurde nicht gefunden!
 ChastiKey:
+  # Stats
+  Stats:
+    Lockee:
+      AdditionalLocksField: "Es gibt {{count}} zusätzliche "
+      LockStats: |-
+        Keyholder **`{{#if isSelfLocked}}Self Locked{{else}}{{keyholderName}}{{/if}}`** Status `Locked`
+        Verschlossen `{{lockedTime}}`
+        Gesamt gefrorene Zeit `{{totalTimeFrozen}}`
+        {{#unless isFixed}}
+          {{#if hasPickedCard}}
+            Letzter Zug `{{lastPickedTime}}` ago
+          {{else}}
+            Letzter Zug `has yet to pick`
+          {{/if}}
+          {{#if showNextPick}}
+            Nächster Zug `{{#if nextPickNow}}now{{else}}{{nextPickTime}}{{/if}}`
+          {{/if}}
+          Details {{#if isCumulative}}Cumulative{{else}}Non-Cumulative{{/if}} Rythmus `{{regularity}}` mit `{{turnsMade}}` gemachten Zügen.
+          Die letzten (`{{discardPileLength}}`) gezogenen Karten:
+          {{{discardPile}}}
+          {{#unless isHidden}}
+            Verbleibende Karten
+            {{{cardsRemaining}}}
+          {{/unless}}
+        {{/unless}}
+        
+      MainStats: |-
+        {{#if showAvgRating}}Durchschnittliche Bewertung `{{avgRating}}` | # Ratings `{{ratings}}`{{/if}}
+        Verschlossen für `{{lockedFor}}` Monate bis heute | `{{locksCompleted}}` abgeschlossene Locks
+        Längstes (abgeschlossenes) `{{longestLockCompleted}}`
+        Durchschnittlich gelockte Zeit (gesamt) `{{avgTimeLocked}}`
+        Zuletzt aktiv in ChastiKey App `{{lastActiveInApp}}` vor
+        Beigetreten vor `{{joinedDate}}` (`{{joinedDaysAgo}}` )
+        {{#if isVerified}}Verifiziert zu {{{verifiedTo}}}{{/if}}
+      NoActiveLocks: Keine aktiven Locks
+      NoActiveLocksTimeSinceLast: |-
+        Um weitere Statistiken sehen zu können, muss ein Lock aktiv sein.
+        Zeit seit dem letzten Lock `{{time}}`
+      Title: "{{#if isVerified}}{{{verifiedEmoji}}}{{/if}} `{{username}}` - Aktive Statistiken der Lockee Statistiken"
+    KeyholderNoLocks: "Dieser Benutzer hat bisher noch keine aktiven Lock als Keyholder, oder noch keine vergangenen Lockees, deshalb gibt es keine darstellbaren Daten."
+    UserRequestedNoStats: "Dieser Benutzer möchte, dass seine Statistiken privat bleiben."
   # Verify
   Verify:
     CkeckYourDMs: Bitte überprüfe deine Direktnachrichten, um weitere Instruktionen zu erhalten
@@ -122,10 +146,6 @@ ChastiKey:
   Ticker:
     IncorrectTimer: "*Scheint etwas nicht korrekt? Bitte kontaktiere **Kevin**, der Entwickler von ChastiKey wenn irgendwelche Statistiken falsch erscheinen*"
     InvalidOverrideType: "Inkorrekter Überschreibungs-Typ, bitte nutze: (1) Keyholder, (2) Lockee, (3) Beide"
-  # Stats
-  Stats:
-    KeyholderNoLocks: "Dieser Benutzer hat bisher noch keine aktiven Lock als Keyholder, oder noch keine vergangenen Lockees, deshalb gibt es keine darstellbaren Daten."
-    UserRequestedNoStats: "Dieser Benutzer möchte, dass seine Statistiken privat bleiben."
   # Errors
   Error:
     KeyholderOrAboveRoleRequired: "Hierfür wird die Keyholder-Rolle oder höher benötigt."
@@ -137,11 +157,77 @@ ChastiKey:
   # Administrative Tasks
   Admin:
     RefreshTriggered: Manuelle Aktualisierung der Statistiken wurde gestartet.
+Moderate:
+  Mute:
+    AlreadyMuted: Dieser Benutzer hat bereits eine aktive Stummschaltung, die verfolgt wird.
+    CancelledMute: Stummschaltung abgebrochen
+    ConfirmMutePrompt: "Sind Sie sicher, dass Sie diese Stummschaltung anwenden möchten?\nBitte innerhalb der nächsten 60 Sekunden mit **Ja** antworten"
+    EntryLookup: ":mute: **Suche gestummten Benutzer**"
+    LengthForMutePrompt: Wie lange soll die Stummschaltung dauern? Zeit in Stunden angeben
+    ListEntryUser: |+
+      {{Username}}#{{discriminator}}
+      ## Gestummt: {{dateFormatted}}
+      ## Grund: {{reason}}
+      ## Gestummt von: {{mutedBy}}
+    ListEntryUserLeftServer: |+
+      {{username}}#{{discriminator}}__(Benutzer hat den Server verlassen)
+      ## Gestummt: {{dateFormatted}}
+      ## Grund: {{reason}}
+      ## Gestummt von: {{mutedBy}}
+    ListLookup: ":mute: **Liste gestummter Benutzer**"
+    New: |+
+      :mute: **Gestummter Benutzer**
+      ```
+      @{{username}}#{{discriminator}} id:{{id}}
+      ## Gestummt von: {{mutedBy}}
+        ## Entfernt: {{removeAt}}
+        ## Erhaltene Rollen: {{rolesPreserved}}
+        ## Grund: {{reason}}
+    ReasonForMutePrompt: Was ist der Grund für diese Stummschaltung? Geben Sie Ihren Grund innerhalb der nächsten 5 Minuten in so viele Zeilen wie nötig ein (Bearbeiten wird nicht gespeichert) oder wenn Sie mit Ihrer Eingabe zufrieden sind, senden Sie eine einfache Nachricht mit `:end`
+    RolesUnableToManage: |-
+      Die folgenden Rollen können nicht von Kiera und diesem Befehl verwaltet werden: ```
+      
+      {{untouchableRoles}}
+      ```
+  Error:
+    CannotCallCommandOnSelf: Du kannst diesen diesen Befehl nicht auf dich selbst anwenden!
+    CouldNotFindActiveMuteForUser: Es konnte keine aktive Stummschaltung für diesen Benutzer gefunden werden.
+    CouldNotFindUserSnowflake: Konnte den angeforderten Benutzer nicht finden, stelle sicher, dass du auf der Grundlage seines Discord Benutzerkonto suchst
+  Unmute:
+    EntryUnmute: |-
+      :mute: **Entstummter Benutzer**
+      ```
+      
+      @{{username}}#{{discriminator}} id:{{id}}
+        ## Gestummt: {{dateFormatted}}
+        ## Gestummt von: {{mutedBy}}
+        ## Entfernen: {{removeAt}}
+        ## Entfernt: {{removedAt}}
+        ## Gund: {{reason}}
+        ## Wiederhergestellte Rollen: {{rolesRestored}}
+Admin:
+  BotManualRestart: "Bot startet in `{{seconds}}` neu."
+  CommandCategoriesList: >-
+    Hier ist eine Übersicht darüber, wie viele Befehle sich unter welcher Kategorie befinden. Wenn du mehr über einen Befehl erfahren möchtest, wie etwa der Name um Beschränkungen zu setzen oder weitere Informationen abzufragen, nutze `{{prefix}}admin command category Fun`.
+    
+    ```
+    {{categories}}
+    ```
+  CommandCategoryCommands: >-
+    Folgende Befehle befinden sich in der Kategorie "{{category}}":
+    
+    ```
+    {{commands}}
+    ```
+BattleNet:
+  Error:
+    CharacterNotFound: Dieser Buchstabe wurde nicht gefunden!
 Generic:
   Error:
     CommandDisabledInChannel: Der `{{command}}` Befehl ist in diesem Raum nicht erlaubt.
     CommandExactMatchFailedOptions: "***Tipp:** Du kannst:* `{{prefix}}help {{command}}` verwenden, Hier sind einige Beispiele, die diesen Befehl verwenden:"
     HelpCommandMissing: Leider ist für diesen Befehl noch kein Hilfstext verfügbar.
+    Internal: Befehl aufgrund einer internen Angelegenheit nicht ausgeführt! Dies kann weitere Untersuchungen erfordern. Wenn Sie dabei Unterstützung benötigen, besuchen Sie bitte https://kierabot.xyz/support
   Warn:
     CommandUnderMaintenance: Dieser Befehl ist aufgrund von Wartungsarbeiten vorübergehend nicht verfügbar.
   Info:
@@ -153,9 +239,9 @@ Help:
     ChastiKeyRefresh:
       Description: Aktualisierung des Chastikey Cache auslösen
     CommandCategories:
-      Description: ""
+      Description: Liste der Befehlskategorien abrufen
     CategoryCommands:
-      Description: ""
+      Description: Liste der Kategorien-Befehle abrufen
     CommandRestrict:
       Description: Verwendung von Befehlen einschränken
     CheckPermissions:
@@ -166,6 +252,31 @@ Help:
       Description: Überprüfe den Ping/ die Latenz von Kiera
     BotRestart:
       Description: Neustart von Kiera
+    BotStatistics:
+      Description: Allgemeine Bot-Laufstatistiken
+    DeleteUser:
+      Description: Entfernt Benutzer aus Kieras Datenbank
+  BattleNet:
+    D3CurrentSeason:
+      Description: Aktuelle Diablo 3 Saison abrufen
+    D3ProfileLookup:
+      Description: Benutzerprofil von Diablo 3 abrufen
+  ChastiKey:
+    RecoverCombinations:
+      Description: Abrufen deiner abgeschlossenen Schlosskombinationen
+    Verify:
+      Description: Verknüpfen des "Discord" Kontos mit der "ChastiKey App".
+    RoleCounts:
+      Description: Liste der ChastiKey Discord Rollen und Statistiken
+  Moderate:
+    MuteUser:
+      Description: "`Temporary Mute` Rolle auf Benutzer anwenden und Rollen beibehalten"
+    UnmuteUser:
+      Description: Entstumme gestummte user und stelle dreren Rollen wieder her
+    MuteListMuted:
+      Description: Liste der derzeit gestummten Benutzer
+    MuteLookup:
+      Description: Suche aktive Stummschaltung für Benutzer
 Poll:
   Warn:
     DifferentAuthorID: Nur der Ersteller dieser Umfrage darf den {{prefix}} Befehl aufrufen!
@@ -213,18 +324,6 @@ Poll:
   Interaction:
     VoteCast: Stimme abgegeben!
     VoteRemoved: Stimme zurückgezogen!
-Moderate:
-  Mute:
-    ListEntryUser: |-
-      {{Username}}#{{discriminator}}
-      ## Gestummt: {{dateFormatted}}
-      ## Grund: {{reason}}
-      ## Gestummt von: {{mutedBy}}
-    ListEntryUserLeftServer: |-
-      {{username}}#{{discriminator}}__(Benutzer hat den Server verlassen)
-      ## Gestummt: {{dateFormatted}}
-      ## Grund: {{reason}}
-      ## Gestummt von: {{mutedBy}}
 Decision:
   Edit:
     NewQuestionAdded: |-
