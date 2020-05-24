@@ -1,134 +1,3 @@
-Admin:
-  BotManualRestart: "De bot herstart in `{{seconds}}` seconden.. "
-  CommandCategoriesList: >-
-    Dit is een overzicht van hoeveel commando's er zijn onder elke categorie. Als je dieper wilt zoeken of een commando wilt vinden om een beperking in te stellen of info te krijgen, type {{prefix}}admin command category Fun.
-    ```
-    {{categories}}
-    ```
-  CommandCategoryCommands: >-
-    De volgende commando's zijn beschikbaar in de categorie {{category}}:
-    
-    ```
-    {{commands}}
-    ```
-ChastiKey:
-  # Administrative Tasks
-  Admin:
-    RefreshTriggered: Statistieken handmatig vernieuwen gestart
-  # Errors
-  Error:
-    UserNotFound: "Gebruiker niet gevonden! De eigenaar van het ChastiKey account moet eerst `{{prefix}}ck verify` uitvoeren, voordat je hiermee verder kunt. "
-    UserLookupErrorOrNotFound: >-
-      Kan deze opdracht niet uitvoeren! Enkele mogelijke redenen hiervoor:
-      - Een gebruiker met deze gebruikersnaam bestaat niet
-      - De gebruiker heeft zijn/haar naam in de Chastikey App gewijzigd
-    KeyholderOrAboveRoleRequired: "Om dit commando voor een andere gebruiker uit te voeren, moet je de rol van Keyholder of hoger hebben."
-  # Ticker
-  Ticker:
-    InvalidOverrideType: "Verkeerd type, gebruik (1) Keyholder, (2) Lockee, (3) Beide"
-    IncorrectTimer: "*Klopt er iets niet in deze gegevens? Neem dan contact op met **Kevin**, de maker van Chastikey als je gegevens niet kloppen* "
-  # Stats
-  Stats:
-    KeyholderNoLocks: "De opgevraagde gebruiker lijkt geen actieve locks of eerdere lockees te hebben, en dus zijn er ook geen statistieken om weer te geven."
-    UserRequestedNoStats: "Deze gebruiker wil zijn statistieken graag privé houden."
-  # Verify
-  Verify:
-    NotSuccessfulUsingReason: "{{reason}}"
-    DMInstructions: |-
-      Scan deze code in de Chastikey App, zoals je ook een lock laadt (en dat binnen 5 minuten), daarmee koppel je je Discordaccount aan ChastiKey.
-      Als je Chastikey-account minder dan 15-30 minuten geleden aangemaakt is, kan het ook zo lang duren voordat Kiera alle gegevens heeft ontvangen.
-    CkeckYourDMs: "Kijk in je DM's van Kiera voor verdere instructies. "
-    FastForward: "Je account is geverifieerd! Het kan **tot een kwartier** duren voordat alle gegevens beschikbaar zijn. "
-    # 1366`
-    PreviouslyCompleted: Je account is al geverifieerd! Als er iets mis is, neem dan contact op met `emma.
-    VerifyRequired: |-
-      Voor deze opdracht moet je account geverifieerd zijn met Chastikey. Gebruik hiervoor het volgende commando: 
-      `!ck verify`
-      
-      Als je dit al hebt gedaan in de afgelopen 15 minuten, dan kun je de verificatie versnellen door `!ck verify` nogmaals uit te voeren
-Generic:
-  Warn:
-    CommandUnderMaintenance: Deze opdracht kan nu niet gebruikt worden vanwege onderhoud.
-  Info:
-    UserNotRegistered: Je moet je eerst bij de bot registreren met `{{prefix}}register`
-  Error:
-    CommandExactMatchFailedOptions: "**Hint.** Het commando is:* `{{prefix}}help {{command}}`, hier een paar voorbeelden van dit commando: "
-    CommandDisabledInChannel: Het commando  `{{command}}` is niet toegestaan in dit kanaal.
-    HelpCommandMissing: Helaas is er nog geen helptekst beschikbaar voor dit commando
-BattleNet:
-  Error:
-    CharacterNotFound: Karakter niet gevonden!
-Decision:
-  Edit:
-    NewQuestionAdded: |-
-      Nieuwe vraag toegevoegd (id: {{id}}`)
-      Voeg de opties toe met `!decision {{id}} add "Uitkomst van de decision"`
-      Om een uitkomst te krijgen gebruik je `!decision roll {{id}}`
-    SetModeOptions: |-
-      Beschikbare opties zijn: 
-      > `0` = Standaard (Geen limieten)
-      > `1` = Tijdelijk verwijderen 
-      (Let erop dat de reset-tijd in seconden is, bijvoorbeeld {{prefix}}decision "id" consume reset 60`)
-      > `2` = Verwijderen
-      (Als een uitslag is geweest, dan wordt hij niet meer gebruikt totdat de eigenaar dit reset, je reset dit door:  {{prefix}}decision "id" consume reset`)
-Moderate:
-  Mute:
-    ListEntryUser: |-
-      {{username}}#{{discriminator}}
-        ## Muted: {{dateFormatted}}
-        ## Reden: {{reason}}
-        ## Muted door: {{mutedBy}}
-    ListEntryUserLeftServer: |-
-      {{username}}#{{discriminator}} __(user heeft de server verlaten)__
-       ## Muted: {{dateFormatted}}
-       ## Reden: {{reason}}
-       ## Muted door: {{mutedBy}}
-Poll:
-  New: |-
-    Nieuwe Poll ID:
-      `{{id}}`
-    
-    De volgende opties zijn beschikbaar om je poll aan te maken:
-      - public (Default: true) **`true`** | **`false`** - Is de poll zichtbaar op de website of niet
-      - open (Default: true) **`true`** | **`false`** - Of de user mag stemmen op de poll
-      - question: `{{question}}`
-    
-    Gebruik deze commando's om de bovenstaande opties te wijzigen:
-      `{{prefix}}poll edit {{id}} open false`
-      `{{prefix}}poll edit {{id}} public false`
-      `{{prefix}}poll edit {{id}} title "Hier je titel"`
-      `{{prefix}}poll edit {{id}} question "Hier je vraag"`
-      `{{prefix}}poll edit {{id}} footer "Hier je eindtekst"`
-    
-    Start de poll met (hiermee krijg je de tekst waarop mensen stemmen):
-    `{{prefix}}poll start {{id}}`
-    
-    Stop de poll met:
-      `{{prefix}}poll stop {{id}}`
-  Edit:
-    OptionAdded: |-
-      Poll optie is toegevoegd
-        Emoticon: {{emoji}}
-        Omschrijving: {{description}}
-      Om deze optie te verwijderen "{{prefix}}poll remove option {{id}} {{optionID}}"
-    OptionRemoved: Poll optie {{optionID}} verwijderd!
-  Error:
-    NotFoundInDB: Deze poll bestaat niet in de database!
-    OptionNotFound: Poll optie  {{optionID}} niet gevonden!
-    PropertyNotFound: Deze poll optie bestaat niet!
-    PropertyUpdated: |-
-      Poll ID `{{id}}` property `{{property}}` geupdated!
-      
-      **Van:** `{{from}}` 🡒 **Naar:** `{{to}}`
-  Interaction:
-    VoteCast: Je stem is ingediend!
-    VoteRemoved: Je stem is ingetrokken!
-  Info:
-    Expired: Je stem is niet ingediend! De poll is verlopen.
-    RandomVoteSelected: "Random: {{emoji}} door: {{by}}"
-    Ended: Deze poll is beëindigd!
-  Warn:
-    DifferentAuthorID: Alleen de eigenaar van de poll mag {{prefix}} dit commando gebruiken!
 Stats:
   Info:
     About: |-
@@ -159,6 +28,11 @@ Stats:
       - Voor de server: op heel de server worden geen statistieken meer bewaard (inclusief kanalen en gebruikers). 
       
   Channel:
+    DeletionCancelled: Wissen statistieken van dit kanaal niet doorgevoerd. Antwoord niet ontvangen binnen 60 seconden.
+    DeletionConfirm: Weet je zeker dat je alle statistieken van dit kanaal wilt wissen? Verzend dan **`yes`** binnen 60 seconden!
+    DeletionConfirmReceived: Bevestiging ontvangen! De statistieken van dit kanaal worden gewist. Even geduld.
+    DeletionDeleted: "Statistieken `(count: {{count}})` van dit kanaal zijn gewist!"
+    DeletionNoStats: Er zijn geen statistieken opgeslagen voor dit kanaal!
     Disabled: |-
       Alle statistieken voor dit kanaal zijn nu **uitgeschakeld**.
       
@@ -168,17 +42,17 @@ Stats:
       - Het commando `{{prefix}}stats channel` is nu uitgeschakeld voor dit kanaal.
       
       Voor meer informatie over statistieken, gebruik `{{prefix}}stats about` 
+    DisabledInfo: "De statistieken voor dit kanaal zijn op verzoek uitgeschakeld. (Let op: ze kunnen voorkomen in server- of gebruikers-statistieken totdat alle statistieken van dit kanaal zijn gewist)"
     Enabled: |-
       Statistieken voor dit kanaal zijn nu **ingeschakeld**. 
       
       Voor meer informatie over statistieken, gebruik `{{prefix}}stats about`.
-    DeletionConfirm: Weet je zeker dat je alle statistieken van dit kanaal wilt wissen? Verzend dan **`yes`** binnen 60 seconden!
-    DeletionConfirmReceived: Bevestiging ontvangen! De statistieken van dit kanaal worden gewist. Even geduld.
-    DeletionDeleted: "Statistieken `(count: {{count}})` van dit kanaal zijn gewist!"
-    DeletionCancelled: Wissen statistieken van dit kanaal niet doorgevoerd. Antwoord niet ontvangen binnen 60 seconden.
-    DeletionNoStats: Er zijn geen statistieken opgeslagen voor dit kanaal!
-    DisabledInfo: "De statistieken voor dit kanaal zijn op verzoek uitgeschakeld. (Let op: ze kunnen voorkomen in server- of gebruikers-statistieken totdat alle statistieken van dit kanaal zijn gewist)"
   Server:
+    DeletionCancelled: Wissen statistieken van dit kanaal niet doorgevoerd. Antwoord niet ontvangen binnen 60 seconden.
+    DeletionConfirm: Weet je zeker dat je alle statistieken van deze server wilt wissen? Verzend dan **`yes`** binnen 60 seconden!
+    DeletionConfirmReceived: Bevestiging ontvangen! De statistieken van deze server worden gewist. Even geduld.
+    DeletionDeleted: "Statistieken `(count: {{count}})` van deze server zijn gewist! "
+    DeletionNoStats: Er zijn geen statistieken opgeslagen voor deze server!
     Disabled: |-
       Alle statistieken voor deze server zijn nu **uitgeschakeld**
       
@@ -188,16 +62,11 @@ Stats:
       - Het commando `{{prefix}}stats server` is nu uitgeschakeld.
       
       Voor meer informatie over statistieken, gebruik `{{prefix}}stats about` 
+    DisabledInfo: "De statistieken van deze server zijn op verzoek uitgeschakeld. (Let op: ze kunnen voorkomen in kanaal- of gebruikers-statistieken totdat alle statistieken van dit kanaal zijn gewist)"
     Enabled: |-
       Statistieken voor deze server zijn nu **ingeschakeld**. 
       
       Voor meer informatie over statistieken, gebruik `{{prefix}}stats about`.
-    DeletionConfirm: Weet je zeker dat je alle statistieken van deze server wilt wissen? Verzend dan **`yes`** binnen 60 seconden!
-    DeletionConfirmReceived: Bevestiging ontvangen! De statistieken van deze server worden gewist. Even geduld.
-    DeletionDeleted: "Statistieken `(count: {{count}})` van deze server zijn gewist! "
-    DeletionCancelled: Wissen statistieken van dit kanaal niet doorgevoerd. Antwoord niet ontvangen binnen 60 seconden.
-    DeletionNoStats: Er zijn geen statistieken opgeslagen voor deze server!
-    DisabledInfo: "De statistieken van deze server zijn op verzoek uitgeschakeld. (Let op: ze kunnen voorkomen in kanaal- of gebruikers-statistieken totdat alle statistieken van dit kanaal zijn gewist)"
   User:
     Disabled: |-
       Alle statistieken voor je account zijn nu **uitgeschakeld** (voor alle servers waarop Kiera actief is)
@@ -215,6 +84,158 @@ Stats:
       De statistieken voor je account zijn weer ingeschakeld (op alle servers waar Kiera actief is)
       
       Voor meer informatie over statistieken, gebruik het commando  `{{prefix}}stats about`.
+Admin:
+  BotManualRestart: "De bot herstart in `{{seconds}}` seconden.. "
+  CommandCategoriesList: >-
+    Dit is een overzicht van hoeveel commando's er zijn onder elke categorie. Als je dieper wilt zoeken of een commando wilt vinden om een beperking in te stellen of info te krijgen, type {{prefix}}admin command category Fun.
+    ```
+    {{categories}}
+    ```
+  CommandCategoryCommands: >-
+    De volgende commando's zijn beschikbaar in de categorie {{category}}:
+    
+    ```
+    {{commands}}
+    ```
+BattleNet:
+  Error:
+    CharacterNotFound: Karakter niet gevonden!
+ChastiKey:
+  # Verify
+  Verify:
+    CkeckYourDMs: "Kijk in je DM's van Kiera voor verdere instructies. "
+    DMInstructions: |-
+      Scan deze code in de Chastikey App, zoals je ook een lock laadt (en dat binnen 5 minuten), daarmee koppel je je Discordaccount aan ChastiKey.
+      Als je Chastikey-account minder dan 15-30 minuten geleden aangemaakt is, kan het ook zo lang duren voordat Kiera alle gegevens heeft ontvangen.
+    FastForward: "Je account is geverifieerd! Het kan **tot een kwartier** duren voordat alle gegevens beschikbaar zijn. "
+    NotSuccessfulUsingReason: "{{reason}}"
+    PreviouslyCompleted: Je account is al geverifieerd! Als er iets mis is, neem dan contact op met `emma.
+    VerifyRequired: |-
+      Voor deze opdracht moet je account geverifieerd zijn met Chastikey. Gebruik hiervoor het volgende commando: 
+      `!ck verify`
+      
+      Als je dit al hebt gedaan in de afgelopen 15 minuten, dan kun je de verificatie versnellen door `!ck verify` nogmaals uit te voeren
+  # Ticker
+  Ticker:
+    IncorrectTimer: "*Klopt er iets niet in deze gegevens? Neem dan contact op met **Kevin**, de maker van Chastikey als je gegevens niet kloppen* "
+    InvalidOverrideType: "Verkeerd type, gebruik (1) Keyholder, (2) Lockee, (3) Beide"
+  # Stats
+  Stats:
+    KeyholderNoLocks: "De opgevraagde gebruiker lijkt geen actieve locks of eerdere lockees te hebben, en dus zijn er ook geen statistieken om weer te geven."
+    Lockee:
+      Title: "Titel"
+    UserRequestedNoStats: "Deze gebruiker wil zijn statistieken graag privé houden."
+  # Errors
+  Error:
+    KeyholderOrAboveRoleRequired: "Om dit commando voor een andere gebruiker uit te voeren, moet je de rol van Keyholder of hoger hebben."
+    UserLookupErrorOrNotFound: >-
+      Kan deze opdracht niet uitvoeren! Enkele mogelijke redenen hiervoor:
+      - Een gebruiker met deze gebruikersnaam bestaat niet
+      - De gebruiker heeft zijn/haar naam in de Chastikey App gewijzigd
+    UserNotFound: "Gebruiker niet gevonden! De eigenaar van het ChastiKey account moet eerst `{{prefix}}ck verify` uitvoeren, voordat je hiermee verder kunt. "
+  # Administrative Tasks
+  Admin:
+    RefreshTriggered: Statistieken handmatig vernieuwen gestart
+Generic:
+  Error:
+    CommandDisabledInChannel: Het commando  `{{command}}` is niet toegestaan in dit kanaal.
+    CommandExactMatchFailedOptions: "**Hint.** Het commando is:* `{{prefix}}help {{command}}`, hier een paar voorbeelden van dit commando: "
+    HelpCommandMissing: Helaas is er nog geen helptekst beschikbaar voor dit commando
+  Warn:
+    CommandUnderMaintenance: Deze opdracht kan nu niet gebruikt worden vanwege onderhoud.
+  Info:
+    UserNotRegistered: Je moet je eerst bij de bot registreren met `{{prefix}}register`
+Help:
+  Admin:
+    ChannelPurge:
+      Description: "Alle berichten in dit kanaal verwijderen"
+    ChastiKeyRefresh:
+      Description: Vernieuwen van Chastikey's data cache activeren
+    CommandCategories:
+      Description: Vraag lijst van commando-categorieën op
+    CategoryCommands:
+      Description: Vraag lijst van categorie commando's op
+    CommandRestrict:
+      Description: Beperk gebruik van commando's
+    CheckPermissions:
+      Description: Controleer jouw eigen en Kiera's rechten
+    BotVersion:
+      Description: Geef de huidige Kiera versie weer
+    BotPing:
+      Description: Vraag Kiera's Ping/Latency op
+    BotRestart:
+      Description: Herstart de Kiera bot applicatie
+Poll:
+  Warn:
+    DifferentAuthorID: Alleen de eigenaar van de poll mag {{prefix}} dit commando gebruiken!
+  Info:
+    Ended: Deze poll is beëindigd!
+    Expired: Je stem is niet ingediend! De poll is verlopen.
+    RandomVoteSelected: "Random: {{emoji}} door: {{by}}"
+  New: |-
+    Nieuwe Poll ID:
+      `{{id}}`
+    
+    De volgende opties zijn beschikbaar om je poll aan te maken:
+      - public (Default: true) **`true`** | **`false`** - Is de poll zichtbaar op de website of niet
+      - open (Default: true) **`true`** | **`false`** - Of de user mag stemmen op de poll
+      - question: `{{question}}`
+    
+    Gebruik deze commando's om de bovenstaande opties te wijzigen:
+      `{{prefix}}poll edit {{id}} open false`
+      `{{prefix}}poll edit {{id}} public false`
+      `{{prefix}}poll edit {{id}} title "Hier je titel"`
+      `{{prefix}}poll edit {{id}} question "Hier je vraag"`
+      `{{prefix}}poll edit {{id}} footer "Hier je eindtekst"`
+    
+    Start de poll met (hiermee krijg je de tekst waarop mensen stemmen):
+    `{{prefix}}poll start {{id}}`
+    
+    Stop de poll met:
+      `{{prefix}}poll stop {{id}}`
+  Error:
+    NotFoundInDB: Deze poll bestaat niet in de database!
+    OptionNotFound: Poll optie  {{optionID}} niet gevonden!
+    PropertyNotFound: Deze poll optie bestaat niet!
+    PropertyUpdated: |-
+      Poll ID `{{id}}` property `{{property}}` geupdated!
+      
+      **Van:** `{{from}}` 🡒 **Naar:** `{{to}}`
+  Edit:
+    OptionAdded: |-
+      Poll optie is toegevoegd
+        Emoticon: {{emoji}}
+        Omschrijving: {{description}}
+      Om deze optie te verwijderen "{{prefix}}poll remove option {{id}} {{optionID}}"
+    OptionRemoved: Poll optie {{optionID}} verwijderd!
+  Interaction:
+    VoteCast: Je stem is ingediend!
+    VoteRemoved: Je stem is ingetrokken!
+Moderate:
+  Mute:
+    ListEntryUser: |+
+      {{username}}#{{discriminator}}
+        ## Muted: {{dateFormatted}}
+        ## Reden: {{reason}}
+        ## Muted door: {{mutedBy}}
+    ListEntryUserLeftServer: |+
+      {{username}}#{{discriminator}} __(user heeft de server verlaten)__
+       ## Muted: {{dateFormatted}}
+       ## Reden: {{reason}}
+       ## Muted door: {{mutedBy}}
+Decision:
+  Edit:
+    NewQuestionAdded: |-
+      Nieuwe vraag toegevoegd (id: {{id}}`)
+      Voeg de opties toe met `!decision {{id}} add "Uitkomst van de decision"`
+      Om een uitkomst te krijgen gebruik je `!decision roll {{id}}`
+    SetModeOptions: |-
+      Beschikbare opties zijn: 
+      > `0` = Standaard (Geen limieten)
+      > `1` = Tijdelijk verwijderen 
+      (Let erop dat de reset-tijd in seconden is, bijvoorbeeld {{prefix}}decision "id" consume reset 60`)
+      > `2` = Verwijderen
+      (Als een uitslag is geweest, dan wordt hij niet meer gebruikt totdat de eigenaar dit reset, je reset dit door:  {{prefix}}decision "id" consume reset`)
 System:
   Startup: |+
     :::::::::::::::::::::::::::::::::::::::::
@@ -236,23 +257,3 @@ System:
     
     =========================================
     Startup
-Help:
-  Admin:
-    ChannelPurge:
-      Description: "Alle berichten in dit kanaal verwijderen"
-    ChastiKeyRefresh:
-      Description: Vernieuwen van Chastikey's data cache activeren
-    CommandCategories:
-      Description: Vraag lijst van commando-categorieën op
-    CategoryCommands:
-      Description: Vraag lijst van categorie commando's op
-    CommandRestrict:
-      Description: Beperk gebruik van commando's
-    CheckPermissions:
-      Description: Controleer jouw eigen en Kiera's rechten
-    BotVersion:
-      Description: Geef de huidige Kiera versie weer
-    BotPing:
-      Description: Vraag Kiera's Ping/Latency op
-    BotRestart:
-      Description: Herstart de Kiera bot applicatie
