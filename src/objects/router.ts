@@ -176,6 +176,10 @@ export class RouterRouted {
     return this.bot.Localization.$localeExists(key)
   }
 
+  public $localeContributors(key: string) {
+    return this.bot.Localization.$localeContributors(this.user ? this.user.locale : 'en')
+  }
+
   public $locales() {
     return this.bot.Localization.$locales()
   }

@@ -6,10 +6,12 @@ Locale:
   Description: |-
     "Generic English usage and the default for Kiera.
 
-    Contributors to this locale:
-      - Emma <gh: rileyIO, discord: emma#1366>
+    {{contributors}}
 
-    If you wish to contribute to this locale or help translate those you're fluent in, please contact `emma#1366` to confirm and request access to the target language: https://kierabot.xyz/translate Not all languages are listed, if there's one not preset, let Emma know and it will be added."
+    If you wish to contribute to this locale or help translate those you're fluent in, please contact `emma#1366` to confirm and request access to the target language: `https://kierabot.xyz/translate` Not all languages are listed, if there's one not preset, let Emma know and it will be added."
+  Contributors: |-
+    Contributors to this locale:
+      - `Emma <gh: rileyIO, discord: emma#1366>`
   Error:
     DoesNotExist: |-
       That locale code (`{{locale}}`) does not match any that are available for Kiera. Try one of the following: 
@@ -21,10 +23,9 @@ Locale:
     Set: |-
       Locale `{{locale}}` set successfully! All responses (that are translated) will now appear in English.
 
-      Contributors to this locale:
-        - Emma <gh: rileyIO, discord: emma#1366>
+      {{contributors}}
 
-      If you wish to contribute to this Localization please reachout to emma#1366 and request access to that locale at: https://kierabot.xyz/translate
+      If you wish to contribute to this Localization please reachout to emma#1366 and request access to that locale at: `https://kierabot.xyz/translate`
 
 Admin:
   BotManualRestart: "Bot restarting in `{{seconds}}` seconds.."
@@ -224,7 +225,7 @@ Generic:
     CommandExactMatchFailedOptions: "***Hint:** You can type:* `{{prefix}}help {{command}}`, Here are some examples using this command:"
     CommandDisabledInChannel: The command `{{command}}` is not allowed in this channel.
     HelpCommandMissing: Unfortunately there's no help text for this command yet.
-    Internal: Failed to complete command due to an internal issue! This may require further investigation. If you need support on this please visit https://kierabot.xyz/support
+    Internal: Failed to complete command due to an internal issue! This may require further investigation. If you need support on this please visit `https://kierabot.xyz/support`
 
   Warn:
     CommandUnderMaintenance: This command is currently under maintenance.

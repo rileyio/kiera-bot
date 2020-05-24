@@ -129,6 +129,6 @@ export async function setUserLocale(routed: RouterRouted) {
 
   // Set user locale
   await routed.bot.DB.update<TrackedUser>('users', { id: routed.author.id }, { $set: { locale: routed.v.o.name } }, { atomic: true })
-  await routed.message.reply(routed.$render('Locale.Success.Set', { locale: routed.v.o.name }))
+  await routed.message.reply(routed.$render('Locale.Success.Set', { locale: routed.v.o.name, contributors: routed.$localeContributors(routed.v.o.name) }))
   return true
 }

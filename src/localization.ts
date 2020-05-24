@@ -100,6 +100,10 @@ export default class Localization {
     return !!dotProp.get(this.loaded[locale].strings, key)
   }
 
+  public $localeContributors(locale: string) {
+    return dotProp.get(this.loaded[locale].strings, 'Locale.Contributors')
+  }
+
   public $locales() {
     return Object.keys(this.loaded)
       .map((l) =>
