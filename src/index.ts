@@ -1,5 +1,4 @@
 const { version } = require('../package.json')
-const { startup } = require('./startup')
 import * as Discord from 'discord.js'
 import * as Task from '@/tasks'
 import * as Utils from '@/utils'
