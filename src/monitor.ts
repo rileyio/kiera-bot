@@ -118,7 +118,7 @@ export class BotMonitor extends EventEmitter {
 
     // Set intents
     const intents = new Discord.Intents()
-    intents.add(Discord.Intents.NON_PRIVILEGED)
+    intents.add(Discord.Intents.ALL)
     this.Bot.Log.Bot.log('intents set from preset:', intents.toArray())
 
     // Create new Discord Client
