@@ -5,6 +5,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'Fun',
   controller: eightBall,
+  description: 'Help.Fun.EightBall.Description',
   example: '{{prefix}}8ball',
   name: '8ball',
   validate: '/8ball:string/question?=string',

@@ -9,6 +9,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'User',
     controller: registerUser,
+    description: 'Help.User.Register.Description',
     example: '{{prefix}}register',
     name: 'register',
     validate: '/register:string',
@@ -45,6 +46,7 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'User',
+    description: 'Help.User.SetLocale.Description',
     controller: setUserLocale,
     example: '{{prefix}}user set locale fr',
     name: 'user-locale-set',

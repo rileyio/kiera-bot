@@ -28,7 +28,7 @@ Locale:
       If you wish to contribute to this Localization please reachout to emma#1366 and request access to that locale at: `https://kierabot.xyz/translate`
 
 Admin:
-  BotManualRestart: "Bot restarting in `{{seconds}}` seconds.."
+  BotManualRestart: 'Bot restarting in `{{seconds}}` seconds..'
   CommandCategoriesList: >-
     The following is a breakdown of how many commands are under each command category. If you wish to drill deeper or find a command's name to set restrictions/get info, simply type: {{prefix}}admin command category Fun`.
 
@@ -58,19 +58,19 @@ ChastiKey:
       Could not complete lookup! Some of the possible reasons:
         - A user with that username may not exist.
         - The user may have changed their username in the ChastiKey App.
-    KeyholderOrAboveRoleRequired: "Calling this command for another user requires you hold the Keyholder or above role."
+    KeyholderOrAboveRoleRequired: 'Calling this command for another user requires you hold the Keyholder or above role.'
 
   # Ticker
   Ticker:
-    InvalidOverrideType: "Invalid override type, please use: (1) Keyholder, (2) Lockee, (3) Both"
-    IncorrectTimer: "*Does something look incorrect? Please contact **Kevin** the developer of ChastiKey if any numbers appear incorrect*"
+    InvalidOverrideType: 'Invalid override type, please use: (1) Keyholder, (2) Lockee, (3) Both'
+    IncorrectTimer: '*Does something look incorrect? Please contact **Kevin** the developer of ChastiKey if any numbers appear incorrect*'
 
   # Stats
   Stats:
-    KeyholderNoLocks: "The requested user seems to not have any active locks or past lockees, there will be no stats to display"
-    UserRequestedNoStats: "This user has requested their stats remain private"
+    KeyholderNoLocks: 'The requested user seems to not have any active locks or past lockees, there will be no stats to display'
+    UserRequestedNoStats: 'This user has requested their stats remain private'
     Lockee:
-      Title: "{{#if isVerified}}{{{verifiedEmoji}}}{{/if}} `{{username}}` - ChastiKey Lockee Statistics - Active Stats"
+      Title: '{{#if isVerified}}{{{verifiedEmoji}}}{{/if}} `{{username}}` - ChastiKey Lockee Statistics - Active Stats'
       AdditionalLocksField: There are {{count}} additional lock(s).
       NoActiveLocks: No active locks
       NoActiveLocksTimeSinceLast: |-
@@ -108,7 +108,7 @@ ChastiKey:
 
   # Verify
   Verify:
-    NotSuccessfulUsingReason: "{{reason}}"
+    NotSuccessfulUsingReason: '{{reason}}'
     DMInstructions: |-
       Scan this code with the ChastiKey App like loading a lock (within the next 5 minutes), this will verify your Discord Account to ChastiKey.
       If your ChastiKey account is new in the last 15-30 minutes, it may take this long for Kiera to receive all the required data.
@@ -124,7 +124,7 @@ ChastiKey:
 Help:
   Admin:
     ChannelPurge:
-      Description: "Purge all messages in channel"
+      Description: 'Purge all messages in channel'
     ChastiKeyRefresh:
       Description: Trigger refresh of ChastiKey data cache
     CommandCategories:
@@ -150,6 +150,8 @@ Help:
       Description: Retrieve current Diablo 3 Active Season
     D3ProfileLookup:
       Description: Retrieve Diablo 3 user profile
+    WoWCharacterProfile:
+      Description: Retrieve World of Warcraft character profile
   ChastiKey:
     RecoverCombinations:
       Description: Retrieve your completed lock combinations
@@ -157,6 +159,34 @@ Help:
       Description: Link Discord account with ChastiKey App account
     RoleCounts:
       Description: List of ChastiKey Discord Roles & statistics
+    CKWeb:
+      Description: Generate session for external Kiera + ChastiKey web portal
+    LockeeHistory:
+      Description: Show lockee's history breakdown
+    LocktoberStats:
+      Description: ChastiKey Locktober event statistics
+    UsernameSearch:
+      Description: Search based off ChastiKey username
+    LockeeStats:
+      Description: View Lockee stats
+    KeyholderStats:
+      Description: View Keyholder stats
+    CheckKeyholderMultilocked:
+      Description: List of Keyholder's lockees who have 2 or more Keyholders
+    KeyholderLockees:
+      Description: List of Keyholder's lockees
+    ToggleKeyholderAverageDisplayed:
+      Description: Enable/Disable your ratining visibility in stats commands
+    SetTickerType:
+      Description: Set your default displayed ticker when you call the ticker command
+    SetTickerDate:
+      Description: Set a start date for your ticker data
+    ToggleTickerRating:
+      Description: Enable/Disable your ticker & stats rating display
+    Ticker:
+      Description: View ChastiKey Ticker
+    Update:
+      Description: Sync your ChastiKey profile with Discord
   Decision:
     UnblacklistUser:
       Description: Remove user from Decision's Blacklist
@@ -193,6 +223,45 @@ Help:
       Description: List currently muted users
     MuteLookup:
       Description: Lookup user's active mute
+  Utility:
+    ListRoles:
+      Description: List all server roles & their user counts
+    ListRolesInRange:
+      Description: List server roles & their user counts from a specified range
+    ListRolesLike:
+      Description: List server roles & user counts where name is similar to that sent
+    DisplayRoleInformation:
+      Description: Display a give role's details
+  Fun:
+    EightBall:
+      Description: Ask the 8ball a question
+    Flip:
+      Description: Flip a coin
+    Roll:
+      Description: Roll 1 or more dice
+  Help:
+    General:
+      Description: View Bot help information
+  Poll:
+    New:
+      Description: Create a new poll
+    Edit:
+      Description: Edit poll settings (`open`, `public`, `question`, `title`, `footer`)
+    Start:
+      Description: Start accepting poll responses
+    Stop:
+      Description: Stop accepting poll responses
+    PickRandomVote:
+      Description: Picks a random poll vote user
+    AddOption:
+      Description: Add a poll response option
+    RemoveOption:
+      Description: Remove a poll response option
+  User:
+    Register:
+      Description: Register with the Bot
+    SetLocale:
+      Description: Set your locale for bot responses
 
 Decision:
   Edit:
@@ -211,8 +280,8 @@ Decision:
     NewIDAssigned: |-
       A new Decision ID has been assigned to `{{oldID}}`
       New Decision ID: **`{{newID}}`**
-    ConsumeModeSet: "Decision consume mode now set to: `{{change}}`"
-    SetConsumeReset: "Decision consume mode reset is not set to: {{value}}"
+    ConsumeModeSet: 'Decision consume mode now set to: `{{change}}`'
+    SetConsumeReset: 'Decision consume mode reset is not set to: {{value}}'
     AllConsumedOutcomesReset: All decision outcome consumed flags have been reset!
     AllConsumedOutcomesResetTo: All decision outcome consumed flags have been reset & the reset time is now `{{value}}`
     ConfirmResetAllConsumedOutcomes: To confirm resetting all consumed Outcomes for this decision, send **`yes`** in the next 60 seconds!
@@ -222,7 +291,7 @@ Generic:
   Info:
     UserNotRegistered: You'll need to register with the bot first using `{{prefix}}register`
   Error:
-    CommandExactMatchFailedOptions: "***Hint:** You can type:* `{{prefix}}help {{command}}`, Here are some examples using this command:"
+    CommandExactMatchFailedOptions: '***Hint:** You can type:* `{{prefix}}help {{command}}`, Here are some examples using this command:'
     CommandDisabledInChannel: The command `{{command}}` is not allowed in this channel.
     HelpCommandMissing: Unfortunately there's no help text for this command yet.
     Internal: Failed to complete command due to an internal issue! This may require further investigation. If you need support on this please visit `https://kierabot.xyz/support`
@@ -231,8 +300,8 @@ Generic:
     CommandUnderMaintenance: This command is currently under maintenance.
 
   Word:
-    UppercaseYes: "Yes"
-    UppercaseNo: "No"
+    UppercaseYes: 'Yes'
+    UppercaseNo: 'No'
 
 Moderate:
   Error:
@@ -241,8 +310,8 @@ Moderate:
     CannotCallCommandOnSelf: Cannot use this command upon yourself!
 
   Mute:
-    ListLookup: ":mute: **Muted Users List**"
-    EntryLookup: ":mute: **Muted User Lookup**"
+    ListLookup: ':mute: **Muted Users List**'
+    EntryLookup: ':mute: **Muted User Lookup**'
     AlreadyMuted: This user already has an active mute being tracked.
     RolesUnableToManage: |-
       The following roles cannot be managed by this command & Kiera:
@@ -337,7 +406,7 @@ Poll:
 
   Info:
     Expired: Vote **not** cast! Poll has expired.
-    RandomVoteSelected: "Randomly selected: {{emoji}} by: {{by}}"
+    RandomVoteSelected: 'Randomly selected: {{emoji}} by: {{by}}'
     Ended: The current poll has ended!
 
   Warn:
@@ -390,10 +459,10 @@ Stats:
 
     DeletionConfirm: To confirm deleting all stats pertaining to this channel, send **`yes`** in the next 60 seconds!
     DeletionConfirmReceived: Confirmation Received! Channel Stats Deletion in progress... please wait
-    DeletionDeleted: "Stats `(count: {{count}})` for this channel have been deleted!"
+    DeletionDeleted: 'Stats `(count: {{count}})` for this channel have been deleted!'
     DeletionCancelled: Channel Stats Deletion Cancelled! Reply not received before timeout (1 minute).
     DeletionNoStats: There are no stats stored for this channel!
-    DisabledInfo: "This Channel has requested stats be disabled - (Note: It may appear in server or user statistics unless all stored statistics for the channel are deleted.)"
+    DisabledInfo: 'This Channel has requested stats be disabled - (Note: It may appear in server or user statistics unless all stored statistics for the channel are deleted.)'
 
   Server:
     Disabled: |-
@@ -413,10 +482,10 @@ Stats:
 
     DeletionConfirm: To confirm deleting all stats pertaining to this server, send **`yes`** in the next 60 seconds!
     DeletionConfirmReceived: Confirmation Received! Server Stats Deletion in progress... please wait
-    DeletionDeleted: "Stats `(count: {{count}})` for this Server have been deleted!"
+    DeletionDeleted: 'Stats `(count: {{count}})` for this Server have been deleted!'
     DeletionCancelled: Server Stats Deletion Cancelled! Reply not received before timeout (1 minute).
     DeletionNoStats: There are no stats stored for this Server!
-    DisabledInfo: "This Server has requested stats be disabled - (Note: It may appear in Channel or User statistics unless all stored statistics for the channel are deleted.)"
+    DisabledInfo: 'This Server has requested stats be disabled - (Note: It may appear in Channel or User statistics unless all stored statistics for the channel are deleted.)'
 
   User:
     Disabled: |-

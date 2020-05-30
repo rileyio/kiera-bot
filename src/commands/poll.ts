@@ -10,6 +10,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: voteNew,
+    description: 'Help.Poll.New.Description',
     example: '{{prefix}}poll new "Is Kiera the cat cute?"',
     name: 'poll-new',
     validate: '/poll:string/new:string/question=string'
@@ -18,6 +19,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: voteEdit,
+    description: 'Help.Poll.Edit.Description',
     example: '{{prefix}}poll edit 5cfcf44614e8a64034ca89f3 public false',
     name: 'poll-edit',
     validate: '/poll:string/edit:string/id=string/property=string/update=string'
@@ -26,6 +28,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: startPoll,
+    description: 'Help.Poll.Start.Description',
     example: '{{prefix}}poll start 5cfcf44614e8a64034ca89f3',
     name: 'poll-start',
     validate: '/poll:string/start:string/id=string'
@@ -34,6 +37,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: stopPoll,
+    description: 'Help.Poll.Stop.Description',
     example: '{{prefix}}poll stop 5cfcf44614e8a64034ca89f3',
     name: 'poll-stop',
     validate: '/poll:string/stop:string/id=string'
@@ -42,6 +46,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: pickRandomVote,
+    description: 'Help.Poll.PickRandomVote.Description',
     example: '{{prefix}}poll pick random 5cfcf44614e8a64034ca89f3 :thumbsup:',
     name: 'poll-pick-random-vote',
     validate: '/poll:string/pick:string/random:string/id=string/emoji=string'
@@ -50,6 +55,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: addOption,
+    description: 'Help.Poll.AddOption.Description',
     example: '{{prefix}}poll add option 5cfcf44614e8a64034ca89f3 :thumbsup: "Optional description here"',
     name: 'poll-add-option',
     validate: '/poll:string/add:string/option:string/id=string/emoji=string/description?=string'
@@ -58,6 +64,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: removeOption,
+    description: 'Help.Poll.RemoveOption.Description',
     example: '{{prefix}}poll add option 5cfcf44614e8a64034ca89f3 :thumbsup:',
     name: 'poll-remove-option',
     validate: '/poll:string/remove:string/option:string/id=string/optionID=string'

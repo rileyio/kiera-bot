@@ -5,6 +5,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Utility',
     controller: displayRoles,
+    description: 'Help.Utility.ListRoles.Description',
     example: '{{prefix}}util roles show',
     name: 'util-roles-stats',
     validate: '/util:string/roles:string/show:string'
@@ -13,6 +14,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Utility',
     controller: displayRoleRange,
+    description: 'Help.Utility.ListRolesInRange.Description',
     example: '{{prefix}}util roles show 0 to 10',
     name: 'util-role-stats',
     validate: '/util:string/roles:string/show:string/from=number/to:string/until=number'
@@ -21,6 +23,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Utility',
     controller: displayRolesLike,
+    description: 'Help.Utility.ListRolesLike.Description',
     example: '{{prefix}}util roles show like RolesContainingWord',
     name: 'util-role-stats-bystring-search',
     validate: '/util:string/roles:string/show:string/like:string/name=string'
@@ -29,6 +32,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Utility',
     controller: displayRole,
+    description: 'Help.Utility.DisplayRoleInformation.Description',
     example: '{{prefix}}util role show RoleNameHere',
     name: 'util-role-specific-stats',
     validate: '/util:string/role:string/show:string/name=string'

@@ -9,6 +9,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'ChastiKey',
   controller: history,
+  description: 'Help.ChastiKey.LockeeHistory.Description',
   example: '{{prefix}}ck lockee history',
   name: 'ck-lockee-history',
   validate: '/ck:string/lockee:string/history:string/username?=string',

@@ -9,6 +9,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'ChastiKey',
   controller: update,
+  description: 'Help.ChastiKey.Update.Description',
   example: '{{prefix}}ck update',
   name: 'ck-update',
   validate: '/ck:string/update:string/user?=string',

@@ -69,6 +69,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'BNet',
   controller: wowCharacterProfile,
+  description: 'Help.BattleNet.WoWCharacterProfile.Description',
   example: '{{prefix}}wow character us stormreaver thejaydox',
   name: 'bnet-wow-character',
   validate: '/wow:string/character:string/region=string/server=string/name=string'

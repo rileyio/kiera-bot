@@ -1,17 +1,16 @@
 import { RouterRouted, ExportRoutes } from '@/router'
-import { flipCoin } from '@/embedded/flip-embed';
+import { flipCoin } from '@/embedded/flip-embed'
 
-export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'Fun',
-    controller: flip,
-    example: '{{prefix}}flip',
-    name: 'flip-coin',
-    validate: '/flip:string',
-    permissions: { serverOnly: false }
-  }
-)
+export const Routes = ExportRoutes({
+  type: 'message',
+  category: 'Fun',
+  controller: flip,
+  description: 'Help.Fun.Flip.Description',
+  example: '{{prefix}}flip',
+  name: 'flip-coin',
+  validate: '/flip:string',
+  permissions: { serverOnly: false }
+})
 
 /**
  * Flip a coin

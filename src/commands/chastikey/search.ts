@@ -8,6 +8,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'ChastiKey',
   controller: search,
+  description: 'Help.ChastiKey.UsernameSearch.Description',
   example: '{{prefix}}ck search UsernameHere',
   name: 'ck-search-username',
   validate: '/ck:string/search:string/like=string',

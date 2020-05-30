@@ -6,6 +6,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'Fun',
   controller: roll,
+  description: 'Help.Fun.Roll.Description',
   example: '{{prefix}}roll',
   name: 'roll-die',
   validate: '/roll:string/count1?=number/count2?=number',

@@ -16,6 +16,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Info',
     controller: genericFallback,
+    description: 'Help.Help.General.Description',
     example: '{{prefix}}help',
     name: 'help',
     validate: '/help:string',
