@@ -10,22 +10,29 @@ import { WebRouter, WebRoute } from '@/api/web-router'
 import { webRouteLoader } from '@/api/router/route-loader'
 
 export class WebAPI {
+  // As of 6.0.0 as a reverse proxy is in use and HTTPS managed there in prod
+  // HTTPS Certs are optional for the bot's API
+  protected readonly isHTTPSSet = fs.existsSync(path.join(process.env.API_HTTPS_KEY)) && fs.readFileSync(path.join(process.env.API_HTTPS_CRT))
+  protected readonly https = this.isHTTPSSet
+    ? {
+        key: fs.readFileSync(path.join(process.env.API_HTTPS_KEY)),
+        certificate: fs.readFileSync(path.join(process.env.API_HTTPS_CRT))
+      }
+    : null
+  protected readonly port: number = Number(process.env.API_PORT || 8234)
+  protected readonly prefix: string = '/api'
   protected Bot: Bot
-  protected https = {
-    key: fs.readFileSync(path.join(process.env.API_HTTPS_KEY)),
-    certificate: fs.readFileSync(path.join(process.env.API_HTTPS_CRT))
-  }
   protected server: restify.Server
   protected socket: SocketIO.Server
   protected router: WebRouter
-  protected readonly port: number = Number(process.env.API_PORT || 8234)
-  protected readonly prefix: string = '/api'
   protected DEBUG_WEBAPI = Debug('WebAPI')
   public configuredRoutes: Array<WebRoute> = []
 
   constructor(bot: Bot) {
     this.Bot = bot
-    this.server = restify.createServer(this.https)
+
+    // Start Node Web server
+    this.server = restify.createServer(this.isHTTPSSet ? this.https : {})
     // API config
     this.server.use(restify.plugins.bodyParser({ mapParams: true }))
 
