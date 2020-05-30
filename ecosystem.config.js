@@ -23,7 +23,7 @@ module.exports = {
 
   deploy: {
     production: {
-      'post-deploy': 'yarn install && pm2 reload ecosystem.config.js --env production'
+      'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env production'
     }
   }
 }

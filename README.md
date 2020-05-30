@@ -25,15 +25,15 @@ src/ - All project code
 
 To build (compile only):
 
-> `yarn run clean && yarn run build`
+> `npm run clean && npm run build`
 
 To automatically build on saved changes to repo code (inside `/src`)
 
-> `yarn run dev`
+> `npm run dev`
 
 To start the application (without pm2)
 
-> `yarn run start:nodebug` -or- for debug: `yarn run start` -or- if using PowerShell, check the `package.json` scrips.
+> `npm run start:nodebug` -or- for debug: `npm run start` -or- if using PowerShell, check the `package.json` scrips.
 
 Additional `terminal` and `powershell` debugging start scripts available!
 
