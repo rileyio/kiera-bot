@@ -1,3 +1,5 @@
+import got from 'got'
+import * as FormData from 'form-data'
 import * as YAML from 'yaml'
 import * as fs from 'fs'
 import * as glob from 'fast-glob'
@@ -105,6 +107,14 @@ export default class Localization {
       return null
     }
   }
+
+  // /**
+  //  * Download/Refresh locales from POEditor
+  //  * @memberof Localization
+  //  */
+  // public async download() {
+  //   const resp = await got('https://api.poeditor.com/v2/projects/export', { method: 'POST', responseType: 'json' })
+  // }
 
   /**
    * Render localized string
