@@ -30,7 +30,7 @@ Stats:
     DeletionCancelled: Raum Statistik Löschung abgebrochen! Bestätigung nicht innerhalb von 60 Sekunden erfolgt.
     DeletionConfirm: Um zu bestätigen, dass alle diesen Raum betreffenden Statistiken gelöscht werden, senden sie bitte **`Ja`** innerhalb der nächsten 60 Sekunden!
     DeletionConfirmReceived: "Bestätigung erhalten! Löschung der Raumstatistiken wird durchgeführt... \nBitte warten"
-    DeletionDeleted: "Statistiken `(count: {{count}})` für diesen Kanal wurden gelöscht!"
+    DeletionDeleted: 'Statistiken `(count: {{count}})` für diesen Kanal wurden gelöscht!'
     DeletionNoStats: Für diesen Raum sind keine Statistiken vorhanden!
     Disabled: |-
       Alle Statistiken wurden für diesem Raum **deaktiviert**.
@@ -41,7 +41,7 @@ Stats:
       - The `{{prefix}}stats channel` command will now be disabled for this channel.
       
       For more information about Statistics, see the `{{prefix}}stats about` command output.
-    DisabledInfo: "Für diesen Raum sind Statistiken auf Anfrage deaktiviert worden."
+    DisabledInfo: 'Für diesen Raum sind Statistiken auf Anfrage deaktiviert worden.'
     Enabled: |-
       Statistiken sind für diesen Raum ab jetzt **aktiviert**.
       
@@ -50,7 +50,7 @@ Stats:
     DeletionCancelled: Löschung der Server Statistiken abgebrochen! Bestätigung nicht innerhalb von 60 Sekunden erhalten.
     DeletionConfirm: Um alle Statistiken von diesem Server zu löschen, sende **`Ja`** innerhalb von 60 Sekunden!
     DeletionConfirmReceived: "Bestätigung erhalten! Löschen der Server Statistiken wird durchgeführt...\nBitte warten"
-    DeletionDeleted: "Statistiken `(count: {{count}}` für diesen Server wurden gelöscht!"
+    DeletionDeleted: 'Statistiken `(count: {{count}}` für diesen Server wurden gelöscht!'
     DeletionNoStats: Für diesen Server befinden sich keine Statistiken in der Datenbank!
     Disabled: |-
       Für diesen Server sind nun alle Statistiken **deaktiviert**.
@@ -62,7 +62,7 @@ Stats:
       
       
       Für mehr Informationen über Statistiken nutze bitte den Befehl `{{prefix}}stats about`
-    DisabledInfo: "Statistiken sind nun für diesen Server deaktiviert."
+    DisabledInfo: 'Statistiken sind nun für diesen Server deaktiviert.'
     Enabled: |-
       Statistiken sind jetzt für diesen Server **aktiviert**
       
@@ -123,9 +123,9 @@ ChastiKey:
       NoActiveLocksTimeSinceLast: |-
         Um weitere Statistiken sehen zu können, muss ein Lock aktiv sein.
         Zeit seit dem letzten Lock `{{time}}`
-      Title: "{{#if isVerified}}{{{verifiedEmoji}}}{{/if}} `{{username}}` - Aktive Statistiken der Lockee Statistiken"
-    KeyholderNoLocks: "Dieser Benutzer hat bisher noch keine aktiven Lock als Keyholder, oder noch keine vergangenen Lockees, deshalb gibt es keine darstellbaren Daten."
-    UserRequestedNoStats: "Dieser Benutzer möchte, dass seine Statistiken privat bleiben."
+      Title: '{{#if isVerified}}{{{verifiedEmoji}}}{{/if}} `{{username}}` - Aktive Statistiken der Lockee Statistiken'
+    KeyholderNoLocks: 'Dieser Benutzer hat bisher noch keine aktiven Lock als Keyholder, oder noch keine vergangenen Lockees, deshalb gibt es keine darstellbaren Daten.'
+    UserRequestedNoStats: 'Dieser Benutzer möchte, dass seine Statistiken privat bleiben.'
   # Verify
   Verify:
     CkeckYourDMs: Bitte überprüfe deine Direktnachrichten, um weitere Instruktionen zu erhalten
@@ -133,7 +133,7 @@ ChastiKey:
       Scanne diesen Code mit der ChastiKey-App, wie wenn du ein Schloss laden würdest (in den nächsten 5 Minuten). Dies verifiziert deinen Discord-Account mit deiner ChastiKey-App.
       Wenn dein ChastiKey-Account in den letzten 15-30 Minuten erstellt wurde, kann es ähnlich lange dauern, bis Kiera alle erforderlichen Daten empfangen hat.
     FastForward: Dein Account wurde verifiziert! Es kann allerdings noch **bis zu 15 Minuten** dauern, bis alle Daten korrekt zwischengespeichert und verfügbar sind.
-    NotSuccessfulUsingReason: "Die Verifizierung hat leider nicht funktioniert. Begründung: {{reason}}"
+    NotSuccessfulUsingReason: 'Die Verifizierung hat leider nicht funktioniert. Begründung: {{reason}}'
     # 1366`
     PreviouslyCompleted: Dein Account wurde bereits verifiziert! Wenn es damit irgendwelche Probleme gibt, melde dich bitte bei `Emma#1366`
     VerifyRequired: |-
@@ -144,11 +144,11 @@ ChastiKey:
       Wenn du dies in den letzten 15 Minuten gemacht hast, kannst du den Vorgang mit dem erneuten eingeben von `!ck verify` beschleunigen.
   # Ticker
   Ticker:
-    IncorrectTimer: "*Scheint etwas nicht korrekt? Bitte kontaktiere **Kevin**, der Entwickler von ChastiKey wenn irgendwelche Statistiken falsch erscheinen*"
-    InvalidOverrideType: "Inkorrekter Überschreibungs-Typ, bitte nutze: (1) Keyholder, (2) Lockee, (3) Beide"
+    IncorrectTimer: '*Scheint etwas nicht korrekt? Bitte kontaktiere **Kevin**, der Entwickler von ChastiKey wenn irgendwelche Statistiken falsch erscheinen*'
+    InvalidOverrideType: 'Inkorrekter Überschreibungs-Typ, bitte nutze: (1) Keyholder, (2) Lockee, (3) Beide'
   # Errors
   Error:
-    KeyholderOrAboveRoleRequired: "Hierfür wird die Keyholder-Rolle oder höher benötigt."
+    KeyholderOrAboveRoleRequired: 'Hierfür wird die Keyholder-Rolle oder höher benötigt.'
     UserLookupErrorOrNotFound: >-
       Die Abfrage konnte nicht ausgeführt werden! Mögliche Gründe hierfür sind:
       - Es existiert kein Benutzer mit diesem Benutzernamen.
@@ -162,7 +162,7 @@ Moderate:
     AlreadyMuted: Dieser Benutzer hat bereits eine aktive Stummschaltung, die verfolgt wird.
     CancelledMute: Stummschaltung abgebrochen
     ConfirmMutePrompt: "Sind Sie sicher, dass Sie diese Stummschaltung anwenden möchten?\nBitte innerhalb der nächsten 60 Sekunden mit **Ja** antworten"
-    EntryLookup: ":mute: **Suche gestummten Benutzer**"
+    EntryLookup: ':mute: **Suche gestummten Benutzer**'
     LengthForMutePrompt: Wie lange soll die Stummschaltung dauern? Zeit in Stunden angeben
     ListEntryUser: |+
       {{Username}}#{{discriminator}}
@@ -174,7 +174,7 @@ Moderate:
       ## Gestummt: {{dateFormatted}}
       ## Grund: {{reason}}
       ## Gestummt von: {{mutedBy}}
-    ListLookup: ":mute: **Liste gestummter Benutzer**"
+    ListLookup: ':mute: **Liste gestummter Benutzer**'
     New: |+
       :mute: **Gestummter Benutzer**
       ```
@@ -206,7 +206,7 @@ Moderate:
         ## Gund: {{reason}}
         ## Wiederhergestellte Rollen: {{rolesRestored}}
 Admin:
-  BotManualRestart: "Bot startet in `{{seconds}}` neu."
+  BotManualRestart: 'Bot startet in `{{seconds}}` neu.'
   CommandCategoriesList: >-
     Hier ist eine Übersicht darüber, wie viele Befehle sich unter welcher Kategorie befinden. Wenn du mehr über einen Befehl erfahren möchtest, wie etwa der Name um Beschränkungen zu setzen oder weitere Informationen abzufragen, nutze `{{prefix}}admin command category Fun`.
     
@@ -222,20 +222,27 @@ Admin:
 BattleNet:
   Error:
     CharacterNotFound: Dieser Buchstabe wurde nicht gefunden!
+Locale:
+  Code: en
+  Language: Englisch
+  Name: Englisch
 Generic:
   Error:
     CommandDisabledInChannel: Der `{{command}}` Befehl ist in diesem Raum nicht erlaubt.
-    CommandExactMatchFailedOptions: "***Tipp:** Du kannst:* `{{prefix}}help {{command}}` verwenden, Hier sind einige Beispiele, die diesen Befehl verwenden:"
+    CommandExactMatchFailedOptions: '***Tipp:** Du kannst:* `{{prefix}}help {{command}}` verwenden, Hier sind einige Beispiele, die diesen Befehl verwenden:'
     HelpCommandMissing: Leider ist für diesen Befehl noch kein Hilfstext verfügbar.
     Internal: Befehl aufgrund einer internen Angelegenheit nicht ausgeführt! Dies kann weitere Untersuchungen erfordern. Wenn Sie dabei Unterstützung benötigen, besuchen Sie bitte https://kierabot.xyz/support
   Warn:
     CommandUnderMaintenance: Dieser Befehl ist aufgrund von Wartungsarbeiten vorübergehend nicht verfügbar.
+  Word:
+    UppercaseNo: 'Nein'
+    UppercaseYes: 'Ja'
   Info:
     UserNotRegistered: Du musst dich erst bei dem Bot registrieren. Verwende dazu `{{prefix}}register`
 Help:
   Admin:
     ChannelPurge:
-      Description: "Bereinige alle Nachrichten in diesem Raum"
+      Description: 'Bereinige alle Nachrichten in diesem Raum'
     ChastiKeyRefresh:
       Description: Aktualisierung des Chastikey Cache auslösen
     CommandCategories:
@@ -277,13 +284,38 @@ Help:
       Description: Liste der derzeit gestummten Benutzer
     MuteLookup:
       Description: Suche aktive Stummschaltung für Benutzer
+  Decision:
+    UnblacklistUser:
+      Description: Entferne den Benutzer von der Schwarzen Liste für den Decision roll
+    BlacklistUser:
+      Description: Füge den Benutzer der Schwarzen Liste für den Decision roll hinzu
+    UnwhitelistServer:
+      Description: Entferne den Server von der Decisions Whitelist
+    WhitelistServer:
+      Description: Füge den Server zur Decision Whitelist hinzu
+    Log:
+      Description: Rufe die letzten 5 decision Einträge ab
+    New:
+      Description: Erstelle einen neuen Decision roll
+    NewEntry:
+      Description: Füge ein neues Ergebnis zur Decision roll hinzu
+    SetConsumeMode:
+      Description: Stelle die Decision roll auf den Verbrauchs modus
+    ResetConsumed:
+      Description: Stelle eine Rückstellzeit (In Sekunden) für die verbrauchten möglichkeiten
+    GenerateNewID:
+      Description: Generiere eine neue einzigartige ID für die rolle
+    Roll:
+      Description: Rolle die vorgefertigten rollen
+    RollRealtime:
+      Description: Erstelle und rolle eine einmalige decision roll
 Poll:
   Warn:
     DifferentAuthorID: Nur der Ersteller dieser Umfrage darf den {{prefix}} Befehl aufrufen!
   Info:
     Ended: Die aktuelle Umfrage wurde beendet!
     Expired: Die Stimme wurde **nicht** gewertet. Diese Abstimmung ist abgelaufen.
-    RandomVoteSelected: "Zufällig gewählt: {{emoji}} von: {{by}}"
+    RandomVoteSelected: 'Zufällig gewählt: {{emoji}} von: {{by}}'
   New: |-
     Neue Umfrage ID:
       `{{id}}`
@@ -326,6 +358,7 @@ Poll:
     VoteRemoved: Stimme zurückgezogen!
 Decision:
   Edit:
+    NewEntry: Decision Eintrag hinzugefügt {{added}}
     NewQuestionAdded: |-
       Neue Frage hinzugefügt (id: {{id}}`)
       Gib deine Ergebnisse ein mit `!decision {{id}} add "Ergebnis der Entscheidung hier"`
