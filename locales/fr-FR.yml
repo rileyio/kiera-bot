@@ -159,6 +159,13 @@ Locale:
     NoneSpecified: |-
       Veuillez sélectionner une des 
       {{{locales}}}
+  Success:
+    Set: |-
+      Les paramètres régionaux `{{locale}}` ont été définis avec succès! Toutes les réponses (traduites) apparaîtront désormais en français.
+      
+      {{contributors}}
+      
+      Si vous souhaitez contribuer à cette localisation, veuillez contacter emma#1366 et demander l'accès à cette locale sur: `https://kierabot.xyz/translate`
 Generic:
   Error:
     CommandDisabledInChannel: La commande `{{command}}` n'est pas autorisée dans ce canal.
