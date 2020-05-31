@@ -12,8 +12,7 @@ export const Routes = ExportRoutes(
     description: 'Help.User.Register.Description',
     example: '{{prefix}}register',
     name: 'register',
-    validate: '/register:string',
-    middleware: [Middleware.middlewareTest]
+    validate: '/register:string'
   },
   {
     type: 'message',
