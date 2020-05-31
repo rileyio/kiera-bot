@@ -223,9 +223,9 @@ BattleNet:
   Error:
     CharacterNotFound: Dieser Buchstabe wurde nicht gefunden!
 Locale:
-  Code: en
-  Language: Englisch
-  Name: Englisch
+  Code: de
+  Language: Deutsch
+  Name: Deutsch
 Generic:
   Error:
     CommandDisabledInChannel: Der `{{command}}` Befehl ist in diesem Raum nicht erlaubt.
