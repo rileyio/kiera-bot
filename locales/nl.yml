@@ -31,7 +31,7 @@ Stats:
     DeletionCancelled: Wissen statistieken van dit kanaal niet doorgevoerd. Antwoord niet ontvangen binnen 60 seconden.
     DeletionConfirm: Weet je zeker dat je alle statistieken van dit kanaal wilt wissen? Verzend dan **`yes`** binnen 60 seconden!
     DeletionConfirmReceived: Bevestiging ontvangen! De statistieken van dit kanaal worden gewist. Even geduld.
-    DeletionDeleted: "Statistieken `(count: {{count}})` van dit kanaal zijn gewist!"
+    DeletionDeleted: 'Statistieken `(count: {{count}})` van dit kanaal zijn gewist!'
     DeletionNoStats: Er zijn geen statistieken opgeslagen voor dit kanaal!
     Disabled: |-
       Alle statistieken voor dit kanaal zijn nu **uitgeschakeld**.
@@ -42,7 +42,7 @@ Stats:
       - Het commando `{{prefix}}stats channel` is nu uitgeschakeld voor dit kanaal.
       
       Voor meer informatie over statistieken, gebruik `{{prefix}}stats about` 
-    DisabledInfo: "De statistieken voor dit kanaal zijn op verzoek uitgeschakeld. (Let op: ze kunnen voorkomen in server- of gebruikers-statistieken totdat alle statistieken van dit kanaal zijn gewist)"
+    DisabledInfo: 'De statistieken voor dit kanaal zijn op verzoek uitgeschakeld. (Let op: ze kunnen voorkomen in server- of gebruikers-statistieken totdat alle statistieken van dit kanaal zijn gewist)'
     Enabled: |-
       Statistieken voor dit kanaal zijn nu **ingeschakeld**. 
       
@@ -51,7 +51,7 @@ Stats:
     DeletionCancelled: Wissen statistieken van dit kanaal niet doorgevoerd. Antwoord niet ontvangen binnen 60 seconden.
     DeletionConfirm: Weet je zeker dat je alle statistieken van deze server wilt wissen? Verzend dan **`yes`** binnen 60 seconden!
     DeletionConfirmReceived: Bevestiging ontvangen! De statistieken van deze server worden gewist. Even geduld.
-    DeletionDeleted: "Statistieken `(count: {{count}})` van deze server zijn gewist! "
+    DeletionDeleted: 'Statistieken `(count: {{count}})` van deze server zijn gewist! '
     DeletionNoStats: Er zijn geen statistieken opgeslagen voor deze server!
     Disabled: |-
       Alle statistieken voor deze server zijn nu **uitgeschakeld**
@@ -62,7 +62,7 @@ Stats:
       - Het commando `{{prefix}}stats server` is nu uitgeschakeld.
       
       Voor meer informatie over statistieken, gebruik `{{prefix}}stats about` 
-    DisabledInfo: "De statistieken van deze server zijn op verzoek uitgeschakeld. (Let op: ze kunnen voorkomen in kanaal- of gebruikers-statistieken totdat alle statistieken van dit kanaal zijn gewist)"
+    DisabledInfo: 'De statistieken van deze server zijn op verzoek uitgeschakeld. (Let op: ze kunnen voorkomen in kanaal- of gebruikers-statistieken totdat alle statistieken van dit kanaal zijn gewist)'
     Enabled: |-
       Statistieken voor deze server zijn nu **ingeschakeld**. 
       
@@ -85,7 +85,7 @@ Stats:
       
       Voor meer informatie over statistieken, gebruik het commando  `{{prefix}}stats about`.
 Admin:
-  BotManualRestart: "De bot herstart in `{{seconds}}` seconden.. "
+  BotManualRestart: 'De bot herstart in `{{seconds}}` seconden.. '
   CommandCategoriesList: >-
     Dit is een overzicht van hoeveel commando's er zijn onder elke categorie. Als je dieper wilt zoeken of een commando wilt vinden om een beperking in te stellen of info te krijgen, type {{prefix}}admin command category Fun.
     ```
@@ -108,7 +108,8 @@ ChastiKey:
       Scan deze code in de Chastikey App, zoals je ook een lock laadt (en dat binnen 5 minuten), daarmee koppel je je Discordaccount aan ChastiKey.
       Als je Chastikey-account minder dan 15-30 minuten geleden aangemaakt is, kan het ook zo lang duren voordat Kiera alle gegevens heeft ontvangen.
     FastForward: "Je account is geverifieerd! Het kan **tot een kwartier** duren voordat alle gegevens beschikbaar zijn. "
-    NotSuccessfulUsingReason: "{{reason}}"
+    NotSuccessfulUsingReason: '{{reason}}'
+    # 1366`
     PreviouslyCompleted: Je account is al geverifieerd! Als er iets mis is, neem dan contact op met `emma.
     VerifyRequired: |-
       Voor deze opdracht moet je account geverifieerd zijn met Chastikey. Gebruik hiervoor het volgende commando: 
@@ -117,17 +118,17 @@ ChastiKey:
       Als je dit al hebt gedaan in de afgelopen 15 minuten, dan kun je de verificatie versnellen door `!ck verify` nogmaals uit te voeren
   # Ticker
   Ticker:
-    IncorrectTimer: "*Klopt er iets niet in deze gegevens? Neem dan contact op met **Kevin**, de maker van Chastikey als je gegevens niet kloppen* "
-    InvalidOverrideType: "Verkeerd type, gebruik (1) Keyholder, (2) Lockee, (3) Beide"
+    IncorrectTimer: '*Klopt er iets niet in deze gegevens? Neem dan contact op met **Kevin**, de maker van Chastikey als je gegevens niet kloppen* '
+    InvalidOverrideType: 'Verkeerd type, gebruik (1) Keyholder, (2) Lockee, (3) Beide'
   # Stats
   Stats:
-    KeyholderNoLocks: "De opgevraagde gebruiker lijkt geen actieve locks of eerdere lockees te hebben, en dus zijn er ook geen statistieken om weer te geven."
+    KeyholderNoLocks: 'De opgevraagde gebruiker lijkt geen actieve locks of eerdere lockees te hebben, en dus zijn er ook geen statistieken om weer te geven.'
     Lockee:
-      Title: "Titel"
-    UserRequestedNoStats: "Deze gebruiker wil zijn statistieken graag privé houden."
+      Title: 'Titel'
+    UserRequestedNoStats: 'Deze gebruiker wil zijn statistieken graag privé houden.'
   # Errors
   Error:
-    KeyholderOrAboveRoleRequired: "Om dit commando voor een andere gebruiker uit te voeren, moet je de rol van Keyholder of hoger hebben."
+    KeyholderOrAboveRoleRequired: 'Om dit commando voor een andere gebruiker uit te voeren, moet je de rol van Keyholder of hoger hebben.'
     UserLookupErrorOrNotFound: >-
       Kan deze opdracht niet uitvoeren! Enkele mogelijke redenen hiervoor:
       - Een gebruiker met deze gebruikersnaam bestaat niet
@@ -139,7 +140,7 @@ ChastiKey:
 Generic:
   Error:
     CommandDisabledInChannel: Het commando  `{{command}}` is niet toegestaan in dit kanaal.
-    CommandExactMatchFailedOptions: "**Hint.** Het commando is:* `{{prefix}}help {{command}}`, hier een paar voorbeelden van dit commando: "
+    CommandExactMatchFailedOptions: '**Hint.** Het commando is:* `{{prefix}}help {{command}}`, hier een paar voorbeelden van dit commando: '
     HelpCommandMissing: Helaas is er nog geen helptekst beschikbaar voor dit commando
   Warn:
     CommandUnderMaintenance: Deze opdracht kan nu niet gebruikt worden vanwege onderhoud.
@@ -148,7 +149,7 @@ Generic:
 Help:
   Admin:
     ChannelPurge:
-      Description: "Alle berichten in dit kanaal verwijderen"
+      Description: 'Alle berichten in dit kanaal verwijderen'
     ChastiKeyRefresh:
       Description: Vernieuwen van Chastikey's data cache activeren
     CommandCategories:
@@ -171,7 +172,7 @@ Poll:
   Info:
     Ended: Deze poll is beëindigd!
     Expired: Je stem is niet ingediend! De poll is verlopen.
-    RandomVoteSelected: "Random: {{emoji}} door: {{by}}"
+    RandomVoteSelected: 'Random: {{emoji}} door: {{by}}'
   New: |-
     Nieuwe Poll ID:
       `{{id}}`
