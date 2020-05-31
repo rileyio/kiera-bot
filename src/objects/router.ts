@@ -178,8 +178,8 @@ export class RouterRouted {
     return this.bot.Localization.$localeExists(key)
   }
 
-  public $localeContributors(key: string) {
-    return this.bot.Localization.$localeContributors(key) || ''
+  public $localeContributors(locale: string) {
+    return this.bot.Localization.$localeContributors(locale) || ''
   }
 
   public $locales() {
