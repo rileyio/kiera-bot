@@ -15,8 +15,8 @@ export enum ChastiKeyTickerType {
  */
 export class TrackedChastiKey {
   public username: string = ''
-  public ticker: TrackedChastiKeyTicker = new TrackedChastiKeyTicker({})
-  public preferences: TrackedChastiKeyPreferences = new TrackedChastiKeyPreferences({})
+  public ticker: TrackedChastiKeyTicker
+  public preferences: TrackedChastiKeyPreferences
   public isVerified: boolean = false
   public isVerifiedInData: boolean = false
   public verificationCode: string = ''
@@ -24,6 +24,10 @@ export class TrackedChastiKey {
 
   constructor(init: Partial<TrackedChastiKey>) {
     Object.assign(this, init)
+
+    // Assign sub objects properly
+    this.ticker = new TrackedChastiKeyTicker(init ? init.ticker : {})
+    this.preferences = new TrackedChastiKeyPreferences(init ? init.preferences : {})
   }
 }
 
@@ -40,7 +44,7 @@ export class TrackedChastiKeyTicker {
   public showStarRatingScore: boolean = false
   public date: string
 
-  constructor(init: Partial<TrackedChastiKey>) {
+  constructor(init: Partial<TrackedChastiKeyTicker>) {
     Object.assign(this, init)
   }
 }
@@ -49,13 +53,18 @@ export class TrackedChastiKeyPreferences {
   public keyholder: { showAverage: boolean } = {
     showAverage: false
   }
-  public lockee: { allowPublicHistory: boolean; limitMonths: 3 | 6 | 12 } = {
+  public lockee: { allowPublicHistory: boolean; limitMonths: 3 | 6 | 12; showLockInNickname: 'never' | 'always' | 'locked' | 'unlocked' } = {
     allowPublicHistory: false,
-    limitMonths: 3
+    limitMonths: 3,
+    showLockInNickname: 'never'
   }
 
   constructor(init: Partial<TrackedChastiKeyPreferences>) {
-    Object.assign(this, init)
+    console.log('Extending .preferences', init)
+
+    // Assign sub objects properly
+    Object.assign(this.keyholder, init.keyholder || {})
+    Object.assign(this.lockee, init.lockee || {})
   }
 }
 
