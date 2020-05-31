@@ -30,7 +30,7 @@ Stats:
     DeletionCancelled: Effacement des statistiques du canal annulé! La réponse n'a pas été reçue avant la fin du délai (1 minute).
     DeletionConfirm: Pour confirmer l'effacement de toutes les statistiques liées à ce canal, vous avez 60 secondes pour envoyer **`yes`**!
     DeletionConfirmReceived: "Confirmation reçue! Effacement des statistiques du canal en cours..\nVeuillez patienter"
-    DeletionDeleted: "Les statistiques `(count: {{count}})` pour ce canal ont été effacées!"
+    DeletionDeleted: 'Les statistiques `(count: {{count}})` pour ce canal ont été effacées!'
     DeletionNoStats: Il n'y a pas de statistiques stockés pour ce canal.
     Disabled: |-
       Toutes les statistiques sont désormais **Désactivés* pour ce canal.
@@ -41,21 +41,33 @@ Stats:
       - La commande `{{prefix}}stats channel` sera désormais désactivée pour ce canal
       
       Pour plus d'informations sur les statistiques, voyez  le résultat de la commande `{{prefix}}stats about`
-    DisabledInfo: "Ce canal a demandé d'avoir les statistiques désactivées. - (Note:Elles peuvent apparaître dans les statistiques du serveur ou utilisateur a moins que les statistiques stockées pour le canal soient effacées."
+    DisabledInfo: 'Ce canal a demandé d''avoir les statistiques désactivées. - (Note:Elles peuvent apparaître dans les statistiques du serveur ou utilisateur a moins que les statistiques stockées pour le canal soient effacées.'
     Enabled: |-
       Les statistiques sont maintenant **activées** sur ce canal.
       
       Pour plus d'informations sur les statistiques, consultez la réponse de la commande `{{prefix}}stats about`.
   Server:
+    DeletionCancelled: Effacement des statistiques du serveur annulé! La réponse n'a pas été reçue avant la fin du délai (1 minute).
+    DeletionConfirm: Pour confirmer l'effacement de toutes les statistiques concernant ce serveur, envoyez **`yes`** dans les 60 prochaines secondes!
+    DeletionConfirmReceived: Confirmation reçue! Effacement des statistiques du serveur en cours... veuillez patienter
+    DeletionDeleted: 'Les statistiques `(nombre: {{count}})` de ce serveur ont été effacées.'
     DeletionNoStats: Il n'y a pas de statistiques stockées pour ce serveur!
+    Enabled: |-
+      Les statistiques sont maintenant **activées* pour ce serveur.
+      
+      Pour  plus d'information sur les statistiques, consultez le résultat de la commande `{{prefix}}stats about`.
 ChastiKey:
   # Stats
   Stats:
     Lockee:
       AdditionalLocksField: Il y a {{count}} verrou(s) supplémentaire(s)
       NoActiveLocks: Pas de verrou actif
-    KeyholderNoLocks: "L'utilisateur demandé ne semble pas avoir de verrou actif ou d'encagés passés, il n'y a pas de statistiques à afficher."
-    UserRequestedNoStats: "Cet utilisateur souhaite garder privé ses statistiques."
+      NoActiveLocksTimeSinceLast: |-
+        Pour voir des statistiques supplémentaires un verrou doit être actif.
+        Temps depuis le dernier verrou: `{{time}}`
+      Title: '{{#if isVerified}}{{{verifiedEmoji}}}{{/if}} `{{username}}` - Statistiques du lockee dans ChastiKey - Statistiques actives'
+    KeyholderNoLocks: 'L''utilisateur demandé ne semble pas avoir de verrou actif ou d''encagés passés, il n''y a pas de statistiques à afficher.'
+    UserRequestedNoStats: 'Cet utilisateur souhaite garder privé ses statistiques.'
   # Verify
   Verify:
     CkeckYourDMs: Vérifiez vos messages privés de Kiera pour la suite des instructions.
@@ -63,7 +75,8 @@ ChastiKey:
       Scannez ce code avec l'application Chastikey comme si vous chargiez un verrou (valable les 5 prochaines minutes), cela votre compte Discord à ChastiKey.
       Si votre compte ChastiKey est nouveau (15-30 minutes), cela peut prendre du temps pour que Kiera reçoive toutes les données nécessaires.
     FastForward: Votre compte a été vérifié! Certaines données peuvent encore prendre **jusqu'à 15 minutes** pour être mises en cache et être complètement disponible.
-    NotSuccessfulUsingReason: "{{reason}}"
+    NotSuccessfulUsingReason: '{{reason}}'
+    # 1366`
     PreviouslyCompleted: Votre compte a déjà été vérifié! Si cella pose encore problème veuillez contacter emma
     VerifyRequired: |-
       Cette commande nécessite que votre compte soit vérifié auprès de ChastKey avec la commande suivante:
@@ -72,10 +85,10 @@ ChastiKey:
       Si vous avez fait cela dans les 15 dernières minutes, vous pouvez accélérer le processus de vérification en exécutant `!ck verify` de nouveau.
   # Ticker
   Ticker:
-    IncorrectTimer: "*Est-ce que quelque chose semble incorrecte ? Veuillez contacter **Kevin** le développeur de ChastiKey si des valeurs semblent erronées*"
+    IncorrectTimer: '*Est-ce que quelque chose semble incorrecte ? Veuillez contacter **Kevin** le développeur de ChastiKey si des valeurs semblent erronées*'
   # Errors
   Error:
-    KeyholderOrAboveRoleRequired: "Vous devez avoir le rôle Keyholder ou supérieur pour appeler cette commande pour un autre utilisateur."
+    KeyholderOrAboveRoleRequired: 'Vous devez avoir le rôle Keyholder ou supérieur pour appeler cette commande pour un autre utilisateur.'
     UserLookupErrorOrNotFound: >-
       Impossible de terminer la recherche! Certaines des raisons possibles:
         - Un utilisateur avec ce nom d'utilisateur peut ne pas exister.
@@ -86,7 +99,7 @@ ChastiKey:
   Admin:
     RefreshTriggered: Raffraichissement manuel des statistiques déclenché..
 Admin:
-  BotManualRestart: "Redémarrage du bot dans `{{seconds}}` secondes.."
+  BotManualRestart: 'Redémarrage du bot dans `{{seconds}}` secondes..'
   CommandCategoriesList: >-
     Voici une répartition de combien de commandes sont sous chaque catégorie de commandes. Si vous souhaitez consultez plus en profondeur ou trouver le nom d'une commande pour mettre en place des restrictions ou obtenir des informations, tappez juste:
     {{prefix}}admin command category Fun`.
@@ -100,29 +113,87 @@ Admin:
     ```
     {{commands}}
     ```
+Moderate:
+  Mute:
+    CancelledMute: Sourdine annulée
+    ConfirmMutePrompt: Etes-vous sûr de vouloir appliquer cette sourdine ? Répondez avec **yes** pour le confirmer dans les 60 secondes.
+    LengthForMutePrompt: Combien de temps doit durer cette sourdine ? Entrez un temps en heures.
+    ListEntryUser: |+
+      {{username}}#{{discriminator}}
+        ## Rendu muet le: {{dateFormatted}}
+        ## Motif: {{reason}}
+        ## Rendu muet par: {{mutedBy}}
+    ListEntryUserLeftServer: |+
+      {{username}}#{{discriminator}}__(l'utilisateur a quitté le serveur)__
+        ## Rendu muet le: {{dateFormatted}}
+        ## Motif: {{reason}}
+        ## Rendu muet par: {{mutedBy}} 
+    ListLookup: ':mute: **Liste d''utilisateurs muets**'
+    New: |+
+      :mute: **Utilisateur mis en sourdine**
+      ```
+      @{{username}}#{{discriminator}} id:{{id}}
+        ## Muté par: {{mutedBy}}
+        ## Fin: {{removeAt}}
+        ## Rôles préservés {{rolesPreserved}}
+        ## Motif: {{reason}}
+      ```
+    RolesUnableToManage: |-
+      Les rôles suivants ne peuvent pas être gérés par cette commande et Kiera:
+      ```
+      {{untouchableRoles}}
+      ```
+  Error:
+    CannotCallCommandOnSelf: Impossible d'utiliser cette commande sur soi-même!
 BattleNet:
   Error:
     CharacterNotFound: Personnage introuvable!
 Generic:
   Error:
     CommandDisabledInChannel: La commande `{{command}}` n'est pas autorisée dans ce canal.
-    CommandExactMatchFailedOptions: "***Astuce:** Vous pouvez saisir:* `{{prefix}}help {{command}}`, voici quelques exemples d'utilisation de cette commande."
+    CommandExactMatchFailedOptions: '***Astuce:** Vous pouvez saisir:* `{{prefix}}help {{command}}`, voici quelques exemples d''utilisation de cette commande.'
     HelpCommandMissing: Malheureusement il n'y a actuellement pas d'aide textuelle pour cette commande.
   Warn:
     CommandUnderMaintenance: Cette commande est actuellement en maintenance.
   Info:
     UserNotRegistered: Vous devrez d'abord vous enregistrer auprès du bot avec `{{prefix}}register`
+Locale:
+  Contributors: |-
+    Contributeurs pour cette localisation:
+    - `Emma <gh: rileyIO, discord: emma#1366>`
+  Language: Anglais
+  Name: Anglais
+  Error:
+    NoneSpecified: |-
+      Veuillez sélectionner une des 
+      {{{locales}}}
 Help:
   Admin:
     ChannelPurge:
-      Description: "Purger tout les messages de ce canal"
+      Description: 'Purger tout les messages de ce canal'
+    ChastiKeyRefresh:
+      Description: Déclencher le raffraichissement du cache de données de ChastiKey
+    CommandCategories:
+      Description: Récupèrer la liste des catégories de commandes
+    CategoryCommands:
+      Description: Récupèrer la liste des commandes de catégories
+    CommandRestrict:
+      Description: Restraindre l'utilisation d'une commande
+    CheckPermissions:
+      Description: Vérifier vos permissions et celles de Kiera.
+    BotVersion:
+      Description: Afficher la version actuelle de Kiera
+    BotPing:
+      Description: Vérifier le ping et la latence de Kiera
+    BotRestart:
+      Description: Redémarrer le bot de Kiera
 Poll:
   Warn:
     DifferentAuthorID: Seul l'auteur du sondage peut appeler la commande {{prefix}} !
   Info:
     Ended: Le sondage actuel est terminé!
     Expired: Vote **pas** déposé! Le sondage a expiré.
-    RandomVoteSelected: "Choisi aléatoirement: {{emoji}} par: {{by}}"
+    RandomVoteSelected: 'Choisi aléatoirement: {{emoji}} par: {{by}}'
   New: |-
     Nouvel ID de sondage:
       `{{id}}`
@@ -163,18 +234,6 @@ Poll:
   Interaction:
     VoteCast: Vote déposé!
     VoteRemoved: Vote retiré!
-Moderate:
-  Mute:
-    ListEntryUser: |+
-      {{username}}#{{discriminator}}
-        ## Rendu muet le: {{dateFormatted}}
-        ## Motif: {{reason}}
-        ## Rendu muet par: {{mutedBy}}
-    ListEntryUserLeftServer: |+
-      {{username}}#{{discriminator}}__(l'utilisateur a quitté le serveur)__
-        ## Rendu muet le: {{dateFormatted}}
-        ## Motif: {{reason}}
-        ## Rendu muet par: {{mutedBy}} 
 Decision:
   Edit:
     NewQuestionAdded: |-
