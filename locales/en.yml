@@ -289,9 +289,14 @@ Decision:
     ConfirmResetAllConsumedOutcomes: To confirm resetting all consumed Outcomes for this decision, send **`yes`** in the next 60 seconds!
     ConfirmResetAllConsumedOutcomesReceived: Confirmation Received! Resetting all consumed flags for this decision... please wait
     CancelledResetAllConsumedFlags: Decision outcome consumed flag reset cancelled! Reply not received before timeout (1 minute).
+
 Generic:
   Info:
-    UserNotRegistered: You'll need to register with the bot first using `{{prefix}}register`
+    UserNotRegistered: |-
+      You'll need to register with the bot first using `{{prefix}}register`
+      
+      Registering opts you into having some basic account user ids stored in order for the bot to function normally for commands requiring stored values.
+      If you wish to remove your account data in the future, please contact `emma#1366`
   Error:
     CommandExactMatchFailedOptions: '***Hint:** You can type:* `{{prefix}}help {{command}}`, Here are some examples using this command:'
     CommandExactMatchFailedFallback: 'Examples of commands in the `{{prefix}}{{command}}` group:'
