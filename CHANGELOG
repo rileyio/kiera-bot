@@ -1,9 +1,19 @@
 6.0.0
 - Fixed: Mod Mute not working on users of the same role or higher than Kiera's role position + excluding @everyone and Nitro Booster for being unmanaged roles.
+- Fixed: CK extended props object when loading and merging with defaults.
 - Updated: Dependencies audit and update.
+- Updated: CK Lockee Stats command to show fewer locks (Max: 5) due to character cap on Discord Embedded messages.
 - Removed: Old code from User object used primarily by Legacy permissions and decommissioned site - need to reevaluate remaining.
-- Added: ck update command will now change your username to add 🔓 or 🔒 depending what the setting is set to.
+- Removed: Old commands and middleware used for testing.
+- Removed: Command for CK Set Username (no longer in use with CK Verify command replacing functionality)
+- Removed: Command for Ext Web Session (was replaced in a previous release)
+- Added: CK update command will now change your username to add 🔓 or 🔒 depending on what the setting is set to.
 - Added: New ck command to set if/when to set a 🔓 or 🔒 depending on your linked ChastiKey account status.
+- Added: Localization support. Included this release: [ de, en, fr-FR, nl ]. Translations in progress.
+- Added: New help menus. Some legacy menus will remain but will be converted in future updates.
+- Added: Intents for Discord.js on startup - Currently using all as existing functionality would be impacted.
+- Added: New template renderer (handlebars.js)
+- Added: New prompt & input helpers - Will be slowly migrating some existing commands that could use it over future updates.
 
 5.1.1
 - Fixed: Decision Roll not working on servers where the roll author is not present #28
