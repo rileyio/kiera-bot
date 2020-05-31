@@ -148,6 +148,17 @@ Moderate:
 BattleNet:
   Error:
     CharacterNotFound: Personnage introuvable!
+Locale:
+  Code: fr-FR
+  Contributors: |-
+    Contributeurs pour cette localisation:
+    - `Emma <gh: rileyIO, discord: emma#1366>`
+  Language: Français
+  Name: Français
+  Error:
+    NoneSpecified: |-
+      Veuillez sélectionner une des 
+      {{{locales}}}
 Generic:
   Error:
     CommandDisabledInChannel: La commande `{{command}}` n'est pas autorisée dans ce canal.
@@ -155,18 +166,11 @@ Generic:
     HelpCommandMissing: Malheureusement il n'y a actuellement pas d'aide textuelle pour cette commande.
   Warn:
     CommandUnderMaintenance: Cette commande est actuellement en maintenance.
+  Word:
+    UppercaseNo: 'Non'
+    UppercaseYes: 'Oui'
   Info:
     UserNotRegistered: Vous devrez d'abord vous enregistrer auprès du bot avec `{{prefix}}register`
-Locale:
-  Contributors: |-
-    Contributeurs pour cette localisation:
-    - `Emma <gh: rileyIO, discord: emma#1366>`
-  Language: Anglais
-  Name: Anglais
-  Error:
-    NoneSpecified: |-
-      Veuillez sélectionner une des 
-      {{{locales}}}
 Help:
   Admin:
     ChannelPurge:
