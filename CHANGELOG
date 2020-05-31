@@ -1,7 +1,9 @@
 6.0.0
 - Fixed: Mod Mute not working on users of the same role or higher than Kiera's role position + excluding @everyone and Nitro Booster for being unmanaged roles.
 - Updated: Dependencies audit and update.
-- Removed: Old code from User object used primarily by Legacy permissions and decommissioned site - need to reevaluate remainin.
+- Removed: Old code from User object used primarily by Legacy permissions and decommissioned site - need to reevaluate remaining.
+- Added: ck update command will now change your username to add 🔓 or 🔒 depending what the setting is set to.
+- Added: New ck command to set if/when to set a 🔓 or 🔒 depending on your linked ChastiKey account status.
 
 5.1.1
 - Fixed: Decision Roll not working on servers where the roll author is not present #28

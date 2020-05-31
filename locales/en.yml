@@ -303,6 +303,8 @@ Generic:
     CommandDisabledInChannel: The command `{{command}}` is not allowed in this channel.
     HelpCommandMissing: Unfortunately there's no help text for this command yet.
     Internal: Failed to complete command due to an internal issue! This may require further investigation. If you need support on this please visit `https://kierabot.xyz/support`
+    ThisActionFailedServerOwner: Cannot complete this action as you are the Server Owner.
+    RoleTooHightForThisAction: Cannot complete this action as your role is too high.
 
   Warn:
     CommandUnderMaintenance: This command is currently under maintenance.

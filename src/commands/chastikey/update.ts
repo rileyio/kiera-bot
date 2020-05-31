@@ -31,7 +31,8 @@ export async function update(routed: RouterRouted) {
     verify: { start: 0, end: 0 },
     lockee: { start: 0, end: 0 },
     locktober: { start: 0, end: 0 },
-    keyholder: { start: 0, end: 0 }
+    keyholder: { start: 0, end: 0 },
+    nickname: { start: 0, end: 0 }
   }
 
   // Check if user calling this command is targeting a different user
@@ -50,8 +51,8 @@ export async function update(routed: RouterRouted) {
 
   // Track changes made later - if any
   var changesImplemented: Array<{
-    action: 'changed' | 'added' | 'removed' | 'header' | 'performance'
-    category: 'n/a' | 'verify' | 'lockee' | 'locktober' | 'keyholder'
+    action: 'changed' | 'added' | 'removed' | 'header' | 'performance' | 'error'
+    category: 'n/a' | 'verify' | 'lockee' | 'locktober' | 'keyholder' | 'nickname'
     type: 'role' | 'status'
     result: number | string
   }> = []
@@ -136,7 +137,7 @@ export async function update(routed: RouterRouted) {
   // Fetch some stuff from Discord & ChastiKey
   const discordUser =
     targetUserType !== 'Self'
-      ? await routed.message.guild.members.fetch(user.id)
+      ? routed.message.guild.member(user.id)
       : // User calling the command
         routed.message.member
 
@@ -451,6 +452,54 @@ export async function update(routed: RouterRouted) {
     category: 'n/a',
     type: 'status',
     result: `${Math.round(updatePerformance.locktober.end - updatePerformance.locktober.start)}ms`
+  })
+
+  ///////////////////////////////////////
+  /// Nickname Update                 ///
+  ///////////////////////////////////////
+  // * Performance Start: Nickname * //
+  updatePerformance.nickname.start = performance.now()
+  changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Nickname' })
+
+  try {
+    // Lockee Nickname update
+    const hasEmojiStatus = /🔒|🔓/.test(discordUser.nickname)
+    const hasEmojiLocked = /🔒/.test(discordUser.nickname)
+    const hasEmojiUnlocked = /🔓/.test(discordUser.nickname)
+    const lockeeStatusPref = user.ChastiKey.preferences.lockee.showStatusInNickname
+
+    // Check if kiera sits at or below the person calling -and- is not the server owner
+    const isServerOwner = discordUser.id === routed.message.guild.ownerID
+    const isPermissionsIssue = discordUser.roles.highest.comparePositionTo(routed.message.guild.member(routed.bot.client.user.id).roles.highest) > 0
+
+    if (!isPermissionsIssue && !isServerOwner) {
+      // When user is in an active lock but has the (unlocked -or- no) emoji
+      if (hasLockedLock && (hasEmojiUnlocked || !hasEmojiStatus) && (lockeeStatusPref === 'always' || lockeeStatusPref === 'locked')) {
+        // Set locked emoji
+        await discordUser.setNickname(hasEmojiUnlocked ? discordUser.nickname.replace('🔓', '🔒') : `${discordUser.nickname} 🔒`)
+        changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${discordUser.nickname} 🔒` })
+      }
+      if (!hasLockedLock && (hasEmojiLocked || !hasEmojiStatus) && (lockeeStatusPref === 'always' || lockeeStatusPref === 'unlocked')) {
+        // Set unlocked emoji
+        await discordUser.setNickname(hasEmojiLocked ? discordUser.nickname.replace('🔒', '🔓') : `${discordUser.nickname} 🔓`)
+        changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${discordUser.nickname} 🔓` })
+      }
+    } else {
+      // Show error for is server owner
+      if (isServerOwner) changesImplemented.push({ action: 'error', category: 'nickname', type: 'status', result: routed.$render('Generic.Error.ThisActionFailedServerOwner') })
+      if (isPermissionsIssue) changesImplemented.push({ action: 'error', category: 'nickname', type: 'status', result: routed.$render('Generic.Error.RoleTooHightForThisAction') })
+    }
+  } catch (e) {
+    console.log('CK Update Error updating Nickname', e)
+    // changesImplemented.push({ action: 'added', category: 'nickname', type: 'role', result: 'Renowned nickname' })
+  }
+  // * Performance End: Nickname * //
+  updatePerformance.nickname.end = performance.now()
+  changesImplemented.push({
+    action: 'performance',
+    category: 'n/a',
+    type: 'status',
+    result: `${Math.round(updatePerformance.nickname.end - updatePerformance.nickname.start)}ms`
   })
 
   ///////////////////////////////////////

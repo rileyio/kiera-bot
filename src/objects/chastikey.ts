@@ -53,18 +53,16 @@ export class TrackedChastiKeyPreferences {
   public keyholder: { showAverage: boolean } = {
     showAverage: false
   }
-  public lockee: { allowPublicHistory: boolean; limitMonths: 3 | 6 | 12; showLockInNickname: 'never' | 'always' | 'locked' | 'unlocked' } = {
+  public lockee: { allowPublicHistory: boolean; limitMonths: 3 | 6 | 12; showStatusInNickname: 'never' | 'always' | 'locked' | 'unlocked' } = {
     allowPublicHistory: false,
     limitMonths: 3,
-    showLockInNickname: 'never'
+    showStatusInNickname: 'never'
   }
 
-  constructor(init: Partial<TrackedChastiKeyPreferences>) {
-    console.log('Extending .preferences', init)
-
+  constructor(init?: Partial<TrackedChastiKeyPreferences>) {
     // Assign sub objects properly
-    Object.assign(this.keyholder, init.keyholder || {})
-    Object.assign(this.lockee, init.lockee || {})
+    Object.assign(this.keyholder, init ? (init.hasOwnProperty('keyholder') ? init.keyholder : {}) : {})
+    Object.assign(this.lockee, init ? (init.hasOwnProperty('lockee') ? init.lockee : {}) : {})
   }
 }
 
