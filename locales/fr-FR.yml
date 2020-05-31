@@ -76,7 +76,6 @@ ChastiKey:
       Si votre compte ChastiKey est nouveau (15-30 minutes), cela peut prendre du temps pour que Kiera reçoive toutes les données nécessaires.
     FastForward: Votre compte a été vérifié! Certaines données peuvent encore prendre **jusqu'à 15 minutes** pour être mises en cache et être complètement disponible.
     NotSuccessfulUsingReason: '{{reason}}'
-    # 1366`
     PreviouslyCompleted: Votre compte a déjà été vérifié! Si cella pose encore problème veuillez contacter emma
     VerifyRequired: |-
       Cette commande nécessite que votre compte soit vérifié auprès de ChastKey avec la commande suivante:
@@ -98,6 +97,30 @@ ChastiKey:
   # Administrative Tasks
   Admin:
     RefreshTriggered: Raffraichissement manuel des statistiques déclenché..
+Locale:
+  Info:
+    AlreadySet: |-
+      Vous avez déjà la localisation définie sur `{{locale}}` .
+  Code: fr-FR
+  Contributors: |-
+    Contributeurs pour cette localisation:
+    - `Emma <gh: rileyIO, discord: emma#1366>`
+  Error:
+    DoesNotExist: |-
+      Le code de localisation (`{{locale}}`) ne correspond à aucune entrée disponible pour Kiera. Essayez un des codes suivants:
+      {{{locales}}}
+    NoneSpecified: |-
+      Veuillez sélectionner une des 
+      {{{locales}}}
+  Language: Français
+  Name: Français
+  Success:
+    Set: |-
+      Les paramètres régionaux `{{locale}}` ont été définis avec succès! Toutes les réponses (traduites) apparaîtront désormais en français.
+      
+      {{contributors}}
+      
+      Si vous souhaitez contribuer à cette localisation, veuillez contacter emma#1366 et demander l'accès à cette locale sur: `https://kierabot.xyz/translate`
 Admin:
   BotManualRestart: 'Redémarrage du bot dans `{{seconds}}` secondes..'
   CommandCategoriesList: >-
@@ -148,24 +171,6 @@ Moderate:
 BattleNet:
   Error:
     CharacterNotFound: Personnage introuvable!
-Locale:
-  Code: fr-FR
-  Contributors: |-
-    Contributeurs pour cette localisation:
-    - `Emma <gh: rileyIO, discord: emma#1366>`
-  Language: Français
-  Name: Français
-  Error:
-    NoneSpecified: |-
-      Veuillez sélectionner une des 
-      {{{locales}}}
-  Success:
-    Set: |-
-      Les paramètres régionaux `{{locale}}` ont été définis avec succès! Toutes les réponses (traduites) apparaîtront désormais en français.
-      
-      {{contributors}}
-      
-      Si vous souhaitez contribuer à cette localisation, veuillez contacter emma#1366 et demander l'accès à cette locale sur: `https://kierabot.xyz/translate`
 Generic:
   Error:
     CommandDisabledInChannel: La commande `{{command}}` n'est pas autorisée dans ce canal.
@@ -198,6 +203,51 @@ Help:
       Description: Vérifier le ping et la latence de Kiera
     BotRestart:
       Description: Redémarrer le bot de Kiera
+  BattleNet:
+    WoWCharacterProfile:
+      Description: Récupérer le profil du personnage de World of Warcraft
+  ChastiKey:
+    LockeeHistory:
+      Description: Montrer le détail de l'historique du lockee
+    UsernameSearch:
+      Description: Recherche sur le nom d'utilisateur ChastiKey
+    LockeeStats:
+      Description: Voir les statistiques du lockee
+    KeyholderStats:
+      Description: Voir les statistiques du keyholder
+    KeyholderLockees:
+      Description: Liste des lockee du Keyholder
+    Ticker:
+      Description: Voir le compteur ChastiKey
+    Update:
+      Description: Synchroniser votre profile ChastiKey avec Discord
+  Utility:
+    ListRoles:
+      Description: Lister tous les rôles serveur et leurs nombres d'utilisateurs.
+  Fun:
+    EightBall:
+      Description: Poser une question à la boule numéro 8
+    Flip:
+      Description: Lancer une pièce
+    Roll:
+      Description: Lancer un ou plusieurs dés
+  Poll:
+    New:
+      Description: Créer un nouveau sondage
+    Edit:
+      # should open, etc be translated ?
+      Description: Editer les réglages du sondage (`ouvert`, `public`, `question`, `titre`, `bas de page`)
+    Start:
+      Description: Commencer à accepter les réponses au sondage
+    Stop:
+      Description: Arrêter d'accepter les réponses au sondage
+    AddOption:
+      Description: Ajouter une réponse possible au sondage
+    RemoveOption:
+      Description: Enlever une réponse possible au sondage
+  User:
+    SetLocale:
+      Description: Définissez votre localisation for les réponses du bot
 Poll:
   Warn:
     DifferentAuthorID: Seul l'auteur du sondage peut appeler la commande {{prefix}} !
