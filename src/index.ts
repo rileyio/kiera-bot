@@ -13,6 +13,8 @@ import { Statistics } from '@/statistics'
 import { ServerStatisticType } from './objects/statistics'
 import { ChastiKey } from './integrations/ChastiKey'
 
+const DEFAULT_LOCALE = process.env.BOT_LOCALE
+
 export class Bot {
   public client: Discord.Client
   public Log = {
@@ -119,7 +121,7 @@ export class Bot {
     // Print startup details ///////////////
     ////////////////////////////////////////
     this.Log.Bot.log(
-      this.Localization.$render(process.env.BOT_LOCALE, 'System.Startup', {
+      this.Localization.$render(DEFAULT_LOCALE, 'System.Startup', {
         routes: this.BotMonitor.WebAPI.configuredRoutes.length,
         commands: this.Router.routes.length,
         guilds: this.client.guilds.cache.size,
