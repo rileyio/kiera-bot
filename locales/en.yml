@@ -6,7 +6,7 @@ Locale:
   Description: |-
     "Generic English usage and the default for Kiera.
 
-    {{contributors}}
+    {{{contributors}}}
 
     If you wish to contribute to this locale or help translate those you're fluent in, please contact `emma#1366` to confirm and request access to the target language: `https://kierabot.xyz/translate` Not all languages are listed, if there's one not preset, let Emma know and it will be added."
   Contributors: |-
@@ -23,7 +23,7 @@ Locale:
     Set: |-
       Locale `{{locale}}` set successfully! All responses (that are translated) will now appear in English.
 
-      {{contributors}}
+      {{{contributors}}}
 
       If you wish to contribute to this Localization please reachout to emma#1366 and request access to that locale at: `https://kierabot.xyz/translate`
 
