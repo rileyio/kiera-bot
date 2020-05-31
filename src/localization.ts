@@ -136,8 +136,6 @@ export default class Localization {
    * @memberof Localization
    */
   public $render<T>(locale: string, key: string, data?: boolean | object | T) {
-    // Check if its fallback being passed for the 3rd arg
-    if (typeof data === 'boolean' && data === false) return
     // Check if locale exists
     if (this.loaded[locale]) {
       const targetString: string = dotProp.get(this.loaded[locale].strings, key)
@@ -146,6 +144,9 @@ export default class Localization {
         return sb(targetString, data)
       }
     }
+
+    // Check if its fallback being passed for the 3rd arg
+    if (typeof data === 'boolean' && data === false) return
     // Fallback
     const templ = Handlebars.compile(dotProp.get(this.loaded[DEFAULT_LOCALE].strings, key))
     return templ(data)
@@ -188,16 +189,43 @@ export default class Localization {
    * @memberof Localization
    */
   public $locales() {
-    return Object.keys(this.loaded)
-      .map((l) =>
-        this.$localeStringExists(l, 'Locale.Code')
-          ? `\`${this.$render(l, 'Locale.Code', l === DEFAULT_LOCALE ? undefined : false)}\` - (\`${this.$render(
-              l,
-              'Locale.Language',
-              l === DEFAULT_LOCALE ? undefined : false
-            )}\`) ${this.$render(l, 'Locale.ShortDescription', l === DEFAULT_LOCALE ? undefined : false)}`
-          : ''
-      )
-      .join('\n')
+    var longestLocaleCode = 5
+    var longestLocaleName = 0
+
+    // Find longest name
+    Object.keys(this.loaded).forEach((l) => {
+      const localeName = (dotProp.get(this.loaded[l].strings, 'Locale.Name') as string) || '<Missing Locale Description>'
+      if (localeName) longestLocaleName = longestLocaleName < localeName.length ? localeName.length : longestLocaleName
+    })
+
+    return (
+      '```' +
+      Object.keys(this.loaded)
+        .map((l) => {
+          const stringsTranslated = this.countStrings(this.loaded[l])
+          const localeCodeExists = this.$localeStringExists(l, 'Locale.Code')
+          const localeNameExists = this.$localeStringExists(l, 'Locale.Name')
+          const localeDescExists = this.$localeStringExists(l, 'Locale.ShortDescription')
+          const localeCode = localeCodeExists ? this.$render(l, 'Locale.Code', l === DEFAULT_LOCALE ? undefined : false) : ''
+          const localeName = localeNameExists ? this.$render(l, 'Locale.Name', l === DEFAULT_LOCALE ? undefined : false) : '<Missing Locale Name>'
+          const localeDesc = localeDescExists ? this.$render(l, 'Locale.ShortDescription', l === DEFAULT_LOCALE ? undefined : false) : '<Missing Locale Description>'
+
+          // Format # with leading 0 if below 10%
+          const percTranslated = Math.round((stringsTranslated / this.stringsCount) * 100)
+          const percTranslatedStr =
+            (stringsTranslated / this.stringsCount) * 100 < 10 ? ` 0${percTranslated}%` : percTranslated === 100 ? `${percTranslated}%` : ` ${percTranslated}%`
+
+          if (localeCodeExists) {
+            return `[${percTranslatedStr}] ${localeCode} ${Array.from(Array(longestLocaleCode + 2 - localeCode.length)).join('.')} ${localeName} ${Array.from(
+              Array(longestLocaleName + 2 - localeName.length)
+            ).join('.')} ${localeDesc}`
+          }
+
+          // Fallback: return empty string
+          return ''
+        })
+        .join('\n') +
+      '```'
+    )
   }
 }
