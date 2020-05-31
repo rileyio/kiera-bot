@@ -1,5 +1,5 @@
-import got from 'got'
-import * as FormData from 'form-data'
+// import got from 'got'
+// import * as FormData from 'form-data'
 import * as YAML from 'yaml'
 import * as fs from 'fs'
 import * as glob from 'fast-glob'
@@ -141,7 +141,8 @@ export default class Localization {
       const targetString: string = dotProp.get(this.loaded[locale].strings, key)
       // Check if string is translated - if not: fallback
       if (targetString) {
-        return sb(targetString, data)
+        const templ = Handlebars.compile(targetString, data as T | object)
+        return templ(data)
       }
     }
 
