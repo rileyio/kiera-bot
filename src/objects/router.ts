@@ -6,6 +6,8 @@ import { TrackedMessage } from './message'
 import * as XRegExp from 'xregexp'
 import { TrackedUser } from './user'
 
+const DEFAULT_LOCALE = process.env.BOT_LOCALE
+
 /**
  * Discord Command Route
  *
@@ -169,7 +171,7 @@ export class RouterRouted {
   }
 
   public $render<T>(key: string, data?: T) {
-    return this.bot.Localization.$render(this.user ? this.user.locale : 'en', key, data)
+    return this.bot.Localization.$render(this.user ? this.user.locale : DEFAULT_LOCALE, key, data)
   }
 
   public $localeExists(key: string) {
@@ -177,7 +179,7 @@ export class RouterRouted {
   }
 
   public $localeContributors(key: string) {
-    return this.bot.Localization.$localeContributors(this.user ? this.user.locale : 'en')
+    return this.bot.Localization.$localeContributors(key) || ''
   }
 
   public $locales() {
