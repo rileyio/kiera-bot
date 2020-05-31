@@ -170,8 +170,16 @@ export class RouterRouted {
     this.v = this.route.validation.validateArgs(this.args)
   }
 
-  public $render<T>(key: string, data?: T) {
-    return this.bot.Localization.$render(this.user ? this.user.locale : DEFAULT_LOCALE, key, data)
+  public $render<T>(key: string, data?: T): string
+  public $render<T>(locale: string, key: string, data?: T): string
+  public $render<T>(locale: string, key?: string | T, data?: T): string {
+    // When a locale override is passed too
+    if (typeof locale === 'string' && typeof key === 'string') {
+      return this.bot.Localization.$render(locale, key as string, arguments[2])
+    }
+
+    // Use locale from this.user
+    return this.bot.Localization.$render(this.user ? this.user.locale : DEFAULT_LOCALE, locale, key as T)
   }
 
   public $localeExists(key: string) {
