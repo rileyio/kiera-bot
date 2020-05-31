@@ -109,7 +109,6 @@ ChastiKey:
       Als je Chastikey-account minder dan 15-30 minuten geleden aangemaakt is, kan het ook zo lang duren voordat Kiera alle gegevens heeft ontvangen.
     FastForward: "Je account is geverifieerd! Het kan **tot een kwartier** duren voordat alle gegevens beschikbaar zijn. "
     NotSuccessfulUsingReason: '{{reason}}'
-    # 1366`
     PreviouslyCompleted: Je account is al geverifieerd! Als er iets mis is, neem dan contact op met `emma.
     VerifyRequired: |-
       Voor deze opdracht moet je account geverifieerd zijn met Chastikey. Gebruik hiervoor het volgende commando: 
@@ -137,6 +136,9 @@ ChastiKey:
   # Administrative Tasks
   Admin:
     RefreshTriggered: Statistieken handmatig vernieuwen gestart
+Locale:
+  Code: nl
+  Name: Nederlands
 Generic:
   Error:
     CommandDisabledInChannel: Het commando  `{{command}}` is niet toegestaan in dit kanaal.
