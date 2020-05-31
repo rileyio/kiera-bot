@@ -1,6 +1,6 @@
 import { performance } from 'perf_hooks'
 import { User, Message } from 'discord.js'
-import { RouteConfigurationCategory, RouteActionUserTarget, Validate, ProcessedPermissions, ValidationType } from '@/router'
+import { RouteConfigurationCategory, Validate, ProcessedPermissions, ValidationType } from '@/router'
 import { Bot } from '@/index'
 import { TrackedMessage } from './message'
 import * as XRegExp from 'xregexp'
@@ -57,7 +57,6 @@ export class RouterStats {
 
 /**
  * Message routing configured to Object for use by the router
- *
  * @export
  * @class MessageRoute
  */
@@ -74,6 +73,7 @@ export class MessageRoute {
   public category: string
   public command: string
   public controller: (routed: RouterRouted) => Promise<Boolean>
+  public description: string
   public example: string
   public help: string
   public middleware: Array<(routed: RouterRouted) => Promise<RouterRouted | void>> = []

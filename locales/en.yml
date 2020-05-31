@@ -292,6 +292,7 @@ Generic:
     UserNotRegistered: You'll need to register with the bot first using `{{prefix}}register`
   Error:
     CommandExactMatchFailedOptions: '***Hint:** You can type:* `{{prefix}}help {{command}}`, Here are some examples using this command:'
+    CommandExactMatchFailedFallback: 'Examples of commands in the `{{prefix}}{{command}}` group:'
     CommandDisabledInChannel: The command `{{command}}` is not allowed in this channel.
     HelpCommandMissing: Unfortunately there's no help text for this command yet.
     Internal: Failed to complete command due to an internal issue! This may require further investigation. If you need support on this please visit `https://kierabot.xyz/support`

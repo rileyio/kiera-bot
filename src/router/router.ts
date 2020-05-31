@@ -180,10 +180,10 @@ export class CommandRouter {
       if (routes.length === 0) return
 
       // Try to find a route
-      var examples = []
+      var allCategoryRoutes = [] as Array<MessageRoute>
       const route = routes.find((r) => {
         // Add to examples
-        if (r.permissions.restricted === false) examples.push(r.example)
+        if (r.permissions.restricted === false) allCategoryRoutes.push(r)
         else {
           this.bot.Log.Router.log(`Router -> Examples for command like '${args[0]}' Restricted!`)
         }
@@ -201,17 +201,23 @@ export class CommandRouter {
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
 
         // Provide some feedback about the failed command(s)
-        var exampleUseOfCommand = this.bot.Localization.$render(kieraUser.locale, 'Generic.Error.CommandExactMatchFailedOptions', { command: args[0] })
+        var exampleUseOfCommand = this.bot.Localization.$render(kieraUser.locale, 'Generic.Error.CommandExactMatchFailedFallback', { command: args[0] })
         var examplesToAppend = ``
-        for (let index = 0; index < examples.length; index++) {
-          const example = examples[index]
-          examplesToAppend += `\`${Utils.sb(example)}\`${index < examples.length - 1 ? '\n' : ''}`
+        for (let index = 0; index < allCategoryRoutes.length; index++) {
+          const routeHint = allCategoryRoutes[index]
+          var routeExample = `\`${Utils.sb(routeHint.example)}\` `
+          // Add description (if one is present to example)
+          routeExample += routeHint.description && typeof routeHint.description === 'string' ? `\n└ ${this.bot.Localization.$render(kieraUser.locale, routeHint.description)}` : ''
+          // Add newline if applicable
+          routeExample += `${index < allCategoryRoutes.length - 1 ? '\n' : ''}`
+          // Add to built examples string
+          examplesToAppend += routeExample
         }
 
         // Send back in chat
         // If no commands are available, don't print the fallback (this typically means
         // the whole route has restrited coammnds)
-        if (examples.length === 0) return // stop here
+        if (allCategoryRoutes.length === 0) return // stop here
         await message.channel.send(fallbackHelp(exampleUseOfCommand, examplesToAppend))
 
         // End routing

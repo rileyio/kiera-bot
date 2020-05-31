@@ -3,15 +3,15 @@ import { RouterRouted, ExportRoutes } from '@/router'
 import { TrackedAvailableObject } from '@/objects/available-objects'
 
 export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'Info',
-    controller: commandHelp,
-    example: '{{prefix}}help poll',
-    name: 'help-command',
-    validate: '/help:string/command=string',
-    permissions: { serverOnly: false }
-  },
+  // {
+  //   type: 'message',
+  //   category: 'Info',
+  //   controller: commandHelp,
+  //   example: '{{prefix}}help poll',
+  //   name: 'help-command',
+  //   validate: '/help:string/command=string',
+  //   permissions: { serverOnly: false }
+  // },
   {
     type: 'message',
     category: 'Info',
