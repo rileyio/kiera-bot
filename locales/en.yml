@@ -234,7 +234,7 @@ Help:
     ListRolesLike:
       Description: List server roles & user counts where name is similar to that sent
     DisplayRoleInformation:
-      Description: Display a give role's details
+      Description: Display a given role's details
   Fun:
     EightBall:
       Description: Ask the 8ball a question
