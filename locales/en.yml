@@ -216,6 +216,12 @@ Help:
       Description: Roll premade Decision
     RollRealtime:
       Description: Create & Roll a 1 time Decision roll
+    AddManager:
+      Description: Add user as a Manager of the Decision roll's properties
+    RemoveManager:
+      Description: Remove user as a Manager from the Decision roll
+    TransferOwnership:
+      Description: Transfer ownership of Decision roll
   Moderate:
     MuteUser:
       Description: Apply `Tempoary Mute` role to user & preserve roles
