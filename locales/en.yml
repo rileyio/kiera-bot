@@ -295,12 +295,17 @@ Decision:
     ConfirmResetAllConsumedOutcomes: To confirm resetting all consumed Outcomes for this decision, send **`yes`** in the next 60 seconds!
     ConfirmResetAllConsumedOutcomesReceived: Confirmation Received! Resetting all consumed flags for this decision... please wait
     CancelledResetAllConsumedFlags: Decision outcome consumed flag reset cancelled! Reply not received before timeout (1 minute).
+    OwnershipTransfered: Ownership of this Decision roll `{{id}}` has been transfered to {{target}}
+    AddedManager: |-
+      {{user}} has been added to {{id}} as a Manager.
+      Managers are able to perform all actions upon a Decision roll the same as the author with the exception of deleting it all together. This includes seeing and editing it in any of the online web portals as if it were their own.
+    RemovedManager: '{{user}} has been removed as a Manager from {{id}}.'
 
 Generic:
   Info:
     UserNotRegistered: |-
       You'll need to register with the bot first using `{{prefix}}register`
-      
+
       Registering opts you into having some basic account user ids stored in order for the bot to function normally for commands requiring stored values.
       If you wish to remove your account data in the future, please contact `emma#1366`
   Error:

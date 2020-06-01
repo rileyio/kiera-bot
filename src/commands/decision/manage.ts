@@ -277,6 +277,7 @@ export async function addDecisionManager(routed: RouterRouted) {
     if (!isAlreadyManager) decision.managers.push(mentionedUser.id)
 
     await routed.bot.DB.update('decision', { _id: new ObjectID(routed.v.o.id) }, { $set: { managers: decision.managers } }, { atomic: true })
+    await routed.message.reply(routed.$render('Decision.Edit.AddedManager', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
     return true
   }
 }
@@ -298,6 +299,7 @@ export async function removeDecisionManager(routed: RouterRouted) {
     }
 
     await routed.bot.DB.update('decision', { _id: new ObjectID(routed.v.o.id) }, { $set: { managers: decision.managers } }, { atomic: true })
+    await routed.message.reply(routed.$render('Decision.Edit.RemovedManager', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
     return true
   }
 }
@@ -311,7 +313,7 @@ export async function transferDecisionOwnership(routed: RouterRouted) {
 
     // Make new owner by updating the authorID field
     await routed.bot.DB.update('decision', { _id: decision._id, authorID: routed.user.id }, { $set: { authorID: mentionedUser.id } }, { atomic: true })
-
+    await routed.message.reply(routed.$render('Decision.Edit.OwnershipTransfered', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
     return true
   }
 }
