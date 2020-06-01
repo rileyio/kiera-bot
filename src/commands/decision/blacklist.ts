@@ -13,7 +13,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "id" unblacklist user "userSnowflake"',
     name: 'decision-unblacklist-user',
     validate: '/decision:string/id=string/unblacklist:string/user:string/user=string',
-    middleware: [Middleware.isUserRegistered],
+    middleware: [Middleware.isUserRegistered]
   },
   {
     type: 'message',
@@ -23,7 +23,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "id" blacklist user "userSnowflake"',
     name: 'decision-blacklist-user',
     validate: '/decision:string/id=string/blacklist:string/user:string/user=string',
-    middleware: [Middleware.isUserRegistered],
+    middleware: [Middleware.isUserRegistered]
   },
   {
     type: 'message',
@@ -33,7 +33,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "id" blacklisted users',
     name: 'decision-blacklist-show',
     validate: '/decision:string/id=string/blacklisted:string/users:string',
-    middleware: [Middleware.isUserRegistered],
+    middleware: [Middleware.isUserRegistered]
   },
   {
     type: 'message',
@@ -43,7 +43,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "id" unwhitelist server "serverID"',
     name: 'decision-unwhitelist-server',
     validate: '/decision:string/id=string/unwhitelist:string/server:string/serverid=string',
-    middleware: [Middleware.isUserRegistered],
+    middleware: [Middleware.isUserRegistered]
   },
   {
     type: 'message',
@@ -53,12 +53,15 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision "id" whitelist server "serverID"',
     name: 'decision-whitelist-server',
     validate: '/decision:string/id=string/whitelist:string/server:string/serverid=string',
-    middleware: [Middleware.isUserRegistered],
+    middleware: [Middleware.isUserRegistered]
   }
 )
 
 export async function blacklistUser(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
+    _id: new ObjectID(routed.v.o.id),
+    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+  })
 
   if (decisionFromDB) {
     // Check if user snowflake passed is valid
@@ -107,7 +110,10 @@ export async function blacklistUser(routed: RouterRouted) {
 }
 
 export async function unblacklistUser(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
+    _id: new ObjectID(routed.v.o.id),
+    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+  })
 
   if (decisionFromDB) {
     // Check if user snowflake passed is valid
@@ -157,7 +163,10 @@ export async function unblacklistUser(routed: RouterRouted) {
 }
 
 export async function showUserBlacklist(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
+    _id: new ObjectID(routed.v.o.id),
+    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+  })
 
   if (decisionFromDB) {
     // Construct
@@ -197,7 +206,10 @@ export async function showUserBlacklist(routed: RouterRouted) {
 }
 
 export async function whitelistServer(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
+    _id: new ObjectID(routed.v.o.id),
+    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+  })
 
   if (decisionFromDB) {
     // Construct
@@ -227,7 +239,10 @@ export async function whitelistServer(routed: RouterRouted) {
 }
 
 export async function unwhitelistServer(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
+    _id: new ObjectID(routed.v.o.id),
+    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+  })
 
   if (decisionFromDB) {
     // Construct

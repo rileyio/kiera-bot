@@ -5,7 +5,6 @@ import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import { ObjectID } from 'bson'
 import { decisionFromSaved, decisionRealtime } from '@/embedded/decision-embed'
 import { TrackedDecisionLogEntry } from '@/objects/decision'
-import { GuildMember } from 'discord.js'
 
 export const Routes = ExportRoutes(
   {

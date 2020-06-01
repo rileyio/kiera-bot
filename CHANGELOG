@@ -11,9 +11,13 @@
 - Added: New ck command to set if/when to set a 🔓 or 🔒 depending on your linked ChastiKey account status.
 - Added: Localization support. Included this release: [ de, en, fr-FR, nl ]. Translations in progress.
 - Added: New help menus. Some legacy menus will remain but will be converted in future updates.
+- Added: Help descriptions to almost all commands for use in new help menu texts and for localization.
 - Added: Intents for Discord.js on startup - Currently using all as existing functionality would be impacted.
 - Added: New template renderer (handlebars.js)
 - Added: New prompt & input helpers - Will be slowly migrating some existing commands that could use it over future updates.
+- Added: Improved backend logging to help debug issues, especially with errors.
+- Added: Ability for a decision roll to have Managers added. Managers will be able to perform any action on a decision roll except delete it all together. #30
+- Changed: `!decision "id" add "Outcome Text"` to `!decision "id" outcome add "Outcome Text"`
 
 5.1.1
 - Fixed: Decision Roll not working on servers where the roll author is not present #28

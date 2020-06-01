@@ -20,11 +20,21 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Fun',
+    controller: addDecisionManager,
+    description: 'Help.Decision.GenerateNewID.Description',
+    example: '{{prefix}}decision "id" manager add @user#1234',
+    name: 'decision-add-manager',
+    validate: '/decision:string/id=string/manager:string/add:string/user=string',
+    middleware: [Middleware.isUserRegistered]
+  },
+  {
+    type: 'message',
+    category: 'Fun',
     controller: newDecisionEntry,
     description: 'Help.Decision.NewEntry.Description',
-    example: '{{prefix}}decision "id" add "Your decision entry here"',
-    name: 'decision-new-option',
-    validate: '/decision:string/id=string/add:string/text=string',
+    example: '{{prefix}}decision "id" outcome add "Your decision entry here"',
+    name: 'decision-new-outcome',
+    validate: '/decision:string/id=string/outcome:string/add:string/text=string',
     middleware: [Middleware.isUserRegistered]
   },
   {
@@ -84,7 +94,7 @@ export async function newDecisionEntry(routed: RouterRouted) {
   // Get the saved decision from the db (Only the creator can edit)
   var decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    authorID: routed.user.id
+    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
   })
 
   if (decisionFromDB) {
@@ -100,7 +110,7 @@ export async function newDecisionEntry(routed: RouterRouted) {
 export async function generateNewDecisionID(routed: RouterRouted) {
   const oldDecision = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.oldid),
-    authorID: routed.user.id
+    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
   })
 
   if (oldDecision) {
@@ -138,7 +148,7 @@ export async function setDecisionConsumeMode(routed: RouterRouted) {
   // Get the saved decision from the db (Only the creator can edit)
   var decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    authorID: routed.user.id
+    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
   })
 
   if (decisionFromDB) {
@@ -171,7 +181,7 @@ export async function setConsumeReset(routed: RouterRouted) {
   // Get the saved decision from the db (Only the creator can edit)
   var decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    authorID: routed.user.id
+    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
   })
 
   if (decisionFromDB) {
@@ -233,4 +243,20 @@ export async function setConsumeReset(routed: RouterRouted) {
   }
 
   return false
+}
+
+export async function addDecisionManager(routed: RouterRouted) {
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+
+  if (decisionFromDB) {
+    const decision = new TrackedDecision(decisionFromDB)
+    const mentionedUser = routed.message.mentions.members.first()
+    const isAlreadyManager = decision.managers.findIndex((u) => u === mentionedUser.id) > -1
+
+    // Update managers
+    if (!isAlreadyManager) decision.managers.push(mentionedUser.id)
+
+    await routed.bot.DB.update('decision', { _id: new ObjectID(routed.v.o.id) }, { $set: { managers: decision.managers } }, { atomic: true })
+    return true
+  }
 }

@@ -57,6 +57,14 @@ export class TrackedDecision {
   public userWhitelist: Array<string> = []
   public userBlacklist: Array<string> = []
 
+  /**
+   * Users who are allowed to Edit all properties & outcomes on a decision.
+   *   Limit: They cannot delete a decision on the owner
+   * @type {Array<string>}
+   * @memberof TrackedDecision
+   */
+  public managers: Array<string> = []
+
   public log?: Array<TrackedDecisionLogEntry>
 
   public consumeMode: 'Basic' | 'Temporarily Consume' | 'Consume' = 'Basic'
@@ -64,7 +72,7 @@ export class TrackedDecision {
 
   constructor(init?: Partial<TrackedDecision>) {
     Object.assign(this, init || {})
-    this.options = this.options.map(o => new TrackedDecisionOption(o))
+    this.options = this.options.map((o) => new TrackedDecisionOption(o))
   }
 }
 

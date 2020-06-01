@@ -1,5 +1,4 @@
 import { MongoClient, MongoClientOptions, Cursor, Db, MongoError, CollectionInsertManyOptions } from 'mongodb'
-import { Logging } from '@/utils'
 import { Bot } from '..'
 
 export * from './promise'
