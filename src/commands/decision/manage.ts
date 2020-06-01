@@ -21,10 +21,30 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Fun',
     controller: addDecisionManager,
-    description: 'Help.Decision.GenerateNewID.Description',
+    description: 'Help.Decision.AddManager.Description',
     example: '{{prefix}}decision "id" manager add @user#1234',
     name: 'decision-add-manager',
     validate: '/decision:string/id=string/manager:string/add:string/user=string',
+    middleware: [Middleware.isUserRegistered]
+  },
+  {
+    type: 'message',
+    category: 'Fun',
+    controller: removeDecisionManager,
+    description: 'Help.Decision.RemoveManager.Description',
+    example: '{{prefix}}decision "id" manager remove @user#1234',
+    name: 'decision-remove-manager',
+    validate: '/decision:string/id=string/manager:string/remove:string/user=string',
+    middleware: [Middleware.isUserRegistered]
+  },
+  {
+    type: 'message',
+    category: 'Fun',
+    controller: transferDecisionOwnership,
+    description: 'Help.Decision.TransferOwnership.Description',
+    example: '{{prefix}}decision "id" ownership transfer @user#1234',
+    name: 'decision-transfer-ownership',
+    validate: '/decision:string/id=string/ownership:string/transfer:string/user=string',
     middleware: [Middleware.isUserRegistered]
   },
   {
@@ -247,16 +267,51 @@ export async function setConsumeReset(routed: RouterRouted) {
 
 export async function addDecisionManager(routed: RouterRouted) {
   const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+  const mentionedUser = routed.message.mentions.members.first()
 
-  if (decisionFromDB) {
+  if (decisionFromDB && mentionedUser) {
     const decision = new TrackedDecision(decisionFromDB)
-    const mentionedUser = routed.message.mentions.members.first()
     const isAlreadyManager = decision.managers.findIndex((u) => u === mentionedUser.id) > -1
 
     // Update managers
     if (!isAlreadyManager) decision.managers.push(mentionedUser.id)
 
     await routed.bot.DB.update('decision', { _id: new ObjectID(routed.v.o.id) }, { $set: { managers: decision.managers } }, { atomic: true })
+    return true
+  }
+}
+
+export async function removeDecisionManager(routed: RouterRouted) {
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+  const mentionedUser = routed.message.mentions.members.first()
+
+  if (decisionFromDB && mentionedUser) {
+    const decision = new TrackedDecision(decisionFromDB)
+    const isAlreadyManager = decision.managers.findIndex((u) => u === mentionedUser.id) > -1
+
+    // Update managers
+    if (isAlreadyManager) {
+      decision.managers.splice(
+        decision.managers.findIndex((u) => u === mentionedUser.id),
+        1
+      )
+    }
+
+    await routed.bot.DB.update('decision', { _id: new ObjectID(routed.v.o.id) }, { $set: { managers: decision.managers } }, { atomic: true })
+    return true
+  }
+}
+
+export async function transferDecisionOwnership(routed: RouterRouted) {
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+  const mentionedUser = routed.message.mentions.members.first()
+
+  if (decisionFromDB && mentionedUser) {
+    const decision = new TrackedDecision(decisionFromDB)
+
+    // Make new owner by updating the authorID field
+    await routed.bot.DB.update('decision', { _id: decision._id, authorID: routed.user.id }, { $set: { authorID: mentionedUser.id } }, { atomic: true })
+
     return true
   }
 }
