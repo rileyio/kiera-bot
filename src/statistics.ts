@@ -9,6 +9,7 @@ export class Statistics {
   }
 
   public trackServerStatistic(serverID: string, channelID: string, userID: string, type: ServerStatisticType) {
+    if (process.env.BOT_BLOCK_STATS === 'true') return // block stats saving
     ;(async () => {
       try {
         // Check Stats Settings if server is tracking & if the user has stats turned off
