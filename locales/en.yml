@@ -178,7 +178,7 @@ Help:
     KeyholderLockees:
       Description: List of Keyholder's lockees
     ToggleKeyholderAverageDisplayed:
-      Description: Enable/Disable your ratining visibility in stats commands
+      Description: Enable/Disable your rating visibility in stats commands
     SetTickerType:
       Description: Set your default displayed ticker when you call the ticker command
     SetTickerDate:
