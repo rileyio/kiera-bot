@@ -56,6 +56,24 @@ Stats:
       Les statistiques sont maintenant **activées* pour ce serveur.
       
       Pour  plus d'information sur les statistiques, consultez le résultat de la commande `{{prefix}}stats about`.
+Decision:
+  Edit:
+    AddedManager: |-
+      {{user}} a été ajouté comme manager de {{id}}.
+      Les managers sont capables d'exécuter toutes les actions d'un lancé de dés de décision de la même manière que l'auteur à l'exception de son effacement. Cela inclus la visualisation et l'édition dans n'importe quel portail web comme si c'était le sien.
+    NewQuestionAdded: |-
+      Nouvelle question ajoutée (id: {{id}}`)
+      Saisissez vos options avec `!decision {{id}} add "Résultat de la décision ici"`
+      Jetez les dés pour un résultat avec `!decision roll {{id}}`
+    OwnershipTransfered: La propriété du lancé de dés de décision `{{id}}` a été transféré à {{target}}
+    RemovedManager: '{{user}} ne fait plus partie des managers de {{id}}.'
+    SetModeOptions: |-
+      Les options de mode disponibles sont:
+      > `0` = Basique (Pas de limitation activée)
+      > `1` = Consommation temporaire
+          (Soyez sûr de spécifier le temps de remise à zéro en secondes. Exemple: {{prefix}}decision "id" consume reset 60`)
+      > `2` = Consommation
+          (Une fois que la décision a été utilisée, elle ne sera plus dans la rotation à moins que l'auteur ne la remette à zéro, Remise à zéro avec: {{prefix}}decision "id" consume reset`)
 ChastiKey:
   # Stats
   Stats:
@@ -76,6 +94,7 @@ ChastiKey:
       Si votre compte ChastiKey est nouveau (15-30 minutes), cela peut prendre du temps pour que Kiera reçoive toutes les données nécessaires.
     FastForward: Votre compte a été vérifié! Certaines données peuvent encore prendre **jusqu'à 15 minutes** pour être mises en cache et être complètement disponible.
     NotSuccessfulUsingReason: '{{reason}}'
+    # 1366`
     PreviouslyCompleted: Votre compte a déjà été vérifié! Si cella pose encore problème veuillez contacter emma
     VerifyRequired: |-
       Cette commande nécessite que votre compte soit vérifié auprès de ChastKey avec la commande suivante:
@@ -85,6 +104,8 @@ ChastiKey:
   # Ticker
   Ticker:
     IncorrectTimer: '*Est-ce que quelque chose semble incorrecte ? Veuillez contacter **Kevin** le développeur de ChastiKey si des valeurs semblent erronées*'
+    # lacking context, should "Keyholder"," Lockee", "Both", be translated (part of a command ?) or not
+    InvalidOverrideType: 'Type de remplacement invalide, veuillez utiliser : (1) Keyholder (2) Lockee, (3) les deux'
   # Errors
   Error:
     KeyholderOrAboveRoleRequired: 'Vous devez avoir le rôle Keyholder ou supérieur pour appeler cette commande pour un autre utilisateur.'
@@ -110,17 +131,18 @@ Locale:
       Le code de localisation (`{{locale}}`) ne correspond à aucune entrée disponible pour Kiera. Essayez un des codes suivants:
       {{{locales}}}
     NoneSpecified: |-
-      Veuillez sélectionner une des 
+      Veuillez sélectionner une des localisations disponibles suivantes:
       {{{locales}}}
   Language: Français
   Name: Français
   Success:
     Set: |-
-      Les paramètres régionaux `{{locale}}` ont été définis avec succès! Toutes les réponses (traduites) apparaîtront désormais en français.
+      La localisation `{{locale}}` a été défini avec succès! Toutes les réponses (traduites) apparaîtront désormais en français.
       
       {{contributors}}
       
-      Si vous souhaitez contribuer à cette localisation, veuillez contacter emma#1366 et demander l'accès à cette locale sur: `https://kierabot.xyz/translate`
+      Si vous souhaitez contribuer à cette localisation, veuillez contacter emma#1366 et demander l'accès à cette localisation sur:
+      `https://kierabot.xyz/translate`
 Admin:
   BotManualRestart: 'Redémarrage du bot dans `{{seconds}}` secondes..'
   CommandCategoriesList: >-
@@ -142,15 +164,17 @@ Moderate:
     ConfirmMutePrompt: Etes-vous sûr de vouloir appliquer cette sourdine ? Répondez avec **yes** pour le confirmer dans les 60 secondes.
     LengthForMutePrompt: Combien de temps doit durer cette sourdine ? Entrez un temps en heures.
     ListEntryUser: |+
-      {{username}}#{{discriminator}}
+      @{{username}}#{{discriminator}} id:{{id}}
         ## Rendu muet le: {{dateFormatted}}
-        ## Motif: {{reason}}
+        ## Jusqu'à: {{removeAt}}
         ## Rendu muet par: {{mutedBy}}
-    ListEntryUserLeftServer: |+
-      {{username}}#{{discriminator}}__(l'utilisateur a quitté le serveur)__
-        ## Rendu muet le: {{dateFormatted}}
         ## Motif: {{reason}}
+    ListEntryUserLeftServer: |+
+      @{{username}}#{{discriminator}} id:{{id}} __(l'utilisateur a quitté le serveur)__
+        ## Rendu muet le: {{dateFormatted}}
+        ## Jusqu'à: {{removeAt}}
         ## Rendu muet par: {{mutedBy}} 
+        ## Motif: {{reason}}
     ListLookup: ':mute: **Liste d''utilisateurs muets**'
     New: |+
       :mute: **Utilisateur mis en sourdine**
@@ -174,15 +198,19 @@ BattleNet:
 Generic:
   Error:
     CommandDisabledInChannel: La commande `{{command}}` n'est pas autorisée dans ce canal.
+    CommandExactMatchFailedFallback: 'Exemples de commandes dans le groupe `{{prefix}}{{command}}`:'
     CommandExactMatchFailedOptions: '***Astuce:** Vous pouvez saisir:* `{{prefix}}help {{command}}`, voici quelques exemples d''utilisation de cette commande.'
     HelpCommandMissing: Malheureusement il n'y a actuellement pas d'aide textuelle pour cette commande.
+    RoleTooHightForThisAction: Action impossible comme votre rôle est trop important.
+    ThisActionFailedServerOwner: Action impossible comme vous êtes le propriétaire du serveur.
   Warn:
     CommandUnderMaintenance: Cette commande est actuellement en maintenance.
   Word:
     UppercaseNo: 'Non'
     UppercaseYes: 'Oui'
   Info:
-    UserNotRegistered: Vous devrez d'abord vous enregistrer auprès du bot avec `{{prefix}}register`
+    UserNotRegistered: |-
+      Vous devrez d'abord vous enregistrer auprès du bot avec `{{prefix}}register`
 Help:
   Admin:
     ChannelPurge:
@@ -203,12 +231,24 @@ Help:
       Description: Vérifier le ping et la latence de Kiera
     BotRestart:
       Description: Redémarrer le bot de Kiera
+    DeleteUser:
+      Description: Retire l'utilisateur de la base de données Kiera
   BattleNet:
+    D3CurrentSeason:
+      Description: Récupérer la saison courante de Diablo 3
+    D3ProfileLookup:
+      Description: Récupérer le profil utilisateur de Diablo 3
     WoWCharacterProfile:
       Description: Récupérer le profil du personnage de World of Warcraft
   ChastiKey:
+    Verify:
+      Description: Lier le compte Discord avec le compte de l'application ChastiKey
+    RoleCounts:
+      Description: Liste des rôles et statistiques du discord ChastiKey
     LockeeHistory:
       Description: Montrer le détail de l'historique du lockee
+    LocktoberStats:
+      Description: Statistiques de l'événement Locktober de Chastikey
     UsernameSearch:
       Description: Recherche sur le nom d'utilisateur ChastiKey
     LockeeStats:
@@ -217,13 +257,21 @@ Help:
       Description: Voir les statistiques du keyholder
     KeyholderLockees:
       Description: Liste des lockee du Keyholder
+    SetTickerDate:
+      Description: Définir la date de début des données du ticker
     Ticker:
       Description: Voir le compteur ChastiKey
     Update:
       Description: Synchroniser votre profile ChastiKey avec Discord
+  Moderate:
+    MuteListMuted:
+      Description: Liste des utilisateurs mis en sourdine
   Utility:
     ListRoles:
       Description: Lister tous les rôles serveur et leurs nombres d'utilisateurs.
+    DisplayRoleInformation:
+      # error in english ? "given" instead of "give" maybe ? otherwise I do not understand
+      Description: Afficher les détails d'un rôle particulier
   Fun:
     EightBall:
       Description: Poser une question à la boule numéro 8
@@ -231,6 +279,9 @@ Help:
       Description: Lancer une pièce
     Roll:
       Description: Lancer un ou plusieurs dés
+  Help:
+    General:
+      Description: Voir les informations du bot d'aide
   Poll:
     New:
       Description: Créer un nouveau sondage
@@ -241,13 +292,24 @@ Help:
       Description: Commencer à accepter les réponses au sondage
     Stop:
       Description: Arrêter d'accepter les réponses au sondage
+    PickRandomVote:
+      Description: Choisir aléatoirement un votant
     AddOption:
       Description: Ajouter une réponse possible au sondage
     RemoveOption:
       Description: Enlever une réponse possible au sondage
   User:
+    Register:
+      Description: S'enregistrer auprès du bot
     SetLocale:
       Description: Définissez votre localisation for les réponses du bot
+  Decision:
+    AddManager:
+      Description: Ajouter l'utilisateur comme manager des propriétés d'un lancé de dés de décision
+    RemoveManager:
+      Description: Retirer l'utilisateur comme manager d'un lancé de dés de décision
+    TransferOwnership:
+      Description: Transferer la propriété du lancé de dés de décision
 Poll:
   Warn:
     DifferentAuthorID: Seul l'auteur du sondage peut appeler la commande {{prefix}} !
@@ -295,19 +357,6 @@ Poll:
   Interaction:
     VoteCast: Vote déposé!
     VoteRemoved: Vote retiré!
-Decision:
-  Edit:
-    NewQuestionAdded: |-
-      Nouvelle question ajoutée (id: {{id}}`)
-      Saisissez vos options avec `!decision {{id}} add "Résultat de la décision ici"`
-      Jetez les dés pour un résultat avec `!decision roll {{id}}`
-    SetModeOptions: |-
-      Les options de mode disponibles sont:
-      > `0` = Basique (Pas de limitation activée)
-      > `1` = Consommation temporaire
-          (Soyez sûr de spécifier le temps de remise à zéro en secondes. Exemple: {{prefix}}decision "id" consume reset 60`)
-      > `2` = Consommation
-          (Une fois que la décision a été utilisée, elle ne sera plus dans la rotation à moins que l'auteur ne la remette à zéro, Remise à zéro avec: {{prefix}}decision "id" consume reset`)
 System:
   Startup: |+
     
