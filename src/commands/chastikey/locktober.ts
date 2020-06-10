@@ -62,7 +62,7 @@ export async function statsLocktober(routed: RouterRouted) {
   // console.log(JSON.stringify(queryIDs))
 
   // Are you (the person calling the command) apart of that list?
-  const apartOfLocktober = stored.findIndex((lockee) => lockee.discordID === routed.user.id) > -1
+  const apartOfLocktober = stored.findIndex((lockee) => lockee.discordID === routed.author.id) > -1
 
   // Set cached timestamp for running locks
   const cachedTimestampFromFetch = new TrackedBotSetting(await routed.bot.DB.get('settings', { key: 'bot.task.chastikey.api.fetch.ChastiKeyAPIRunningLocks' }))

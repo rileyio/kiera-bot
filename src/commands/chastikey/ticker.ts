@@ -94,11 +94,11 @@ export async function setTickerType(routed: RouterRouted) {
   }
 
   // Get the user from the db in their current state
-  const user = new TrackedUser(await routed.bot.DB.get('users', { id: routed.user.id }))
+  const user = new TrackedUser(await routed.bot.DB.get('users', { id: routed.author.id }))
   // Change/Update TrackedChastiKey.Type Prop
   user.ChastiKey.ticker.type = newTickerType
   // Commit change to db
-  const updateResult = await routed.bot.DB.update('users', { id: routed.user.id }, user)
+  const updateResult = await routed.bot.DB.update('users', { id: routed.author.id }, user)
 
   if (updateResult > 0) {
     await routed.message.author.send(`:white_check_mark: ChastiKey Ticker type now set to: \`${newTickerTypeAsString}\``)
@@ -113,7 +113,7 @@ export async function setTickerType(routed: RouterRouted) {
 export async function setTickerDate(routed: RouterRouted) {
   // Validate ticker date passed
   if (/([0-9]{4}-[0-9]{2}-[0-9]{2})/.test(routed.v.o.number)) {
-    await routed.bot.DB.update('users', { id: routed.user.id }, { $set: { 'ChastiKey.ticker.date': routed.v.o.number } }, { atomic: true })
+    await routed.bot.DB.update('users', { id: routed.author.id }, { $set: { 'ChastiKey.ticker.date': routed.v.o.number } }, { atomic: true })
 
     await routed.message.author.send(`:white_check_mark: ChastiKey Start Date now set to: \`${routed.v.o.number}\``)
     routed.bot.Log.Command.log(`{{prefix}}ck ticker set date ${routed.v.o.number}`)
@@ -132,7 +132,7 @@ export async function setTickerRatingDisplay(routed: RouterRouted) {
   if (routed.v.o.state.toLowerCase() === 'show' || routed.v.o.state.toLowerCase() === 'hide') {
     await routed.bot.DB.update(
       'users',
-      { id: routed.user.id },
+      { id: routed.author.id },
       { $set: { 'ChastiKey.ticker.showStarRatingScore': `show` ? routed.v.o.state === 'show' : false } },
       { atomic: true }
     )
@@ -151,7 +151,7 @@ export async function setTickerRatingDisplay(routed: RouterRouted) {
 
 export async function getTicker(routed: RouterRouted) {
   const user = new TrackedUser(
-    await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
+    await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
   )
 
   // If the user has passed a type as an argument, use that over what was saved as their default

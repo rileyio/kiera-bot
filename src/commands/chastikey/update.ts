@@ -66,7 +66,7 @@ export async function update(routed: RouterRouted) {
         : // When: CKUsername
           await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
       : // When: Self
-        await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
+        await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
 
   const queryBy =
     routed.v.o.user !== undefined
@@ -85,7 +85,7 @@ export async function update(routed: RouterRouted) {
         : // When: CKUsername
           routed.v.o.user
       : // When: Self
-        routed.user.id
+        routed.author.id
 
   // If target user does not have a record on the server
   if ((!user._id && targetUserType === 'CKUsername') || targetUserType === 'Snowflake') {

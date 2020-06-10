@@ -85,7 +85,7 @@ export async function recoverCombos(routed: RouterRouted) {
   // Get user's past locks
   const resp = await routed.bot.Service.ChastiKey.fetchAPICombinations({
     username: routed.v.o.user ? routed.v.o.user : undefined,
-    discordid: !routed.v.o.user ? routed.user.id : undefined
+    discordid: !routed.v.o.user ? routed.author.id : undefined
   })
 
   // Stop if error in lookup
@@ -144,7 +144,7 @@ export async function recoverCombos(routed: RouterRouted) {
 export async function verifyAccount(routed: RouterRouted) {
   // Get the user from the db in their current state
   var user = new TrackedUser(
-    await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
+    await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
   )
 
   // Statuses
@@ -155,7 +155,7 @@ export async function verifyAccount(routed: RouterRouted) {
   if (!user._id) {
     // Create a record for them like !register would have
     user = new TrackedUser({
-      id: routed.user.id,
+      id: routed.author.id,
       username: routed.user.username,
       discriminator: routed.user.discriminator
     })
@@ -174,21 +174,21 @@ export async function verifyAccount(routed: RouterRouted) {
       user.ChastiKey.isVerified = true
       user.ChastiKey.username = parsedVerifyDiscordID.username
 
-      await routed.bot.DB.update('users', { id: routed.user.id }, user)
+      await routed.bot.DB.update('users', { id: routed.author.id }, user)
       // We can safely stop here - let the user know nothing more is needed at this time
       await routed.message.reply(routed.$render('ChastiKey.Verify.FastForward'))
       return true // Stop here
     }
   }
 
-  const verifyResponse = await routed.bot.Service.ChastiKey.verifyCKAccountGetCode(routed.user.id, routed.user.username, routed.user.discriminator)
+  const verifyResponse = await routed.bot.Service.ChastiKey.verifyCKAccountGetCode(routed.author.id, routed.user.username, routed.user.discriminator)
 
   if (verifyResponse.success) {
     isSuccessful = true
     // Track User's verification code
     user.ChastiKey.verificationCode = verifyResponse.code
     // Commit Verify code to db, to have on hand
-    await routed.bot.DB.update('users', { id: routed.user.id }, user)
+    await routed.bot.DB.update('users', { id: routed.author.id }, user)
   } else {
     isNotSuccessfulReason = verifyResponse.reason || isNotSuccessfulReason
   }
@@ -328,7 +328,7 @@ function roundedDisplay(perc: number) {
 
 export async function extSession(routed: RouterRouted) {
   // Create new Session Object
-  const newSession = new TrackedSession({ userID: routed.user.id, generatedFor: 'kiera-ck' })
+  const newSession = new TrackedSession({ userID: routed.author.id, generatedFor: 'kiera-ck' })
   // Generate OTL and store in sessions table
   newSession.newOTL()
 

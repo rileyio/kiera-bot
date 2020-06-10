@@ -60,7 +60,7 @@ export const Routes = ExportRoutes(
 export async function blacklistUser(routed: RouterRouted) {
   const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
   })
 
   if (decisionFromDB) {
@@ -112,7 +112,7 @@ export async function blacklistUser(routed: RouterRouted) {
 export async function unblacklistUser(routed: RouterRouted) {
   const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
   })
 
   if (decisionFromDB) {
@@ -165,7 +165,7 @@ export async function unblacklistUser(routed: RouterRouted) {
 export async function showUserBlacklist(routed: RouterRouted) {
   const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
   })
 
   if (decisionFromDB) {
@@ -208,7 +208,7 @@ export async function showUserBlacklist(routed: RouterRouted) {
 export async function whitelistServer(routed: RouterRouted) {
   const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
   })
 
   if (decisionFromDB) {
@@ -241,7 +241,7 @@ export async function whitelistServer(routed: RouterRouted) {
 export async function unwhitelistServer(routed: RouterRouted) {
   const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
   })
 
   if (decisionFromDB) {

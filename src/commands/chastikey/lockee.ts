@@ -38,13 +38,13 @@ export const Routes = ExportRoutes(
 export async function history(routed: RouterRouted) {
   // Get any Kiera preferences
   const kieraUser = new TrackedUser(
-    (await routed.bot.DB.get('users', routed.v.o.username ? { 'ChastiKey.username': routed.v.o.username } : { id: routed.user.id })) || { __notStored: true }
+    (await routed.bot.DB.get('users', routed.v.o.username ? { 'ChastiKey.username': routed.v.o.username } : { id: routed.author.id })) || { __notStored: true }
   )
 
   // Get user from lockee data (Stats, User and Locks)
   const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({
     discordid: !routed.v.o.username
-      ? routed.user.id
+      ? routed.author.id
       : kieraUser.__notStored
       ? undefined
       : kieraUser.username.toLowerCase() === routed.v.o.username.toLowerCase()
@@ -73,7 +73,7 @@ export async function history(routed: RouterRouted) {
 
 export async function toggleLockInNickname(routed: RouterRouted) {
   if (routed.v.o.mode === 'never' || routed.v.o.mode === 'always' || routed.v.o.mode === 'locked' || routed.v.o.mode === 'unlocked') {
-    await routed.bot.DB.update('users', { id: routed.user.id }, { $set: { 'ChastiKey.preferences.lockee.showStatusInNickname': routed.v.o.mode } }, { atomic: true })
+    await routed.bot.DB.update('users', { id: routed.author.id }, { $set: { 'ChastiKey.preferences.lockee.showStatusInNickname': routed.v.o.mode } }, { atomic: true })
   }
 
   return true

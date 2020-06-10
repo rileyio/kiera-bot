@@ -82,7 +82,7 @@ export async function getLockeeStats(routed: RouterRouted) {
   // Get user from lockee data (Stats, User and Locks)
   const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({
     username: routed.v.o.user ? routed.v.o.user : undefined,
-    discordid: !routed.v.o.user ? routed.user.id : undefined,
+    discordid: !routed.v.o.user ? routed.author.id : undefined,
     showDeleted: true
   })
 
@@ -106,7 +106,7 @@ export async function getLockeeStats(routed: RouterRouted) {
         // Fallback: Create a mock record
         <TrackedUser>{ ChastiKey: { username: lockeeData.data.username, isVerified: false, ticker: { showStarRatingScore: true } } }
       : // Else when its the caller themself: Lookup the user by Discord ID
-        await routed.bot.DB.get<TrackedUser>('users', { id: routed.user.id })
+        await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
 
   // Generate compiled stats
   await routed.message.channel.send(lockeeStats(lockeeData, { showRating: kieraUser.ChastiKey.ticker.showStarRatingScore }, routed))
@@ -118,7 +118,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
   // Get user from lockee data (Stats, User and Locks)
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
     username: routed.v.o.user ? routed.v.o.user : undefined,
-    discordid: !routed.v.o.user ? routed.user.id : undefined
+    discordid: !routed.v.o.user ? routed.author.id : undefined
   })
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -219,7 +219,7 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
   // Get user from lockee data (Stats, User and Locks)
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
     username: routed.v.o.user ? routed.v.o.user : undefined,
-    discordid: !routed.v.o.user ? routed.user.id : undefined
+    discordid: !routed.v.o.user ? routed.author.id : undefined
   })
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -273,7 +273,7 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
 export async function getKeyholderLockees(routed: RouterRouted) {
   // Get user from lockee data (Stats, User and Locks)
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
-    discordid: routed.user.id
+    discordid: routed.author.id
   })
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -330,7 +330,7 @@ export async function setKHAverageDisplay(routed: RouterRouted) {
   if (routed.v.o.state.toLowerCase() === 'show' || routed.v.o.state.toLowerCase() === 'hide') {
     await routed.bot.DB.update(
       'users',
-      { id: routed.user.id },
+      { id: routed.author.id },
       { $set: { 'ChastiKey.preferences.keyholder.showAverage': `show` ? routed.v.o.state === 'show' : false } },
       { atomic: true }
     )
