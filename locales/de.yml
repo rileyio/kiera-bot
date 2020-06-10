@@ -113,17 +113,17 @@ ChastiKey:
         
       MainStats: |-
         {{#if showAvgRating}}Durchschnittliche Bewertung `{{avgRating}}` | # Ratings `{{ratings}}`{{/if}}
-        Verschlossen für `{{lockedFor}}` Monate bis heute | `{{locksCompleted}}` abgeschlossene Locks
-        Längstes (abgeschlossenes) `{{longestLockCompleted}}`
-        Durchschnittlich gelockte Zeit (gesamt) `{{avgTimeLocked}}`
-        Zuletzt aktiv in ChastiKey App `{{lastActiveInApp}}` vor
-        Beigetreten vor `{{joinedDate}}` (`{{joinedDaysAgo}}` )
-        {{#if isVerified}}Verifiziert zu {{{verifiedTo}}}{{/if}}
+        Verschlossen für `{{lockedFor}}` Monate bis heute | `{{locksCompleted}}` beendete Locks
+        Längstes abeschlossenes Lock `{{longestLockCompleted}}`
+        Durchschnittliche verschlossene Zeit (gesamt) `{{avgTimeLocked}}`
+        Zuletzt aktiv in ChastiKey App vor `{{lastActiveInApp}}`
+        Beigetreten am `{{joinedDate}}` (vor `{{joinedDaysAgo}}` Tagen)
+        {{#if isVerified}}Verifiziert von {{{verifiedTo}}}{{/if}}
       NoActiveLocks: Keine aktiven Locks
       NoActiveLocksTimeSinceLast: |-
         Um weitere Statistiken sehen zu können, muss ein Lock aktiv sein.
         Zeit seit dem letzten Lock `{{time}}`
-      Title: '{{#if isVerified}}{{{verifiedEmoji}}}{{/if}} `{{username}}` - Aktive Statistiken der Lockee Statistiken'
+      Title: '{{#if isVerified}}{{{verifiedEmoji}}}{{/if}} `{{username}}` - Aktive ChastiKey Lockee Statistiken'
     KeyholderNoLocks: 'Dieser Benutzer hat bisher noch keine aktiven Lock als Keyholder, oder noch keine vergangenen Lockees, deshalb gibt es keine darstellbaren Daten.'
     UserRequestedNoStats: 'Dieser Benutzer möchte, dass seine Statistiken privat bleiben.'
   # Verify
@@ -165,15 +165,17 @@ Moderate:
     EntryLookup: ':mute: **Suche gestummten Benutzer**'
     LengthForMutePrompt: Wie lange soll die Stummschaltung dauern? Zeit in Stunden angeben
     ListEntryUser: |+
-      {{Username}}#{{discriminator}}
+      @{{Username}}#{{discriminator}} id:{{id}}
       ## Gestummt: {{dateFormatted}}
-      ## Grund: {{reason}}
+      ## Entrernt: {{removeAt}}
       ## Gestummt von: {{mutedBy}}
+      ## Grund: {{reason}}
     ListEntryUserLeftServer: |+
-      {{username}}#{{discriminator}}__(Benutzer hat den Server verlassen)
+      @{{username}}#{{discriminator}} id:{{id}}__(Benutzer hat den Server verlassen)
       ## Gestummt: {{dateFormatted}}
-      ## Grund: {{reason}}
+      ## Entfernt: {{removeAt}}
       ## Gestummt von: {{mutedBy}}
+      ## Grund: {{reason}}
     ListLookup: ':mute: **Liste gestummter Benutzer**'
     New: |+
       :mute: **Gestummter Benutzer**
@@ -226,19 +228,21 @@ Locale:
   Code: de
   Language: Deutsch
   Name: Deutsch
+  ShortDescription: Interationales Englisch und Standard für Kiera.
 Generic:
   Error:
     CommandDisabledInChannel: Der `{{command}}` Befehl ist in diesem Raum nicht erlaubt.
     CommandExactMatchFailedOptions: '***Tipp:** Du kannst:* `{{prefix}}help {{command}}` verwenden, Hier sind einige Beispiele, die diesen Befehl verwenden:'
     HelpCommandMissing: Leider ist für diesen Befehl noch kein Hilfstext verfügbar.
-    Internal: Befehl aufgrund einer internen Angelegenheit nicht ausgeführt! Dies kann weitere Untersuchungen erfordern. Wenn Sie dabei Unterstützung benötigen, besuchen Sie bitte https://kierabot.xyz/support
+    Internal: Befehl aufgrund eines internen Problems nicht ausgeführt! Dies kann weitere Untersuchungen erfordern. Wenn Sie dabei Unterstützung benötigen, besuchen Sie bitte https://kierabot.xyz/support
   Warn:
     CommandUnderMaintenance: Dieser Befehl ist aufgrund von Wartungsarbeiten vorübergehend nicht verfügbar.
   Word:
     UppercaseNo: 'Nein'
     UppercaseYes: 'Ja'
   Info:
-    UserNotRegistered: Du musst dich erst bei dem Bot registrieren. Verwende dazu `{{prefix}}register`
+    UserNotRegistered: |-
+      Du musst dich erst bei dem Bot registrieren. Verwende dazu `{{prefix}}register`
 Help:
   Admin:
     ChannelPurge:
@@ -289,6 +293,8 @@ Help:
       Description: Entferne den Benutzer von der Schwarzen Liste für den Decision roll
     BlacklistUser:
       Description: Füge den Benutzer der Schwarzen Liste für den Decision roll hinzu
+    ShowUserBlacklist:
+      Description: Benutzer auf der Entscheidungs-Blacklist anzeigen.
     UnwhitelistServer:
       Description: Entferne den Server von der Decisions Whitelist
     WhitelistServer:
@@ -359,10 +365,13 @@ Poll:
 Decision:
   Edit:
     NewEntry: Decision Eintrag hinzugefügt {{added}}
+    NewIDAssigned: |-
+      Eine neue Entscheidungs-ID wurde zu `{{oldID}}` hinzugefügt.
+      Neue Entscheidungs-ID: **`{{newID}}`**
     NewQuestionAdded: |-
-      Neue Frage hinzugefügt (id: {{id}}`)
+      Neue Frage hinzugefügt (id: `{{id}}`)
       Gib deine Ergebnisse ein mit `!decision {{id}} add "Ergebnis der Entscheidung hier"`
-      Würfle ein Ergebnis mit `!decision roll {{id}}`
+      Rolle ein Ergebnis mit `!decision roll {{id}}`
     SetModeOptions: |-
       Modus-Optionen verfügbar:
       > `0` = Standard (Keine limite)
