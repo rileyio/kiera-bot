@@ -87,7 +87,7 @@ export async function voteNew(routed: RouterRouted) {
   const insertedRecordID = await routed.bot.DB.add(
     'polls',
     new TrackedPoll({
-      authorID: routed.user.id,
+      authorID: routed.author.id,
       question: routed.v.o.question
     })
   )
@@ -111,7 +111,7 @@ export async function voteEdit(routed: RouterRouted) {
   // Find poll in db
   var storedPoll = await routed.bot.DB.get<TrackedPoll>('polls', {
     _id: new ObjectID(routed.v.o.id),
-    authorID: routed.user.id
+    authorID: routed.author.id
   })
 
   if (storedPoll) {

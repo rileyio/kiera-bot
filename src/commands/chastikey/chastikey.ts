@@ -166,7 +166,7 @@ export async function verifyAccount(routed: RouterRouted) {
   // If user exists & this command is being re-run, try checking if they're verified on the ChastiKey side before
   // Triggering a new verify
   if (!user.ChastiKey.isVerified) {
-    const parsedVerifyDiscordID = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ discordID: routed.user.id })
+    const parsedVerifyDiscordID = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ discordID: routed.author.id })
 
     // When they are already verified, let them know & update the ChastiKey user record
     if (parsedVerifyDiscordID.status === 200) {

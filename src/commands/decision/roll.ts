@@ -36,7 +36,7 @@ export async function runSavedDecision(routed: RouterRouted) {
     const decision = new TrackedDecision(decisionFromDB)
 
     // Halt if user blacklist is triggered
-    if (decision.userBlacklist.findIndex((u) => u === routed.user.id) > -1) {
+    if (decision.userBlacklist.findIndex((u) => u === routed.author.id) > -1) {
       return true // Stop here
     }
 
@@ -131,7 +131,7 @@ export async function runSavedDecision(routed: RouterRouted) {
     await routed.bot.DB.add(
       'decision-log',
       new TrackedDecisionLogEntry({
-        callerID: routed.user.id,
+        callerID: routed.author.id,
         decisionID: String(decision._id),
         outcomeID: String(outcome._id),
         serverID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.guild.id,

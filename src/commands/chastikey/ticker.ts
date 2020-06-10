@@ -170,7 +170,7 @@ export async function getTicker(routed: RouterRouted) {
 
   // If the type is only for a single ticker, return just that
   if (user.ChastiKey.ticker.type === 1 || user.ChastiKey.ticker.type === 2) {
-    await routed.message.channel.send(routed.$render('ChastiKey.Ticker.IncorrectTimer'), {
+    await routed.message.channel.send({
       files: [new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey))]
     })
     return true

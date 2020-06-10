@@ -21,7 +21,7 @@ export const Routes = ExportRoutes({
 })
 
 export async function statsForUser(routed: RouterRouted) {
-  const userID = routed.v.o.id !== undefined ? `${routed.v.o.id}` : routed.user.id
+  const userID = routed.v.o.id !== undefined ? `${routed.v.o.id}` : routed.author.id
 
   // Check for stats disabled setting from user
   if (await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { userID, setting: StatisticsSettingType.UserDisableStats })) {

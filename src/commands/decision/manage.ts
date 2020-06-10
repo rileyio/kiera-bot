@@ -114,7 +114,7 @@ export async function newDecisionEntry(routed: RouterRouted) {
   // Get the saved decision from the db (Only the creator can edit)
   var decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
   })
 
   if (decisionFromDB) {
@@ -130,7 +130,7 @@ export async function newDecisionEntry(routed: RouterRouted) {
 export async function generateNewDecisionID(routed: RouterRouted) {
   const oldDecision = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.oldid),
-    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
   })
 
   if (oldDecision) {
@@ -168,7 +168,7 @@ export async function setDecisionConsumeMode(routed: RouterRouted) {
   // Get the saved decision from the db (Only the creator can edit)
   var decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
   })
 
   if (decisionFromDB) {
@@ -201,7 +201,7 @@ export async function setConsumeReset(routed: RouterRouted) {
   // Get the saved decision from the db (Only the creator can edit)
   var decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
     _id: new ObjectID(routed.v.o.id),
-    $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }]
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
   })
 
   if (decisionFromDB) {
@@ -238,7 +238,7 @@ export async function setConsumeReset(routed: RouterRouted) {
       try {
         // Filter to watch for the correct user & text to be sent (+ remove any whitespace)
         const filter: CollectorFilter = (response: Message) =>
-          response.content.toLowerCase().replace(' ', '') === routed.$render('Generic.Word.UppercaseYes').toLowerCase() && response.author.id === routed.user.id
+          response.content.toLowerCase().replace(' ', '') === routed.$render('Generic.Word.UppercaseYes').toLowerCase() && response.author.id === routed.author.id
         // Message collector w/Filter - Wait up to a max of 1 min for exactly 1 reply from the required user
         const collected = await routed.message.channel.awaitMessages(filter, { max: 1, time: 60000, errors: ['time'] })
         // Delete the previous message at this stage
@@ -266,7 +266,7 @@ export async function setConsumeReset(routed: RouterRouted) {
 }
 
 export async function addDecisionManager(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.author.id })
   const mentionedUser = routed.message.mentions.members.first()
 
   if (decisionFromDB && mentionedUser) {
@@ -283,7 +283,7 @@ export async function addDecisionManager(routed: RouterRouted) {
 }
 
 export async function removeDecisionManager(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.author.id })
   const mentionedUser = routed.message.mentions.members.first()
 
   if (decisionFromDB && mentionedUser) {
@@ -305,14 +305,14 @@ export async function removeDecisionManager(routed: RouterRouted) {
 }
 
 export async function transferDecisionOwnership(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.user.id })
+  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.author.id })
   const mentionedUser = routed.message.mentions.members.first()
 
   if (decisionFromDB && mentionedUser) {
     const decision = new TrackedDecision(decisionFromDB)
 
     // Make new owner by updating the authorID field
-    await routed.bot.DB.update('decision', { _id: decision._id, authorID: routed.user.id }, { $set: { authorID: mentionedUser.id } }, { atomic: true })
+    await routed.bot.DB.update('decision', { _id: decision._id, authorID: routed.author.id }, { $set: { authorID: mentionedUser.id } }, { atomic: true })
     await routed.message.reply(routed.$render('Decision.Edit.OwnershipTransfered', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
     return true
   }

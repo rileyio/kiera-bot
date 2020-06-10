@@ -28,7 +28,7 @@ export async function promptUserInput(routed: RouterRouted, options: PromptUserI
     const firstMessage = await routed.message.reply(options.firstMessage)
 
     // Filter to watch for the correct user (OPTIONAL: & text to be sent)
-    const filter: CollectorFilter = (response: Message) => response.author.id === routed.user.id
+    const filter: CollectorFilter = (response: Message) => response.author.id === routed.author.id
 
     // Message collector w/Filter - Wait up to a max of 5 mins for user input
     const collector = routed.message.channel.createMessageCollector(filter, { max: options.maxToCollect, time: options.waitFor || 300000 })
@@ -63,9 +63,9 @@ export async function promptUserConfirm(routed: RouterRouted, options: PromptUse
           ? (response: Message) =>
               (response.content.toLowerCase().replace(' ', '') === options.expectedValidResponse ||
                 response.content.toLowerCase().replace(' ', '') === options.expectedValidCancel) &&
-              response.author.id === routed.user.id
-          : (response: Message) => response.content.toLowerCase().replace(' ', '') === options.expectedValidResponse && response.author.id === routed.user.id
-        : (response: Message) => response.author.id === routed.user.id
+              response.author.id === routed.author.id
+          : (response: Message) => response.content.toLowerCase().replace(' ', '') === options.expectedValidResponse && response.author.id === routed.author.id
+        : (response: Message) => response.author.id === routed.author.id
 
     // Message collector w/Filter - Wait up to a max of 1 min for exactly 1 reply from the required user
     const collected = await routed.message.channel.awaitMessages(filter, { max: 1, time: options.waitFor || 60000, errors: ['time'] })

@@ -47,7 +47,7 @@ export async function diableUserStats(routed: RouterRouted) {
   await routed.bot.DB.add(
     'stats-settings',
     new StatisticsSetting({
-      userID: routed.user.id,
+      userID: routed.author.id,
       setting: StatisticsSettingType.UserDisableStats
     })
   )
@@ -58,7 +58,7 @@ export async function diableUserStats(routed: RouterRouted) {
 
 export async function enableUserStats(routed: RouterRouted) {
   const removed = await routed.bot.DB.remove<StatisticsSetting>('stats-settings', {
-    userID: routed.user.id,
+    userID: routed.author.id,
     setting: StatisticsSettingType.UserDisableStats
   })
 
@@ -68,7 +68,7 @@ export async function enableUserStats(routed: RouterRouted) {
 
 export async function deleteUserStats(routed: RouterRouted) {
   // First check if there's even anything to delete
-  const count = await routed.bot.DB.count('stats-servers', { userID: routed.user.id })
+  const count = await routed.bot.DB.count('stats-servers', { userID: routed.author.id })
 
   if (count > 0) {
     const confirmed = await promptUserConfirm(routed, {
@@ -85,7 +85,7 @@ export async function deleteUserStats(routed: RouterRouted) {
       const removed = await routed.bot.DB.remove<ServerStatistic>(
         'stats-servers',
         {
-          userID: routed.user.id
+          userID: routed.author.id
         },
         { deleteOne: false }
       )

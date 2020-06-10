@@ -53,7 +53,7 @@ export async function disableServerStats(routed: RouterRouted) {
     'stats-settings',
     new StatisticsSetting({
       serverID: routed.message.guild.id,
-      userID: routed.user.id,
+      userID: routed.author.id,
       setting: StatisticsSettingType.ServerDisableStats
     })
   )
@@ -81,7 +81,7 @@ export async function deleteServerStats(routed: RouterRouted) {
 
     try {
       // Filter to watch for the correct user & text to be sent (+ remove any whitespace)
-      const filter: CollectorFilter = (response: Message) => response.content.toLowerCase().replace(' ', '') === 'yes' && response.author.id === routed.user.id
+      const filter: CollectorFilter = (response: Message) => response.content.toLowerCase().replace(' ', '') === 'yes' && response.author.id === routed.author.id
       // Message collector w/Filter - Wait up to a max of 1 min for exactly 1 reply from the required user
       const collected = await routed.message.channel.awaitMessages(filter, { max: 1, time: 60000, errors: ['time'] })
       // Delete the previous message at this stage

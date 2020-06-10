@@ -17,7 +17,7 @@ export const Routes = ExportRoutes({
 
 export async function fetchDecisionLog(routed: RouterRouted) {
   const log: Array<TrackedDecision> = await routed.bot.DB.aggregate('decision', [
-    { $match: { _id: new ObjectID(routed.v.o.id), $or: [{ authorID: routed.user.id }, { managers: { $in: [routed.user.id] } }] } },
+    { $match: { _id: new ObjectID(routed.v.o.id), $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }] } },
     { $project: { _id: { $toString: '$_id' }, name: 1, options: 1 } },
     {
       $lookup: {
