@@ -16,8 +16,8 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'User',
-    description: 'Help.User.SetLocale.Description',
     controller: setUserLocale,
+    description: 'Help.User.SetLocale.Description',
     example: '{{prefix}}user set locale fr',
     name: 'user-locale-set',
     validate: '/user:string/set:string/locale:string/name?=string',
