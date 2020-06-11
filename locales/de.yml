@@ -118,7 +118,7 @@ ChastiKey:
         Durchschnittliche verschlossene Zeit (gesamt) `{{avgTimeLocked}}`
         Zuletzt aktiv in ChastiKey App vor `{{lastActiveInApp}}`
         Beigetreten am `{{joinedDate}}` (vor `{{joinedDaysAgo}}` Tagen)
-        {{#if isVerified}}Verifiziert von {{{verifiedTo}}}{{/if}}
+        {{#if isVerified}}Verbunden mit {{{verifiedTo}}}{{/if}}
       NoActiveLocks: Keine aktiven Locks
       NoActiveLocksTimeSinceLast: |-
         Um weitere Statistiken sehen zu können, muss ein Lock aktiv sein.
@@ -207,6 +207,39 @@ Moderate:
         ## Entfernt: {{removedAt}}
         ## Gund: {{reason}}
         ## Wiederhergestellte Rollen: {{rolesRestored}}
+Locale:
+  Info:
+    AlreadySet: |-
+      Du hast diese Sprache `{{locale}}` bereits eingestellt
+  Code: de
+  Contributors: |-
+    Mitwirkende an dieser Sprache
+    - `Emma <gh: rileyIO, discord: emma#1366>`
+  Description: |-
+    Englisch ist die Standardsprache für Kiera.
+    
+    {{contributors}}
+    
+    Wenn du bei der Übersetzung helfen möchtest, und die Sprache fließend beherrschst, melde dich bitte bei `emma#1366` um Zugang zum Übersetzer zu erhalten: `https://kierabot.xyz/translate`
+    Nicht alle Sprachen sind aufgelistet, wenn du eine nicht vorhandene Sprache übersetzen möchtest, gib Emma bescheid und Sie fügt die Sprache hinzu. 
+  Error:
+    DoesNotExist: |-
+      Der Code (`{{locale}}`) stimmt nicht mit den bestehenden überein. Versuche einen der folgenden zu nutzen. 
+      {{{locales}}}
+    NoneSpecified: |-
+      Bitte wähle eine der folgenden verfügbaren Sprachen aus: 
+      {{{locales}}}
+  Language: Deutsch
+  Name: Deutsch
+  Success:
+    Set: |-
+      Sprache `{{locale}}` erfolgreich eingestellt! Alle Antworten (welche bisher übersetzt sind) erscheinen nun in Deutsch. 
+      
+      {{contributors}}
+      
+      Wenn ihr beim übersetzen helfen möchtet, wendet euch bitte an @emma#1366 und teilt ihr die Sprache mit. 
+      `https://kierabot.xyz/translate`
+  ShortDescription: Interationales Englisch und Standard für Kiera.
 Admin:
   BotManualRestart: 'Bot startet in `{{seconds}}` neu.'
   CommandCategoriesList: >-
@@ -224,11 +257,6 @@ Admin:
 BattleNet:
   Error:
     CharacterNotFound: Dieser Buchstabe wurde nicht gefunden!
-Locale:
-  Code: de
-  Language: Deutsch
-  Name: Deutsch
-  ShortDescription: Interationales Englisch und Standard für Kiera.
 Generic:
   Error:
     CommandDisabledInChannel: Der `{{command}}` Befehl ist in diesem Raum nicht erlaubt.
@@ -279,6 +307,28 @@ Help:
       Description: Verknüpfen des "Discord" Kontos mit der "ChastiKey App".
     RoleCounts:
       Description: Liste der ChastiKey Discord Rollen und Statistiken
+    CKWeb:
+      Description: Externe Sitzung für Kiera + ChastiKey web Portal erstellen
+    LocktoberStats:
+      Description: ChastiKey Locktober Event Statistik
+    UsernameSearch:
+      Description: Suche basierend auf ChastiKey Benutzername
+    LockeeStats:
+      Description: Zeige die Lockee Statistiken
+    KeyholderStats:
+      Description: Zeige die Keyholder Statistiken
+    CheckKeyholderMultilocked:
+      Description: Liste der Lockees welche 2 oder mehr Keyholder haben
+    KeyholderLockees:
+      Description: Liste aller lockees des Keyholders
+    ToggleKeyholderAverageDisplayed:
+      Description: Aktiviere/deaktiviere die Bewertungsanzeige in deinen Statistiken
+    SetTickerDate:
+      Description: Setze ein Start Datum für die ticker Daten
+    Ticker:
+      Description: Zeige den ChastiKey Ticker
+    Update:
+      Description: Verbinde Discord mit deinem ChastiKey account
   Moderate:
     MuteUser:
       Description: "`Temporary Mute` Rolle auf Benutzer anwenden und Rollen beibehalten"
@@ -315,6 +365,13 @@ Help:
       Description: Rolle die vorgefertigten rollen
     RollRealtime:
       Description: Erstelle und rolle eine einmalige decision roll
+  Fun:
+    EightBall:
+      Description: Stell dem 8ball eine Frage
+    Flip:
+      Description: Wirf eine Münze
+    Roll:
+      Description: Rolle einen oder mehrere Würfel
 Poll:
   Warn:
     DifferentAuthorID: Nur der Ersteller dieser Umfrage darf den {{prefix}} Befehl aufrufen!
