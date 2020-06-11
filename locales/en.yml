@@ -87,7 +87,7 @@ ChastiKey:
         Joined `{{joinedDate}}` (`{{joinedDaysAgo}}` days ago)
         {{#if isVerified}}Verified to {{{verifiedTo}}}{{/if}}
       LockStats: |-
-        Keyholder **`{{#if isSelfLocked}}Self Locked{{else}}{{keyholderName}}{{/if}}`** Status `Locked` 
+        Keyholder **`{{#if isSelfLocked}}Self Locked{{else}}{{{keyholderName}}}{{/if}}`** Status `Locked` 
         Locked `{{lockedTime}}`
         Total time frozen `{{totalTimeFrozen}}`
         {{#unless isFixed}}

@@ -1,6 +1,7 @@
 6.0.0-beta-2
 - Fixed: Large Emoji showing on CK Stats Lockee when there's no Lock name. #36
 - Fixed: CK Ticker command. #34
+- Fixed: CK Stats Lockee command template is printing <> as gt & lt #33
 - Updated: Localization with updates to date for [German]
 
 6.0.0-beta-1
