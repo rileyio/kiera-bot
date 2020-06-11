@@ -154,11 +154,7 @@ export async function verifyAccount(routed: RouterRouted) {
   // User not previously registered with Kiera
   if (!user._id) {
     // Create a record for them like !register would have
-    user = new TrackedUser({
-      id: routed.author.id,
-      username: routed.user.username,
-      discriminator: routed.user.discriminator
-    })
+    user = new TrackedUser({ id: routed.author.id })
     // Add to DB
     await routed.bot.DB.add('users', user)
   }
@@ -181,7 +177,7 @@ export async function verifyAccount(routed: RouterRouted) {
     }
   }
 
-  const verifyResponse = await routed.bot.Service.ChastiKey.verifyCKAccountGetCode(routed.author.id, routed.user.username, routed.user.discriminator)
+  const verifyResponse = await routed.bot.Service.ChastiKey.verifyCKAccountGetCode(routed.author.id, routed.author.username, routed.author.discriminator)
 
   if (verifyResponse.success) {
     isSuccessful = true

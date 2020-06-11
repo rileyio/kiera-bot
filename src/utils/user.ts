@@ -1,5 +1,6 @@
 import * as XRegex from 'xregexp'
-import { TrackedUser, TrackedUserQuery } from '@/objects/user'
+import { TrackedUserQuery } from '@/objects/user'
+import { GuildMember } from 'discord.js'
 
 export namespace User {
   export enum UserRefType {
@@ -83,17 +84,17 @@ export namespace User {
    * @param {TrackedUser} user
    * @returns string
    */
-  export function buildUserFull(user: TrackedUser): string {
-    return `@${user.username}#${user.discriminator}`
+  export function buildUserFull(user: GuildMember): string {
+    return `@${user.nickname || user.user.username}#${user.user.discriminator}`
   }
 
   /**
    * Builds an in-chat snowflake reference to properly trigger the @user
    * @export
-   * @param {(string | TrackedUser)} user
+   * @param {(string | GuildMember)} user
    * @returns string
    */
-  export function buildUserWrappedSnowflake(user: string | TrackedUser): string {
+  export function buildUserWrappedSnowflake(user: string | GuildMember): string {
     // Catch if incoming is already a snowflake
     if (typeof user === 'string') {
       if (XRegex('^\\<\\@[0-9]*\\>$', 'i').test(user)) return user
@@ -113,11 +114,11 @@ export namespace User {
    * `dm` messages use just plain text
    *
    * @export
-   * @param {(string | TrackedUser)} input
+   * @param {(string | GuildMember)} input
    * @param {UserRefType} neededInFormat
    * @returns string
    */
-  export function buildUserChatAt(input: string | TrackedUser, neededInFormat: UserRefType): string {
+  export function buildUserChatAt(input: string | GuildMember, neededInFormat: UserRefType): string {
     if (neededInFormat === UserRefType.snowflake) return buildUserWrappedSnowflake(input)
     if (neededInFormat === UserRefType.usernameFull && typeof input === 'object') return buildUserFull(input)
   }

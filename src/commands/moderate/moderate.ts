@@ -1,7 +1,7 @@
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import { ExportRoutes, RouterRouted } from '@/router'
-import { TrackedMutedUser, TrackedUser } from '@/objects/user'
+import { TrackedMutedUser } from '@/objects/user'
 
 export const Routes = ExportRoutes(
   {
@@ -154,8 +154,8 @@ export async function mute(routed: RouterRouted) {
     serverID: routed.message.guild.id,
     reason: routed.v.o.reason || reasonCombined || '<blank>',
     mutedById: routed.author.id,
-    mutedByUsername: routed.user.username,
-    mutedByDiscriminator: routed.user.discriminator,
+    mutedByUsername: routed.author.username,
+    mutedByDiscriminator: routed.author.discriminator,
     removeAt: muteLengthIsNumber ? Date.now() + parseFloat(muteLenthString) * 3600000 : undefined,
     roles: rolesToRemove.map((r) => {
       return { id: r.id, name: r.name }
@@ -173,10 +173,7 @@ export async function mute(routed: RouterRouted) {
       discriminator: targetUser.user.discriminator,
       removeAt: new Date(mutedUserRecord.removeAt).toUTCString(),
       reason: mutedUserRecord.reason,
-      mutedBy: Utils.User.buildUserChatAt(
-        new TrackedUser({ username: mutedUserRecord.mutedByUsername, discriminator: mutedUserRecord.mutedByDiscriminator }),
-        Utils.User.UserRefType.usernameFull
-      ),
+      mutedBy: `${mutedUserRecord.mutedByUsername}#${mutedUserRecord.mutedByDiscriminator}`,
       rolesPreserved: mutedUserRecord.roles.map((r) => r.name).join(' ')
     })
   )
@@ -240,10 +237,7 @@ export async function unMute(routed: RouterRouted) {
           removeAt: new Date(mutedUserRecord.removeAt).toUTCString(),
           removedAt: new Date(Date.now()).toUTCString(),
           reason: mutedUserRecord.reason,
-          mutedBy: Utils.User.buildUserChatAt(
-            new TrackedUser({ username: mutedUserRecord.mutedByUsername, discriminator: mutedUserRecord.mutedByDiscriminator }),
-            Utils.User.UserRefType.usernameFull
-          ),
+          mutedBy: `${mutedUserRecord.mutedByUsername}#${mutedUserRecord.mutedByDiscriminator}`,
           rolesRestored: mutedUserRecord.roles.map((r) => r.name).join(' ')
         })
       : routed.$render('Moderate.Unmute.EntryUnmute', {
@@ -254,10 +248,7 @@ export async function unMute(routed: RouterRouted) {
           removeAt: new Date(mutedUserRecord.removeAt).toUTCString(),
           removedAt: new Date(Date.now()).toUTCString(),
           reason: mutedUserRecord.reason,
-          mutedBy: Utils.User.buildUserChatAt(
-            new TrackedUser({ username: mutedUserRecord.mutedByUsername, discriminator: mutedUserRecord.mutedByDiscriminator }),
-            Utils.User.UserRefType.usernameFull
-          )
+          mutedBy: `${mutedUserRecord.mutedByUsername}#${mutedUserRecord.mutedByDiscriminator}`
         })
   )
 
@@ -285,7 +276,7 @@ export async function activeMutes(routed: RouterRouted) {
         dateFormatted: new Date(m.timestamp).toUTCString(),
         removeAt: new Date(m.removeAt).toUTCString(),
         reason: m.reason,
-        mutedBy: Utils.User.buildUserChatAt(new TrackedUser({ username: m.mutedByUsername, discriminator: m.mutedByDiscriminator }), Utils.User.UserRefType.usernameFull)
+        mutedBy: `${m.mutedByUsername}#${m.mutedByDiscriminator}`
       })
     } else {
       response += routed.$render('Moderate.Mute.ListEntryUser', {
@@ -295,7 +286,7 @@ export async function activeMutes(routed: RouterRouted) {
         dateFormatted: new Date(m.timestamp).toUTCString(),
         removeAt: new Date(m.removeAt).toUTCString(),
         reason: m.reason,
-        mutedBy: Utils.User.buildUserChatAt(new TrackedUser({ username: m.mutedByUsername, discriminator: m.mutedByDiscriminator }), Utils.User.UserRefType.usernameFull)
+        mutedBy: `${m.mutedByUsername}#${m.mutedByDiscriminator}`
       })
     }
   }
@@ -336,7 +327,7 @@ export async function lookupMutes(routed: RouterRouted) {
         dateFormatted: new Date(m.timestamp).toUTCString(),
         removeAt: new Date(m.removeAt).toUTCString(),
         reason: m.reason,
-        mutedBy: Utils.User.buildUserChatAt(new TrackedUser({ username: m.mutedByUsername, discriminator: m.mutedByDiscriminator }), Utils.User.UserRefType.usernameFull)
+        mutedBy: `@${m.mutedByUsername}#${m.mutedByDiscriminator}`
       })
     } else {
       response += routed.$render('Moderate.Mute.ListEntryUser', {
@@ -346,7 +337,7 @@ export async function lookupMutes(routed: RouterRouted) {
         dateFormatted: new Date(m.timestamp).toUTCString(),
         removeAt: new Date(m.removeAt).toUTCString(),
         reason: m.reason,
-        mutedBy: Utils.User.buildUserChatAt(new TrackedUser({ username: m.mutedByUsername, discriminator: m.mutedByDiscriminator }), Utils.User.UserRefType.usernameFull)
+        mutedBy: `@${m.mutedByUsername}#${m.mutedByDiscriminator}`
       })
     }
   })

@@ -46,10 +46,10 @@ export async function history(routed: RouterRouted) {
     discordid: !routed.v.o.username
       ? routed.author.id
       : kieraUser.__notStored
-      ? undefined
-      : kieraUser.username.toLowerCase() === routed.v.o.username.toLowerCase()
-      ? kieraUser.id
-      : undefined,
+        ? undefined
+        : kieraUser.ChastiKey.username.toLowerCase() === routed.v.o.username.toLowerCase()
+          ? kieraUser.id
+          : undefined,
     username: kieraUser.__notStored && routed.v.o.username ? routed.v.o.username : undefined,
     showDeleted: true
   })

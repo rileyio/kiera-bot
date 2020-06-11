@@ -5,10 +5,8 @@ export class TrackedUser {
   public __notStored: boolean
   public _id: ObjectId
   public accessToken: string
-  public avatar: string = ''
-  public discriminator: string = ''
-  public id: string = ''
-  public username: string = ''
+  public avatar: string
+  public id: string
   public webToken: string
   public locale: string = process.env.BOT_LOCALE
 

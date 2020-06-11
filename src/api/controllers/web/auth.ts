@@ -37,6 +37,7 @@ export async function auth(routed: WebRouted) {
     // Is user already stored?
     const storedUser = await routed.Bot.DB.get('users', { id: v.o.id })
     const kieraUser = storedUser ? new TrackedUser(storedUser) : new TrackedUser(v.o)
+    const discordUser = await routed.Bot.client.users.fetch(routed.session.userID)
 
     // If not stored, add record
     if (!storedUser) await routed.Bot.DB.add<TrackedUser>('users', kieraUser)
@@ -47,7 +48,7 @@ export async function auth(routed: WebRouted) {
       generatedFor: 'kiera-web',
       otlExpiry: 0,
       otlConsumed: true,
-      session: jwt.sign({ discordID: kieraUser.id, userID: kieraUser.id, username: kieraUser.username, discriminator: kieraUser.discriminator }, process.env.BOT_SECRET, {
+      session: jwt.sign({ discordID: kieraUser.id, userID: kieraUser.id, username: discordUser.username, discriminator: discordUser.username }, process.env.BOT_SECRET, {
         expiresIn: '7d'
       })
     })
@@ -57,9 +58,9 @@ export async function auth(routed: WebRouted) {
 
     return routed.res.send({
       success: true,
-      username: kieraUser.username,
+      username: discordUser.username,
       userID: kieraUser.id,
-      discriminator: kieraUser.discriminator,
+      discriminator: discordUser.username,
       session: newSession.session
     })
   } catch (error) {

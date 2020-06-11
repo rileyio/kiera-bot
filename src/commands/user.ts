@@ -33,20 +33,17 @@ export async function registerUser(routed: RouterRouted) {
     // If not yet registered, store user in db
     const userID = await routed.bot.DB.add(
       'users',
-      new TrackedUser({
-        id: routed.message.author.id,
-        username: routed.message.author.username,
-        discriminator: routed.message.author.discriminator
-      })
+      new TrackedUser({ id: routed.message.author.id })
     )
+
     const user = await routed.bot.DB.get<TrackedUser>('users', { _id: userID })
-    const userAt = Utils.User.buildUserChatAt(user, userArgType)
+    const userAt = Utils.User.buildUserChatAt(routed.message.member, userArgType)
 
     await routed.message.reply(`:white_check_mark: You're now registered! ^_^`)
     routed.bot.Log.Command.log(`!register ${userAt}`)
   } else {
     await routed.message.reply(`You're already registered! :wink:`)
-    const userAt = Utils.User.buildUserChatAt(routed.message.author.id, userArgType)
+    const userAt = Utils.User.buildUserChatAt(routed.message.member.id, userArgType)
     routed.bot.Log.Command.log(`!register ${userAt} - user already registered`)
   }
 
