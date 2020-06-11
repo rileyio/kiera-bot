@@ -1,4 +1,7 @@
-6.0.0
+6.0.0-beta-2
+- Fixed: Large Emoji showing on CK Stats Lockee when there's no Lock name. #36
+
+6.0.0-beta-1
 - Fixed: Mod Mute not working on users of the same role or higher than Kiera's role position + excluding @everyone and Nitro Booster for being unmanaged roles.
 - Fixed: CK extended props object when loading and merging with defaults.
 - Updated: Dependencies audit and update.

@@ -172,7 +172,7 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number, r
   name += ` ${lock.isTrustedKeyholder ? indicatorEmoji.TrustedKH : ''}`
 
   // When the lock has a name
-  if (lock.lockName !== '') name += ` \`${lock.lockName}\``
+  lock.lockName !== '' ? name += ` \`${lock.lockName}\`` : name += ` \`<Lock not named>\``
 
   // Build Remaining cards string
   var remaining = ``
