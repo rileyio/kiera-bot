@@ -17,34 +17,6 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'User',
-    controller: registerAPIAuthKey,
-    example: '{{prefix}}user key new',
-    name: 'user-api-authkey-create',
-    validate: '/user:string/key:string/new:string',
-    middleware: [Middleware.isUserRegistered],
-    permissions: {
-      restrictedTo: [
-        '146439529824256000' // Emma#1366
-      ]
-    }
-  },
-  {
-    type: 'message',
-    category: 'User',
-    controller: destroyAPIAuthKey,
-    example: '{{prefix}}user key destroy user:1:123abc',
-    name: 'user-api-authkey-destroy',
-    validate: '/user:string/key:string/destroy:string/authkey=string',
-    middleware: [Middleware.isUserRegistered],
-    permissions: {
-      restrictedTo: [
-        '146439529824256000' // Emma#1366
-      ]
-    }
-  },
-  {
-    type: 'message',
-    category: 'User',
     description: 'Help.User.SetLocale.Description',
     controller: setUserLocale,
     example: '{{prefix}}user set locale fr',
@@ -78,41 +50,6 @@ export async function registerUser(routed: RouterRouted) {
     const userAt = Utils.User.buildUserChatAt(routed.message.author.id, userArgType)
     routed.bot.Log.Command.log(`!register ${userAt} - user already registered`)
   }
-
-  return true
-}
-
-export async function registerAPIAuthKey(routed: RouterRouted) {
-  const user = await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
-  const userKeyCount = await routed.bot.DB.getMultiple('authkeys', { uid: user._id })
-  const authKey = new AuthKey({
-    uid: user._id
-  })
-  const priKey = authKey.generate(user.username, userKeyCount.length + 1)
-
-  await routed.bot.DB.add('authkeys', authKey)
-  await routed.message.author.send(
-    `:exclamation: This is your private key \`${priKey}\` **(DO NOT share this with anyone!)**
-       Note: if you need to destroy this you can run \`!user key destroy ${priKey}\``
-  )
-
-  return true
-}
-
-export async function destroyAPIAuthKey(routed: RouterRouted) {
-  // Make sure authkey exists and belongs to this user
-  const user = await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
-  const keysplit = routed.v.o.authkey.split(':')
-  const newLookupRegex = RegExp(`^${keysplit[0]}\\:${keysplit[1]}`)
-  const authKey = await routed.bot.DB.get<AuthKey>('authkeys', { hash: newLookupRegex, uid: user._id })
-
-  // Stop if no keys could be found
-  if (!authKey) return false
-
-  // Else: continue
-  const updated = await routed.bot.DB.update<AuthKey>('authkeys', { _id: authKey._id }, { isActive: false })
-
-  await routed.message.author.send(`:exclamation: Your authkey \`${routed.v.o.authkey}\` is now deactivated!`)
 
   return true
 }
