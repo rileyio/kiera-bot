@@ -2,7 +2,6 @@ import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import { TrackedUser } from '@/objects/user'
 import { RouterRouted, ExportRoutes } from '@/router'
-import { AuthKey } from '@/objects/authkey'
 
 export const Routes = ExportRoutes(
   {
