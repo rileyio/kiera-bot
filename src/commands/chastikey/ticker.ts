@@ -157,7 +157,7 @@ export async function getTicker(routed: RouterRouted) {
   // If the user has passed a type as an argument, use that over what was saved as their default
   if (routed.v.o.type !== undefined) {
     // Stop invalid number/inputs
-    console.log(typeof routed.v.o.type, routed.v.o.type)
+    routed.bot.Log.Command.log(typeof routed.v.o.type, routed.v.o.type)
     if (routed.v.o.type !== 1 && routed.v.o.type !== 2 && routed.v.o.type !== 3) {
       await routed.message.channel.send(routed.$render('ChastiKey.Ticker.InvalidOverrideType'))
       return false
@@ -169,14 +169,18 @@ export async function getTicker(routed: RouterRouted) {
   user.ChastiKey.username = String(user.ChastiKey.username)
 
   // If the type is only for a single ticker, return just that
+  routed.bot.Log.Command.log(Utils.ChastiKey.generateTickerURL(user.ChastiKey))
   if (user.ChastiKey.ticker.type === 1 || user.ChastiKey.ticker.type === 2) {
     await routed.message.channel.send({
-      files: [new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey))]
+      files: [new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey), `${Date.now()}-ticker.png`)]
     })
     return true
   } else {
     await routed.message.channel.send(routed.$render('ChastiKey.Ticker.IncorrectTimer'), {
-      files: [Utils.ChastiKey.generateTickerURL(user.ChastiKey, 1), Utils.ChastiKey.generateTickerURL(user.ChastiKey, 2)]
+      files: [
+        new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey, 1), `${Date.now()}-ticker-lockee.png`),
+        new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey, 2), `${Date.now()}-ticker-keyholder.png`)
+      ]
     })
     return true
   }
