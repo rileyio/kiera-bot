@@ -475,12 +475,14 @@ export async function update(routed: RouterRouted) {
 
     if (!isPermissionsIssue && !isServerOwner) {
       // When user is in an active lock but has the (unlocked -or- no) emoji
-      if (hasLockedLock && (hasEmojiUnlocked || !hasEmojiStatus) && (lockeeStatusPref === 'always' || lockeeStatusPref === 'locked')) {
+      if (hasLockedLock.length && (hasEmojiUnlocked || !hasEmojiStatus) && (lockeeStatusPref === 'always' || lockeeStatusPref === 'locked') && currentNickname.length < 32) {
+        // console.log('Give 🔒 Emoji')
         // Set locked emoji
         await discordUser.setNickname(hasEmojiUnlocked ? currentNickname.replace('🔓', '🔒') : `${currentNickname} 🔒`)
         changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${currentNickname} 🔒` })
       }
-      if (!hasLockedLock && (hasEmojiLocked || !hasEmojiStatus) && (lockeeStatusPref === 'always' || lockeeStatusPref === 'unlocked')) {
+      if (!hasLockedLock.length && (hasEmojiLocked || !hasEmojiStatus) && (lockeeStatusPref === 'always' || lockeeStatusPref === 'unlocked') && currentNickname.length < 32) {
+        // console.log('Give 🔓 Emoji')
         // Set unlocked emoji
         await discordUser.setNickname(hasEmojiLocked ? currentNickname.replace('🔒', '🔓') : `${currentNickname} 🔓`)
         changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${currentNickname} 🔓` })
