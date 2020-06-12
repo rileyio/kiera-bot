@@ -1,3 +1,6 @@
+6.0.0-beta-3
+- Updated: Admin CK stats command to work once again for those users who can trigger a full update.
+
 6.0.0-beta-2
 - Fixed: Large Emoji showing on CK Stats Lockee when there's no Lock name. #36
 - Fixed: CK Ticker command. #34

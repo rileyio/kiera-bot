@@ -52,7 +52,7 @@ ChastiKey:
   # Administrative Tasks
   Admin:
     RefreshTriggered: Manual stats refresh triggered..
-
+    RefreshManualCompleted: Manual stats refresh has completed!
   # Errors
   Error:
     UserNotFound: User not found! The owner of the ChastiKey account must `{{prefix}}ck verify` in order to proceed with calling this command upon them.
@@ -60,6 +60,10 @@ ChastiKey:
       Could not complete lookup! Some of the possible reasons:
         - A user with that username may not exist.
         - The user may have changed their username in the ChastiKey App.
+    SelfLookupErrorOrNotFound: >-
+      Could not complete lookup! Some of the possible reasons:
+        - Your ChastiKey App may have `Display username in public stats, lists and data?` set to No or was recently changed.
+        - Your ChastiKey App account cannot be found or a ChastiKey server issue has arisen. Please check the ChastiKey Discord announcements.
     KeyholderOrAboveRoleRequired: 'Calling this command for another user requires you hold the Keyholder or above role.'
 
   # Ticker

@@ -9,10 +9,10 @@ export const Routes = ExportRoutes({
   name: 'admin-ck-stats-stats',
   permissions: {
     defaultEnabled: false,
-    serverAdminOnly: true,
     restrictedTo: [
       '473856245166506014', // KevinCross#0001
-      '146439529824256000' // Emma#1366
+      '146439529824256000', // Emma#1366,
+      '448856044840550403' // Sanni#0001
     ]
   },
   validate: '/admin:string/ck:string/stats:string/refresh:string'
@@ -24,19 +24,20 @@ export const Routes = ExportRoutes({
  * @param {RouterRouted} routed
  */
 export async function forceStatsReload(routed: RouterRouted) {
-  await routed.message.reply(routed.$render('Generic.Warn.CommandUnderMaintenance'))
+  await routed.message.channel.send(routed.$render('ChastiKey.Admin.RefreshTriggered'))
 
-  return true
+  // Get Jobs queue
+  const jobs = await routed.bot.Task.Agenda.jobs({})
+  const chastiKeyJobs = jobs.filter((j) => j.attrs.name.startsWith('ChastiKeyAPI'))
+  console.log('chastiKeyJobs', chastiKeyJobs.length)
 
-  await routed.message.channel.send(
-    routed.$render('ChastiKey.Admin.RefreshTriggered', {
-      seconds: (routed.v.o.seconds || 5000) / 1000
-    })
-  )
+  for (let index = 0; index < chastiKeyJobs.length; index++) {
+    const job = chastiKeyJobs[index]
+    await job.run()
+  }
 
-  // Update in db
-  // await routed.bot.DB.update<TrackedBotSetting>('settings', { key: /^bot\.task\.chastikey\.api\.fetch/i }, { lastUpdatd: Date.now(), value: 0 }, { updateOne: false })
+  // Report its done
+  await routed.message.channel.send(routed.$render('ChastiKey.Admin.RefreshManualCompleted'))
 
-  // Successful end
   return true
 }
