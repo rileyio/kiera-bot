@@ -2,6 +2,7 @@
 - Fixed: CK Update command's nickname with 🔓 or 🔒 depending if there is an active lock or not.
 - Fixed: CK Verify middleware and command.
 - Fixed: CK Update nickname issue when no nickname is set to just use the username.
+- Fixed: Mod Mute command not listing mutes if a member could not be found.
 - Updated: Admin CK stats command to work once again for those users who can trigger a full update.
 - Updated: Command Router's ChastiKey middleware & command errors when lookup fails.
 - Added: Nickname length check as to not run into a too many character issue when users try to CK Update with a long Nickname or Username.

@@ -2,6 +2,7 @@ import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import { ExportRoutes, RouterRouted } from '@/router'
 import { TrackedMutedUser } from '@/objects/user'
+import { GuildMember } from 'discord.js'
 
 export const Routes = ExportRoutes(
   {
@@ -265,8 +266,13 @@ export async function activeMutes(routed: RouterRouted) {
 
   for (let index = 0; index < mutedRecords.length; index++) {
     const m = mutedRecords[index]
+    var userOnServer: GuildMember
+    try {
+      await routed.message.guild.members.fetch(m.id)
+    } catch (error) {
+      userOnServer = undefined
+    }
 
-    const userOnServer = await routed.message.guild.members.fetch(m.id)
     // If still on the server
     if (userOnServer) {
       response += routed.$render('Moderate.Mute.ListEntryUser', {
