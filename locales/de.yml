@@ -84,6 +84,28 @@ Stats:
       Statistiken für diesen Benutzer sind wieder aktiviert (auf allen Servern auf denen Kiera anwesend ist).
       
       Für mehr Informationen über Statistiken benutze bitte den `{{prefix}}stats about` Befehl
+Decision:
+  Edit:
+    AddedManager: |-
+      {{user}} wurde zu {{id}} als Manager hinzugefügt. 
+      
+      Manager sind in der Lage, alle Aktionen auf einer Decision roll wie der Autor auszuführen, mit der Ausnahme, sie alle zusammen zu löschen. Dazu gehört, dass er sie in jedem Webportal sehen und bearbeiten kann, als ob er sie erstellt hätte. 
+    NewEntry: Decision Eintrag hinzugefügt {{added}}
+    NewIDAssigned: |-
+      Eine neue Entscheidungs-ID wurde zu `{{oldID}}` hinzugefügt.
+      Neue Entscheidungs-ID: **`{{newID}}`**
+    NewQuestionAdded: |-
+      Neue Frage hinzugefügt (id: `{{id}}`)
+      Gib deine Ergebnisse ein mit `!decision {{id}} add "Ergebnis der Entscheidung hier"`
+      Rolle ein Ergebnis mit `!decision roll {{id}}`
+    RemovedManager: '{{user}} wurde als Manager von {{id}} entlassen.'
+    SetModeOptions: |-
+      Modus-Optionen verfügbar:
+      > `0` = Standard (Keine limite)
+      > `1` = Temporärer Verzehr (consume)
+          (Stelle sicher, dass du die Reset-Zeit in Skunden setzst, Beispiel: {{prefix}}decision "id" consume reset 60`)
+      > `2` = Verzehr (consume)
+          (Sobald dieses Ergebnis verwendet wurde, wird es aus der Rotation entfernt, bis der Author es zurücksetzt. Zurücksetzen mit: {{prefix}}decision "id" consume reset`)
 ChastiKey:
   # Stats
   Stats:
@@ -185,6 +207,7 @@ Moderate:
         ## Entfernt: {{removeAt}}
         ## Erhaltene Rollen: {{rolesPreserved}}
         ## Grund: {{reason}}
+      ```
     ReasonForMutePrompt: Was ist der Grund für diese Stummschaltung? Geben Sie Ihren Grund innerhalb der nächsten 5 Minuten in so viele Zeilen wie nötig ein (Bearbeiten wird nicht gespeichert) oder wenn Sie mit Ihrer Eingabe zufrieden sind, senden Sie eine einfache Nachricht mit `:end`
     RolesUnableToManage: |-
       Die folgenden Rollen können nicht von Kiera und diesem Befehl verwaltet werden: ```
@@ -207,6 +230,7 @@ Moderate:
         ## Entfernt: {{removedAt}}
         ## Gund: {{reason}}
         ## Wiederhergestellte Rollen: {{rolesRestored}}
+      ```
 Locale:
   Info:
     AlreadySet: |-
@@ -260,9 +284,11 @@ BattleNet:
 Generic:
   Error:
     CommandDisabledInChannel: Der `{{command}}` Befehl ist in diesem Raum nicht erlaubt.
+    CommandExactMatchFailedFallback: 'Beispiele von Befehlen in der `{{prefix}}{{command}}` Gruppe:'
     CommandExactMatchFailedOptions: '***Tipp:** Du kannst:* `{{prefix}}help {{command}}` verwenden, Hier sind einige Beispiele, die diesen Befehl verwenden:'
     HelpCommandMissing: Leider ist für diesen Befehl noch kein Hilfstext verfügbar.
     Internal: Befehl aufgrund eines internen Problems nicht ausgeführt! Dies kann weitere Untersuchungen erfordern. Wenn Sie dabei Unterstützung benötigen, besuchen Sie bitte https://kierabot.xyz/support
+    ThisActionFailedServerOwner: Die Aktion kann nicht ausgeführt werden da du der Besitzer des Servers bist.
   Warn:
     CommandUnderMaintenance: Dieser Befehl ist aufgrund von Wartungsarbeiten vorübergehend nicht verfügbar.
   Word:
@@ -323,8 +349,12 @@ Help:
       Description: Liste aller lockees des Keyholders
     ToggleKeyholderAverageDisplayed:
       Description: Aktiviere/deaktiviere die Bewertungsanzeige in deinen Statistiken
+    SetTickerType:
+      Description: Stelle deinen standard ticker ein, welcher dargestellt wird wenn du den ticker Befehl benutzt
     SetTickerDate:
       Description: Setze ein Start Datum für die ticker Daten
+    ToggleTickerRating:
+      Description: "Aktiviere/deaktiviere die Anzeige der Bewertung in der Darstellung des tickers "
     Ticker:
       Description: Zeige den ChastiKey Ticker
     Update:
@@ -365,6 +395,9 @@ Help:
       Description: Rolle die vorgefertigten rollen
     RollRealtime:
       Description: Erstelle und rolle eine einmalige decision roll
+  Utility:
+    ListRoles:
+      Description: Auflistung aller Server Rollen & der Nutzerzahl
   Fun:
     EightBall:
       Description: Stell dem 8ball eine Frage
@@ -372,6 +405,14 @@ Help:
       Description: Wirf eine Münze
     Roll:
       Description: Rolle einen oder mehrere Würfel
+  Poll:
+    New:
+      Description: Eine neue Umfrage erstellen
+    PickRandomVote:
+      Description: Wählt einen zufälligen Nutzer der Abstimmung aus
+  User:
+    Register:
+      Description: Registrier dich beim Bot
 Poll:
   Warn:
     DifferentAuthorID: Nur der Ersteller dieser Umfrage darf den {{prefix}} Befehl aufrufen!
@@ -419,23 +460,6 @@ Poll:
   Interaction:
     VoteCast: Stimme abgegeben!
     VoteRemoved: Stimme zurückgezogen!
-Decision:
-  Edit:
-    NewEntry: Decision Eintrag hinzugefügt {{added}}
-    NewIDAssigned: |-
-      Eine neue Entscheidungs-ID wurde zu `{{oldID}}` hinzugefügt.
-      Neue Entscheidungs-ID: **`{{newID}}`**
-    NewQuestionAdded: |-
-      Neue Frage hinzugefügt (id: `{{id}}`)
-      Gib deine Ergebnisse ein mit `!decision {{id}} add "Ergebnis der Entscheidung hier"`
-      Rolle ein Ergebnis mit `!decision roll {{id}}`
-    SetModeOptions: |-
-      Modus-Optionen verfügbar:
-      > `0` = Standard (Keine limite)
-      > `1` = Temporärer Verzehr (consume)
-          (Stelle sicher, dass du die Reset-Zeit in Skunden setzst, Beispiel: {{prefix}}decision "id" consume reset 60`)
-      > `2` = Verzehr (consume)
-          (Sobald dieses Ergebnis verwendet wurde, wird es aus der Rotation entfernt, bis der Author es zurücksetzt. Zurücksetzen mit: {{prefix}}decision "id" consume reset`)
 System:
   # This is so technical, i would leave it like that, because there would be no major  changes to it
   Startup: |+
