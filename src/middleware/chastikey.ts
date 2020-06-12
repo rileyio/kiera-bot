@@ -8,7 +8,7 @@ export async function isCKVerified(routed: RouterRouted) {
 
   // User has previously verified, let them pass for now, likely a Cache data issue or they're still awaiting
   // the cache to update for their user record
-  if (routed.user.ChastiKey.isVerified && !!ckUser.userID) {
+  if (routed.user.ChastiKey.isVerified && !ckUser.userID) {
     routed.bot.Log.Command.log(`Middleware -> ChastiKey user previously verified => username: ${routed.author.username}#${routed.author.discriminator}, id: ${routed.author.id}`)
     return routed
   }
@@ -27,7 +27,7 @@ export async function isCKVerified(routed: RouterRouted) {
   }
 
   // Verified!!
-  if (ckUser.userID !== undefined && routed.user.ChastiKey.isVerified) return routed // No need to hault if this passes
+  if (!!ckUser.userID && routed.user.ChastiKey.isVerified) return routed // No need to hault if this passes
   // Fallback, user not yet registered
   await routed.message.reply(routed.$render('ChastiKey.Verify.VerifyRequired'))
   routed.bot.Log.Command.log(`Middleware -> ChastiKey user not verified => username: ${routed.author.username}#${routed.author.discriminator}, id: ${routed.author.id}`)

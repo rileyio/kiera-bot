@@ -128,7 +128,6 @@ export class ChastiKey {
     try {
       // Make request out to ChastiKey to start process
       const postData = new FormData()
-      // Check if verify key has been cached recently
       postData.append('id', discordID)
       postData.append('username', username)
       postData.append('discriminator', discriminator)

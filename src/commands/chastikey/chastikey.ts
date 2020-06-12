@@ -159,11 +159,12 @@ export async function verifyAccount(routed: RouterRouted) {
     await routed.bot.DB.add('users', user)
   }
 
+  const parsedVerifyDiscordID = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ discordID: routed.author.id })
+  console.log(user.ChastiKey)
+
   // If user exists & this command is being re-run, try checking if they're verified on the ChastiKey side before
   // Triggering a new verify
   if (!user.ChastiKey.isVerified) {
-    const parsedVerifyDiscordID = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ discordID: routed.author.id })
-
     // When they are already verified, let them know & update the ChastiKey user record
     if (parsedVerifyDiscordID.status === 200) {
       // Update that we know they're at least verified
@@ -175,6 +176,11 @@ export async function verifyAccount(routed: RouterRouted) {
       await routed.message.reply(routed.$render('ChastiKey.Verify.FastForward'))
       return true // Stop here
     }
+  }
+
+  if (parsedVerifyDiscordID.status === 200) {
+    await routed.message.reply(routed.$render('ChastiKey.Verify.PreviouslyCompleted'))
+    return true
   }
 
   const verifyResponse = await routed.bot.Service.ChastiKey.verifyCKAccountGetCode(routed.author.id, routed.author.username, routed.author.discriminator)
