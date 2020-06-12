@@ -1,5 +1,6 @@
 6.0.0-beta-3
-- Fixing: CK Verify middleware and command.
+- Fixed: CK Verify middleware and command.
+- Fixed: CK Update nickname issue when no nickname is set to just use the username.
 - Updated: Admin CK stats command to work once again for those users who can trigger a full update.
 - Updated: Command Router's ChastiKey middleware & command errors when lookup fails.
 

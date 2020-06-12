@@ -462,10 +462,11 @@ export async function update(routed: RouterRouted) {
   changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Nickname' })
 
   try {
+    const currentNickname = discordUser.nickname || discordUser.user.username
     // Lockee Nickname update
-    const hasEmojiStatus = /🔒|🔓/.test(discordUser.nickname)
-    const hasEmojiLocked = /🔒/.test(discordUser.nickname)
-    const hasEmojiUnlocked = /🔓/.test(discordUser.nickname)
+    const hasEmojiStatus = /🔒|🔓/.test(currentNickname)
+    const hasEmojiLocked = /🔒/.test(currentNickname)
+    const hasEmojiUnlocked = /🔓/.test(currentNickname)
     const lockeeStatusPref = user.ChastiKey.preferences.lockee.showStatusInNickname
 
     // Check if kiera sits at or below the person calling -and- is not the server owner
@@ -476,13 +477,13 @@ export async function update(routed: RouterRouted) {
       // When user is in an active lock but has the (unlocked -or- no) emoji
       if (hasLockedLock && (hasEmojiUnlocked || !hasEmojiStatus) && (lockeeStatusPref === 'always' || lockeeStatusPref === 'locked')) {
         // Set locked emoji
-        await discordUser.setNickname(hasEmojiUnlocked ? discordUser.nickname.replace('🔓', '🔒') : `${discordUser.nickname} 🔒`)
-        changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${discordUser.nickname} 🔒` })
+        await discordUser.setNickname(hasEmojiUnlocked ? currentNickname.replace('🔓', '🔒') : `${currentNickname} 🔒`)
+        changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${currentNickname} 🔒` })
       }
       if (!hasLockedLock && (hasEmojiLocked || !hasEmojiStatus) && (lockeeStatusPref === 'always' || lockeeStatusPref === 'unlocked')) {
         // Set unlocked emoji
-        await discordUser.setNickname(hasEmojiLocked ? discordUser.nickname.replace('🔒', '🔓') : `${discordUser.nickname} 🔓`)
-        changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${discordUser.nickname} 🔓` })
+        await discordUser.setNickname(hasEmojiLocked ? currentNickname.replace('🔒', '🔓') : `${currentNickname} 🔓`)
+        changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${currentNickname} 🔓` })
       }
     } else {
       // Show error for is server owner
