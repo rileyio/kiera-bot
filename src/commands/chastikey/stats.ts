@@ -88,8 +88,13 @@ export async function getLockeeStats(routed: RouterRouted) {
 
   // If the lookup is upon someone else with no data, return the standard response
   if (lockeeData.response.status !== 200) {
-    // Notify in chat what the issue could be
-    await routed.message.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
+    if (routed.v.o.username) {
+      // Notify in chat what the issue could be for the target user
+      await routed.message.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
+    } else {
+      // Notify in chat what the issue could be for the user's own account
+      await routed.message.reply(routed.$render('ChastiKey.Error.SelfLookupErrorOrNotFound'))
+    }
     return true // Stop here
   }
 
@@ -123,8 +128,13 @@ export async function getKeyholderStats(routed: RouterRouted) {
 
   // If the lookup is upon someone else with no data, return the standard response
   if (keyholderData.response.status !== 200) {
-    // Notify in chat what the issue could be
-    await routed.message.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
+    if (routed.v.o.username) {
+      // Notify in chat what the issue could be for the target user
+      await routed.message.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
+    } else {
+      // Notify in chat what the issue could be for the user's own account
+      await routed.message.reply(routed.$render('ChastiKey.Error.SelfLookupErrorOrNotFound'))
+    }
     return true // Stop here
   }
 

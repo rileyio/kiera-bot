@@ -46,18 +46,23 @@ export async function history(routed: RouterRouted) {
     discordid: !routed.v.o.username
       ? routed.author.id
       : kieraUser.__notStored
-        ? undefined
-        : kieraUser.ChastiKey.username.toLowerCase() === routed.v.o.username.toLowerCase()
-          ? kieraUser.id
-          : undefined,
+      ? undefined
+      : kieraUser.ChastiKey.username.toLowerCase() === routed.v.o.username.toLowerCase()
+      ? kieraUser.id
+      : undefined,
     username: kieraUser.__notStored && routed.v.o.username ? routed.v.o.username : undefined,
     showDeleted: true
   })
 
   // If the lookup is upon someone else with no data, return the standard response
   if (lockeeData.response.status !== 200) {
-    // Notify in chat what the issue could be
-    await routed.message.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
+    if (routed.v.o.username) {
+      // Notify in chat what the issue could be for the target user
+      await routed.message.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
+    } else {
+      // Notify in chat what the issue could be for the user's own account
+      await routed.message.reply(routed.$render('ChastiKey.Error.SelfLookupErrorOrNotFound'))
+    }
     return true // Stop here
   }
 
