@@ -228,7 +228,7 @@ Help:
       Description: Transfer ownership of Decision roll
   Moderate:
     MuteUser:
-      Description: Apply `Tempoary Mute` role to user & preserve roles
+      Description: Apply `Temporary Mute` role to user & preserve roles
     UnmuteUser:
       Description: Unmute previously Muted user & restoring roles
     MuteListMuted:
