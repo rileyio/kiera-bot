@@ -36,7 +36,7 @@ export async function isAuthenticatedOwner(routed: WebRouted) {
 export async function validateSession(routed: WebRouted) {
   const userID = String(routed.req.header('userID'))
   const session = String(routed.req.header('session'))
-  var verifiedSession: { userID: string; username: string; discriminator: string; session: string }
+  var verifiedSession: { userID: string; session: string }
 
   // If missing, fail
   if (!userID || !session) {
@@ -62,6 +62,9 @@ export async function validateSession(routed: WebRouted) {
     session
   } as Partial<TrackedSession>)
 
+  // If session is found but has been terminated
+  if (storedSession.terminated) routed.res.send(401, 'Unauthorized')
+
   // If valid record is found, return successful
   if (storedSession) {
     // Pass along some session data to help easing future lookups
@@ -72,7 +75,6 @@ export async function validateSession(routed: WebRouted) {
 
   // Fallback - fail auth
   console.log('ValidateSession => Session not found!')
-  routed.res.send(401, 'Unauthorized')
   return // FAIL
 }
 
@@ -83,6 +85,8 @@ export async function validateWebSecret(routed: WebRouted) {
   if (secret === process.env.BOT_WEB_APP_SERVER_SECRET) {
     return routed
   }
-  // When Invalid
+
+  // Fallback - fail auth
+  routed.res.send(401, 'Unauthorized')
   return
 }

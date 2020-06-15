@@ -5,12 +5,7 @@ export namespace User {
     return joi
       .object()
       .keys({
-        id: joi
-          .string()
-          .alphanum()
-          .min(2)
-          .max(24)
-          .required()
+        id: joi.string().alphanum().min(2).max(24).required()
       })
       .required()
   }
@@ -29,37 +24,8 @@ export namespace User {
     return joi
       .object()
       .keys({
-        username: joi
-          .string()
-          .min(2)
-          .max(32)
-          .required(),
-        avatar: joi
-          .string()
-          .alphanum()
-          .min(32)
-          .max(32)
-          .allow(null)
-          .required(),
-        discriminator: joi
-          .string()
-          .alphanum()
-          .min(4)
-          .max(4)
-          .required(),
-        id: joi
-          .string()
-          .alphanum()
-          .min(2)
-          .max(24)
-          .required(),
-        accessToken: joi
-          .string()
-          .alphanum()
-          .min(28)
-          .max(30)
-          .required(),
-        fetchedAt: joi.string().required()
+        id: joi.string().alphanum().min(2).max(24).required(),
+        accessToken: joi.string().alphanum().min(28).max(30).required()
       })
       .required()
   }

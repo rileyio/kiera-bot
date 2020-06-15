@@ -55,6 +55,13 @@ export class TrackedSession {
    */
   public generatedFor: 'kiera-web' | 'kiera-ck' = undefined
 
+  /**
+   * Is set to 'true' when the session has been found to be expired or is logged out
+   * @type {boolean}
+   * @memberof TrackedSession
+   */
+  public terminated: boolean = false
+
   constructor(init?: Partial<TrackedSession>) {
     Object.assign(this, init || {})
   }
@@ -63,10 +70,7 @@ export class TrackedSession {
     // Only generate a new OTL if session does not exist
     if (this.session) throw new Error('Cannot create a OTL on a session that already exists.')
     // Generate OTL
-    const otl = `${crypto
-      .SHA256(Math.random().toString())
-      .toString()
-      .substr(0, 8)}`
+    const otl = `${crypto.SHA256(Math.random().toString()).toString().substr(0, 8)}`
 
     // Set OTL on Session
     this.otl = otl

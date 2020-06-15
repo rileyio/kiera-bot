@@ -13,12 +13,7 @@ export namespace Auth {
     return joi
       .object()
       .keys({
-        id: joi.string().alphanum().min(2).max(24).required(),
-        username: joi.string().min(2).max(32).required(),
-        discriminator: joi.string().alphanum().min(4).max(4).required(),
-        avatar: joi.string().alphanum().min(32).max(32).allow(null).required(),
-        fetchedAt: joi.string().required(),
-        locale: joi.string().min(2).max(8).required()
+        id: joi.string().alphanum().min(2).max(24).required()
       })
       .required()
   }

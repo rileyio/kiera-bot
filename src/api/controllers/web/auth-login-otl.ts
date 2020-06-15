@@ -59,7 +59,7 @@ export async function otl(routed: WebRouted) {
   // Get Kiera User Record
   const kieraUser = new TrackedUser(await routed.Bot.DB.get('users', { id: storedSession.userID }))
 
-  // Store on TrackedSession
+  // Update TrackedSession
   await routed.Bot.DB.update<TrackedSession>(
     'sessions',
     { _id: storedSession._id },
