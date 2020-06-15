@@ -7,7 +7,7 @@ export class LiveStatistics extends EventEmitter {
   private uptimeInterval: NodeJS.Timer
   private dbUpdateInterval: NodeJS.Timer
   private Bot: Bot
-  public BotStatistics = new BotStatistics()
+  public BotStatistics: BotStatistics
 
   // Ticker states
   private uptimeTickerRunning = false
@@ -16,6 +16,7 @@ export class LiveStatistics extends EventEmitter {
   constructor(bot: Bot) {
     super()
     this.Bot = bot
+    this.BotStatistics = new BotStatistics({ version: this.Bot.version })
   }
 
   public async start() {
@@ -61,15 +62,6 @@ export class LiveStatistics extends EventEmitter {
       case 'dms-sent':
         this.BotStatistics.dms.sent += 1
         break
-      case 'users-total':
-        valueOverride !== undefined ? (this.BotStatistics.users.total = valueOverride) : (this.BotStatistics.users.total += 1)
-        break
-      case 'users-registered':
-        valueOverride !== undefined ? (this.BotStatistics.users.registered = valueOverride) : (this.BotStatistics.users.registered += 1)
-        break
-      case 'servers-total':
-        valueOverride !== undefined ? (this.BotStatistics.servers.total = valueOverride) : (this.BotStatistics.servers.total += 1)
-        break
 
       default:
         break
@@ -78,7 +70,7 @@ export class LiveStatistics extends EventEmitter {
 
   public async loadExisting() {
     // Ensure db records exist
-    if (!(await this.Bot.DB.verify('stats-bot', { name: this.BotStatistics.name }))) {
+    if (!(await this.Bot.DB.verify('stats-bot', { name: this.BotStatistics.name /* version: this.Bot.version */ }))) {
       await this.Bot.DB.add('stats-bot', this.BotStatistics)
     }
 
@@ -114,6 +106,7 @@ export class LiveStatistics extends EventEmitter {
           'stats-bot',
           {
             name: this.BotStatistics.name
+            // version: this.Bot.version
           },
           this.BotStatistics
         )
@@ -122,11 +115,6 @@ export class LiveStatistics extends EventEmitter {
   }
 
   private async updatePeriodicStats() {
-    this.BotStatistics.users = await Helper.fetchUserCounts(this.Bot)
     this.BotStatistics.servers = await Helper.fetchGuildStats(this.Bot)
-  }
-
-  private emitUpdate(event: 'statsReady' | 'statsNotReady') {
-    this.emit(event)
   }
 }

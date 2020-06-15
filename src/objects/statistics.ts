@@ -10,15 +10,14 @@ export type BotStatistic =
   | 'commands-invalid'
   | 'dms-received'
   | 'dms-sent'
-  | 'users-total'
-  | 'users-registered'
-  | 'servers-total'
 
 export class BotStatistics {
   public _id: ObjectID
   public name: string = process.env.DISCORD_APP_NAME
   public uptime: number = 0
   public startTimestamp: number = Date.now()
+
+  public version: string
 
   public messages = {
     seen: 0,
@@ -43,6 +42,10 @@ export class BotStatistics {
     total: 0
   }
   public discordAPICalls: number = 0
+
+  constructor(init: Partial<BotStatistics>) {
+    this.version = init.version
+  }
 
   public startup(init: BotStatistics) {
     // Strip certain values that would reset each bot restart
