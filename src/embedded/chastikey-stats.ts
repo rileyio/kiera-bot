@@ -95,7 +95,7 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
     joinedDaysAgo: lockeeData.data.joined !== '-' ? `${Math.round((Date.now() - new Date(lockeeData.data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago` : '',
     // Only Show verified @User if the user is verified
     isVerified: lockeeData.data.discordID ? true : false,
-    verifiedTo: Utils.User.buildUserChatAt(lockeeData.data.discordID, Utils.User.UserRefType.snowflake)
+    verifiedTo: lockeeData.data.discordID ? Utils.User.buildUserChatAt(lockeeData.data.discordID, Utils.User.UserRefType.snowflake) : null
   })
 
   const messageBlock = {
