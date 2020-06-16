@@ -13,7 +13,7 @@ export function heartBeat(Bot: Bot, socket: SocketIO.Server) {
       commands: Bot.BotMonitor.LiveStatistics.BotStatistics.commands,
       servers: Bot.BotMonitor.LiveStatistics.BotStatistics.servers,
       uptime: Bot.BotMonitor.LiveStatistics.BotStatistics.uptime,
-      version: Bot.BotMonitor.LiveStatistics.BotStatistics.version
+      version: Bot.version
     }
   })
 }
