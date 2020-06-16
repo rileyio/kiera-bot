@@ -105,8 +105,8 @@ export class LiveStatistics extends EventEmitter {
         await this.Bot.DB.update(
           'stats-bot',
           {
-            name: this.BotStatistics.name
-            // version: this.Bot.version
+            name: this.BotStatistics.name,
+            version: this.Bot.version
           },
           this.BotStatistics
         )
