@@ -6,7 +6,6 @@ export * from './message-tracker'
 
 export type Collections =
   | 'audit-log'
-  | 'authkeys'
   | 'available-server-settings'
   | 'ck-running-locks'
   | 'ck-locktober'
