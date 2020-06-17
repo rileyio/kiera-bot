@@ -83,6 +83,7 @@ export async function verifySession(routed: WebRouted) {
     // Valid at this point
     return routed.res.send({
       success: true,
+      userID: discordUser.id,
       username: discordUser.username,
       discriminator: discordUser.discriminator,
       avatar: discordUser.avatar
