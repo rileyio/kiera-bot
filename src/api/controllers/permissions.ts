@@ -5,7 +5,6 @@ import { validate } from '@/api/utils/validate'
 import { WebRouted, WebRoute } from '@/api/web-router'
 import { CommandPermission } from '@/objects/permission'
 import { ObjectID } from 'bson'
-import { routeLoader } from '@/router/route-loader'
 import { sb } from '@/utils'
 import { TrackedAvailableObject } from '@/objects/available-objects'
 
