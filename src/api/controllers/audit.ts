@@ -14,16 +14,15 @@ export const Routes: Array<WebRoute> = [
 ]
 
 export async function getEntries(routed: WebRouted) {
-  // const v = await validate(Validation.Audit.getAll(), routed.req.body)
-  // User & Token from header
-  const id = routed.req.header('id')
+  var auditEntries = await routed.Bot.DB.getLatest<AuditEntry>(
+    'audit-log',
+    {
+      owner: routed.session.userID
+    },
+    { limit: 200 }
+  )
 
-  var auditEntries = await routed.Bot.DB.getMultiple<AuditEntry>('audit-log', {
-    owner: id
-  })
-
-  // Sort Desc on date
-  auditEntries.reverse()
+  console.log('Audit Count:', auditEntries.length)
 
   return routed.res.send(auditEntries)
 }
