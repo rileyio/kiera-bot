@@ -90,6 +90,12 @@ Decision:
       {{user}} wurde zu {{id}} als Manager hinzugefügt. 
       
       Manager sind in der Lage, alle Aktionen auf einer Decision roll wie der Autor auszuführen, mit der Ausnahme, sie alle zusammen zu löschen. Dazu gehört, dass er sie in jedem Webportal sehen und bearbeiten kann, als ob er sie erstellt hätte. 
+    AllConsumedOutcomesReset: Alle Ergebnisse der decision roll wurden zurückgesetzt
+    AllConsumedOutcomesResetTo: Alle verbrauchten Ergebnisse der decision roll wurden zurückgesetzt, und die Reset Zeit ist nun `{{value}}`
+    CancelledResetAllConsumedFlags: Zurücksetzen der Decision roll abgebrochen! Antwort nicht innerhalb einer Minute erhalten.
+    ConfirmResetAllConsumedOutcomes: Um das zurücksetzen aller verbrauchten Ergebnisse zurückzusetzen, sende **`yes`** innerhalb der nächsten 60 Sekunden
+    ConfirmResetAllConsumedOutcomesReceived: "Bestätigung erhalten! Setze alle möglichen Ergebnisse dieser Decision roll zurück... \nBitte warten"
+    ConsumeModeSet: 'Der Verbrauchs modus für diese decision roll ist nun auf `{{change}}` gestellt'
     NewEntry: Decision Eintrag hinzugefügt {{added}}
     NewIDAssigned: |-
       Eine neue Entscheidungs-ID wurde zu `{{oldID}}` hinzugefügt.
@@ -98,7 +104,9 @@ Decision:
       Neue Frage hinzugefügt (id: `{{id}}`)
       Gib deine Ergebnisse ein mit `!decision {{id}} add "Ergebnis der Entscheidung hier"`
       Rolle ein Ergebnis mit `!decision roll {{id}}`
+    OwnershipTransfered: Eigentumsrechte der Decision roll `{{id}}`wurde auf {{target}} übertragen
     RemovedManager: '{{user}} wurde als Manager von {{id}} entlassen.'
+    SetConsumeReset: 'Der Reset modus für die verbrauchten Ergebnisse ist nun auf {{value}} gesetzt'
     SetModeOptions: |-
       Modus-Optionen verfügbar:
       > `0` = Standard (Keine limite)
@@ -171,6 +179,13 @@ ChastiKey:
   # Errors
   Error:
     KeyholderOrAboveRoleRequired: 'Hierfür wird die Keyholder-Rolle oder höher benötigt.'
+    SelfLookupErrorOrNotFound: >-
+      Die Suche konnte nicht abgeschlossen werden, einige mögliche Gründe dafür:
+      
+      In der ChastiKey App könnte die Option `Display username in public stats, lists and data?` auf No gestellt dein, oder vor kurzem auf nein umgestellt worden sein. 
+      
+      Dein ChastiKey account wurde nicht gefunden, oder ein Server Problem ist aufgetreten. 
+      Bitte schaue nach ob du hierzu in den Announcements auf dem ChastiKey Discord findest.
     UserLookupErrorOrNotFound: >-
       Die Abfrage konnte nicht ausgeführt werden! Mögliche Gründe hierfür sind:
       - Es existiert kein Benutzer mit diesem Benutzernamen.
@@ -178,6 +193,7 @@ ChastiKey:
     UserNotFound: Der Benutzer wurde nicht gefunden! Der Besitzer des ChastiKey Kontos muss den `{{prefix}}ck verify` ausführen, um sich zu verifizieren.
   # Administrative Tasks
   Admin:
+    RefreshManualCompleted: Manuell ausgelöste Datenbankaktualisierung wurde beendet!
     RefreshTriggered: Manuelle Aktualisierung der Statistiken wurde gestartet.
 Moderate:
   Mute:
@@ -288,6 +304,7 @@ Generic:
     CommandExactMatchFailedOptions: '***Tipp:** Du kannst:* `{{prefix}}help {{command}}` verwenden, Hier sind einige Beispiele, die diesen Befehl verwenden:'
     HelpCommandMissing: Leider ist für diesen Befehl noch kein Hilfstext verfügbar.
     Internal: Befehl aufgrund eines internen Problems nicht ausgeführt! Dies kann weitere Untersuchungen erfordern. Wenn Sie dabei Unterstützung benötigen, besuchen Sie bitte https://kierabot.xyz/support
+    RoleTooHightForThisAction: Die Aktion konnte nicht ausgeführt werden, da deine Rolle zu hoch ist
     ThisActionFailedServerOwner: Die Aktion kann nicht ausgeführt werden da du der Besitzer des Servers bist.
   Warn:
     CommandUnderMaintenance: Dieser Befehl ist aufgrund von Wartungsarbeiten vorübergehend nicht verfügbar.
@@ -326,6 +343,8 @@ Help:
       Description: Aktuelle Diablo 3 Saison abrufen
     D3ProfileLookup:
       Description: Benutzerprofil von Diablo 3 abrufen
+    WoWCharacterProfile:
+      Description: World of Warcraft-Charakterprofil abrufen
   ChastiKey:
     RecoverCombinations:
       Description: Abrufen deiner abgeschlossenen Schlosskombinationen
@@ -335,6 +354,8 @@ Help:
       Description: Liste der ChastiKey Discord Rollen und Statistiken
     CKWeb:
       Description: Externe Sitzung für Kiera + ChastiKey web Portal erstellen
+    LockeeHistory:
+      Description: Lockee historie anzeigen
     LocktoberStats:
       Description: ChastiKey Locktober Event Statistik
     UsernameSearch:
@@ -395,9 +416,21 @@ Help:
       Description: Rolle die vorgefertigten rollen
     RollRealtime:
       Description: Erstelle und rolle eine einmalige decision roll
+    AddManager:
+      Description: Füge einen Benutzer als Manager der Decision roll hinzu
+    RemoveManager:
+      Description: Entferne Benutzer als Manager von der Decision roll
+    TransferOwnership:
+      Description: "Übertrage den Besitz der Decision roll\n"
   Utility:
     ListRoles:
       Description: Auflistung aller Server Rollen & der Nutzerzahl
+    ListRolesInRange:
+      Description: Server-Rollen und Benutzeranzahl einer festgelegtenListe anzeigen
+    ListRolesLike:
+      Description: Server-Rollen und Benutzeranzahl auflisten, bei denen der Name ähnlich zu dem gesendeten ist
+    DisplayRoleInformation:
+      Description: Zeige details für die gegebenen Rollen an
   Fun:
     EightBall:
       Description: Stell dem 8ball eine Frage
@@ -405,14 +438,29 @@ Help:
       Description: Wirf eine Münze
     Roll:
       Description: Rolle einen oder mehrere Würfel
+  Help:
+    General:
+      Description: Zeige hilfe für den Bot an
   Poll:
     New:
       Description: Eine neue Umfrage erstellen
+    Edit:
+      Description: Bearbeite Umfrageeinstellungen
+    Start:
+      Description: Beginne mit der Annahme von Stimmen
+    Stop:
+      Description: Nehme keine Stimmen mehr an
     PickRandomVote:
       Description: Wählt einen zufälligen Nutzer der Abstimmung aus
+    AddOption:
+      Description: Füge der Umfrage eine Antwort hinzu
+    RemoveOption:
+      Description: Entferne eine Antwort von der Umfrage
   User:
     Register:
       Description: Registrier dich beim Bot
+    SetLocale:
+      Description: Stelle deine Sprache für die Bot antworten ein
 Poll:
   Warn:
     DifferentAuthorID: Nur der Ersteller dieser Umfrage darf den {{prefix}} Befehl aufrufen!
