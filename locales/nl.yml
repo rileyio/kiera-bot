@@ -84,23 +84,76 @@ Stats:
       De statistieken voor je account zijn weer ingeschakeld (op alle servers waar Kiera actief is)
       
       Voor meer informatie over statistieken, gebruik het commando  `{{prefix}}stats about`.
-Admin:
-  BotManualRestart: 'De bot herstart in `{{seconds}}` seconden.. '
-  CommandCategoriesList: >-
-    Dit is een overzicht van hoeveel commando's er zijn onder elke categorie. Als je dieper wilt zoeken of een commando wilt vinden om een beperking in te stellen of info te krijgen, type {{prefix}}admin command category Fun.
-    ```
-    {{categories}}
-    ```
-  CommandCategoryCommands: >-
-    De volgende commando's zijn beschikbaar in de categorie {{category}}:
-    
-    ```
-    {{commands}}
-    ```
-BattleNet:
-  Error:
-    CharacterNotFound: Karakter niet gevonden!
+Decision:
+  Edit:
+    AddedManager: |-
+      {{user}} is toegevoegd aan {{id}} als manager.
+      Managers kunnen alles met de 'Decision role' wat de maker ervan ook kan, behalve deze wissen. Daartoe behoort ook het bekijken en aanpassen in alle websites, alsof deze role van henzelf is.
+    AllConsumedOutcomesReset: Alle 'Decision consumed' markeringen zijn gereset!
+    AllConsumedOutcomesResetTo: Alle 'Decision consumed' markeringen zijn gereset & de reset tijd is nu `{{value}}`
+    CancelledResetAllConsumedFlags: 'Decision consumed markeringen resetten' niet uitgevoerd! Antwoord niet ontvangen binnen 1 minuut.
+    ConfirmResetAllConsumedOutcomes: "Om alle 'Decision consumed' resultaten te resetten, zend **`yes`** binnen 60 seconden! "
+    ConfirmResetAllConsumedOutcomesReceived: Bevestiging ontvangen! Alle 'Consumed' resultaten voor deze 'Decision' worden nu gereset
+    ConsumeModeSet: '''Decision consume'' is nu: `{{change}}`'
+    NewEntry: Decision toegevoegd
+    NewIDAssigned: |-
+      Een nieuwe Decision ID is toegekend aan `{{oldID}}`
+      Nieuwe Decision ID: **`{{newID}}`**
+    NewQuestionAdded: |-
+      Nieuwe vraag toegevoegd (id: {{id}}`)
+      Voeg de opties toe met `!decision {{id}} add "Uitkomst van de decision"`
+      Om een uitkomst te krijgen gebruik je `!decision roll {{id}}`
+    OwnershipTransfered: Eigendom van de 'Decision roll' `{{id}}` is overgezet naar {{target}}
+    RemovedManager: '{{user}} is verwijderd als manager van {{id}}.'
+    SetConsumeReset: '''Decision consume'' reset is niet toegevoegd aan: {{value}}'
+    SetModeOptions: |-
+      Beschikbare opties zijn: 
+      > `0` = Standaard (Geen limieten)
+      > `1` = Tijdelijk verwijderen 
+      (Let erop dat de reset-tijd in seconden is, bijvoorbeeld {{prefix}}decision "id" consume reset 60`)
+      > `2` = Verwijderen
+      (Als een uitslag is geweest, dan wordt hij niet meer gebruikt totdat de eigenaar dit reset, je reset dit door:  {{prefix}}decision "id" consume reset`)
 ChastiKey:
+  # Stats
+  Stats:
+    Lockee:
+      AdditionalLocksField: Er zijn nog {{count}} andere locks.
+      LockStats: |-
+        Keyholder **`{{#if isSelfLocked}}Eigen lock{{else}}{{{keyholderName}}}{{/if}}`** Status `gelockt`
+        gelockt `{{lockedTime}}`
+        Totale tijd bevroren `{{totalTimeFrozen}}`
+        {{#unless isFixed}}
+          {{#if hasPickedCard}}
+            Laatst kaarten gepakt `{{lastPickedTime}}` geleden
+          {{else}}
+            Laatst kaarten gepakt `nog geen kaarten gepakt`
+          {{/if}}
+          {{#if showNextPick}}
+            Volgende kans `{{#if nextPickNow}}nu{{else}}{{nextPickTime}}{{/if}}`
+          {{/if}}
+          Details {{#if isCumulative}}Cumulatief{{else}}Niet-Cumulatief{{/if}} `{{regularity}}` met `{{turnsMade}}` kaarten.
+          Laatste (`{{discardPileLength}}`) kaarten:
+          {{{discardPile}}}
+          {{#unless isHidden}}
+            Kaarten nog over
+            {{{cardsRemaining}}}
+          {{/unless}}
+        {{/unless}}
+      MainStats: |-
+        {{#if showAvgRating}}Gemiddelde beoordeling `{{avgRating}}` | Aantal beoordelingen`{{ratings}}`{{/if}}
+        Tot vandaag `{{lockedFor}}` maanden gelockt. | `{{locksCompleted}}` locks compleet
+        De langste lock (die klaar is) `{{longestLockCompleted}}`
+        Gemiddelde tijd gelockt `{{avgTimeLocked}}`
+        Laatste activiteit in Chastikey app `{{lastActiveInApp}}` geleden
+        Aangemeld op `{{joinedDate}}` (`{{joinedDaysAgo}}` dagen geleden)
+        {{#if isVerified}}Toegekend aan {{{verifiedTo}}}{{/if}}
+      NoActiveLocks: Geen actieve locks
+      NoActiveLocksTimeSinceLast: |-
+        Om verdere stats te zien moet er een lock actief zijn.
+        Tijd sinds de laatste lock `{{time}}`.
+      Title: 'Titel'
+    KeyholderNoLocks: 'De opgevraagde gebruiker lijkt geen actieve locks of eerdere lockees te hebben, en dus zijn er ook geen statistieken om weer te geven.'
+    UserRequestedNoStats: 'Deze gebruiker wil zijn statistieken graag privé houden.'
   # Verify
   Verify:
     CkeckYourDMs: "Kijk in je DM's van Kiera voor verdere instructies. "
@@ -120,15 +173,13 @@ ChastiKey:
   Ticker:
     IncorrectTimer: '*Klopt er iets niet in deze gegevens? Neem dan contact op met **Kevin**, de maker van Chastikey als je gegevens niet kloppen* '
     InvalidOverrideType: 'Verkeerd type, gebruik (1) Keyholder, (2) Lockee, (3) Beide'
-  # Stats
-  Stats:
-    KeyholderNoLocks: 'De opgevraagde gebruiker lijkt geen actieve locks of eerdere lockees te hebben, en dus zijn er ook geen statistieken om weer te geven.'
-    Lockee:
-      Title: 'Titel'
-    UserRequestedNoStats: 'Deze gebruiker wil zijn statistieken graag privé houden.'
   # Errors
   Error:
     KeyholderOrAboveRoleRequired: 'Om dit commando voor een andere gebruiker uit te voeren, moet je de rol van Keyholder of hoger hebben.'
+    SelfLookupErrorOrNotFound: >-
+      Opvragen van stats is mislukt. Een paar oorzaken hiervan zijn:
+        - `Display username in public stats, lists and data?` in de ChastiKey App staat op "No" of is onlangs veranderd.
+        - Je ChastiKey App account is niet gevonden of er is een fout op de  ChastiKey server. Kijk of er een ChastiKey Discord announcements is.
     UserLookupErrorOrNotFound: >-
       Kan deze opdracht niet uitvoeren! Enkele mogelijke redenen hiervoor:
       - Een gebruiker met deze gebruikersnaam bestaat niet
@@ -136,17 +187,118 @@ ChastiKey:
     UserNotFound: "Gebruiker niet gevonden! De eigenaar van het ChastiKey account moet eerst `{{prefix}}ck verify` uitvoeren, voordat je hiermee verder kunt. "
   # Administrative Tasks
   Admin:
+    RefreshManualCompleted: Handmatige vernieuwen van de statistieken is klaar!
     RefreshTriggered: Statistieken handmatig vernieuwen gestart
+Moderate:
+  Mute:
+    AlreadyMuted: Deze gebruiker is al gemute
+    CancelledMute: Mute niet doorgevoerd
+    ConfirmMutePrompt: Weet je zeker dat je deze mute wilt doorvoeren? Antwoord met **yes** om te bevestigen in de komende 60 seconden.
+    EntryLookup: ':mute: **Zoek binnen gemute gebruikers**'
+    LengthForMutePrompt: Hoe lang moet de mute duren? Geef de lengte in uren
+    ListEntryUser: |+
+      {{username}}#{{discriminator}}
+        ## Muted: {{dateFormatted}}
+        ## Reden: {{reason}}
+        ## Muted door: {{mutedBy}}
+    ListEntryUserLeftServer: |+
+      {{username}}#{{discriminator}} __(user heeft de server verlaten)__
+       ## Muted: {{dateFormatted}}
+       ## Reden: {{reason}}
+       ## Muted door: {{mutedBy}}
+    ListLookup: ':mute: **Lijst van gemute gebruikers**'
+    New: |+
+      :mute: **Gebruiker gemute**
+      ```
+      @{{username}}#{{discriminator}} id:{{id}}
+        ## Gemute door: {{mutedBy}}
+        ## Einde: {{removeAt}}
+        ## Bewaarde rollen {{rolesPreserved}}
+        ## Reden: {{reason}}
+      ```
+    ReasonForMutePrompt: Wat is de reden voor de mute? Geef je redenen in binnen de komende 5 minuten (edits worden niet bewaard). Als je klaar bent, zend dan een bericht met  `:end`
+    RolesUnableToManage: |-
+      Deze rollen kunnen niet worden beheerd door dit commando & Kiera:
+      ```
+      {{untouchableRoles}}
+      ```
+  Error:
+    CannotCallCommandOnSelf: Je kunt dit commando niet bij jezelf gebruiken!
+    CouldNotFindActiveMuteForUser: Ik kan geen mute vinden voor deze gebruiker
+    CouldNotFindUserSnowflake: "Kan de gevraagde gebruiker niet vinden. Zorg ervoor dat je zoekt op de Discord snowflake ID "
+  Unmute:
+    EntryUnmute: |-
+      :mute: **Gebruiker geunmute**
+      ```
+      @{{username}}#{{discriminator}} id:{{id}}
+        ## Gemute op: {{dateFormatted}}
+        ## gemute door: {{mutedBy}}
+        ## Einde: {{removeAt}}
+        ## Einde op: {{removedAt}}
+        ## Reden: {{reason}}
+        ## Rollen teruggezet: {{rolesRestored}}
 Locale:
+  Info:
+    AlreadySet: |-
+      Je hebt al een landcode `{{locale}}` ingesteld.
   Code: nl
+  Contributors: |-
+    Deze vertaling is gemaakt door:
+      - `HTuser <HTuser#28566> en Milady Eener <Milady Eener#1602>`
+  Description: |-
+    
+    "Nederlads.
+    
+    {{contributors}}
+    
+    Als je wilt helpen vertalen in een taal die je vloeiend spreekt, contact dan `emma#1366` om toegang te krijgen tot deze taal: `https://kierabot.xyz/translate` Niet alle talen staan hierin, als je een taal mist, laat het Emma weten en hij wordt toegevoegd"
+  Error:
+    DoesNotExist: |-
+      Deze landcode (`{{locale}}`) komt niet overeen met welke beschikbaar zijn in Kiera. Probeer één van deze:
+      {{{locales}}}
+    NoneSpecified: |-
+      Selecteer één van de volgende landcodes
+      {{{locales}}}
+  Language: Nederlands
   Name: Nederlands
+  Success:
+    Set: |-
+      Landcode `{{locale}}` geselecteerd! Alle meldingen (die zijn vertaald) worden nu weergegeven in het Nederlands.
+      
+      {{contributors}}
+      
+      Als je wilt helpen bij deze vertaling, contact Emma#1366 en vraag om toegang op: `https://kierabot.xyz/translate`
+  ShortDescription: Nederlandse taal
+Admin:
+  BotManualRestart: 'De bot herstart in `{{seconds}}` seconden.. '
+  CommandCategoriesList: >-
+    Dit is een overzicht van hoeveel commando's er zijn onder elke categorie. Als je dieper wilt zoeken of een commando wilt vinden om een beperking in te stellen of info te krijgen, type {{prefix}}admin command category Fun.
+    ```
+    {{categories}}
+    ```
+  CommandCategoryCommands: >-
+    De volgende commando's zijn beschikbaar in de categorie {{category}}:
+    
+    ```
+    {{commands}}
+    ```
+BattleNet:
+  Error:
+    CharacterNotFound: Karakter niet gevonden!
 Generic:
   Error:
     CommandDisabledInChannel: Het commando  `{{command}}` is niet toegestaan in dit kanaal.
+    CommandExactMatchFailedFallback: 'Voorbeelden van commando''s in de `{{prefix}}{{command}}` groep:'
     CommandExactMatchFailedOptions: '**Hint.** Het commando is:* `{{prefix}}help {{command}}`, hier een paar voorbeelden van dit commando: '
     HelpCommandMissing: Helaas is er nog geen helptekst beschikbaar voor dit commando
+    Internal: Dit commando kan niet uitgevoerd worden door een intern probleem. Dit moet misschien uitgezocht worden. Heb je hier hulp bij nodig, bezoek dan `https://kierabot.xyz/support`
+    RoleTooHightForThisAction: Ik kan deze actie niet voltooien want je role is te hoog
+    ThisActionFailedServerOwner: Ik kan deze actie niet voltooien want je bent de eigenaar van de server
   Warn:
     CommandUnderMaintenance: Deze opdracht kan nu niet gebruikt worden vanwege onderhoud.
+  Word:
+    UppercaseNo: 'Nee'
+    UppercaseYes: 'Ja'
   Info:
     UserNotRegistered: |-
       Je moet je eerst bij de bot registreren met `{{prefix}}register`
@@ -170,6 +322,133 @@ Help:
       Description: Vraag Kiera's Ping/Latency op
     BotRestart:
       Description: Herstart de Kiera bot applicatie
+    BotStatistics:
+      Description: Robot voor statistieken
+    DeleteUser:
+      Description: Verwijderd gebruiker uit de Kiera database
+  BattleNet:
+    D3CurrentSeason:
+      Description: Vind het huidige Diablo 3 seizoen
+    D3ProfileLookup:
+      Description: "Vind het Diablo 3 gebruikersprofiel "
+    WoWCharacterProfile:
+      Description: Vraag profiel van World of Warcraft speler op
+  ChastiKey:
+    RecoverCombinations:
+      Description: Bekijk je vorige lock combinaties
+    Verify:
+      Description: Koppel je Discord account met je Chastikey app account
+    RoleCounts:
+      Description: Lijst van Chastikey Discord rollen en statistieken
+    CKWeb:
+      Description: Genereer een externe sessie voor Kiera en het Chastikey web portaal
+    LockeeHistory:
+      Description: Bekijk geschiedenis van de lockee
+    LocktoberStats:
+      Description: Statistieken van het Chastikey event Locktober
+    UsernameSearch:
+      Description: Zoeken op Chastikey username
+    LockeeStats:
+      Description: Bekijk de statistieken van de Lockee
+    KeyholderStats:
+      Description: Bekijk de stats van de Keyholder
+    CheckKeyholderMultilocked:
+      Description: Lijst van Lockees die 2 of meer Keyholders hebben
+    KeyholderLockees:
+      Description: Lijst van Keyholders lockees
+    ToggleKeyholderAverageDisplayed:
+      Description: Zet je beoordeling in de statistieken aan of uit
+    SetTickerType:
+      Description: Stel in welke ticker je krijgt bij gebruik van het ticker commando
+    SetTickerDate:
+      Description: Stel de startdatum in voor je ticker data
+    ToggleTickerRating:
+      Description: Zet beoordelingen in je ticker en statistieken aan of uit
+    Ticker:
+      Description: Bekijk ChastiKey Ticker
+    Update:
+      Description: Synchroniseer je Chastikey profiel met  Discord
+  Moderate:
+    MuteUser:
+      Description: Geef de gebruiker tijdelijk de mute roll en bewaar zijn huidige rollen
+    UnmuteUser:
+      Description: Unmute gebruiker en zet zijn oorspronkelijke rollen terug
+    MuteListMuted:
+      Description: Lijst van huidige gemute gebruikers
+    MuteLookup:
+      Description: Lijst van gebruikers die gemute zijn
+  Decision:
+    UnblacklistUser:
+      Description: User van zwarte lijst Decision verwijderen
+    BlacklistUser:
+      Description: User op zwarte lijst Decision zetten
+    ShowUserBlacklist:
+      Description: Lijst van User van zwarte lijst Decision
+    UnwhitelistServer:
+      Description: Haal server van de witte lijst van Decision's
+    WhitelistServer:
+      Description: Zet server op de witte lijst van Decision's
+    Log:
+      Description: Bekijk de laatste 5 logs
+    New:
+      Description: Maak een nieuwe 'Decision roll'
+    NewEntry:
+      Description: Voeg een resultaat toe aan de 'Decision role'
+    SetConsumeMode:
+      Description: Zet de 'consume mode' aan voor de Decision roll
+    ResetConsumed:
+      Description: De reset frequentie (in secondes) van de consume Decision uitkomsten
+    GenerateNewID:
+      Description: Maak een nieuwe unieke ID voor je roll
+    Roll:
+      Description: Rol een standaard Decision
+    RollRealtime:
+      Description: Maak en roll een eenmalige Decision roll
+    AddManager:
+      Description: Maak een gebruiker eigenaar van deze Decision roll.
+    RemoveManager:
+      Description: Verwijder gebruiker als eigenaar van een Decision roll
+    TransferOwnership:
+      Description: Zet eigendom van een Decision roll over naar een andere gebruiker
+  Utility:
+    ListRoles:
+      Description: Lijst van alle server-rollen en aantallen gebruikers
+    ListRolesInRange:
+      Description: Lijst van alle server-rollen en aantallen gebruikers uit een specifieke reeks
+    ListRolesLike:
+      Description: Lijst van server-rollen en users waarvan de naam gelijk is aan de verzonden naam
+    DisplayRoleInformation:
+      Description: Details van de gegeven role.
+  Fun:
+    EightBall:
+      Description: Vraag iets aan 8ball
+    Flip:
+      Description: Gooi een munt
+    Roll:
+      Description: Gooi 1 of meer dobbelstenen
+  Help:
+    General:
+      Description: Bekijk de help-informatie van de bot.
+  Poll:
+    New:
+      Description: Maak een nieuwe stemming
+    Edit:
+      Description: Pas de stemming-instellingen aan (`open`, `public`, `question`, `title`, `footer`)
+    Start:
+      Description: Start de stemming
+    Stop:
+      Description: Sluit de stemming af
+    PickRandomVote:
+      Description: Kies een willekeurige stem
+    AddOption:
+      Description: Voeg een optie toe aan de stemming
+    RemoveOption:
+      Description: Verwijder een optie uit de stemming
+  User:
+    Register:
+      Description: Registreer bij de robot
+    SetLocale:
+      Description: Stel je landcode in voor meldingen van de robot
 Poll:
   Warn:
     DifferentAuthorID: Alleen de eigenaar van de poll mag {{prefix}} dit commando gebruiken!
@@ -216,31 +495,6 @@ Poll:
   Interaction:
     VoteCast: Je stem is ingediend!
     VoteRemoved: Je stem is ingetrokken!
-Moderate:
-  Mute:
-    ListEntryUser: |+
-      {{username}}#{{discriminator}}
-        ## Muted: {{dateFormatted}}
-        ## Reden: {{reason}}
-        ## Muted door: {{mutedBy}}
-    ListEntryUserLeftServer: |+
-      {{username}}#{{discriminator}} __(user heeft de server verlaten)__
-       ## Muted: {{dateFormatted}}
-       ## Reden: {{reason}}
-       ## Muted door: {{mutedBy}}
-Decision:
-  Edit:
-    NewQuestionAdded: |-
-      Nieuwe vraag toegevoegd (id: {{id}}`)
-      Voeg de opties toe met `!decision {{id}} add "Uitkomst van de decision"`
-      Om een uitkomst te krijgen gebruik je `!decision roll {{id}}`
-    SetModeOptions: |-
-      Beschikbare opties zijn: 
-      > `0` = Standaard (Geen limieten)
-      > `1` = Tijdelijk verwijderen 
-      (Let erop dat de reset-tijd in seconden is, bijvoorbeeld {{prefix}}decision "id" consume reset 60`)
-      > `2` = Verwijderen
-      (Als een uitslag is geweest, dan wordt hij niet meer gebruikt totdat de eigenaar dit reset, je reset dit door:  {{prefix}}decision "id" consume reset`)
 System:
   Startup: |+
     :::::::::::::::::::::::::::::::::::::::::
