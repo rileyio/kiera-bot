@@ -1,6 +1,7 @@
 6.0.0-beta-4
 - Fixed: CK Stats lockee not working when user is not CK Verified.
 - Updated: Bot User Audit Log now limited to most recent 200 entries in API fetch by default due to performance.
+- Updated: Localization updates for [Dutch, German]
 - Added: API endpoint for fetching number of records from the DB as the owner (By Discord Snowflake) 
 
 6.0.0-beta-3
