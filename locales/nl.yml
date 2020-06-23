@@ -91,7 +91,7 @@ Decision:
       Managers kunnen alles met de 'Decision role' wat de maker ervan ook kan, behalve deze wissen. Daartoe behoort ook het bekijken en aanpassen in alle websites, alsof deze role van henzelf is.
     AllConsumedOutcomesReset: Alle 'Decision consumed' markeringen zijn gereset!
     AllConsumedOutcomesResetTo: Alle 'Decision consumed' markeringen zijn gereset & de reset tijd is nu `{{value}}`
-    CancelledResetAllConsumedFlags: 'Decision consumed markeringen resetten' niet uitgevoerd! Antwoord niet ontvangen binnen 1 minuut.
+    CancelledResetAllConsumedFlags: "'Decision consumed markeringen resetten' niet uitgevoerd! Antwoord niet ontvangen binnen 1 minuut."
     ConfirmResetAllConsumedOutcomes: "Om alle 'Decision consumed' resultaten te resetten, zend **`yes`** binnen 60 seconden! "
     ConfirmResetAllConsumedOutcomesReceived: Bevestiging ontvangen! Alle 'Consumed' resultaten voor deze 'Decision' worden nu gereset
     ConsumeModeSet: '''Decision consume'' is nu: `{{change}}`'
