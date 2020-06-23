@@ -6,6 +6,14 @@ export async function isCKVerified(routed: RouterRouted) {
     await routed.bot.DB.get<UserData>('ck-users', { discordID: routed.author.id })
   )
 
+  // When user has a DiscordID in the 'ck-users' data but none with kiera (this means they linked their Discord account)
+  // via the ChastiKey App
+  if (routed.user.__notStored && ckUser) {
+    routed.bot.Log.Command.log(`Middleware -> User with DiscordID: ${routed.author.id} is not in kiera's DB`)
+    await routed.message.reply(routed.$render('ChastiKey.Verify.VerifyRequired'))
+    return
+  }
+
   // User has previously verified, let them pass for now, likely a Cache data issue or they're still awaiting
   // the cache to update for their user record
   if (routed.user.ChastiKey.isVerified && !ckUser.userID) {

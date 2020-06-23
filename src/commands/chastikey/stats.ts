@@ -111,7 +111,7 @@ export async function getLockeeStats(routed: RouterRouted) {
         // Fallback: Create a mock record
         <TrackedUser>{ ChastiKey: { username: lockeeData.data.username, isVerified: false, ticker: { showStarRatingScore: true } } }
       : // Else when its the caller themself: Lookup the user by Discord ID
-        await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
+        routed.user
 
   // Generate compiled stats
   await routed.message.channel.send(lockeeStats(lockeeData, { showRating: kieraUser.ChastiKey.ticker.showStarRatingScore }, routed))
