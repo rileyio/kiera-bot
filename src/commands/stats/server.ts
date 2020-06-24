@@ -220,17 +220,19 @@ export async function serverStats(routed: RouterRouted) {
 
 export async function aboutStats(routed: RouterRouted) {
   // Get states
-  const statsDisabledServer = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', {
+  const serverStatsEnabled = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', {
     serverID: routed.message.guild.id,
-    setting: StatisticsSettingType.ServerDisableStats
+    setting: StatisticsSettingType.ServerEnableStats
   })
+
   const statsDisabledUser = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { userID: routed.author.id, setting: StatisticsSettingType.UserDisableStats })
+
   // Get user total stats count
   const statsCount = await routed.bot.DB.count<ServerStatistic>('stats-servers', { userID: routed.author.id })
 
   await routed.message.reply(
     routed.$render('Stats.Info.About', {
-      serverState: statsDisabledServer ? 'Disabled' : 'Enabled',
+      serverState: serverStatsEnabled ? 'Enabled' : 'Disabled',
       userState: statsDisabledUser ? 'Disabled' : 'Enabled',
       count: statsCount
     })
