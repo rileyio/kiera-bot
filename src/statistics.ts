@@ -3,13 +3,51 @@ import { ServerStatisticType, ServerStatistic, StatisticsSetting, StatisticsSett
 
 export class Statistics {
   private Bot: Bot
+  private whitelistedServers: Array<string> = []
 
   constructor(bot: Bot) {
     this.Bot = bot
+
+    // Load Servers whitelist into memory to save processing time looking up each time
+    ;(async () => {
+      console.log('loading stats settings from DB')
+      const loaded = await this.Bot.DB.getMultiple<StatisticsSetting>('stats-settings', {
+        setting: StatisticsSettingType.ServerEnableStats
+      })
+
+      console.log('servers in db', loaded)
+
+      this.whitelistedServers = loaded.map((s) => s.serverID)
+      console.log(this.whitelistedServers)
+    })()
+  }
+
+  private isWhitelistedServer(value: string) {
+    return this.whitelistedServers.findIndex((ws) => ws === value) > -1
+  }
+
+  public whitelistServer(value: string) {
+    this.whitelistedServers.push(value)
+    console.log('after whitelist', this.whitelistedServers)
+  }
+
+  public unWhitelistServer(value: string) {
+    this.whitelistedServers.splice(
+      this.whitelistedServers.findIndex((ws) => ws === value),
+      1
+    )
+
+    console.log('after unwhitelist', this.whitelistedServers)
   }
 
   public trackServerStatistic(serverID: string, channelID: string, userID: string, type: ServerStatisticType) {
-    if (process.env.BOT_BLOCK_STATS === 'true') return // block stats saving
+    // Env setting - Block stats saving
+    if (process.env.BOT_BLOCK_STATS === 'true') return
+
+    console.log('test:', this.whitelistedServers, this.isWhitelistedServer(serverID))
+
+    // Check if server is whitelisted, if not, block stats tracking
+    if (!this.isWhitelistedServer(serverID)) return
     ;(async () => {
       try {
         // Check Stats Settings if server is tracking & if the user has stats turned off
