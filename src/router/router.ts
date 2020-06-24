@@ -195,6 +195,9 @@ export class CommandRouter {
         await this.bot.DB.get<TrackedUser>('users', { id: message.author.id })
       )
 
+      // Check if not stored - will be no Discord ID
+      if (!kieraUser.id) kieraUser.__notStored = true
+
       // Stop if there's no specific route found
       if (route === undefined) {
         this.bot.Log.Router.log(`Router -> Failed to match '${message.content}' to a route - ending routing`)

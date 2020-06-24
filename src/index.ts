@@ -72,13 +72,17 @@ export class Bot {
     this.BotMonitor = new BotMonitor(this)
     this.Router = new CommandRouter(routeLoader(this.Log.Router), this)
     this.MsgTracker = new MsgTracker(this)
-    this.Statistics = new Statistics(this)
     this.Task = new Task.TaskManager(this)
 
     ////////////////////////////////////////
     // Bot Monitor - Sync //////////////////
     ////////////////////////////////////////
     await this.BotMonitor.start()
+
+    ////////////////////////////////////////
+    // Start Stats /////////////////////////
+    ////////////////////////////////////////
+    this.Statistics = new Statistics(this)
 
     ////////////////////////////////////////
     // Background Tasks ////////////////////

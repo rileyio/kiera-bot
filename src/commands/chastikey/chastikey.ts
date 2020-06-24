@@ -142,36 +142,31 @@ export async function recoverCombos(routed: RouterRouted) {
  * @param {RouterRouted} routed
  */
 export async function verifyAccount(routed: RouterRouted) {
-  // Get the user from the db in their current state
-  var user = new TrackedUser(
-    await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
-  )
-
   // Statuses
   var isSuccessful = false
   var isNotSuccessfulReason = 'Unknown, Try again later.'
 
   // User not previously registered with Kiera
-  if (!user._id) {
+  if (!routed.user._id) {
     // Create a record for them like !register would have
-    user = new TrackedUser({ id: routed.author.id })
+    routed.user = new TrackedUser({ id: routed.author.id })
     // Add to DB
-    await routed.bot.DB.add('users', user)
+    await routed.bot.DB.add('users', routed.user)
   }
 
   const parsedVerifyDiscordID = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ discordID: routed.author.id })
-  console.log(user.ChastiKey)
+  console.log(routed.user.ChastiKey)
 
   // If user exists & this command is being re-run, try checking if they're verified on the ChastiKey side before
   // Triggering a new verify
-  if (!user.ChastiKey.isVerified) {
+  if (!routed.user.ChastiKey.isVerified) {
     // When they are already verified, let them know & update the ChastiKey user record
     if (parsedVerifyDiscordID.status === 200) {
       // Update that we know they're at least verified
-      user.ChastiKey.isVerified = true
-      user.ChastiKey.username = parsedVerifyDiscordID.username
+      routed.user.ChastiKey.isVerified = true
+      routed.user.ChastiKey.username = parsedVerifyDiscordID.username
 
-      await routed.bot.DB.update('users', { id: routed.author.id }, user)
+      await routed.bot.DB.update('users', { id: routed.author.id }, routed.user)
       // We can safely stop here - let the user know nothing more is needed at this time
       await routed.message.reply(routed.$render('ChastiKey.Verify.FastForward'))
       return true // Stop here
@@ -188,15 +183,15 @@ export async function verifyAccount(routed: RouterRouted) {
   if (verifyResponse.success) {
     isSuccessful = true
     // Track User's verification code
-    user.ChastiKey.verificationCode = verifyResponse.code
+    routed.user.ChastiKey.verificationCode = verifyResponse.code
     // Commit Verify code to db, to have on hand
-    await routed.bot.DB.update('users', { id: routed.author.id }, user)
+    await routed.bot.DB.update('users', { id: routed.author.id }, routed.user)
   } else {
     isNotSuccessfulReason = verifyResponse.reason || isNotSuccessfulReason
   }
 
   if (isSuccessful) {
-    const QRImgStream = await Utils.ChastiKey.generateVerifyQR(user.ChastiKey.verificationCode)
+    const QRImgStream = await Utils.ChastiKey.generateVerifyQR(routed.user.ChastiKey.verificationCode)
     // Let user know in a reply to check their DMs
     await routed.message.reply(routed.$render('ChastiKey.Verify.CkeckYourDMs'))
     // Send QR Code via DM

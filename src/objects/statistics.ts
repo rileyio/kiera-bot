@@ -105,10 +105,16 @@ export class ServerStatistic {
 }
 
 export enum StatisticsSettingType {
+  // Disables
   ServerDisableStats,
   ServerNonPublicStats,
   UserDisableStats,
-  ChannelDisableStats
+  ChannelDisableStats,
+
+  // Enables
+  ServerEnableStats,
+  UserEnableStats,
+  ChannelEnableStats
 }
 
 export class StatisticsSetting {

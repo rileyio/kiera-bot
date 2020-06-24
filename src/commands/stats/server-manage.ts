@@ -1,6 +1,6 @@
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
-import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
+import { StatisticsSetting, StatisticsSettingType, ServerStatisticType } from '@/objects/statistics'
 import { CollectorFilter, Message, TextChannel } from 'discord.js'
 
 export const Routes = ExportRoutes(
@@ -49,6 +49,19 @@ export const Routes = ExportRoutes(
 )
 
 export async function disableServerStats(routed: RouterRouted) {
+  // Delete any existing record
+  await routed.bot.DB.remove<StatisticsSetting>(
+    'stats-settings',
+    {
+      serverID: routed.message.guild.id,
+      $or: [{ setting: StatisticsSettingType.ServerDisableStats }, { setting: StatisticsSettingType.ServerEnableStats }]
+    } as any,
+    { deleteOne: false }
+  )
+
+  // Update live stats whitelist
+  routed.bot.Statistics.unWhitelistServer(routed.message.guild.id)
+
   await routed.bot.DB.add(
     'stats-settings',
     new StatisticsSetting({
@@ -63,12 +76,27 @@ export async function disableServerStats(routed: RouterRouted) {
 }
 
 export async function enableServerStats(routed: RouterRouted) {
-  const removed = await routed.bot.DB.remove<StatisticsSetting>('stats-settings', {
+  // Delete any existing record
+  await routed.bot.DB.remove<StatisticsSetting>(
+    'stats-settings',
+    {
+      serverID: routed.message.guild.id,
+      $or: [{ setting: StatisticsSettingType.ServerDisableStats }, { setting: StatisticsSettingType.ServerEnableStats }]
+    } as any,
+    { deleteOne: false }
+  )
+
+  // Update live stats whitelist
+  routed.bot.Statistics.whitelistServer(routed.message.guild.id)
+
+  // Add new enabled record
+  await routed.bot.DB.add<StatisticsSetting>('stats-settings', {
     serverID: routed.message.guild.id,
-    setting: StatisticsSettingType.ServerDisableStats
+    userID: routed.message.author.id,
+    setting: StatisticsSettingType.ServerEnableStats
   })
 
-  if (removed > 0) await routed.message.reply(routed.$render('Stats.Server.Enabled'))
+  await routed.message.reply(routed.$render('Stats.Server.Enabled'))
   return true
 }
 
