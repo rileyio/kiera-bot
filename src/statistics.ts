@@ -15,8 +15,6 @@ export class Statistics {
         setting: StatisticsSettingType.ServerEnableStats
       })
 
-      console.log('servers in db', loaded)
-
       this.whitelistedServers = loaded.map((s) => s.serverID)
       console.log(this.whitelistedServers)
     })()
