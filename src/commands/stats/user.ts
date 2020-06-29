@@ -1,14 +1,13 @@
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { ServerStatisticType, StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
-import { statsChannel } from '@/embedded/stats-channel'
-import { TextChannel } from 'discord.js'
 import { statsUser } from '@/embedded/stats-user'
 
 export const Routes = ExportRoutes({
   type: 'message',
   category: 'Stats',
   controller: statsForUser,
+  description: 'Help.Stats.ViewUserStats.Description',
   example: '{{prefix}}stats user',
   name: 'stats-user',
   validate: '/stats:string/user:string/id?=string-number',

@@ -269,6 +269,41 @@ Help:
       Description: Add a poll response option
     RemoveOption:
       Description: Remove a poll response option
+  Stats:
+    StatsByCommands:
+      Description: Statistics about most run commands
+    AboutStats:
+      Description: About Statistics
+    ViewServerStats: 
+      Description: View Statistics for Server
+    ViewChannelStats: 
+      Description: View Statistics for Channel
+    ViewUserStats: 
+      Description: View Statistics for User
+    ViewTopChannelsByStats:
+      Description: View top channels on server by Statistics
+
+    EnableServerStats:
+      Description: Enable Server Statistics collection
+    DisableServerStats:
+      Description: Disable Server Statistics collection
+    DeleteServerStats:
+      Description: Delete Server Statistics collected
+
+    EnableChannelStats:
+      Description: Enable Channel Statistics collection
+    DisableChannelStats:
+      Description: Disable Channel Statistics collection
+    DeleteChannelStats:
+      Description: Delete Channel Statistics collected
+
+    EnableUserStats:
+      Description: Enable your User Statistics collection
+    DisableUserStats:
+      Description: Disable your User Statistics collection    
+    DeleteUserStats:
+      Description: Delete your User Statistics collected
+
   User:
     Register:
       Description: Register with the Bot

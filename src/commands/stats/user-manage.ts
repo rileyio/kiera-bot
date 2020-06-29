@@ -1,14 +1,15 @@
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
-import { StatisticsSetting, StatisticsSettingType, ServerStatisticType, ServerStatistic } from '@/objects/statistics'
-import { CollectorFilter, Message, TextChannel } from 'discord.js'
-import { promptUserInput, promptUserConfirm } from '@/utils/prompt'
+import { StatisticsSetting, StatisticsSettingType, ServerStatistic } from '@/objects/statistics'
+import { Message, TextChannel } from 'discord.js'
+import { promptUserConfirm } from '@/utils/prompt'
 
 export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'Stats',
     controller: diableUserStats,
+    description: 'Help.Stats.DisableUserStats.Description',
     example: '{{prefix}}stats disable user',
     name: 'stats-disable-user',
     validate: '/stats:string/disable:string/user:string',
@@ -21,6 +22,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Stats',
     controller: enableUserStats,
+    description: 'Help.Stats.EnableUserStats.Description',
     example: '{{prefix}}stats enable user',
     name: 'stats-enable-user',
     validate: '/stats:string/enable:string/user:string',
@@ -33,6 +35,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'Stats',
     controller: deleteUserStats,
+    description: 'Help.Stats.DeleteUserStats.Description',
     example: '{{prefix}}stats delete user',
     name: 'stats-delete-user',
     validate: '/stats:string/delete:string/user:string',

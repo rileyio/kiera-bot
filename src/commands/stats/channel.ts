@@ -8,6 +8,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'Stats',
   controller: statsForChannel,
+  description: 'Help.Stats.ViewChannelStats.Description',
   example: '{{prefix}}stats channel',
   name: 'stats-channels',
   validate: '/stats:string/channel:string/id?=string-number',

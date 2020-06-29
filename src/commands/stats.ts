@@ -4,6 +4,7 @@ export const Routes = ExportRoutes({
   type: 'message',
   category: 'Info',
   controller: commandUsageStats,
+  description: 'Help.Stats.StatsByCommands.Description',
   example: '{{prefix}}stats commands',
   name: 'stats-commands',
   validate: '/stats:string/commands:string',
