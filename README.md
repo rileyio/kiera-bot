@@ -103,6 +103,19 @@ All code for [kierabot.xyz](https://kierabot.xyz) will be at [rileyio/kiera-web]
 
 ## Commands
 
+#### Admin
+
+- `!admin channel purge` - [**Restricted:** Server Admin] Purge all messages in channel  
+- `!admin ck stats refresh` - [**Restricted:** Pre-defined users] Trigger refresh of ChastiKey data cache   
+- `!admin commands` - [**Restricted:** Server Admin] Retrieve list of command categories  
+- `!admin category Fun` - [**Restricted:** Server Admin] Retrieve list of categories commands  
+- `!admin restrict command 8ball` - [**Restricted:** Server Admin] Restrict Command usage **(Under Dev)**  
+- `!admin stats` - [**Restricted:** Server Admin] Bot running stats
+- `!check permissions` - Check Yours and Kiera's permissions
+- `!ping` - Check Kiera's Ping/Latency
+- `!restart bot` - [**Restricted:** Pre-defined users] Restart Kiera Bot application
+- `!version` - Display current Kiera version
+
 #### BNet
 
 - `!wow character us stormreaver thejaydox` - Retrieve World of Warcraft character profile  
@@ -115,7 +128,7 @@ All code for [kierabot.xyz](https://kierabot.xyz) will be at [rileyio/kiera-web]
 - `!ck verify` - Link Discord account with ChastiKey App account
 - `!ck role counts` - List of ChastiKey Discord Roles & statistics
 - `!ck web` - Generate session for external Kiera + ChastiKey web portal
-- `!ck debug UsernameHere` 
+- `!ck debug UsernameHere` [**Restricted:** Pre-defined users]
 - `!ck lockee history` - Show lockee's history breakdown
 - `!ck lockee nickname status always` 
 - `!ck stats locktober` - ChastiKey Locktober event statistics
