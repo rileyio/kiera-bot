@@ -92,7 +92,7 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
     avgTimeLocked: Utils.Date.calculateHumanTimeDDHHMM(lockeeData.data.averageTimeLockedInSeconds, true),
     lastActiveInApp: Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lockeeData.data.timestampLastActive, true),
     joinedDate: lockeeData.data.joined.substr(0, 10),
-    joinedDaysAgo: lockeeData.data.joined !== '-' ? `${Math.round((Date.now() - new Date(lockeeData.data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago` : '',
+    joinedDaysAgo: lockeeData.data.joined !== '-' ? `${Math.round((Date.now() - new Date(lockeeData.data.joined).getTime()) / 1000 / 60 / 60 / 24)}` : '',
     // Only Show verified @User if the user is verified
     isVerified: lockeeData.data.discordID ? true : false,
     verifiedTo: lockeeData.data.discordID ? Utils.User.buildUserChatAt(lockeeData.data.discordID, Utils.User.UserRefType.snowflake) : null
