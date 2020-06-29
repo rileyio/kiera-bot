@@ -42,7 +42,8 @@ const cardsEmoji = {
   GoAgain: '<:2_:601169068837568542>',
   Green: `<:3_:601169082066141238>`,
   DoubleUp: `<:4_:601169095982841856>`,
-  Freeze: `<:1_:601169050294419476>`
+  Freeze: `<:1_:601169050294419476>`,
+  Sticky: `<:stickycard:726348014977024011>`
 }
 
 export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRating: boolean }, routed: RouterRouted) {
@@ -172,7 +173,7 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number, r
   name += ` ${lock.isTrustedKeyholder ? indicatorEmoji.TrustedKH : ''}`
 
   // When the lock has a name
-  lock.lockName !== '' ? name += ` \`${lock.lockName}\`` : name += ` \`<Lock not named>\``
+  lock.lockName !== '' ? (name += ` \`${lock.lockName}\``) : (name += ` \`<Lock not named>\``)
 
   // Build Remaining cards string
   var remaining = ``
