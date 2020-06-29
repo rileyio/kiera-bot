@@ -29,35 +29,39 @@ src/                - All project code
 *──                 - Primary files to startup bot & core functionality only
 ```
 
-## Commands for working on integration
+## Commands for development & compiling
 
-To build (compile only):
+To build (compile only):  
+`npm run clean && npm run build`  
 
-> `npm run clean && npm run build`
+To automatically build on saved changes to repo code (inside `/src`)  
+`npm run dev`  
 
-To automatically build on saved changes to repo code (inside `/src`)
-
-> `npm run dev`
-
-To start the application (without pm2)
-
-> `npm run start:nodebug` -or- for debug: `npm run start` -or- if using PowerShell, check the `package.json` scrips.
-
+To start the application (without pm2)  
+`npm run start:nodebug` -or- for debug: `npm run start` -or- if using PowerShell, check the `package.json` scrips.  
 Additional `terminal` and `powershell` debugging start scripts available!
 
-To start the application (with pm2)
-
-> `pm2 start .\ecosystem.config.js`
-
-## Env template
-
-See .env-template at the root of the project directory
+To start the application (with pm2)  
+`pm2 start .\ecosystem.config.js`
 
 ## Web Portal
 
-All code for [kierabot.xyz](https://kierabot.xyz) will be at [rileyio/kiera-web](https://github.com/rileyio/kiera-web)
-
+All code for [kierabot.xyz](https://kierabot.xyz) will be at [rileyio/kiera-web](https://github.com/rileyio/kiera-web)  
 `kiera-web` makes use of the `kiera-bot` api for everything.
+
+## Localization
+Starting in Kiera `v6` there is now Localization support.  
+All strings are managed on [POEditor](https://kierabot.xyz/translate)  
+
+Current Progress (Languages in focus where translations are being used):  
+- English `[100%]` `(Source)`
+- Dutch `[92%]`
+- French `[65%]`
+- German `[92%]`
+
+> **Note:** This is not an exhaustive list of languages under review. 
+> Locales are generally included after they've reached the> `>=50%` completed mark. 
+> Some languages may require further review before inclusion.
 
 ## API
 
