@@ -1,3 +1,7 @@
+6.1.0
+- Fixed: Database connections to non-atlas DB provider.
+- Added: Extra error catching to DB Queries to get logging data.
+
 6.0.0
 - Added: ChastiKey Stats Sticky Card.
 - Removed: "Days ago" text from CK Stats Lockee command in favor of the {i18n}.yml.
