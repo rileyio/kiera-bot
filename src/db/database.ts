@@ -102,7 +102,7 @@ export class MongoDB {
       status = pingStatus ? true : false
       this.Bot.Log.Database.debug(`ping success!`)
     } catch (error) {
-      this.Bot.Log.Database.warn(`ping failed!`, error)
+      this.Bot.Log.Database.error(`ping failed!`, error)
       status = false
     }
     return status
@@ -145,7 +145,7 @@ export class MongoDB {
       // connection.client.close()
       return results.result.n === 1 ? results.insertedCount : null
     } catch (error) {
-      this.Bot.Log.Database.warn(`[${targetCollection}].addMany error`, error)
+      this.Bot.Log.Database.error(`[${targetCollection}].addMany error`, error)
       return null
     }
   }
@@ -165,7 +165,7 @@ export class MongoDB {
       this.Bot.Log.Database.debug(`[${targetCollection}].verify => ${results.count()}`, query)
       return (await results.count()) > 0
     } catch (error) {
-      this.Bot.Log.Database.warn(`[${targetCollection}].verify error`, error)
+      this.Bot.Log.Database.error(`[${targetCollection}].verify error`, error)
       return null
     }
   }
@@ -188,7 +188,7 @@ export class MongoDB {
       // connection.client.close()
       return result.result.n
     } catch (error) {
-      this.Bot.Log.Database.warn(`[${targetCollection}].remove error`, error)
+      this.Bot.Log.Database.error(`[${targetCollection}].remove error`, error)
       return null
     }
   }
@@ -214,7 +214,7 @@ export class MongoDB {
       // connection.client.close()
       return result.result.n
     } catch (error) {
-      this.Bot.Log.Database.warn(`[${targetCollection}].update error`, error)
+      this.Bot.Log.Database.error(`[${targetCollection}].update error`, error)
       return null
     }
   }
@@ -239,7 +239,7 @@ export class MongoDB {
       // connection.client.close()
       return <T>result
     } catch (error) {
-      this.Bot.Log.Database.warn(`[${targetCollection}].get error`, error)
+      this.Bot.Log.Database.error(`[${targetCollection}].get error`, error)
       return null
     }
   }
@@ -268,7 +268,7 @@ export class MongoDB {
       // connection.client.close()
       return await (<Cursor<T>>result).toArray()
     } catch (error) {
-      this.Bot.Log.Database.warn(`[${targetCollection}].getLatest error`, error)
+      this.Bot.Log.Database.error(`[${targetCollection}].getLatest error`, error)
       return []
     }
   }
@@ -293,7 +293,7 @@ export class MongoDB {
       // connection.client.close()
       return (<Cursor<T>>result).toArray()
     } catch (error) {
-      this.Bot.Log.Database.warn(`[${targetCollection}].getMultiple error`, error)
+      this.Bot.Log.Database.error(`[${targetCollection}].getMultiple error`, error)
       return []
     }
   }
@@ -308,7 +308,7 @@ export class MongoDB {
       // connection.client.close()
       return <number>result
     } catch (error) {
-      this.Bot.Log.Database.warn(`[${targetCollection}].count error`, error)
+      this.Bot.Log.Database.error(`[${targetCollection}].count error`, error)
       return null
     }
   }
@@ -323,7 +323,7 @@ export class MongoDB {
       // connection.client.close()
       return (await result.toArray()) as Array<T>
     } catch (error) {
-      this.Bot.Log.Database.warn(`[${targetCollection}].aggregate error`, error)
+      this.Bot.Log.Database.error(`[${targetCollection}].aggregate error`, error)
       return null
     }
   }
