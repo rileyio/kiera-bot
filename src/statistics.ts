@@ -16,7 +16,6 @@ export class Statistics {
       })
 
       this.whitelistedServers = loaded.map((s) => s.serverID)
-      // console.log(this.whitelistedServers)
     })()
   }
 
