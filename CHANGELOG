@@ -1,6 +1,7 @@
 6.1.0
 - Fixed: Database connections to non-atlas DB provider.
 - Added: Extra error catching to DB Queries to get logging data.
+- Updated: Ping response.
 
 6.0.0
 - Added: ChastiKey Stats Sticky Card.
