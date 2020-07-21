@@ -341,6 +341,22 @@ export class MongoDB {
     }
   }
 
+  public async distinct<T>(targetCollection: Collections, field: string) {
+    const performanceStart = performance.now()
+    this.Bot.Log.Database.debug(`[${targetCollection}].distinct => ${targetCollection}`)
+    try {
+      const connection = await this.connect()
+      const collection = connection.db.collection(targetCollection)
+      const result = (await collection.distinct(field)) as Array<T>
+      this.Bot.Log.Database.debug(`[${targetCollection}].distinct [${Math.round(performance.now() - performanceStart)}ms] =>`, result ? true : false)
+      // connection.client.close()
+      return result
+    } catch (error) {
+      this.Bot.Log.Database.error(`[${targetCollection}].distinct error`, error)
+      return null
+    }
+  }
+
   // public get<Q, T>(query: Q, discriminator?: string) {
   //   return new Promise<T>(r => {
   //     this.connect(async (db: Db, client: MongoClient, err: MongoError) => {
