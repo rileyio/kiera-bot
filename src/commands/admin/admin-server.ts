@@ -2,6 +2,7 @@ import * as Middleware from '@/middleware'
 import { performance } from 'perf_hooks'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { TrackedMessage } from '@/objects/message'
+import { pongResponse } from '@/embedded/ping-pong'
 
 export const Routes = ExportRoutes(
   {
@@ -63,7 +64,9 @@ export async function pingPong(routed: RouterRouted) {
   )
 
   const ms = Math.round((performance.now() - startTime) * 100) / 100
-  const response = await routed.message.reply(`pong \`${ms}ms\``)
+  const response = await routed.message.reply(
+    pongResponse(routed.bot.BotMonitor.DBMonitor.pingTotalLatency / routed.bot.BotMonitor.DBMonitor.pingCount, routed.routerStats.performance)
+  )
 
   if (!Array.isArray(response)) {
     await routed.bot.MsgTracker.trackMsg(
