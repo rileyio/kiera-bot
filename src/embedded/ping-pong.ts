@@ -1,5 +1,3 @@
-import { performance } from 'perf_hooks'
-
 export function pongResponse(database: number, commandStart: number) {
   return {
     embed: {
