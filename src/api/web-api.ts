@@ -12,7 +12,8 @@ import { webRouteLoader } from '@/api/router/route-loader'
 export class WebAPI {
   // As of 6.0.0 as a reverse proxy is in use and HTTPS managed there in prod
   // HTTPS Certs are optional for the bot's API
-  protected readonly isHTTPSSet = fs.existsSync(path.join(process.env.API_HTTPS_KEY)) && fs.readFileSync(path.join(process.env.API_HTTPS_CRT))
+  protected readonly isHTTPSSet =
+    process.env.API_HTTPS_KEY && process.env.API_HTTPS_CRT && fs.existsSync(path.join(process.env.API_HTTPS_KEY)) && fs.readFileSync(path.join(process.env.API_HTTPS_CRT))
   protected readonly https = this.isHTTPSSet
     ? {
         key: fs.readFileSync(path.join(process.env.API_HTTPS_KEY)),
