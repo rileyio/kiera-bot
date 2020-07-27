@@ -1,42 +1,40 @@
-6.1.0
-- Fixed: Database connections to non-atlas DB provider.
+6.1.1
 - Fixed: CK Stats commands embedded footer dates.
-- Added: Extra error catching to DB Queries to get logging data.
+- Updated: Formatting on CK Stats Lockee Lock fields.
+- Updated: ChastiKey.js lib.
 - Added: CK Stats Lockee Sticky cards remaining.
 - Added: Twitter line (if set in CK App) to show on Keyholder stats.
-- Updated: Formatting on CK Stats Lockee Lock fields.
+
+
+6.1.0
+- Fixed: Database connections to non-atlas DB provider.
 - Updated: Ping response.
-- Updated: ChastiKey.js lib.
+- Added: Extra error catching to DB Queries to get logging data.
 
 6.0.0
-- Added: ChastiKey Stats Sticky Card.
-- Removed: "Days ago" text from CK Stats Lockee command in favor of the {i18n}.yml.
 - Fixed: isCKVerified middleware could sometimes be bypassed causing errors if user used ChastiKey App to link account. 
 - Fixed: Dutch translation on POEditor.
-- Added: Enabled check for Server Stats, now required enabled state to track stats.
 - Fixed: CK Stats lockee not working when user is not CK Verified.
-- Updated: Bot User Audit Log now limited to most recent 200 entries in API fetch by default due to performance.
-- Updated: Localization updates for [Dutch, German]
-- Added: API endpoint for fetching number of records from the DB as the owner (By Discord Snowflake) 
 - Fixed: CK Update command's nickname with 🔓 or 🔒 depending if there is an active lock or not.
 - Fixed: CK Verify middleware and command.
 - Fixed: CK Update nickname issue when no nickname is set to just use the username.
 - Fixed: Mod Mute command not listing mutes if a member could not be found.
-- Updated: Admin CK stats command to work once again for those users who can trigger a full update.
-- Updated: Command Router's ChastiKey middleware & command errors when lookup fails.
-- Added: Nickname length check as to not run into a too many character issue when users try to CK Update with a long Nickname or Username.
 - Fixed: Large Emoji showing on CK Stats Lockee when there's no Lock name. #36
 - Fixed: CK Ticker command. #34
 - Fixed: CK Stats Lockee command template is printing <> as gt & lt #33
-- Updated: Localization with updates to date for [German]
 - Fixed: Mod Mute not working on users of the same role or higher than Kiera's role position + excluding @everyone and Nitro Booster for being unmanaged roles.
 - Fixed: CK extended props object when loading and merging with defaults.
+- Updated: Bot User Audit Log now limited to most recent 200 entries in API fetch by default due to performance.
+- Updated: Localization updates for [Dutch, German]
+- Updated: Admin CK stats command to work once again for those users who can trigger a full update.
+- Updated: Command Router's ChastiKey middleware & command errors when lookup fails.
+- Updated: Localization with updates to date for [German]
 - Updated: Dependencies audit and update.
 - Updated: CK Lockee Stats command to show fewer locks (Max: 5) due to character cap on Discord Embedded messages.
-- Removed: Old code from User object used primarily by Legacy permissions and decommissioned site - need to reevaluate remaining.
-- Removed: Old commands and middleware used for testing.
-- Removed: Command for CK Set Username (no longer in use with CK Verify command replacing functionality)
-- Removed: Command for Ext Web Session (was replaced in a previous release)
+- Added: Nickname length check as to not run into a too many character issue when users try to CK Update with a long Nickname or Username.
+- Added: API endpoint for fetching number of records from the DB as the owner (By Discord Snowflake) 
+- Added: ChastiKey Stats Sticky Card.
+- Added: Enabled check for Server Stats, now required enabled state to track stats.
 - Added: CK update command will now change your username to add 🔓 or 🔒 depending on what the setting is set to.
 - Added: New ck command to set if/when to set a 🔓 or 🔒 depending on your linked ChastiKey account status.
 - Added: Localization support. Included this release: [ de, en, fr-FR, nl ]. Translations in progress.
@@ -48,6 +46,12 @@
 - Added: Improved backend logging to help debug issues, especially with errors.
 - Added: Ability for a decision roll to have Managers added. Managers will be able to perform any action on a decision roll except delete it all together. #30
 - Changed: `!decision "id" add "Outcome Text"` to `!decision "id" outcome add "Outcome Text"`
+- Removed: Old code from User object used primarily by Legacy permissions and decommissioned site - need to reevaluate remaining.
+- Removed: Old commands and middleware used for testing.
+- Removed: Command for CK Set Username (no longer in use with CK Verify command replacing functionality)
+- Removed: Command for Ext Web Session (was replaced in a previous release)
+- Removed: "Days ago" text from CK Stats Lockee command in favor of the {i18n}.yml.
+
 
 5.1.1
 - Fixed: Decision Roll not working on servers where the roll author is not present #28
