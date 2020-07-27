@@ -1,7 +1,12 @@
 6.1.0
 - Fixed: Database connections to non-atlas DB provider.
+- Fixed: CK Stats commands embedded footer dates.
 - Added: Extra error catching to DB Queries to get logging data.
+- Added: CK Stats Lockee Sticky cards remaining.
+- Added: Twitter line (if set in CK App) to show on Keyholder stats.
+- Updated: Formatting on CK Stats Lockee Lock fields.
 - Updated: Ping response.
+- Updated: ChastiKey.js lib.
 
 6.0.0
 - Added: ChastiKey Stats Sticky Card.

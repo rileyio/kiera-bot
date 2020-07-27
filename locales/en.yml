@@ -89,28 +89,33 @@ ChastiKey:
         Average Time Locked (overall) `{{avgTimeLocked}}`
         Last Active in ChastiKey App `{{lastActiveInApp}}` ago
         Joined `{{joinedDate}}` (`{{joinedDaysAgo}}` days ago)
+        App Version `{{versionInstalled}}` Build `{{buildNumberInstalled}}`
         {{#if isVerified}}Verified to {{{verifiedTo}}}{{/if}}
+        ‏‏‎ ‎
       LockStats: |-
         Keyholder **`{{#if isSelfLocked}}Self Locked{{else}}{{{keyholderName}}}{{/if}}`** Status `Locked` 
         Locked `{{lockedTime}}`
         Total time frozen `{{totalTimeFrozen}}`
         {{#unless isFixed}}
-          {{#if hasPickedCard}}
-            Last Pick `{{lastPickedTime}}` ago
-          {{else}}
-            Last Pick `has yet to pick`
-          {{/if}}
-          {{#if showNextPick}}
-            Next pick `{{#if nextPickNow}}now{{else}}{{nextPickTime}}{{/if}}`
-          {{/if}}
-          Details {{#if isCumulative}}Cumulative{{else}}Non-Cumulative{{/if}} regularity `{{regularity}}` with `{{turnsMade}}` turns made.
-          The last (`{{discardPileLength}}`) cards discarded: 
-          {{{discardPile}}}
-          {{#unless isHidden}}
-            Cards Remaining
-            {{{cardsRemaining}}}
-          {{/unless}}
+        {{#if hasPickedCard}}
+        Last Pick `{{lastPickedTime}}` ago
+        {{else}}
+        Last Pick `has yet to pick`
+        {{/if}}
+        {{#if showNextPick}}
+        Next Pick `{{#if nextPickNow}}now{{else}}{{nextPickTime}}{{/if}}`
+        {{/if}}
+        Details {{#if isCumulative}}Cumulative{{else}}Non-Cumulative{{/if}} regularity `{{regularity}}` with `{{turnsMade}}` turns made.
+
+        Cards Picked/Discarded (Last `{{discardPileLength}}`, Newest First): 
+        {{{discardPile}}}
+
+        {{#unless isHidden}}
+        Cards Remaining
+        {{{cardsRemaining}}}
         {{/unless}}
+        {{/unless}}
+        ‏‏‎ ‎
 
   # Verify
   Verify:
@@ -274,11 +279,11 @@ Help:
       Description: Statistics about most run commands
     AboutStats:
       Description: About Statistics
-    ViewServerStats: 
+    ViewServerStats:
       Description: View Statistics for Server
-    ViewChannelStats: 
+    ViewChannelStats:
       Description: View Statistics for Channel
-    ViewUserStats: 
+    ViewUserStats:
       Description: View Statistics for User
     ViewTopChannelsByStats:
       Description: View top channels on server by Statistics
@@ -300,7 +305,7 @@ Help:
     EnableUserStats:
       Description: Enable your User Statistics collection
     DisableUserStats:
-      Description: Disable your User Statistics collection    
+      Description: Disable your User Statistics collection
     DeleteUserStats:
       Description: Delete your User Statistics collected
 

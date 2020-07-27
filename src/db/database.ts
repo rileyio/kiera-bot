@@ -19,6 +19,7 @@ export type Collections =
   | 'muted-users'
   | 'notifications'
   | 'polls'
+  | 'scheduled-jobs'
   | 'server-settings'
   | 'servers'
   | 'settings'

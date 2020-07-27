@@ -96,7 +96,10 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
     joinedDaysAgo: lockeeData.data.joined !== '-' ? `${Math.round((Date.now() - new Date(lockeeData.data.joined).getTime()) / 1000 / 60 / 60 / 24)}` : '',
     // Only Show verified @User if the user is verified
     isVerified: lockeeData.data.discordID ? true : false,
-    verifiedTo: lockeeData.data.discordID ? Utils.User.buildUserChatAt(lockeeData.data.discordID, Utils.User.UserRefType.snowflake) : null
+    verifiedTo: lockeeData.data.discordID ? Utils.User.buildUserChatAt(lockeeData.data.discordID, Utils.User.UserRefType.snowflake) : null,
+    buildNumberInstalled: lockeeData.data.buildNumberInstalled,
+    versionInstalled: lockeeData.data.versionInstalled,
+    twitterUsername: lockeeData.data.twitterUsername
   })
 
   const messageBlock = {
@@ -184,6 +187,8 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number, r
     remaining += `${cardsEmoji.Green} \`${lock.greenCards}\` `
     // Red cards
     remaining += `${cardsEmoji.Red} \`${lock.redCards}\` `
+    // Sticky cards
+    remaining += `${cardsEmoji.Sticky} \`${lock.stickyCards}\``
     // Yellow cards
     remaining += `${cardsEmoji.Yellow} \`${lock.yellowCards}\` `
     // Freeze Up cards
@@ -226,7 +231,7 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number, r
 export function keyholderStats(
   keyholderData: KeyholderData,
   activeLocks: Array<TrackedKeyholderLockeesStatistics>,
-  cachedTimestamp: number,
+  cachedTimestamp: string,
   routerStats: RouterStats,
   options: { showRating: boolean; showAverage: boolean }
 ) {
@@ -298,7 +303,9 @@ export function keyholderStats(
   description += `# of Shared Locks **\`${keyholderData.noOfSharedLocks}\`**\nTotal Locks Managed **\`${keyholderData.totalLocksManaged}\`**\n`
   description += `Joined \`${keyholderData.joined.substr(0, 10)}\` ${dateJoinedDaysAgo}\n`
   description += `Date first keyheld \`${dateRearranged}\` ${dateFirstKHAgo}\n`
+  description += `App Version \`${keyholderData.versionInstalled}\` Build \`${keyholderData.buildNumberInstalled}\`\n`
   if (keyholderData.discordID) description += `Verified to ${Utils.User.buildUserChatAt(keyholderData.discordID, Utils.User.UserRefType.snowflake)}\n`
+  if (keyholderData.twitterUsername) description += `Twitter \`${keyholderData.twitterUsername}\`\n`
 
   description += `\n**Stats** (Running Locks)\n`
   if (options.showAverage) description += `Average Time of Locks \`${lockCount > 1 ? Utils.Date.calculateHumanTimeDDHHMM(cumulativeTimelocked / lockCount) : '00d 00h 00m'}\`\n`
@@ -332,7 +339,7 @@ export function keyholderStats(
   }
 }
 
-export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatistics>, keyholderName: string, routerStats: RouterStats, cachedTimestamp: number) {
+export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatistics>, keyholderName: string, routerStats: RouterStats, cachedTimestamp: string) {
   const desc =
     data.length > 0
       ? `This query looks for lockees who share 1 or more keyholders with the given keyholder's name \`${keyholderName}\`. This will exclude anyone who has multiple fakes and this can be seen by the count showing differing numbers between Keyholder count and Active Locks.`
@@ -371,7 +378,7 @@ export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatisti
   }
 }
 
-export function keyholderLockees(data: Array<TrackedKeyholderLockeesStatistics>, keyholderName: string, routerStats: RouterStats, cachedTimestamp: number) {
+export function keyholderLockees(data: Array<TrackedKeyholderLockeesStatistics>, keyholderName: string, routerStats: RouterStats, cachedTimestamp: string) {
   // Sort lockees list
   data.sort((a, b) => {
     var x = String(a._id).toLowerCase()
