@@ -9,6 +9,7 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
       avgLockedTimePerKH: 0.0,
       abandonedCount: 0,
       totalLocksCount: 0,
+      totalLocksCountCompleted: 0,
       totalTimeLocked: 0,
       selfLocks: 0,
       botLocks: 0,
@@ -20,6 +21,7 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
       avgLockedTimePerKH: 0.0,
       abandonedCount: 0,
       totalLocksCount: 0,
+      totalLocksCountCompleted: 0,
       totalTimeLocked: 0,
       selfLocks: 0,
       botLocks: 0,
@@ -32,26 +34,29 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
   var lockIDsSeen = {}
 
   // Calculate past KHs first
-  lockeeData.locks.forEach(lock => {
+  lockeeData.locks.forEach((lock) => {
     // Track Lock ID
     if (lockIDsSeen[lock.lockID] === undefined) lockIDsSeen[lock.lockID] = 1
     else lockIDsSeen[lock.lockID]++
 
-    const khIndex12Months = stats.last12Months.khNames.findIndex(name => name === lock.lockedBy)
+    const khIndex12Months = stats.last12Months.khNames.findIndex((name) => name === lock.lockedBy)
     const isLockAbandoned = lock.status === 'Locked' && lock.deleted === 1
     const lockWasInLast12Months = lock.timestampLocked >= twelveMonthAgoTimestamp
     const lockWasSelfLocked = lock.lockedBy === '' || lock.lockedBy === lockeeData.data.username
     const lockWasWithBot = lock.lockedBy === 'Zoe' || lock.lockedBy === 'Chase' || lock.lockedBy === 'Blaine' || lock.lockedBy === 'Hailey'
     const lockLength = lock.timestampUnlocked - lock.timestampLocked
-    const lockIsAFakeStillLocked = lock.status === 'Locked' && lockeeData.locks.findIndex(ll => ll.lockID === lock.lockID && ll.status === 'UnlockedReal') > -1
+    const lockIsAFakeStillLocked = lock.status === 'Locked' && lockeeData.locks.findIndex((ll) => ll.lockID === lock.lockID && ll.status === 'UnlockedReal') > -1
     const lockIDSeenBefore = lockIDsSeen[lock.lockID] > 1 // Suspected fake, has been seen in previous loop iteration
 
     if (lockWasInLast12Months) {
       // -----------------------------------------
       // [12 MONTHS] Stats START
       // [12 MONTHS] Increment total locks count
-      // *Excludes: Abandoned, Self, Bots
-      if (!isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot) stats.last12Months.totalLocksCount += 1
+      // *Excludes: Abandoned, Self, Bots, Locked Locks, Locked Fakes
+      if (!isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot && !lockIsAFakeStillLocked) stats.last12Months.totalLocksCount += 1
+      // [12 MONTHS] Increment total locks count - (Unlocked Only)
+      // *Excludes: Abandoned, Self, Bots, Locked Locks, Locked Fakes
+      if (!isLockAbandoned && !lockWasSelfLocked && !lockWasWithBot && lock.isUnlocked && !lockIsAFakeStillLocked) stats.last12Months.totalLocksCountCompleted += 1
       // [12 MONTHS] Increment Self locks count
       // *Excludes: Abandoned
       if (!isLockAbandoned && lockWasSelfLocked) stats.last12Months.selfLocks += 1
@@ -97,7 +102,7 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
   description += `Locked for \`${Math.round((stats.last12Months.totalTimeLocked / 60 / 60 / 24) * 100) / 100}\` __days__¹ ⁴\n`
   description += `Average \`${Math.round((stats.last12Months.totalLocksCount / stats.last12Months.khNames.length) * 100) / 100}\` __locks__ per Keyholder¹ ⁴\n`
   description += `Longest (completed)¹ \`${Utils.Date.calculateHumanTimeDDHHMM(stats.last12Months.longestLock)}\`\n`
-  description += `\`${stats.last12Months.totalLocksCount}\` Keyholder __locks__ completed¹\n`
+  description += `\`${stats.last12Months.totalLocksCountCompleted}\` Keyholder __locks__ completed¹\n`
   description += `\`${stats.last12Months.botLocks}\` Bot __locks__ completed²\n`
   description += `\`${stats.last12Months.selfLocks}\` Self __locks__ completed²\n`
   description += `\`${stats.last12Months.abandonedCount}\` Keyholder __locks__ abandoned³\n`
