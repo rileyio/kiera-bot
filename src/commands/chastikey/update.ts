@@ -147,7 +147,8 @@ export async function update(routed: RouterRouted) {
   var role: { [name: string]: Discord.Role } = {
     locked: undefined,
     unlocked: undefined,
-    locktober: undefined,
+    locktober2019: undefined,
+    locktober2020: undefined,
     renownedKeyholder: undefined,
     distinguishedKeyholder: undefined,
     establishedKeyholder: undefined,
@@ -166,7 +167,8 @@ export async function update(routed: RouterRouted) {
   var discordUserHasRole = {
     locked: false,
     unlocked: false,
-    locktober: false,
+    locktober2019: false,
+    locktober2020: false,
     renownedKeyholder: false,
     distinguishedKeyholder: false,
     establishedKeyholder: false,
@@ -186,7 +188,8 @@ export async function update(routed: RouterRouted) {
   routed.message.guild.roles.cache.forEach((r) => {
     if (r.name.toLowerCase() === 'locked') role.locked = r
     if (r.name.toLowerCase() === 'unlocked') role.unlocked = r
-    if (r.name.toLowerCase() === 'locktober 2019') role.locktober = r
+    if (r.name.toLowerCase() === 'locktober 2019') role.locktober2019 = r
+    if (r.name.toLowerCase() === 'locktober 2020') role.locktober2020 = r
     if (r.name.toLowerCase() === 'renowned keyholder') role.renownedKeyholder = r
     if (r.name.toLowerCase() === 'distinguished keyholder') role.distinguishedKeyholder = r
     if (r.name.toLowerCase() === 'established keyholder') role.establishedKeyholder = r
@@ -204,7 +207,8 @@ export async function update(routed: RouterRouted) {
   discordUser.roles.cache.forEach((r) => {
     if (r.name.toLowerCase() === 'locked') discordUserHasRole.locked = true
     if (r.name.toLowerCase() === 'unlocked') discordUserHasRole.unlocked = true
-    if (r.name.toLowerCase() === 'locktober 2019') discordUserHasRole.locktober = true
+    if (r.name.toLowerCase() === 'locktober 2019') discordUserHasRole.locktober2019 = true
+    if (r.name.toLowerCase() === 'locktober 2020') discordUserHasRole.locktober2020 = true
     if (r.name.toLowerCase() === 'renowned keyholder') discordUserHasRole.renownedKeyholder = true
     if (r.name.toLowerCase() === 'distinguished keyholder') discordUserHasRole.distinguishedKeyholder = true
     if (r.name.toLowerCase() === 'established keyholder') discordUserHasRole.establishedKeyholder = true
@@ -425,25 +429,44 @@ export async function update(routed: RouterRouted) {
 
   try {
     // Locktober Data (DB Cached)
-    const isLocktoberParticipant = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober', { discordID: user.id })
+    const isLocktoberParticipant2019 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2019', { discordID: user.id })
+    const isLocktoberParticipant2020 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2020', { discordID: user.id })
 
-    if (isLocktoberParticipant) {
+    // * 2019 * //
+    if (isLocktoberParticipant2019) {
       // User is found in participants list, is missing the role, add the role
-      if (!discordUserHasRole.locktober) {
-        await discordUser.roles.add(role.locktober)
+      if (!discordUserHasRole.locktober2019) {
+        await discordUser.roles.add(role.locktober2019)
         changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: 'Locktober 2019' })
       }
     }
     // Else: User is not longer in the participants list
     else {
       // User is NOT found in participants list, remove the role
-      if (discordUserHasRole.locktober) {
-        await discordUser.roles.remove(role.locktober)
+      if (discordUserHasRole.locktober2019) {
+        await discordUser.roles.remove(role.locktober2019)
         changesImplemented.push({ action: 'removed', category: 'locktober', type: 'role', result: 'Locktober 2019' })
       }
     }
+
+    // * 2020 * //
+    if (isLocktoberParticipant2020) {
+      // User is found in participants list, is missing the role, add the role
+      if (!discordUserHasRole.locktober2020) {
+        await discordUser.roles.add(role.locktober2020)
+        changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: 'Locktober 2020' })
+      }
+    }
+    // Else: User is not longer in the participants list
+    else {
+      // User is NOT found in participants list, remove the role
+      if (discordUserHasRole.locktober2020) {
+        await discordUser.roles.remove(role.locktober2020)
+        changesImplemented.push({ action: 'removed', category: 'locktober', type: 'role', result: 'Locktober 2020' })
+      }
+    }
   } catch (e) {
-    console.log('CK Update Error updating Locktober 2019 role')
+    console.log('CK Update Error updating Locktober role(s)', e)
   }
   // * Performance End: Locktober * //
   updatePerformance.locktober.end = performance.now()

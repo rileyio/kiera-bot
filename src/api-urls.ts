@@ -46,7 +46,8 @@ namespace ChastiKey {
    * 
    * Request Type: `GET`
    */
-  export const CachedLocktober: string = `https://chastikey.com/api/kiera/locked_for_locktober.json`
+  export const CachedLocktober2019: string = `https://chastikey.com/api/kiera/locked_for_locktober.json`
+  export const CachedLocktober2020: string = `https://chastikey.com/api/kiera/locked_for_locktober_2020.json`
   /**
    * **Cached Dataset with Lockee data**
    * 

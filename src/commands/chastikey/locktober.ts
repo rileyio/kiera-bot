@@ -26,7 +26,7 @@ export const Routes = ExportRoutes({
 export async function statsLocktober(routed: RouterRouted) {
   const verifiedCount = await routed.bot.DB.count('ck-users', { discordID: { $ne: null } })
   // Get Locktober stats from DB
-  const stored = await routed.bot.DB.getMultiple<{ username: string; discordID: string }>('ck-locktober', { discordID: { $ne: '' } })
+  const stored = await routed.bot.DB.getMultiple<{ username: string; discordID: string }>('ck-locktober-2020', { discordID: { $ne: '' } })
   // Get Eligible user's locks from DB
   const queryIDs = stored.map((s) => s.discordID)
   const breakdownByKH = await routed.bot.DB.aggregate<{ _id: string; count: number; uniqueCount: number }>('ck-running-locks', [

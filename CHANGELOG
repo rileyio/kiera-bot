@@ -1,5 +1,6 @@
 6.2.0
 - Updated: Dependencies audit and update.
+- Added: CK Locktober 2020 and adjusted 2019 in all code references.
 
 6.1.2
 - Fixed: CK Lockee History total locks completed where it was counting locks still locked in the total.

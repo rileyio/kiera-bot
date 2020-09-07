@@ -22,11 +22,18 @@ export class ChastiKeyAPIUsers extends ChastiKeyAPIFetchAndStore {
   respArray: ChastiKeyAPIFetchAndStoreArray = 'users'
 }
 
-export class ChastiKeyAPILocktober extends ChastiKeyAPIFetchAndStoreLegacy {
+export class ChastiKeyAPILocktober2019 extends ChastiKeyAPIFetchAndStoreLegacy {
   // Setting the props for this Task
-  name = 'ChastiKeyAPILocktober'
-  APIEndpoint = APIUrls.ChastiKey.CachedLocktober
-  dbCollection: Collections = 'ck-locktober'
+  name = 'ChastiKeyAPILocktober2019'
+  APIEndpoint = APIUrls.ChastiKey.CachedLocktober2019
+  dbCollection: Collections = 'ck-locktober-2019'
+}
+
+export class ChastiKeyAPILocktober2020 extends ChastiKeyAPIFetchAndStoreLegacy {
+  // Setting the props for this Task
+  name = 'ChastiKeyAPILocktober2020'
+  APIEndpoint = APIUrls.ChastiKey.CachedLocktober2020
+  dbCollection: Collections = 'ck-locktober-2020'
 }
 
 export class ChastiKeyBackgroundVerifiedMonitor extends ChastiKeyVerifiedRoleMonitor {

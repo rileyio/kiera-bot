@@ -91,7 +91,8 @@ export class Bot {
     this.Task.start([
       new Task.ChastiKeyAPIUsers(),
       new Task.ChastiKeyAPIRunningLocks(),
-      new Task.ChastiKeyAPILocktober(),
+      new Task.ChastiKeyAPILocktober2019(),
+      new Task.ChastiKeyAPILocktober2020(),
       // // new Task.ChastiKeyBackgroundLocktoberMonitor()
       new Task.ChastiKeyBackgroundVerifiedMonitor(),
       new Task.ChastiKeyGenerateStatsScheduled()
