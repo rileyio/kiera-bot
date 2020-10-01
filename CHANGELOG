@@ -1,6 +1,9 @@
 6.2.0
 - Updated: Dependencies audit and update.
+- Updated: Hopefully improved ck update command's removal step in code for future adjustments.
 - Added: CK Locktober 2020 and adjusted 2019 in all code references.
+- Added: CK Fanatical role for ck update command.
+- Removed: CK Update's role ID lookup on the Kiera Bot Discord server, opting to use the ChastiKey server only for further ck role update testing.
 
 6.1.2
 - Fixed: CK Lockee History total locks completed where it was counting locks still locked in the total.
