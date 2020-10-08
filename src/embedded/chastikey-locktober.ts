@@ -6,16 +6,17 @@ export function locktoberStats(
   isUserApart: boolean,
   isUserVerified: boolean,
   routerStats: RouterStats,
-  cachedTimestamp: number
+  cachedTimestamp: Date
 ) {
   // Variables for later
   var longestKHName = 9
   var largestCount = 5
   // Find the longest KH name for formatting later
-  khBreakdown.forEach(kh => {
+  khBreakdown.forEach((kh) => {
     longestKHName = kh._id.length > longestKHName ? kh._id.length : longestKHName
     largestCount = String(kh.count).length > largestCount ? String(kh.count).length : largestCount
   })
+
   // Title
   var description = `What is Locktober? Be locked for the entire month of October :yum:\n\n`
   // Display steps to verify if user is missing verification
@@ -32,14 +33,16 @@ export function locktoberStats(
   description += `\`\`\``
   description += `Keyholder${Array.from(Array(longestKHName + 3 - 9)).join(' ')}Locks${Array.from(Array(largestCount + 3 - 5)).join(' ')}w/o Fakes\n`
   khBreakdown.slice(0, 5).forEach((kh, i) => {
-    description += `${kh._id}${Array.from(Array(longestKHName + 3 - kh._id.length)).join(' ')}${kh.count}${Array.from(Array(largestCount + 3 - String(kh.count).length)).join(' ')}${kh.uniqueCount}`
+    description += `${kh._id}${Array.from(Array(longestKHName + 3 - kh._id.length)).join(' ')}${kh.count}${Array.from(Array(largestCount + 3 - String(kh.count).length)).join(
+      ' '
+    )}${kh.uniqueCount}`
     if (i < khBreakdown.length - 1) description += `\n` // Add extra space between
   })
   description += `\`\`\``
 
   return {
     embed: {
-      title: `Locktober Stats`,
+      title: `Locktober 2020 Stats`,
       description: description,
       color: 14553782,
       timestamp: cachedTimestamp,

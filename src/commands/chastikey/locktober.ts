@@ -1,7 +1,7 @@
+import * as Agenda from 'agenda'
 import * as Middleware from '@/middleware'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { locktoberStats } from '@/embedded/chastikey-locktober'
-import { TrackedBotSetting } from '@/objects/setting'
 
 export const Routes = ExportRoutes({
   type: 'message',
@@ -55,18 +55,12 @@ export async function statsLocktober(routed: RouterRouted) {
     kh._id = kh._id === '' ? '<Self*>' : kh._id
   })
 
-  // console.log('!!isVerified', isVerified)
-  // console.log('!!stored.length', stored.length)
-  // console.log('!!verifiedCount', verifiedCount)
-  // console.log('!!breakdownByKH', breakdownByKH)
-  // console.log(JSON.stringify(queryIDs))
-
   // Are you (the person calling the command) apart of that list?
   const apartOfLocktober = stored.findIndex((lockee) => lockee.discordID === routed.author.id) > -1
 
   // Set cached timestamp for running locks
-  const cachedTimestampFromFetch = new TrackedBotSetting(await routed.bot.DB.get('settings', { key: 'bot.task.chastikey.api.fetch.ChastiKeyAPIRunningLocks' }))
-  const cachedTimestamp = cachedTimestampFromFetch.value
+  const cachedTimestampFromFetch = await routed.bot.DB.get('scheduled-jobs', { name: 'ChastiKeyAPILocktober2020' }) as Agenda.JobAttributes
+  const cachedTimestamp = cachedTimestampFromFetch.lastFinishedAt
 
   await routed.message.channel.send(
     locktoberStats({ participants: stored.length, verified: verifiedCount }, breakdownByKH, apartOfLocktober, true, routed.routerStats, cachedTimestamp)

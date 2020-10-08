@@ -1,3 +1,6 @@
+6.3.0
+- Fixed: CK Locktober last updated footer timestamp.
+
 6.2.0
 - Updated: Dependencies audit and update.
 - Updated: Hopefully improved ck update command's removal step in code for future adjustments.
