@@ -1,5 +1,6 @@
 6.3.0
 - Fixed: CK Locktober last updated footer timestamp.
+- Updated: CK Role Counts command stats to include the new Fanatical role.
 
 6.2.0
 - Updated: Dependencies audit and update.

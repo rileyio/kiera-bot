@@ -218,102 +218,80 @@ export async function verifyAccount(routed: RouterRouted) {
 }
 
 export async function roleCounts(routed: RouterRouted) {
-  var largestNumberString = 1
+  var lgStr = 1
 
   const counts = {
-    chastikeyVerified: 0,
+    ckVerified: 0,
     locked: 0,
     unlocked: 0,
     locktober: 0,
-    noviceKeyholder: 0,
+    noviceKh: 0,
     keyholder: 0,
-    establishedKeyholder: 0,
-    distinguishedKeyholder: 0,
-    renownedKeyholder: 0,
-    devotedLockee: 0,
-    experiencedLockee: 0,
-    intermediateLockee: 0,
+    established: 0,
+    distinguished: 0,
+    renowned: 0,
+    fanatical: 0,
+    devoted: 0,
+    experienced: 0,
+    intermediate: 0,
     noviceLockee: 0
   }
 
   routed.message.guild.roles.cache.forEach((r) => {
     // Special states
-    if (r.name.toLowerCase() === 'chastikey verified') counts.chastikeyVerified = r.members.size
+    if (r.name.toLowerCase() === 'chastikey verified') counts.ckVerified = r.members.size
     if (r.name.toLowerCase() === 'locked') counts.locked = r.members.size
     if (r.name.toLowerCase() === 'unlocked') counts.unlocked = r.members.size
     if (r.name.toLowerCase() === 'locktober 2019') counts.locktober = r.members.size
     // Keyholders
+    if (r.name.toLowerCase() === 'renowned keyholder') counts.renowned = r.members.size
+    if (r.name.toLowerCase() === 'distinguished keyholder') counts.distinguished = r.members.size
+    if (r.name.toLowerCase() === 'established keyholder') counts.established = r.members.size
     if (r.name.toLowerCase() === 'keyholder') counts.keyholder = r.members.size
-    if (r.name.toLowerCase() === 'renowned keyholder') counts.renownedKeyholder = r.members.size
-    if (r.name.toLowerCase() === 'distinguished keyholder') counts.distinguishedKeyholder = r.members.size
-    if (r.name.toLowerCase() === 'established keyholder') counts.establishedKeyholder = r.members.size
-    if (r.name.toLowerCase() === 'novice keyholder') counts.noviceKeyholder = r.members.size
+    if (r.name.toLowerCase() === 'novice keyholder') counts.noviceKh = r.members.size
     // Lockees
-    if (r.name.toLowerCase() === 'devoted lockee') counts.devotedLockee = counts.devotedLockee + r.members.size
-    if (r.name.toLowerCase() === 'experienced lockee') counts.experiencedLockee = counts.experiencedLockee + r.members.size
-    if (r.name.toLowerCase() === 'intermediate lockee') counts.intermediateLockee = counts.intermediateLockee + r.members.size
+    if (r.name.toLowerCase() === 'fanatical lockee') counts.fanatical = counts.fanatical + r.members.size
+    if (r.name.toLowerCase() === 'devoted lockee') counts.devoted = counts.devoted + r.members.size
+    if (r.name.toLowerCase() === 'experienced lockee') counts.experienced = counts.experienced + r.members.size
+    if (r.name.toLowerCase() === 'intermediate lockee') counts.intermediate = counts.intermediate + r.members.size
     if (r.name.toLowerCase() === 'novice lockee') counts.noviceLockee = counts.noviceLockee + r.members.size
   })
 
   // Find largest number in string format
   Object.keys(counts).forEach((key) => {
     // Track which category name is the longest
-    if (largestNumberString < String(counts[key]).length) largestNumberString = String(counts[key]).length
+    if (lgStr < String(counts[key]).length) lgStr = String(counts[key]).length
   })
 
   var response = `:bar_chart: **Server Role Statistics**\n`
+  const cacheSize = routed.message.guild.members.cache.size
 
   response += `\`\`\``
   response += `Everyone                 # ${routed.message.guild.members.cache.size}\n`
   response += `=========================================\n`
-  response += `Verified                 # ${counts.chastikeyVerified} ${Array.from(Array(largestNumberString + 3 - String(counts.chastikeyVerified).length)).join(
-    ' '
-  )} ${roundedDisplay(counts.chastikeyVerified / routed.message.guild.members.cache.size)}%\n`
-  response += `Locked                   # ${counts.locked} ${Array.from(Array(largestNumberString + 3 - String(counts.locked).length)).join(' ')} ${roundedDisplay(
-    counts.locked / routed.message.guild.members.cache.size
-  )}%\n`
-  response += `Unlocked                 # ${counts.unlocked} ${Array.from(Array(largestNumberString + 3 - String(counts.unlocked).length)).join(' ')} ${roundedDisplay(
-    counts.unlocked / routed.message.guild.members.cache.size
-  )}%\n`
-  response += `Locktober 2019           # ${counts.locktober} ${Array.from(Array(largestNumberString + 3 - String(counts.locktober).length)).join(' ')} ${roundedDisplay(
-    counts.locktober / routed.message.guild.members.cache.size
-  )}%\n`
+  response += `Verified                 # ${counts.ckVerified} ${arrFrom(lgStr + 3 - strLen(counts.ckVerified)).join(' ')} ${rd(counts.ckVerified / cacheSize)}%\n`
+  response += `Locked                   # ${counts.locked} ${arrFrom(lgStr + 3 - strLen(counts.locked)).join(' ')} ${rd(counts.locked / cacheSize)}%\n`
+  response += `Unlocked                 # ${counts.unlocked} ${arrFrom(lgStr + 3 - strLen(counts.unlocked)).join(' ')} ${rd(counts.unlocked / cacheSize)}%\n`
+  response += `Locktober 2019           # ${counts.locktober} ${arrFrom(lgStr + 3 - strLen(counts.locktober)).join(' ')} ${rd(counts.locktober / cacheSize)}%\n`
   response += `=========================================\n`
-  response += `Renowned Keyholder       # ${counts.renownedKeyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.renownedKeyholder).length)).join(
-    ' '
-  )} ${roundedDisplay(counts.renownedKeyholder / routed.message.guild.members.cache.size)}%\n`
-  response += `Distinguished Keyholder  # ${counts.distinguishedKeyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.distinguishedKeyholder).length)).join(
-    ' '
-  )} ${roundedDisplay(counts.distinguishedKeyholder / routed.message.guild.members.cache.size)}%\n`
-  response += `Established Keyholder    # ${counts.establishedKeyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.establishedKeyholder).length)).join(
-    ' '
-  )} ${roundedDisplay(counts.establishedKeyholder / routed.message.guild.members.cache.size)}%\n`
-  response += `Keyholder                # ${counts.keyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.keyholder).length)).join(' ')} ${roundedDisplay(
-    counts.keyholder / routed.message.guild.members.cache.size
-  )}%\n`
-  response += `Novice Keyholder         # ${counts.noviceKeyholder} ${Array.from(Array(largestNumberString + 3 - String(counts.noviceKeyholder).length)).join(
-    ' '
-  )} ${roundedDisplay(counts.noviceKeyholder / routed.message.guild.members.cache.size)}%\n`
+  response += `Renowned Keyholder       # ${counts.renowned} ${arrFrom(lgStr + 3 - strLen(counts.renowned)).join(' ')} ${rd(counts.renowned / cacheSize)}%\n`
+  response += `Distinguished Keyholder  # ${counts.distinguished} ${arrFrom(lgStr + 3 - strLen(counts.distinguished)).join(' ')} ${rd(counts.distinguished / cacheSize)}%\n`
+  response += `Established Keyholder    # ${counts.established} ${arrFrom(lgStr + 3 - strLen(counts.established)).join(' ')} ${rd(counts.established / cacheSize)}%\n`
+  response += `Keyholder                # ${counts.keyholder} ${arrFrom(lgStr + 3 - strLen(counts.keyholder)).join(' ')} ${rd(counts.keyholder / cacheSize)}%\n`
+  response += `Novice Keyholder         # ${counts.noviceKh} ${arrFrom(lgStr + 3 - strLen(counts.noviceKh)).join(' ')} ${rd(counts.noviceKh / cacheSize)}%\n`
   response += `=========================================\n`
-  response += `Devoted Lockee           # ${counts.devotedLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.devotedLockee).length)).join(' ')} ${roundedDisplay(
-    counts.devotedLockee / routed.message.guild.members.cache.size
-  )}%\n`
-  response += `Experienced Lockee       # ${counts.experiencedLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.experiencedLockee).length)).join(
-    ' '
-  )} ${roundedDisplay(counts.experiencedLockee / routed.message.guild.members.cache.size)}%\n`
-  response += `Intermediate Lockee      # ${counts.intermediateLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.intermediateLockee).length)).join(
-    ' '
-  )} ${roundedDisplay(counts.intermediateLockee / routed.message.guild.members.cache.size)}%\n`
-  response += `Novice Lockee            # ${counts.noviceLockee} ${Array.from(Array(largestNumberString + 3 - String(counts.noviceLockee).length)).join(' ')} ${roundedDisplay(
-    counts.noviceLockee / routed.message.guild.members.cache.size
-  )}%\n`
+  response += `Fanatical Lockee         # ${counts.fanatical} ${arrFrom(lgStr + 3 - strLen(counts.fanatical)).join(' ')} ${rd(counts.fanatical / cacheSize)}%\n`
+  response += `Devoted Lockee           # ${counts.devoted} ${arrFrom(lgStr + 3 - strLen(counts.devoted)).join(' ')} ${rd(counts.devoted / cacheSize)}%\n`
+  response += `Experienced Lockee       # ${counts.experienced} ${arrFrom(lgStr + 3 - strLen(counts.experienced)).join(' ')} ${rd(counts.experienced / cacheSize)}%\n`
+  response += `Intermediate Lockee      # ${counts.intermediate} ${arrFrom(lgStr + 3 - strLen(counts.intermediate)).join(' ')} ${rd(counts.intermediate / cacheSize)}%\n`
+  response += `Novice Lockee            # ${counts.noviceLockee} ${arrFrom(lgStr + 3 - strLen(counts.noviceLockee)).join(' ')} ${rd(counts.noviceLockee / cacheSize)}%\n`
   response += `\`\`\``
 
   await routed.message.channel.send(response)
   return true
 }
 
-function roundedDisplay(perc: number) {
+function rd(perc: number) {
   var moddedPerc: string
   // Calculate with decimal place adjusted
   moddedPerc = parseFloat(String(perc * 100)).toFixed(2)
@@ -321,6 +299,14 @@ function roundedDisplay(perc: number) {
   // When less than 10 add leading 0 before returning
   if (Number(moddedPerc) < 10) moddedPerc = `0${moddedPerc}`
   return moddedPerc
+}
+
+function strLen(value: number) {
+  return String(value).length
+}
+
+function arrFrom(array: number) {
+  return Array.from(Array(array))
 }
 
 export async function extSession(routed: RouterRouted) {
