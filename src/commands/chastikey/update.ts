@@ -326,7 +326,7 @@ export async function update(routed: RouterRouted) {
     }
 
     // Devoted
-    if (cumulativeTimeLockedMonths >= 12 && userHasPref) {
+    if (cumulativeTimeLockedMonths >= 12 && cumulativeTimeLockedMonths < 24 && userHasPref) {
       // Add Proper Devoted role
       if (!discordUserHasRole.devotedLockeePink && prefPink) {
         isChangingLockeeExpRole = true
