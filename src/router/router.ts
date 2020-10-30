@@ -8,8 +8,9 @@ import { ProcessedPermissions } from './route-permissions'
 import { ServerStatisticType } from '../objects/statistics'
 import { MessageRoute, RouteConfiguration, RouterRouted, RouterStats } from '../objects/router'
 import { TrackedUser } from '@/objects/user'
+import { TrackedServer } from '@/objects/server'
 
-const prefix = process.env.BOT_MESSAGE_PREFIX
+const GLOBAL_PREFIX = process.env.BOT_MESSAGE_PREFIX
 
 /**
  * The almighty incoming commands router!
@@ -162,6 +163,11 @@ export class CommandRouter {
       }
     }
 
+    const server = await this.bot.DB.get<TrackedServer>('servers', { id: message.guild.id })
+    // Halt here if the guild is unknown
+    if (!server) return
+
+    const prefix = server.prefix || GLOBAL_PREFIX
     const containsPrefix = message.content.startsWith(prefix)
     this.bot.BotMonitor.LiveStatistics.increment('messages-seen')
 
@@ -169,8 +175,11 @@ export class CommandRouter {
     if (containsPrefix) {
       this.bot.Log.Router.log(`Router -> incoming message: '${message.content}'`)
 
+      // Remove prefix
+      const messageContent = message.content.substr(prefix.length, message.content.length)
+
       // Split message by args (spaces/quoted values)
-      const args = Utils.getArgs(message.content)
+      const args = Utils.getArgs(messageContent)
 
       // Find appropriate routes based on prefix command
       const routes = this.routes.filter((r) => String(r.command).toLowerCase() === args[0].toLowerCase())
@@ -187,7 +196,7 @@ export class CommandRouter {
         else {
           this.bot.Log.Router.log(`Router -> Examples for command like '${args[0]}' Restricted!`)
         }
-        return r.test(message.content) === true
+        return r.test(messageContent) === true
       })
 
       // Lookup Kiera User in DB
@@ -208,7 +217,7 @@ export class CommandRouter {
         var examplesToAppend = ``
         for (let index = 0; index < allCategoryRoutes.length; index++) {
           const routeHint = allCategoryRoutes[index]
-          var routeExample = `\`${Utils.sb(routeHint.example)}\` `
+          var routeExample = `\`${Utils.sb(routeHint.example, { prefix })}\` `
           // Add description (if one is present to example)
           routeExample += routeHint.description && typeof routeHint.description === 'string' ? `\n└ ${this.bot.Localization.$render(kieraUser.locale, routeHint.description)}` : ''
           // Add newline if applicable
@@ -250,6 +259,7 @@ export class CommandRouter {
         bot: this.bot,
         isDM: message.channel.type === 'dm',
         message: message,
+        prefix,
         route: route,
         type: 'message',
         user: kieraUser,

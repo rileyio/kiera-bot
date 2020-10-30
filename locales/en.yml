@@ -156,6 +156,8 @@ Help:
       Description: General Bot running statistcs
     DeleteUser:
       Description: Removes User from Kiera's Database
+    SetPrefix:
+      Description: Set command prefix to be used for Kiera commands on this server
   BattleNet:
     D3CurrentSeason:
       Description: Retrieve current Diablo 3 Active Season

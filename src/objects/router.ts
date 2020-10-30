@@ -4,6 +4,7 @@ import { RouteConfigurationCategory, Validate, ProcessedPermissions, ValidationT
 import { Bot } from '@/index'
 import { TrackedMessage } from './message'
 import * as XRegExp from 'xregexp'
+import * as Utils from '@/utils'
 import { TrackedUser } from './user'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
@@ -130,6 +131,7 @@ export class RouterRouted {
   public isDM: boolean
   public message: Message
   public permissions: ProcessedPermissions
+  public prefix: string
   public reaction: {
     snowflake: string
     reaction: string
@@ -154,6 +156,7 @@ export class RouterRouted {
     this.isDM = init.isDM
     this.message = init.message
     this.permissions = init.permissions
+    this.prefix = init.prefix
     this.reaction = init.reaction
       ? {
           snowflake: init.reaction.snowflake,
@@ -192,5 +195,9 @@ export class RouterRouted {
 
   public $locales() {
     return this.bot.Localization.$locales()
+  }
+
+  public $sb(baseString: string, data?: any) {
+    return Utils.sb(baseString, Object.assign({}, data, { prefix: this.prefix }))
   }
 }

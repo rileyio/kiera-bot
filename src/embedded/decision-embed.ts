@@ -1,7 +1,7 @@
 import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import * as Utils from '@/utils'
 
-export function decisionFromSaved(decision: TrackedDecision, option: TrackedDecisionOption, author: { name: string; avatar: string; id: string }) {
+export function decisionFromSaved(decision: TrackedDecision, option: TrackedDecisionOption, author: { name: string; avatar: string; id: string; server: { prefix: string } }) {
   var _embed = {
     embed: {
       title: `${decision.name}`,

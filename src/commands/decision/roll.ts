@@ -1,7 +1,7 @@
 import * as Random from 'random'
 import * as Middleware from '@/middleware'
 import { RouterRouted, ExportRoutes } from '@/router'
-import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
+import { TrackedDecision } from '@/objects/decision'
 import { ObjectID } from 'bson'
 import { decisionFromSaved, decisionRealtime } from '@/embedded/decision-embed'
 import { TrackedDecisionLogEntry } from '@/objects/decision'
@@ -124,7 +124,7 @@ export async function runSavedDecision(routed: RouterRouted) {
       )
     }
 
-    const outcomeEmbed = decisionFromSaved(decision, outcome, { name: authorName, avatar: authorAvatar, id: authorID })
+    const outcomeEmbed = decisionFromSaved(decision, outcome, { name: authorName, avatar: authorAvatar, id: authorID, server: { prefix: routed.prefix } })
     await routed.message.reply(outcomeEmbed)
 
     // Track in log

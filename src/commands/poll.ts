@@ -153,7 +153,7 @@ export async function voteEdit(routed: RouterRouted) {
     // Update successful
     if (updateCount > 0)
       await routed.message.reply(
-        Utils.sb(routed.$render('Poll.Error.PropertyUpdated'), {
+        routed.$sb(routed.$render('Poll.Error.PropertyUpdated'), {
           id: routed.v.o.id,
           property: routed.v.o.property,
           from: _previousValue,

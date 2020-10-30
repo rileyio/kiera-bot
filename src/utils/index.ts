@@ -10,10 +10,7 @@ import * as XRegex from 'xregexp'
  * @returns
  */
 export function getArgs(msg: string) {
-  return msg
-    .replace(XRegex(`^\\${process.env.BOT_MESSAGE_PREFIX}`), '')
-    .replace(XRegex(`/(?!["][^"]\B)\s+(?![^"]+["]\B)/`, 'g'), ' ')
-    .split(/(?!["][^"]\B)\s+(?![^"]+["]\B)/g)
+  return msg.replace(XRegex(`/(?!["][^"]\B)\s+(?![^"]+["]\B)/`, 'g'), ' ').split(/(?!["][^"]\B)\s+(?![^"]+["]\B)/g)
 }
 
 export * from './chastikey'

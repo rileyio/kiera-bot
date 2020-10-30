@@ -1,3 +1,6 @@
+7.0.0
+- Added: Custom per server prefix support.
+
 6.3.0
 - Fixed: CK Locktober last updated footer timestamp.
 - Fixed: CK Fanatical role auto update from CK Update command sometimes giving Devoted as well.

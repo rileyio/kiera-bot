@@ -169,6 +169,12 @@ export class Bot {
     // this.client.on('messageReactionAdd', (react, user) => this.onMessageCachedReactionAdd(react, user))
     ///  Reaction out (Cached)  ///
     // this.client.on('messageReactionRemove', (react, user) => this.onMessageCachedReactionRemove(react, user))
+
+    /// Update guilds info stored ///
+    for (const guild of this.client.guilds.cache.array()) {
+      // Check if Guild info is cached
+      await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
+    }
   }
 
   public async onReady() {

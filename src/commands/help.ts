@@ -47,7 +47,7 @@ export async function genericFallback(routed: RouterRouted) {
   await routed.message.reply({
     embed: {
       title: `**Commands** *(Note: Some may not be server enabled)*`,
-      description: Utils.sb(helpBlock),
+      description: routed.$sb(helpBlock),
       color: 9125611,
       footer: {
         icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
@@ -73,8 +73,8 @@ export async function commandHelp(routed: RouterRouted) {
   if (Utils.en.help[routed.v.o.command]) {
     await routed.message.reply({
       embed: {
-        title: Utils.sb(`**\`{{prefix}}${routed.v.o.command}\` Command Usage**`),
-        description: Utils.sb(Utils.en.help[routed.v.o.command]),
+        title: routed.$sb(`**\`{{prefix}}${routed.v.o.command}\` Command Usage**`),
+        description: routed.$sb(Utils.en.help[routed.v.o.command]),
         color: 9125611,
         footer: {
           icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',

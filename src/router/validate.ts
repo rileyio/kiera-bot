@@ -144,7 +144,7 @@ export class Validate {
   }
 
   public routeSignatureFromStr(str: string) {
-    var sig = `^\\${process.env.BOT_MESSAGE_PREFIX}`
+    var sig = `^`
 
     XRegex.forEach(str, validationRegex, (match: any, i: number) => {
       // // Handling for 'text block' values

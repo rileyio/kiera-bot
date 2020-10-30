@@ -1,5 +1,6 @@
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
+import { TrackedServer } from '@/objects/server'
 
 export const Routes = ExportRoutes(
   {
@@ -34,6 +35,18 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}admin restrict command 8ball',
     name: 'admin-command-restrict',
     validate: '/admin:string/commands:string/category:string/category=string',
+    permissions: {
+      serverAdminOnly: true
+    }
+  },
+  {
+    type: 'message',
+    category: 'Admin',
+    controller: setPrefix,
+    description: 'Help.Admin.SetPrefix.Description',
+    example: '{{prefix}}admin prefix set #',
+    name: 'admin-prefix-set',
+    validate: '/admin:string/prefix:string/set:string/newPrefix=string',
     permissions: {
       serverAdminOnly: true
     }
@@ -129,7 +142,7 @@ export async function listCategoryCommands(routed: RouterRouted) {
 
   // Add each command category's name & total
   commands.forEach((command, index) => {
-    responseString += `${command.name} ${Array.from(Array(longestName + 3 - command.name.length)).join('.')} Example: ${Utils.sb(command.example)}${
+    responseString += `${command.name} ${Array.from(Array(longestName + 3 - command.name.length)).join('.')} Example: ${routed.$sb(command.example)}${
       index < commands.length - 1 ? '\n' : ''
     }`
   })
@@ -141,4 +154,9 @@ export async function listCategoryCommands(routed: RouterRouted) {
 export async function commandRestrict(routed: RouterRouted) {
   await routed.message.reply(routed.$render('Generic.Warn.CommandUnderMaintenance'))
   return true // Successful
+}
+
+export async function setPrefix(routed: RouterRouted) {
+  await routed.bot.DB.update<TrackedServer>('servers', { id: routed.message.guild.id }, { prefix: routed.v.o.newPrefix })
+  return true
 }

@@ -7,6 +7,9 @@ import { CommandPermission } from '@/objects/permission'
 import { ObjectID } from 'bson'
 import { sb } from '@/utils'
 import { TrackedAvailableObject } from '@/objects/available-objects'
+import { TrackedServer } from '@/objects/server'
+
+const GLOBAL_PREFIX = process.env.BOT_MESSAGE_PREFIX
 
 export const Routes: Array<WebRoute> = [
   {
@@ -47,6 +50,9 @@ export async function getAll(routed: WebRouted) {
   // this.DEBUG_WEBAPI('req params', v.o)
 
   if (v.valid) {
+    const server = await routed.Bot.DB.get<TrackedServer>('servers', { id: v.o.serverID })
+    const prefix = server.prefix || GLOBAL_PREFIX
+
     // Get the same routes the router loader uses
     const routes = routed.Bot.Router.routes
     var query: any = {
@@ -87,7 +93,7 @@ export async function getAll(routed: WebRouted) {
       const matchingRoute = routes.find((r) => r.name === p.command)
       if (matchingRoute) {
         // console.log(matchingRoute)
-        p.example = sb(matchingRoute.example)
+        p.example = sb(matchingRoute.example, { prefix })
         p.category = matchingRoute.category
       }
     })
