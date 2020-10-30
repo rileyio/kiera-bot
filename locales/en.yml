@@ -158,6 +158,8 @@ Help:
       Description: Removes User from Kiera's Database
     SetPrefix:
       Description: Set command prefix to be used for Kiera commands on this server
+    SetStatus:
+      Description: Set bot's displayed status message
   BattleNet:
     D3CurrentSeason:
       Description: Retrieve current Diablo 3 Active Season

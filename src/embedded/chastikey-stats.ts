@@ -231,7 +231,7 @@ function lockEntry(index: number, lock: LockeeDataLock, totalExpected: number, r
 export function keyholderStats(
   keyholderData: KeyholderData,
   activeLocks: Array<TrackedKeyholderLockeesStatistics>,
-  cachedTimestamp: string,
+  cachedTimestamp: number,
   routerStats: RouterStats,
   options: { showRating: boolean; showAverage: boolean }
 ) {
@@ -339,7 +339,7 @@ export function keyholderStats(
   }
 }
 
-export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatistics>, keyholderName: string, routerStats: RouterStats, cachedTimestamp: string) {
+export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatistics>, keyholderName: string, routerStats: RouterStats, cachedTimestamp: number) {
   const desc =
     data.length > 0
       ? `This query looks for lockees who share 1 or more keyholders with the given keyholder's name \`${keyholderName}\`. This will exclude anyone who has multiple fakes and this can be seen by the count showing differing numbers between Keyholder count and Active Locks.`
@@ -378,7 +378,7 @@ export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatisti
   }
 }
 
-export function keyholderLockees(data: Array<TrackedKeyholderLockeesStatistics>, keyholderName: string, routerStats: RouterStats, cachedTimestamp: string) {
+export function keyholderLockees(data: Array<TrackedKeyholderLockeesStatistics>, keyholderName: string, routerStats: RouterStats, cachedTimestamp: number) {
   // Sort lockees list
   data.sort((a, b) => {
     var x = String(a._id).toLowerCase()

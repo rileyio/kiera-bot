@@ -1,5 +1,6 @@
 7.0.0
 - Added: Custom per server prefix support.
+- Added: Command to set bot's presence message.
 
 6.3.0
 - Fixed: CK Locktober last updated footer timestamp.
