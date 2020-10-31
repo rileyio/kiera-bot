@@ -12,6 +12,7 @@ import { BattleNet } from '@/integrations/BNet'
 import { Statistics } from '@/statistics'
 import { ServerStatisticType } from './objects/statistics'
 import { ChastiKey } from './integrations/ChastiKey'
+import { Node } from 'yaml/types'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
 
@@ -89,6 +90,7 @@ export class Bot {
     ////////////////////////////////////////
     // Register background tasks
     this.Task.start([
+      new Task.StatusMessageRotatorScheduled(),
       new Task.ChastiKeyAPIUsers(),
       new Task.ChastiKeyAPIRunningLocks(),
       new Task.ChastiKeyAPILocktober2019(),

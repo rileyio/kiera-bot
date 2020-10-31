@@ -130,7 +130,6 @@ export async function forceRestart(routed: RouterRouted) {
 }
 
 export async function setStatus(routed: RouterRouted) {
-  console.log('setting presence status:', routed.v.o.text)
   // Store status in db in the event of a restart
   await routed.bot.DB.update(
     'settings',
