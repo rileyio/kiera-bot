@@ -37,9 +37,7 @@ export const Routes = ExportRoutes(
     permissions: {
       restricted: true,
       restrictedTo: [
-        '473856245166506014', // KevinCross#0001
-        '146439529824256000', // Emma#1366
-        '448856044840550403' // Sanni#0001
+        '146439529824256000' // Emma#1366
       ]
     },
     validate: '/admin:string/restart:string/bot:string/seconds?=number'
