@@ -1,6 +1,5 @@
 import * as QRCode from 'qrcode'
 import * as APIUrls from '@/api-urls'
-import * as Utils from '@/utils'
 import { Transform } from 'stream'
 import { TrackedChastiKey } from '@/objects/chastikey'
 import { RouterStats, RouterRouted } from '@/router'

@@ -7,4 +7,4 @@ export * from './validate'
 
 // Export the Router Objects to keep things simple
 // !Keep full path below
-export * from '../objects/router'
+export * from '../objects/router/'
