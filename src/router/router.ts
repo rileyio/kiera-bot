@@ -190,13 +190,18 @@ export class CommandRouter {
 
       // Try to find a route
       var allCategoryRoutes = [] as Array<MessageRoute>
+      var validateOutcome: { validateSignature: string; matched: boolean }
+
       const route = routes.find((r) => {
         // Add to examples
         if (r.permissions.restricted === false) allCategoryRoutes.push(r)
         else {
           this.bot.Log.Router.log(`Router -> Examples for command like '${args[0]}' Restricted!`)
         }
-        return r.test(messageContent) === true
+
+        // Set the validate outcome
+        validateOutcome = r.test(messageContent)
+        return validateOutcome.matched === true
       })
 
       // Lookup Kiera User in DB
@@ -250,7 +255,7 @@ export class CommandRouter {
       } // End of no routes
 
       // Process route
-      this.bot.Log.Router.log('Router -> Route:', route)
+      // this.bot.Log.Router.log('Router -> Route:', route)
 
       // Normal routed behaviour
       var routed: RouterRouted = new RouterRouted({
@@ -263,7 +268,8 @@ export class CommandRouter {
         route: route,
         type: 'message',
         user: kieraUser,
-        routerStats: routerStats
+        routerStats: routerStats,
+        validateMatch: validateOutcome.validateSignature
       })
 
       // Process Permissions

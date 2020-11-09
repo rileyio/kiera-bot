@@ -34,6 +34,7 @@ export class MessageRoute {
   }
   public type: 'message' | 'reaction'
   public validate: string
+  public validateAlias?: Array<string>
   public validation: Validate
 
   constructor(route: RouteConfiguration) {
@@ -51,7 +52,34 @@ export class MessageRoute {
   }
 
   public test(message: string) {
-    return this.validation.test(message)
+    if (this.validation.test(message)) {
+      return { validateSignature: this.validate, matched: true }
+    } else {
+      if (this.validateAlias) {
+        let aliasMatched = false
+        let aliasFromMatch = ''
+        // console.log('# of possible alias matches:', this.validateAlias.length)
+
+        for (let index = 0; index < this.validateAlias.length; index++) {
+          if (aliasMatched) continue
+          let alias = this.validateAlias[index]
+
+          let tempValidate = new Validate(alias)
+          // console.log('testing alias', alias)
+          // console.log('debug alias', tempValidate.test(message))
+          if (tempValidate.test(message)) {
+            aliasMatched = true
+            aliasFromMatch = alias
+          }
+        }
+
+        // console.log('alias matched', aliasMatched)
+        if (aliasMatched) return { validateSignature: aliasFromMatch, matched: aliasMatched }
+      }
+    }
+
+    // Fallback - failed
+    return { validateSignature: this.validate, matched: false }
   }
 
   private getCommand(str: string) {

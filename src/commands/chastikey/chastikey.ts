@@ -28,6 +28,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck verify',
     name: 'ck-account-verify',
     validate: '/ck:string/verify:string',
+    validateAlias: ['/ck:string/supercalifragilisticexpialidocious:string'],
     middleware: [], // No Middleware - From 4.4.0 and onward this will replace both !register & !ck verify
     permissions: {
       defaultEnabled: true,

@@ -24,4 +24,5 @@ export interface RouteConfiguration {
   }
   type: 'message' | 'reaction'
   validate?: string
+  validateAlias?: Array<string>
 }

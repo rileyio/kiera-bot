@@ -44,9 +44,9 @@ export const Routes = ExportRoutes(
     category: 'Admin',
     controller: setPrefix,
     description: 'Help.Admin.SetPrefix.Description',
-    example: '{{prefix}}admin prefix set #',
-    name: 'admin-prefix-set',
-    validate: '/admin:string/prefix:string/set:string/newPrefix=string',
+    example: '{{prefix}}admin prefix use #',
+    name: 'admin-prefix-use',
+    validate: '/admin:string/prefix:string/use:string/newPrefix=string',
     permissions: {
       serverAdminOnly: true
     }

@@ -13,6 +13,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats lockee',
     name: 'ck-get-stats-lockee',
     validate: '/ck:string/stats:string/lockee:string/user?=string',
+    validateAlias: ['/ck:string/sl:string/user?=string', '/ck:string/s:string/l:string/user?=string'],
     middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: false,
@@ -27,6 +28,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck stats keyholder UsernameHere',
     name: 'ck-get-stats-keyholder',
     validate: '/ck:string/stats:string/keyholder:string/user?=string',
+    validateAlias: ['/ck:string/sk:string/user?=string', '/ck:string/s:string/k:string/user?=string'],
     middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: false,

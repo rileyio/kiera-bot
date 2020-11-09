@@ -14,6 +14,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck lockee history',
     name: 'ck-lockee-history',
     validate: '/ck:string/lockee:string/history:string/username?=string',
+    validateAlias: ['/ck:string/lh:string/username?=string'],
     middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: true,

@@ -3,7 +3,7 @@ import { User, Message } from 'discord.js'
 import { Bot } from '@/index'
 import { TrackedMessage } from '@/objects/message'
 import { TrackedUser } from '@/objects/user'
-import { MessageRoute, ProcessedPermissions, RouterStats, ValidationType } from '@/router'
+import { MessageRoute, ProcessedPermissions, RouterStats, Validate, ValidationType } from '@/router'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
 
@@ -36,6 +36,7 @@ export class RouterRouted {
     validated: ValidationType[]
     o: { [key: string]: any }
   }
+  public validateMatch?: string
 
   constructor(init: Partial<RouterRouted>) {
     // Object.assign(this, init)
@@ -58,8 +59,10 @@ export class RouterRouted {
     this.trackedMessage = init.trackedMessage
     this.type = init.type
     this.user = init.user
+    this.validateMatch = init.validateMatch
     // Generate v.*
-    this.v = this.route.validation.validateArgs(this.args)
+    const validate = new Validate(this.validateMatch)
+    this.v = validate.validateArgs(this.args)
   }
 
   public $render<T>(key: string, data?: T): string

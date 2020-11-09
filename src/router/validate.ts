@@ -123,7 +123,7 @@ export class Validate {
         ret[v.name] = v.value
         return v
       } else {
-        const sliced = args.slice(i).map(v => {
+        const sliced = args.slice(i).map((v) => {
           return v.substr(1, v.length - 2)
         })
 
@@ -144,9 +144,11 @@ export class Validate {
   }
 
   public routeSignatureFromStr(str: string) {
-    var sig = `^`
+    let sig = `^`
+    let parts = [] as Array<{ name: string; optional: string }>
 
-    XRegex.forEach(str, validationRegex, (match: any, i: number) => {
+    XRegex.forEach(str, validationRegex, (match: any, i: number) => parts.push(match))
+    parts.forEach((match: any, i: number) => {
       // // Handling for 'text block' values
       // if (match.optional === '*=') {
       //   sig += `'[\\"|\\']?([\\w-\\:\\@\\_\\#\\s+]+)[\\"|\\']?\\s?'`
@@ -159,7 +161,11 @@ export class Validate {
 
       // Handling of static route values
       if (match.optional === ':' || match.optional === '?:') {
-        sig += match.optional === '?:' ? `(${match.name})\\s?` : `(${match.name})\\s?`
+        sig += match.optional === '?:' ? `(${match.name})` : `(${match.name})`
+        // Add set space to optional if next is an optional param and there is one
+        if (i < parts.length - 1)
+          if (parts[i + 1].optional === '?:' || parts[i + 1].optional === '?=') sig += `\\s?`
+          else sig += `\\s`
       }
 
       // Handling for user's input values
@@ -167,6 +173,9 @@ export class Validate {
         if (match.type === 'user') sig += `(\\@[\\w\\s-]*\\#[0-9]+|\\<\\@[0-9]*\\>)\\s?`
         else sig += match.optional === '?=' ? `(?:["]?([^"+]+)["]?\s?)?` : `["]?([^"+]+)["]?\\s?`
       }
+
+      // console.log(`${i + 1}/${parts.length}`, sig)
+      // if (i < parts.length - 1) console.log(i, parts[i + 1].optional, parts[i + 1].optional === '?:' || parts[i + 1].optional === '?=')
     })
 
     // Add end of string $
