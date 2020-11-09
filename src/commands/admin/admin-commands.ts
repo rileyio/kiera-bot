@@ -157,6 +157,13 @@ export async function commandRestrict(routed: RouterRouted) {
 }
 
 export async function setPrefix(routed: RouterRouted) {
-  await routed.bot.DB.update<TrackedServer>('servers', { id: routed.message.guild.id }, { prefix: routed.v.o.newPrefix })
+  try {
+    const updated = await routed.bot.DB.update<TrackedServer>('servers', { id: routed.message.guild.id }, { prefix: routed.v.o.newPrefix })
+    if (updated) await routed.message.reply(routed.$render('Admin.PrefixUpdated', { prefix: routed.v.o.newPrefix }))
+    else routed.message.reply(routed.$render('Admin.PrefixNotUpdated', { prefix: routed.v.o.newPrefix }))
+  } catch (error) {
+    routed.message.reply(routed.$render('Admin.PrefixUpdateError', { prefix: routed.v.o.newPrefix }))
+  }
+
   return true
 }

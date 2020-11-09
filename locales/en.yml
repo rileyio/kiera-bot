@@ -43,6 +43,9 @@ Admin:
     ```
     {{commands}}
     ```
+  PrefixUpdated: This server will now use the following prefix `{{prefix}}` to signify the start of each command.
+  PrefixNotUpdated: The server prefix has not been updated. Please try selecting a different prefix.
+  PrefixUpdateError: There was an error changing the command prefix for this server.
 
 BattleNet:
   Error:
