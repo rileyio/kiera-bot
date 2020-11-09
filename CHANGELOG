@@ -2,6 +2,7 @@
 - Added: Custom per server prefix support.
 - Added: Command to set bot's presence message.
 - Added: Presence Status rotator task.
+- Added: Command routing alias support. Support added to a limited set for initial testing.
 
 6.3.0
 - Fixed: CK Locktober last updated footer timestamp.
