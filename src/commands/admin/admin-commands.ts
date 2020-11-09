@@ -48,7 +48,8 @@ export const Routes = ExportRoutes(
     name: 'admin-prefix-use',
     validate: '/admin:string/prefix:string/use:string/newPrefix=string',
     permissions: {
-      serverAdminOnly: true
+      serverAdminOnly: true,
+      serverOnly: true
     }
   }
 )
