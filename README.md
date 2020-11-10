@@ -115,6 +115,7 @@ Current Progress (Languages in focus where translations are being used):
 - `!admin category Fun` - [**Restricted:** Server Admin] Retrieve list of categories commands  
 - `!admin restrict command 8ball` - [**Restricted:** Server Admin] Restrict Command usage **(Under Dev)**  
 - `!admin stats` - [**Restricted:** Server Admin] Bot running stats
+- `!admin prefix use /` - Used to set a custom prefix for Kiera on server. (Replace `/` with desired prefix)
 - `!check permissions` - Check Yours and Kiera's permissions
 - `!ping` - Check Kiera's Ping/Latency
 - `!restart bot` - [**Restricted:** Pre-defined users] Restart Kiera Bot application
@@ -128,25 +129,27 @@ Current Progress (Languages in focus where translations are being used):
 
 #### ChastiKey (3rd party service)
 
-- `!ck recover combos 5` - Retrieve your completed lock combinations
-- `!ck verify` - Link Discord account with ChastiKey App account
-- `!ck role counts` - List of ChastiKey Discord Roles & statistics
-- `!ck web` - Generate session for external Kiera + ChastiKey web portal
-- `!ck debug UsernameHere` [**Restricted:** Pre-defined users]
-- `!ck lockee history` - Show lockee's history breakdown
-- `!ck lockee nickname status always` 
-- `!ck stats locktober` - ChastiKey Locktober event statistics
-- `!ck search UsernameHere` - Search based off ChastiKey username
-- `!ck stats lockee` - View Lockee stats
-- `!ck stats keyholder UsernameHere` - View Keyholder stats
 - `!ck check multilocked KeyHolderName` - List of Keyholder's lockees who have 2 or more Keyholders
+- `!ck debug UsernameHere` [**Restricted:** Pre-defined users]
 - `!ck keyholder lockees` - List of Keyholder's lockees
 - `!ck keyholder set average show` - Enable/Disable your rating visibility in stats commands
+- `!ck lockee history` - Show lockee's history breakdown
+- `!ck lockee nickname status always` - Set preference if Kiera should manage nickname with 🔒 and 🔓
+- `!ck map exp role # @role` - Set/Customize mapping of CK Experience roles for your server
+- `!ck map special role # @role` - Set/Customize mapping of CK Special roles for your server
+- `!ck search UsernameHere` - Search based off ChastiKey username
+- `!ck stats keyholder UsernameHere` - View Keyholder stats
+- `!ck stats locktober` - ChastiKey Locktober event statistics
+- `!ck stats lockee` - View Lockee stats
+- `!ck recover combos 5` - Retrieve your completed lock combinations
+- `!ck role counts` - List of ChastiKey Discord Roles & statistics
+- `!ck ticker` - View ChastiKey Ticker
 - `!ck ticker set type 2` - Set your default displayed ticker when you call the ticker command
 - `!ck ticker set date 2019-01-27` - Set a start date for your ticker data
 - `!ck ticker set rating show` - Enable/Disable your ticker & stats rating display
-- `!ck ticker` - View ChastiKey Ticker
 - `!ck update` - Sync your ChastiKey profile with Discord
+- `!ck verify` - Link Discord account with ChastiKey App account
+- `!ck web` - Generate session for external Kiera + ChastiKey web portal
 
 #### Decision Rollers
 
@@ -178,10 +181,10 @@ Current Progress (Languages in focus where translations are being used):
 
 #### Moderation
 
-- `!mod mute emma#1366 "Reason is optional"` - Mute the given user
-- `!mod unmute emma#1366` - Unmute the given user
 - `!mod list muted` - Display a list of muted users
 - `!mod lookup mute emma#1366` - Lookup a muted user
+- `!mod mute emma#1366 "Reason is optional"` - Mute the given user
+- `!mod unmute emma#1366` - Unmute the given user
 
 #### Poll
 - `!poll new "Is Kiera the cat cute?"` - Create a new poll  
