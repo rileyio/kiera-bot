@@ -43,7 +43,7 @@ Admin:
     ```
     {{commands}}
     ```
-  PrefixUpdated: This server will now use the following prefix `{{prefix}}` to signify the start of each command.
+  PrefixUpdated: This server will now use the following prefix `{{{newPrefix}}}` to signify the start of each command.
   PrefixNotUpdated: The server prefix has not been updated. Please try selecting a different prefix.
   PrefixUpdateError: There was an error changing the command prefix for this server.
 
@@ -119,6 +119,9 @@ ChastiKey:
         {{/unless}}
         {{/unless}}
         ‏‏‎ ‎
+  Nickname:
+    ModeChanged: Your nickname mode is now set to `{{mode}}`
+    ModeChangedAndCleared: Your nickname mode and nickname have been reset
 
   # Verify
   Verify:
@@ -131,9 +134,47 @@ ChastiKey:
     PreviouslyCompleted: Your account has already been verified! If there are any issues with this please reachout to `emma#1366`
     VerifyRequired: |-
       This command requires your account be verified with ChastiKey using the following command: 
-      `!ck verify`
+      `{{prefix}}ck verify`
 
-      If you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `!ck verify` again."
+      If you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `{{prefix}}ck verify` again.
+
+  # Customize
+  Customize:
+    MapExpRole: |-
+      This command is used to map experience roles on your server to the corresponding ChastiKey role.
+
+      When running this command, the first number in the command corresponds to the following options.
+      (Note: You do not wish to have to have both 'colors' on your server, Example: you only use a single role to denote a user's experience then set all only pink)
+
+        **`1` Novice Lockee Pink** {{{noviceLockeePink}}}
+        `11` Novice Lockee Blue {{{noviceLockeeBlue}}}
+        **`2` Intermediate Lockee Pink** {{{intermediateLockeePink}}}
+        `22` Intermediate Lockee Blue {{{intermediateLockeeBlue}}}
+        **`3` Experienced Lockee Pink** {{{experiencedLockeePink}}}
+        `33` Experienced Lockee Blue {{{experiencedLockeeBlue}}}
+        **`4` Devoted Lockee Pink** {{{devotedLockeePink}}}
+        `44` Devoted Lockee Blue {{{devotedLockeeBlue}}}
+        **`5` Fanatical Lockee Pink** {{{fanaticalLockeePink}}}
+        `55` Fanatical Lockee Blue {{{fanaticalLockeeBlue}}}
+        
+        `101` Novice Keyholder {{{noviceKeyholder}}}
+        `102` Keyholder {{{keyholder}}}
+        `103` Established Keyholder {{{establishedKeyholder}}}
+        `104` Distinguished Keyholder {{{distinguishedKeyholder}}}
+        `105` Renowned Keyholder {{{renownedKeyholder}}}
+
+      Example usage: `{{{prefix}}}ck map exp role 1 627557066382245888`
+    MapSpecialRole: |-
+      This command is used to map special roles on your server to the corresponding ChastiKey role.
+
+      When running this command, the first number in the command corresponds to the following options.
+
+        `1` Unlocked {{{locked}}}
+        `2` Locked {{{unlocked}}}
+        `3` Locktober 2019 {{{locktober2019}}}
+        `4` Locktober 2020 {{{locktober2020}}}
+
+      Example usage: `{{{prefix}}}ck map special role 1 627557066382245888`
 
 Help:
   Admin:
@@ -205,6 +246,8 @@ Help:
       Description: View ChastiKey Ticker
     Update:
       Description: Sync your ChastiKey profile with Discord
+    CustomizeExpRole:
+      Description: Set/Customize mapping of CK Experience roles for your server
   Decision:
     UnblacklistUser:
       Description: Remove user from Decision's Blacklist

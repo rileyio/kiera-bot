@@ -3,6 +3,10 @@
 - Added: Command to set bot's presence message.
 - Added: Presence Status rotator task.
 - Added: Command routing alias support. Support added to a limited set for initial testing.
+- Added: Support for CK Update command to be used on all servers (New CK Customize commands to map roles).
+- Updated: CK Nickname command to have a reset (use: clear) also now has status responses.
+- Updated: Response renderer to include Prefix from server.
+- Updated: Verify command now will use server's prefix in help text.
 
 6.3.0
 - Fixed: CK Locktober last updated footer timestamp.

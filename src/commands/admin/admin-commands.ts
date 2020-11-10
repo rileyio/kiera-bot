@@ -1,4 +1,3 @@
-import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { TrackedServer } from '@/objects/server'
 
@@ -47,6 +46,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}admin prefix use #',
     name: 'admin-prefix-use',
     validate: '/admin:string/prefix:string/use:string/newPrefix=string',
+    validateAlias: ['/admin:string/prefix:string/newPrefix=string'],
     permissions: {
       serverAdminOnly: true,
       serverOnly: true
@@ -160,10 +160,10 @@ export async function commandRestrict(routed: RouterRouted) {
 export async function setPrefix(routed: RouterRouted) {
   try {
     const updated = await routed.bot.DB.update<TrackedServer>('servers', { id: routed.message.guild.id }, { prefix: routed.v.o.newPrefix })
-    if (updated) await routed.message.reply(routed.$render('Admin.PrefixUpdated', { prefix: routed.v.o.newPrefix }))
-    else routed.message.reply(routed.$render('Admin.PrefixNotUpdated', { prefix: routed.v.o.newPrefix }))
+    if (updated) await routed.message.reply(routed.$render('Admin.PrefixUpdated', { newPrefix: routed.v.o.newPrefix }))
+    else routed.message.reply(routed.$render('Admin.PrefixNotUpdated'))
   } catch (error) {
-    routed.message.reply(routed.$render('Admin.PrefixUpdateError', { prefix: routed.v.o.newPrefix }))
+    routed.message.reply(routed.$render('Admin.PrefixUpdateError'))
   }
 
   return true

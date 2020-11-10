@@ -10,6 +10,7 @@ export const mainRegister = `(Required for access to some commands)
 `
 
 export const main8Ball = `\`{{prefix}}8ball\` - Ask a question, receive an answer`
+export const mainAdmin = `\`{{prefix}}admin\` - Manage Kiera on this server`
 export const mainBNet = `\`{{prefix}}bnet\`, \`{{prefix}}wow\` - BattleNet Commands`
 export const mainCK = `\`{{prefix}}ck\` - ChastiKey Commands - \`username\` \`ticker\` \`stats\``
 export const mainDecision = `\`{{prefix}}decision\` - Create, Edit or Roll - \`new\` \`roll\``

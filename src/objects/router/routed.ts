@@ -70,11 +70,11 @@ export class RouterRouted {
   public $render<T>(locale: string, key?: string | T, data?: T): string {
     // When a locale override is passed too
     if (typeof locale === 'string' && typeof key === 'string') {
-      return this.bot.Localization.$render(locale, key as string, arguments[2])
+      return this.bot.Localization.$render(locale, key as string, Object.assign({}, arguments[2], { prefix: this.prefix }))
     }
 
     // Use locale from this.user
-    return this.bot.Localization.$render(this.user ? this.user.locale : DEFAULT_LOCALE, locale, key as T)
+    return this.bot.Localization.$render(this.user ? this.user.locale : DEFAULT_LOCALE, locale, Object.assign({}, key, { prefix: this.prefix }) as T)
   }
 
   public $localeExists(key: string) {

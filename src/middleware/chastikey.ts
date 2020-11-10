@@ -10,7 +10,7 @@ export async function isCKVerified(routed: RouterRouted) {
   // via the ChastiKey App
   if (routed.user.__notStored && ckUser) {
     routed.bot.Log.Command.log(`Middleware -> User with DiscordID: ${routed.author.id} is not in kiera's DB`)
-    await routed.message.reply(routed.$render('ChastiKey.Verify.VerifyRequired'))
+    await routed.message.reply(routed.$render('ChastiKey.Verify.VerifyRequired', { prefix: routed.prefix }))
     return
   }
 
@@ -37,7 +37,7 @@ export async function isCKVerified(routed: RouterRouted) {
   // Verified!!
   if (!!ckUser.userID && routed.user.ChastiKey.isVerified) return routed // No need to hault if this passes
   // Fallback, user not yet registered
-  await routed.message.reply(routed.$render('ChastiKey.Verify.VerifyRequired'))
+  await routed.message.reply(routed.$render('ChastiKey.Verify.VerifyRequired', { prefix: routed.prefix }))
   routed.bot.Log.Command.log(`Middleware -> ChastiKey user not verified => username: ${routed.author.username}#${routed.author.discriminator}, id: ${routed.author.id}`)
   return // Returns nothing which halts going any further
 }

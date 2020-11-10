@@ -28,6 +28,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}ck lockee nickname status always',
     name: 'ck-lockee-nickname-status',
     validate: '/ck:string/lockee:string/nickname:string/status:string/mode=string',
+    validateAlias: ['/ck:string/nickname:string/mode=string'],
     middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: true,
@@ -78,8 +79,24 @@ export async function history(routed: RouterRouted) {
 }
 
 export async function toggleLockInNickname(routed: RouterRouted) {
-  if (routed.v.o.mode === 'never' || routed.v.o.mode === 'always' || routed.v.o.mode === 'locked' || routed.v.o.mode === 'unlocked') {
-    await routed.bot.DB.update('users', { id: routed.author.id }, { $set: { 'ChastiKey.preferences.lockee.showStatusInNickname': routed.v.o.mode } }, { atomic: true })
+  if (routed.v.o.mode === 'never' || routed.v.o.mode === 'always' || routed.v.o.mode === 'locked' || routed.v.o.mode === 'unlocked' || routed.v.o.mode === 'clear') {
+    await routed.bot.DB.update(
+      'users',
+      { id: routed.author.id },
+      { $set: { 'ChastiKey.preferences.lockee.showStatusInNickname': routed.v.o.mode === 'clear' ? 'never' : routed.v.o.mode } },
+      { atomic: true }
+    )
+
+    // When Cleared, Clear the Nickname currently set of any padlocks
+    if (routed.v.o.mode === 'clear') {
+      const user = routed.message.guild.member(routed.message.author.id)
+      const currentNickname = user.nickname || user.user.username
+      await user.setNickname(currentNickname.replace(/🔒|🔓/, ''))
+      await routed.message.reply(routed.$render('ChastiKey.Nickname.ModeChangedAndCleared'))
+    }
+
+    if (routed.v.o.mode === 'never' || routed.v.o.mode === 'always' || routed.v.o.mode === 'locked' || routed.v.o.mode === 'unlocked')
+      await routed.message.reply(routed.$render('ChastiKey.Nickname.ModeChanged', { mode: routed.v.o.mode }))
   }
 
   return true
