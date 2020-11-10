@@ -1,3 +1,6 @@
+7.0.1
+- Fixed: English string for CK Special Roles text showing the Locked and Unlocked (once mapped) in reverse.
+
 7.0.0
 - Added: Custom per server prefix support.
 - Added: Command to set bot's presence message.

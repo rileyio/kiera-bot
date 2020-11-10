@@ -169,8 +169,8 @@ ChastiKey:
 
       When running this command, the first number in the command corresponds to the following options.
 
-        `1` Unlocked {{{locked}}}
-        `2` Locked {{{unlocked}}}
+        `1` Unlocked {{{unlocked}}}
+        `2` Locked {{{locked}}}
         `3` Locktober 2019 {{{locktober2019}}}
         `4` Locktober 2020 {{{locktober2020}}}
 
