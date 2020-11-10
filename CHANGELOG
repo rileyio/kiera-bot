@@ -1,3 +1,7 @@
+7.0.3
+- Fixed: Issue with connecting to some existing servers. #45
+- Updated: Dev dependency responsible for audit warnings.
+
 7.0.2
 - Fixed: Bot unable to reply to DMs due to internal issue trying to find a server for config. #44
 

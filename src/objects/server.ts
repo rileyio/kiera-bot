@@ -8,6 +8,7 @@ export class TrackedServer {
   public ownerID: string
   public joinedTimestamp: number
   public enabled: { ChastiKey: boolean } = { ChastiKey: false }
+  public lastSeen?: number
   public prefix?: string
 
   constructor(init: (TrackedServer | Guild) & Partial<TrackedServer>) {
@@ -17,5 +18,6 @@ export class TrackedServer {
     this.ownerID = init.ownerID
     this.joinedTimestamp = init.joinedTimestamp
     this.prefix = init.prefix
+    this.lastSeen = init.lastSeen
   }
 }

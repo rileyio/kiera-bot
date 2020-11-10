@@ -12,7 +12,6 @@ import { BattleNet } from '@/integrations/BNet'
 import { Statistics } from '@/statistics'
 import { ServerStatisticType } from './objects/statistics'
 import { ChastiKey } from './integrations/ChastiKey'
-import { Node } from 'yaml/types'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
 
@@ -175,7 +174,18 @@ export class Bot {
     /// Update guilds info stored ///
     for (const guild of this.client.guilds.cache.array()) {
       // Check if Guild info is cached
-      await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
+      console.log('Guild Connection/Update in Servers Collection', guild.id, guild.name)
+      await this.DB.update(
+        'servers',
+        { id: guild.id },
+        {
+          region: guild.region,
+          ownerID: guild.ownerID,
+          joinedTimestamp: guild.joinedTimestamp,
+          lastSeen: Date.now()
+        },
+        { upsert: true }
+      )
     }
   }
 
