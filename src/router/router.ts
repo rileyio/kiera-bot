@@ -163,7 +163,7 @@ export class CommandRouter {
       }
     }
 
-    const server = await this.bot.DB.get<TrackedServer>('servers', { id: message.guild.id })
+    const server = message.channel.type === 'dm' ? { prefix: undefined } : await this.bot.DB.get<TrackedServer>('servers', { id: message.guild.id })
     // Halt here if the guild is unknown
     if (!server) return
 
