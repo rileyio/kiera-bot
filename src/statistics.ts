@@ -41,7 +41,7 @@ export class Statistics {
     // Env setting - Block stats saving
     if (process.env.BOT_BLOCK_STATS === 'true') return
 
-    console.log('test:', this.whitelistedServers, this.isWhitelistedServer(serverID))
+    // console.log('test:', this.whitelistedServers, this.isWhitelistedServer(serverID))
 
     // Check if server is whitelisted, if not, block stats tracking
     if (!this.isWhitelistedServer(serverID)) return

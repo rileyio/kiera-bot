@@ -174,7 +174,7 @@ export class Bot {
     /// Update guilds info stored ///
     for (const guild of this.client.guilds.cache.array()) {
       // Check if Guild info is cached
-      console.log('Guild Connection/Update in Servers Collection', guild.id, guild.name)
+      // console.log('Guild Connection/Update in Servers Collection', guild.id, guild.name)
       await this.DB.update(
         'servers',
         { id: guild.id },
