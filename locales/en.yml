@@ -248,6 +248,8 @@ Help:
       Description: Sync your ChastiKey profile with Discord
     CustomizeExpRole:
       Description: Set/Customize mapping of CK Experience roles for your server
+    CustomizeSpecialRole:
+      Description: Set/Customize mapping of CK Special roles for your server
   Decision:
     UnblacklistUser:
       Description: Remove user from Decision's Blacklist

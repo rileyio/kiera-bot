@@ -21,7 +21,7 @@ export const Routes = ExportRoutes(
     type: 'message',
     category: 'ChastiKey',
     controller: mapSpecialRoles,
-    description: 'Help.ChastiKey.RecoverCombinations.Description',
+    description: 'Help.ChastiKey.CustomizeSpecialRole.Description',
     example: '{{prefix}}ck map special role 1 627557066382245888',
     name: 'ck-map-special-roles',
     validate: '/ck:string/map:string/special:string/role:string/index?=number/roleid?=string',
