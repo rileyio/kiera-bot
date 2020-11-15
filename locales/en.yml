@@ -72,7 +72,14 @@ ChastiKey:
   # Ticker
   Ticker:
     InvalidOverrideType: 'Invalid override type, please use: (1) Keyholder, (2) Lockee, (3) Both'
-    IncorrectTimer: '*Does something look incorrect? Please contact **Kevin** the developer of ChastiKey if any numbers appear incorrect*'
+    IncorrectTimer: |-
+      *Does something look incorrect? Please contact **Kevin** the developer of ChastiKey if any numbers appear incorrect*
+      {{#unless wasDateOverridden}}
+      {{#if startDate}}
+      
+      > This user has a start date specified for their Ticker: `{{startDate}}`
+      {{/if}}
+      {{/unless}}
 
   # Stats
   Stats:
@@ -144,18 +151,23 @@ ChastiKey:
       This command is used to map experience roles on your server to the corresponding ChastiKey role.
 
       When running this command, the first number in the command corresponds to the following options.
-      (Note: You do not wish to have to have both 'colors' on your server, Example: you only use a single role to denote a user's experience then set all only pink)
+      (Note: If you do not wish to have to have all variants on your server, Example: you only use a set of single roles to denote a user's experience then only set the ones bolded below)
 
-        **`1` Novice Lockee Pink** {{{noviceLockeePink}}}
-        `11` Novice Lockee Blue {{{noviceLockeeBlue}}}
-        **`2` Intermediate Lockee Pink** {{{intermediateLockeePink}}}
-        `22` Intermediate Lockee Blue {{{intermediateLockeeBlue}}}
-        **`3` Experienced Lockee Pink** {{{experiencedLockeePink}}}
-        `33` Experienced Lockee Blue {{{experiencedLockeeBlue}}}
-        **`4` Devoted Lockee Pink** {{{devotedLockeePink}}}
-        `44` Devoted Lockee Blue {{{devotedLockeeBlue}}}
-        **`5` Fanatical Lockee Pink** {{{fanaticalLockeePink}}}
-        `55` Fanatical Lockee Blue {{{fanaticalLockeeBlue}}}
+        **`1` Novice Lockee 1st color** {{{noviceLockeePink}}}
+        `11` Novice Lockee 2nd color {{{noviceLockeeBlue}}}
+        `111` Novice Lockee 3rd color {{{noviceLockeeBlue}}}
+        **`2` Intermediate Lockee 1st color** {{{intermediateLockeePink}}}
+        `22` Intermediate Lockee 2nd color {{{intermediateLockeeBlue}}}
+        `222` Intermediate Lockee 3rd color {{{intermediateLockeeBlue}}}
+        **`3` Experienced Lockee 1st color** {{{experiencedLockeePink}}}
+        `33` Experienced Lockee 2nd color {{{experiencedLockeeBlue}}}
+        `333` Experienced Lockee 3rd color {{{experiencedLockeeBlue}}}
+        **`4` Devoted Lockee 1st color** {{{devotedLockeePink}}}
+        `44` Devoted Lockee 2nd color {{{devotedLockeeBlue}}}
+        `444` Devoted Lockee 3rd color {{{devotedLockeeBlue}}}
+        **`5` Fanatical Lockee 1st color** {{{fanaticalLockeePink}}}
+        `55` Fanatical Lockee 2nd color {{{fanaticalLockeeBlue}}}
+        `555` Fanatical Lockee 3rd color {{{fanaticalLockeeBlue}}}
         
         `101` Novice Keyholder {{{noviceKeyholder}}}
         `102` Keyholder {{{keyholder}}}
