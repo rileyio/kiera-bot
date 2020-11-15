@@ -54,7 +54,7 @@ export const Routes = ExportRoutes(
     description: 'Help.ChastiKey.Ticker.Description',
     example: '{{prefix}}ck ticker',
     name: 'ck-get-ticker',
-    validate: '/ck:string/ticker:string/type?=number',
+    validate: '/ck:string/ticker:string/typeOrUser?=string/type?=number',
     middleware: [Middleware.isCKVerified],
     permissions: {
       defaultEnabled: false,
@@ -101,7 +101,7 @@ export async function setTickerType(routed: RouterRouted) {
   const updateResult = await routed.bot.DB.update('users', { id: routed.author.id }, user)
 
   if (updateResult > 0) {
-    await routed.message.author.send(`:white_check_mark: ChastiKey Ticker type now set to: \`${newTickerTypeAsString}\``)
+    await routed.message.reply(`:white_check_mark: ChastiKey Ticker type now set to: \`${newTickerTypeAsString}\``)
     routed.bot.Log.Command.log(`{{prefix}}ck ticker set type ${newTickerTypeAsString}`)
     return true
   } else {
@@ -154,24 +154,34 @@ export async function getTicker(routed: RouterRouted) {
     await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
   )
 
+  // Was a username passed
+  const is1stPassed = routed.v.o.typeOrUser !== undefined
+  const is1stInt = Number.isInteger(Number(routed.v.o.typeOrUser))
+  const is2ndPassed = routed.v.o.type !== undefined
+  const is2ndInt = Number.isInteger(Number(routed.v.o.type))
+  const isUsernamePassed = is1stPassed && !is1stInt
+
+  const username = isUsernamePassed ? routed.v.o.typeOrUser : undefined
+  const type = is1stInt ? Number(routed.v.o.typeOrUser) : is2ndPassed && is2ndInt ? Number(routed.v.o.type) : undefined
+
   // If the user has passed a type as an argument, use that over what was saved as their default
-  if (routed.v.o.type !== undefined) {
+  if (type) {
     // Stop invalid number/inputs
-    routed.bot.Log.Command.log(typeof routed.v.o.type, routed.v.o.type)
-    if (routed.v.o.type !== 1 && routed.v.o.type !== 2 && routed.v.o.type !== 3) {
+    routed.bot.Log.Command.log(typeof type, type)
+    if (type !== 1 && type !== 2 && type !== 3) {
       await routed.message.channel.send(routed.$render('ChastiKey.Ticker.InvalidOverrideType'))
       return false
     }
-    user.ChastiKey.ticker.type = routed.v.o.type
+    user.ChastiKey.ticker.type = type
   }
 
-  // Override stored username on user with ckUser one
-  user.ChastiKey.username = String(user.ChastiKey.username)
+  // Override stored username on user with ckUser one if one is not passed
+  user.ChastiKey.username = String(isUsernamePassed ? username : user.ChastiKey.username)
 
   // If the type is only for a single ticker, return just that
   routed.bot.Log.Command.log(Utils.ChastiKey.generateTickerURL(user.ChastiKey))
   if (user.ChastiKey.ticker.type === 1 || user.ChastiKey.ticker.type === 2) {
-    await routed.message.channel.send({
+    await routed.message.channel.send(routed.$render('ChastiKey.Ticker.IncorrectTimer'), {
       files: [new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey), `${Date.now()}-ticker.png`)]
     })
     return true

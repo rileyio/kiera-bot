@@ -1,3 +1,7 @@
+7.1.0
+- Fixed: CK Ticker command missing note about CK's developer when running type 1 or 2 ticker requests.
+- Updated: CK Ticker command to allow lookup by username.
+
 7.0.3
 - Fixed: Issue with connecting to some existing servers. #45
 - Updated: Dev dependency responsible for audit warnings.
