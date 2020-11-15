@@ -5,6 +5,7 @@
 - Updated: CK Ticker command to allow lookup by username.
 - Updated: CK Ticker command to allow date override for ticker start date.
 - Added: CK Ticker message if user has a ticker override date preference set.
+- Added: CK Update 3rd option for roles and updated names of existing in reference text.
 
 7.0.3
 - Fixed: Issue with connecting to some existing servers. #45
