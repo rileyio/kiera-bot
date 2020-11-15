@@ -67,7 +67,7 @@ export async function mapExpRole(routed: RouterRouted) {
     renownedKeyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.105`)
   }
 
-  if (((routed.v.o.index >= 1 && routed.v.o.index <= 55) || (routed.v.o.index >= 101 && routed.v.o.index <= 105)) && routed.v.o.index && routed.v.o.roleid) {
+  if (routed.v.o.index >= 1 && routed.v.o.index <= 555 && routed.v.o.index && routed.v.o.roleid) {
     const isTagged = /^\<|@\&([0-9]*)\>&/.test(routed.v.o.roleid)
     const targetRole = isTagged ? routed.message.mentions.roles.first() : await routed.message.guild.roles.fetch(String(routed.v.o.roleid))
 
