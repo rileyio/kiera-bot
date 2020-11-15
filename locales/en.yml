@@ -153,21 +153,21 @@ ChastiKey:
       When running this command, the first number in the command corresponds to the following options.
       (Note: If you do not wish to have to have all variants on your server, Example: you only use a set of single roles to denote a user's experience then only set the ones bolded below)
 
-        **`1` Novice Lockee 1st color** {{{noviceLockeePink}}}
-        `11` Novice Lockee 2nd color {{{noviceLockeeBlue}}}
-        `111` Novice Lockee 3rd color {{{noviceLockeeBlue}}}
-        **`2` Intermediate Lockee 1st color** {{{intermediateLockeePink}}}
-        `22` Intermediate Lockee 2nd color {{{intermediateLockeeBlue}}}
-        `222` Intermediate Lockee 3rd color {{{intermediateLockeeBlue}}}
-        **`3` Experienced Lockee 1st color** {{{experiencedLockeePink}}}
-        `33` Experienced Lockee 2nd color {{{experiencedLockeeBlue}}}
-        `333` Experienced Lockee 3rd color {{{experiencedLockeeBlue}}}
-        **`4` Devoted Lockee 1st color** {{{devotedLockeePink}}}
-        `44` Devoted Lockee 2nd color {{{devotedLockeeBlue}}}
-        `444` Devoted Lockee 3rd color {{{devotedLockeeBlue}}}
-        **`5` Fanatical Lockee 1st color** {{{fanaticalLockeePink}}}
-        `55` Fanatical Lockee 2nd color {{{fanaticalLockeeBlue}}}
-        `555` Fanatical Lockee 3rd color {{{fanaticalLockeeBlue}}}
+        **`1` Novice Lockee 1st color** {{{noviceLockeeX}}}
+        `11` Novice Lockee 2nd color {{{noviceLockeeY}}}
+        `111` Novice Lockee 3rd color {{{noviceLockeeZ}}}
+        **`2` Intermediate Lockee 1st color** {{{intermediateLockeeX}}}
+        `22` Intermediate Lockee 2nd color {{{intermediateLockeeY}}}
+        `222` Intermediate Lockee 3rd color {{{intermediateLockeeZ}}}
+        **`3` Experienced Lockee 1st color** {{{experiencedLockeeX}}}
+        `33` Experienced Lockee 2nd color {{{experiencedLockeeY}}}
+        `333` Experienced Lockee 3rd color {{{experiencedLockeeZ}}}
+        **`4` Devoted Lockee 1st color** {{{devotedLockeeX}}}
+        `44` Devoted Lockee 2nd color {{{devotedLockeeY}}}
+        `444` Devoted Lockee 3rd color {{{devotedLockeeZ}}}
+        **`5` Fanatical Lockee 1st color** {{{fanaticalLockeeX}}}
+        `55` Fanatical Lockee 2nd color {{{fanaticalLockeeY}}}
+        `555` Fanatical Lockee 3rd color {{{fanaticalLockeeZ}}}
         
         `101` Novice Keyholder {{{noviceKeyholder}}}
         `102` Keyholder {{{keyholder}}}

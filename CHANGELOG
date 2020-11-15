@@ -1,3 +1,6 @@
+7.1.1
+- Fixed: English text string for ChastiKey.Customize.MapExpRole to use key names introduced in v7.1.0.
+
 7.1.0
 - Fixed: CK Ticker missing note about CK's developer when running type 1 or 2 ticker requests.
 - Fixed: CK Update where unable to process roles that have not been mapped.
