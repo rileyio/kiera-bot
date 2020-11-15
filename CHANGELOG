@@ -1,8 +1,10 @@
 7.1.0
-- Fixed: CK Ticker command missing note about CK's developer when running type 1 or 2 ticker requests.
+- Fixed: CK Ticker missing note about CK's developer when running type 1 or 2 ticker requests.
+- Fixed: CK Update where unable to process roles that have not been mapped.
+- Fixed: CK Update now able to remove roles regardless if they have the proper role yet or not.
 - Updated: CK Ticker command to allow lookup by username.
 - Updated: CK Ticker command to allow date override for ticker start date.
-- Added: CK Ticker command message if user has a ticker override date preference set.
+- Added: CK Ticker message if user has a ticker override date preference set.
 
 7.0.3
 - Fixed: Issue with connecting to some existing servers. #45

@@ -5,6 +5,7 @@ import { TrackedUser } from '@/objects/user'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { performance } from 'perf_hooks'
 import { TrackedAvailableObject } from '@/objects/available-objects'
+import { error } from 'winston'
 
 export const Routes = ExportRoutes({
   type: 'message',
@@ -206,6 +207,7 @@ export async function update(routed: RouterRouted) {
     intermediateLockeeZ: undefined,
     noviceLockeeZ: undefined
   }
+
   // User Roles
   var discordUserHasRole = {
     locked: false,
@@ -295,9 +297,14 @@ export async function update(routed: RouterRouted) {
   // Determine which color the user prefers, Y or X
   var userHasPref = false
   var isChangingLockeeExpRole = false
-  const prefX = discordUserHasRole.devotedLockeeX || discordUserHasRole.experiencedLockeeX || discordUserHasRole.intermediateLockeeX || discordUserHasRole.noviceLockeeX
-  const prefY = discordUserHasRole.devotedLockeeY || discordUserHasRole.experiencedLockeeY || discordUserHasRole.intermediateLockeeY || discordUserHasRole.noviceLockeeY
-  const prefZ = discordUserHasRole.devotedLockeeZ || discordUserHasRole.experiencedLockeeZ || discordUserHasRole.intermediateLockeeZ || discordUserHasRole.noviceLockeeZ
+  const prefX =
+    discordUserHasRole.fanaticalLockeeX ||
+    discordUserHasRole.devotedLockeeX ||
+    discordUserHasRole.experiencedLockeeX ||
+    discordUserHasRole.intermediateLockeeX ||
+    discordUserHasRole.noviceLockeeX
+  const prefY = discordUserHasRole.fanaticalLockeeY || discordUserHasRole.experiencedLockeeY || discordUserHasRole.intermediateLockeeY || discordUserHasRole.noviceLockeeY
+  const prefZ = discordUserHasRole.fanaticalLockeeZ || discordUserHasRole.experiencedLockeeZ || discordUserHasRole.intermediateLockeeZ || discordUserHasRole.noviceLockeeZ
 
   // Ensure user has a color preference already selected, otherwise don't pick one
   if (prefY || prefX || prefZ) userHasPref = true
@@ -355,7 +362,7 @@ export async function update(routed: RouterRouted) {
   // Intermediate =  2
   // Novice       =  0
   try {
-    const rolesToRemove = [] as Array<{ role: string; name: string }>
+    const rolesToRemove = [] as Array<{ role: string }>
 
     // Devoted
     if (cumulativeTimeLockedMonths >= 24 && userHasPref) {
@@ -377,22 +384,20 @@ export async function update(routed: RouterRouted) {
       }
 
       // Remove other roles
-      if (isChangingLockeeExpRole) {
-        rolesToRemove.push(
-          { role: 'devotedLockeeX', name: role.devotedLockeeX.name },
-          { role: 'devotedLockeeY', name: role.devotedLockeeY.name },
-          { role: 'devotedLockeeZ', name: role.devotedLockeeZ.name },
-          { role: 'experiencedLockeeX', name: role.experiencedLockeeX.name },
-          { role: 'experiencedLockeeY', name: role.experiencedLockeeY.name },
-          { role: 'experiencedLockeeZ', name: role.experiencedLockeeZ.name },
-          { role: 'intermediateLockeeX', name: role.intermediateLockeeX.name },
-          { role: 'intermediateLockeeY', name: role.intermediateLockeeY.name },
-          { role: 'intermediateLockeeZ', name: role.intermediateLockeeZ.name },
-          { role: 'noviceLockeeX', name: role.noviceLockeeX.name },
-          { role: 'noviceLockeeY', name: role.noviceLockeeY.name },
-          { role: 'noviceLockeeZ', name: role.noviceLockeeZ.name }
-        )
-      }
+      rolesToRemove.push(
+        { role: 'devotedLockeeX' },
+        { role: 'devotedLockeeY' },
+        { role: 'devotedLockeeZ' },
+        { role: 'experiencedLockeeX' },
+        { role: 'experiencedLockeeY' },
+        { role: 'experiencedLockeeZ' },
+        { role: 'intermediateLockeeX' },
+        { role: 'intermediateLockeeY' },
+        { role: 'intermediateLockeeZ' },
+        { role: 'noviceLockeeX' },
+        { role: 'noviceLockeeY' },
+        { role: 'noviceLockeeZ' }
+      )
     }
 
     // Devoted
@@ -415,22 +420,20 @@ export async function update(routed: RouterRouted) {
       }
 
       // Remove other roles
-      if (isChangingLockeeExpRole) {
-        rolesToRemove.push(
-          { role: 'fanaticalLockeeX', name: role.fanaticalLockeeX.name },
-          { role: 'fanaticalLockeeY', name: role.fanaticalLockeeY.name },
-          { role: 'fanaticalLockeeZ', name: role.fanaticalLockeeZ.name },
-          { role: 'experiencedLockeeX', name: role.experiencedLockeeX.name },
-          { role: 'experiencedLockeeY', name: role.experiencedLockeeY.name },
-          { role: 'experiencedLockeeZ', name: role.experiencedLockeeZ.name },
-          { role: 'intermediateLockeeX', name: role.intermediateLockeeX.name },
-          { role: 'intermediateLockeeY', name: role.intermediateLockeeY.name },
-          { role: 'intermediateLockeeZ', name: role.intermediateLockeeZ.name },
-          { role: 'noviceLockeeX', name: role.noviceLockeeX.name },
-          { role: 'noviceLockeeY', name: role.noviceLockeeY.name },
-          { role: 'noviceLockeeZ', name: role.noviceLockeeZ.name }
-        )
-      }
+      rolesToRemove.push(
+        { role: 'fanaticalLockeeX' },
+        { role: 'fanaticalLockeeY' },
+        { role: 'fanaticalLockeeZ' },
+        { role: 'experiencedLockeeX' },
+        { role: 'experiencedLockeeY' },
+        { role: 'experiencedLockeeZ' },
+        { role: 'intermediateLockeeX' },
+        { role: 'intermediateLockeeY' },
+        { role: 'intermediateLockeeZ' },
+        { role: 'noviceLockeeX' },
+        { role: 'noviceLockeeY' },
+        { role: 'noviceLockeeZ' }
+      )
     }
 
     // Experienced
@@ -453,22 +456,20 @@ export async function update(routed: RouterRouted) {
       }
 
       // Remove other roles
-      if (isChangingLockeeExpRole) {
-        rolesToRemove.push(
-          { role: 'fanaticalLockeeX', name: role.fanaticalLockeeX.name },
-          { role: 'fanaticalLockeeY', name: role.fanaticalLockeeY.name },
-          { role: 'fanaticalLockeeZ', name: role.fanaticalLockeeZ.name },
-          { role: 'devotedLockeeX', name: role.devotedLockeeX.name },
-          { role: 'devotedLockeeY', name: role.devotedLockeeY.name },
-          { role: 'devotedLockeeZ', name: role.devotedLockeeZ.name },
-          { role: 'intermediateLockeeX', name: role.intermediateLockeeX.name },
-          { role: 'intermediateLockeeY', name: role.intermediateLockeeY.name },
-          { role: 'intermediateLockeeZ', name: role.intermediateLockeeZ.name },
-          { role: 'noviceLockeeX', name: role.noviceLockeeX.name },
-          { role: 'noviceLockeeY', name: role.noviceLockeeY.name },
-          { role: 'noviceLockeeZ', name: role.noviceLockeeZ.name }
-        )
-      }
+      rolesToRemove.push(
+        { role: 'fanaticalLockeeX' },
+        { role: 'fanaticalLockeeY' },
+        { role: 'fanaticalLockeeZ' },
+        { role: 'devotedLockeeX' },
+        { role: 'devotedLockeeY' },
+        { role: 'devotedLockeeZ' },
+        { role: 'intermediateLockeeX' },
+        { role: 'intermediateLockeeY' },
+        { role: 'intermediateLockeeZ' },
+        { role: 'noviceLockeeX' },
+        { role: 'noviceLockeeY' },
+        { role: 'noviceLockeeZ' }
+      )
     }
 
     // Intermediate
@@ -491,35 +492,38 @@ export async function update(routed: RouterRouted) {
       }
 
       // Remove other roles
-      if (isChangingLockeeExpRole) {
-        rolesToRemove.push(
-          { role: 'fanaticalLockeeX', name: role.fanaticalLockeeX.name },
-          { role: 'fanaticalLockeeY', name: role.fanaticalLockeeY.name },
-          { role: 'fanaticalLockeeZ', name: role.fanaticalLockeeZ.name },
-          { role: 'devotedLockeeX', name: role.devotedLockeeX.name },
-          { role: 'devotedLockeeY', name: role.devotedLockeeY.name },
-          { role: 'devotedLockeeZ', name: role.devotedLockeeZ.name },
-          { role: 'experiencedLockeeX', name: role.experiencedLockeeX.name },
-          { role: 'experiencedLockeeY', name: role.experiencedLockeeY.name },
-          { role: 'experiencedLockeeZ', name: role.experiencedLockeeZ.name },
-          { role: 'noviceLockeeX', name: role.noviceLockeeX.name },
-          { role: 'noviceLockeeY', name: role.noviceLockeeY.name },
-          { role: 'noviceLockeeZ', name: role.noviceLockeeZ.name }
-        )
-      }
+      rolesToRemove.push(
+        { role: 'fanaticalLockeeX' },
+        { role: 'fanaticalLockeeY' },
+        { role: 'fanaticalLockeeZ' },
+        { role: 'devotedLockeeX' },
+        { role: 'devotedLockeeY' },
+        { role: 'devotedLockeeZ' },
+        { role: 'experiencedLockeeX' },
+        { role: 'experiencedLockeeY' },
+        { role: 'experiencedLockeeZ' },
+        { role: 'noviceLockeeX' },
+        { role: 'noviceLockeeY' },
+        { role: 'noviceLockeeZ' }
+      )
     }
 
     // Removal Step
     for (let index = 0; index < rolesToRemove.length; index++) {
       const roleForRemoval = rolesToRemove[index]
-      // Ensure user has role before attempting to remove
-      if (discordUserHasRole[roleForRemoval.role]) {
-        await discordUser.roles.remove(role[roleForRemoval.role])
-        changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: roleForRemoval.name })
-      }
+      // Check to be sure all are mapped before trying to process, to prevent any error
+      // console.log('checking role for removal', roleForRemoval.role, role[roleForRemoval.role])
+      if (role[roleForRemoval.role]) {
+        // Ensure user has role before attempting to remove
+        if (discordUserHasRole[roleForRemoval.role]) {
+          console.log('--> Removing Role:', role[roleForRemoval.role].name, 'From:', discordUser.id)
+          await discordUser.roles.remove(role[roleForRemoval.role])
+          changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: role[roleForRemoval.role].name })
+        }
+      } // else console.log('## Role has not been mapped', roleForRemoval)
     }
   } catch (e) {
-    console.log('CK Update Error updating Experience role')
+    console.log('CK Update Error updating Experience role', e)
   }
   // * Performance End: Lockee * //
   updatePerformance.lockee.end = performance.now()
