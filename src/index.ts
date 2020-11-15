@@ -179,12 +179,17 @@ export class Bot {
         'servers',
         { id: guild.id },
         {
-          region: guild.region,
-          ownerID: guild.ownerID,
-          joinedTimestamp: guild.joinedTimestamp,
-          lastSeen: Date.now()
+          $set: {
+            id: guild.id,
+            region: guild.region,
+            ownerID: guild.ownerID,
+            name: guild.name,
+            joinedTimestamp: guild.joinedTimestamp,
+            lastSeen: Date.now(),
+            prefix: undefined
+          }
         },
-        { upsert: true }
+        { atomic: true, upsert: true }
       )
     }
   }
@@ -210,7 +215,22 @@ export class Bot {
   private async onGuildCreate(guild: Discord.Guild) {
     this.Log.Bot.log('Joined a new server: ' + guild.name)
     // Save some info about the server in db
-    await this.DB.update('servers', { id: guild.id }, new TrackedServer(guild), { upsert: true })
+    await this.DB.update(
+      'servers',
+      { id: guild.id },
+      {
+        $set: {
+          id: guild.id,
+          region: guild.region,
+          ownerID: guild.ownerID,
+          name: guild.name,
+          joinedTimestamp: guild.joinedTimestamp,
+          lastSeen: Date.now(),
+          prefix: undefined
+        }
+      },
+      { atomic: true, upsert: true }
+    )
   }
 
   private async onGuildDelete(guild: Discord.Guild) {

@@ -1,5 +1,6 @@
 7.2.0
 - Fixed: Help command not working in DMs.
+- Fixed: Server joining and on startup server's database collection information.
 
 7.1.1
 - Fixed: English text string for ChastiKey.Customize.MapExpRole to use key names introduced in v7.1.0.
