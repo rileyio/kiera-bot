@@ -1,5 +1,5 @@
 import * as Middleware from '@/middleware'
-import { TrackedAvailableObject } from '@/objects/available-objects'
+import { TrackedServerSetting } from '@/objects/server-setting'
 import { RouterRouted, ExportRoutes } from '@/router'
 
 export const Routes = ExportRoutes(
@@ -40,7 +40,7 @@ export const Routes = ExportRoutes(
  */
 export async function mapExpRole(routed: RouterRouted) {
   // Fetch all that have been mapped already
-  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedAvailableObject>('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles\.exp/ })
+  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedServerSetting>('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles\.exp/ })
   // Already Mapped as Object
   const alreadyMappedIDs = {
     // Lockee
@@ -72,7 +72,7 @@ export async function mapExpRole(routed: RouterRouted) {
     const targetRole = isTagged ? routed.message.mentions.roles.first() : await routed.message.guild.roles.fetch(String(routed.v.o.roleid))
 
     if (targetRole) {
-      const upsertResult = await routed.bot.DB.update<TrackedAvailableObject>(
+      const upsertResult = await routed.bot.DB.update<TrackedServerSetting>(
         'server-settings',
         { serverID: routed.message.guild.id, key: `server.ck.roles.exp.${routed.v.o.index}` },
         { value: targetRole.id },
@@ -122,7 +122,7 @@ export async function mapExpRole(routed: RouterRouted) {
  */
 export async function mapSpecialRoles(routed: RouterRouted) {
   // Fetch all that have been mapped already
-  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedAvailableObject>('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles\.special/ })
+  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedServerSetting>('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles\.special/ })
   // Already Mapped as Object
   const alreadyMappedIDs = {
     unlocked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.1`),
@@ -136,7 +136,7 @@ export async function mapSpecialRoles(routed: RouterRouted) {
     const targetRole = isTagged ? routed.message.mentions.roles.first() : await routed.message.guild.roles.fetch(String(routed.v.o.roleid))
 
     if (targetRole) {
-      const upsertResult = await routed.bot.DB.update<TrackedAvailableObject>(
+      const upsertResult = await routed.bot.DB.update<TrackedServerSetting>(
         'server-settings',
         { serverID: routed.message.guild.id, key: `server.ck.roles.special.${routed.v.o.index}` },
         { value: targetRole.id },

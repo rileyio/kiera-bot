@@ -6,8 +6,8 @@ import { WebRouted, WebRoute } from '@/api/web-router'
 import { CommandPermission } from '@/objects/permission'
 import { ObjectID } from 'bson'
 import { sb } from '@/utils'
-import { TrackedAvailableObject } from '@/objects/available-objects'
 import { TrackedServer } from '@/objects/server'
+import { TrackedServerSetting } from '@/objects/server-setting'
 
 const GLOBAL_PREFIX = process.env.BOT_MESSAGE_PREFIX
 
@@ -60,7 +60,7 @@ export async function getAll(routed: WebRouted) {
     }
 
     // Check ChastiKey enabled state in db
-    var ckEnabledState = (await routed.Bot.DB.get<TrackedAvailableObject>('server-settings', {
+    var ckEnabledState = (await routed.Bot.DB.get<TrackedServerSetting>('server-settings', {
       serverID: v.o.serverID,
       key: 'server.chastikey.enabled',
       state: true

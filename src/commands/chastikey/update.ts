@@ -4,8 +4,7 @@ import * as Discord from 'discord.js'
 import { TrackedUser } from '@/objects/user'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { performance } from 'perf_hooks'
-import { TrackedAvailableObject } from '@/objects/available-objects'
-import { error } from 'winston'
+import { TrackedServerSetting } from '@/objects/server-setting'
 
 export const Routes = ExportRoutes({
   type: 'message',
@@ -148,7 +147,7 @@ export async function update(routed: RouterRouted) {
   if (!discordUser) return false // Stop here
 
   // Fetch all that have been mapped already
-  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedAvailableObject>('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles/ })
+  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedServerSetting>('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles/ })
   // Already Mapped as Object
   const alreadyMappedIDs = {
     // Lockee

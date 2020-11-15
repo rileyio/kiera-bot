@@ -1,6 +1,6 @@
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
-import { TrackedAvailableObject } from '@/objects/available-objects'
+import { TrackedServerSetting } from '@/objects/server-setting'
 
 export const Routes = ExportRoutes(
   // {
@@ -26,11 +26,16 @@ export const Routes = ExportRoutes(
 
 export async function genericFallback(routed: RouterRouted) {
   // Check ChastiKey enabled state in db
-  var ckEnabledState = (await routed.bot.DB.get<TrackedAvailableObject>('server-settings', {
-    serverID: routed.message.guild.id,
-    key: 'server.chastikey.enabled',
-    state: true
-  })) || { value: false, state: true }
+  var ckEnabledState =
+    routed.message.channel.type === 'dm'
+      ? { value: false, state: true }
+      : new TrackedServerSetting(
+          await routed.bot.DB.get<TrackedServerSetting>('server-settings', {
+            serverID: routed.message.guild.id,
+            key: 'server.chastikey.enabled',
+            state: true
+          })
+        )
 
   // Create HelpBlock from all indivisual command strings
   var helpBlock = Utils.en.help.main + '\n'
@@ -61,11 +66,16 @@ export async function genericFallback(routed: RouterRouted) {
 
 export async function commandHelp(routed: RouterRouted) {
   // Check ChastiKey enabled state in db
-  var ckEnabledState = (await routed.bot.DB.get<TrackedAvailableObject>('server-settings', {
-    serverID: routed.message.guild.id,
-    key: 'server.chastikey.enabled',
-    state: true
-  })) || { value: false, state: true }
+  var ckEnabledState =
+    routed.message.channel.type === 'dm'
+      ? { value: false, state: true }
+      : new TrackedServerSetting(
+          await routed.bot.DB.get<TrackedServerSetting>('server-settings', {
+            serverID: routed.message.guild.id,
+            key: 'server.chastikey.enabled',
+            state: true
+          })
+        )
 
   // If command is for ChastiKey, block it if thats disabled
   if ((routed.v.o.command === 'ck' && ckEnabledState.value === false) || ckEnabledState.state === false) return // Stop here

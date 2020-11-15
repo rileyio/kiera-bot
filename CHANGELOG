@@ -1,3 +1,6 @@
+7.2.0
+- Fixed: Help command not working in DMs.
+
 7.1.1
 - Fixed: English text string for ChastiKey.Customize.MapExpRole to use key names introduced in v7.1.0.
 - Fixed: CK Customize command not able to process values above the previous maximum index, updated for new indexes (105 -> 555).

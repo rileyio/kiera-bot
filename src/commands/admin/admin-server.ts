@@ -1,9 +1,7 @@
-import * as Middleware from '@/middleware'
 import { performance } from 'perf_hooks'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { TrackedMessage } from '@/objects/message'
 import { pongResponse } from '@/embedded/ping-pong'
-import { Router } from 'restify'
 import { TrackedBotSetting } from '@/objects/setting'
 
 export const Routes = ExportRoutes(

@@ -1,6 +1,6 @@
 import * as Middleware from '@/api/middleware'
 import { WebRouted, WebRoute } from '@/api/web-router'
-import { TrackedAvailableObject } from '@/objects/available-objects'
+import { TrackedServerSetting } from '@/objects/server-setting'
 import { TrackedUser } from '@/objects/user'
 
 export const Routes: Array<WebRoute> = [
@@ -24,7 +24,7 @@ export const Routes: Array<WebRoute> = [
 export async function settings(routed: WebRouted) {
   // this.DEBUG_WEBAPI('req params', v.o)
 
-  var templateNotifications = await routed.Bot.DB.getMultiple<TrackedAvailableObject>('available-server-settings', {}, { _id: 0 })
+  var templateNotifications = await routed.Bot.DB.getMultiple<TrackedServerSetting>('available-server-settings', {}, { _id: 0 })
   return routed.res.send(templateNotifications)
 }
 

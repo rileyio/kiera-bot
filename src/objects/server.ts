@@ -12,12 +12,6 @@ export class TrackedServer {
   public prefix?: string
 
   constructor(init: (TrackedServer | Guild) & Partial<TrackedServer>) {
-    this._id = init._id
-    this.id = init.id
-    this.region = init.region
-    this.ownerID = init.ownerID
-    this.joinedTimestamp = init.joinedTimestamp
-    this.prefix = init.prefix
-    this.lastSeen = init.lastSeen
+    Object.assign(this, init || {})
   }
 }
