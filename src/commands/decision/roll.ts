@@ -1,10 +1,12 @@
-import * as Random from 'random'
 import * as Middleware from '@/middleware'
+import * as Random from 'random'
+import * as XRegExp from 'xregexp'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 import { ObjectID } from 'bson'
 import { decisionFromSaved, decisionRealtime } from '@/embedded/decision-embed'
 import { TrackedDecisionLogEntry } from '@/objects/decision'
+import { TrackedUser } from '@/objects/user'
 
 export const Routes = ExportRoutes(
   {
@@ -15,6 +17,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision roll "id"',
     name: 'decision-run-saved',
     validate: '/decision:string/roll:string/id=string',
+    validateAlias: ['/decision:string/r:string/id=string'],
     middleware: [Middleware.isUserRegistered]
   },
   {
@@ -30,7 +33,17 @@ export const Routes = ExportRoutes(
 )
 
 export async function runSavedDecision(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id) })
+  const shortRegex = XRegExp('^(?<username>[a-z0-9]*):(?<nickname>[a-z0-9-]*)$', 'i')
+  const isShort = shortRegex.test(routed.v.o.id)
+  const shortMatch = isShort ? XRegExp.exec(routed.v.o.id, shortRegex) : null
+  const userNickname = isShort ? shortMatch['username'] : null
+  const decisionNickname = isShort ? shortMatch['nickname'] : null
+  const userByNickname = new TrackedUser(
+    isShort ? await routed.bot.DB.get<TrackedUser>('users', { 'Decision.nickname': new RegExp(`^${userNickname}$`, 'i') }) : {}
+  )
+  const decisionFromDB = isShort
+    ? await routed.bot.DB.get<TrackedDecision>('decision', { authorID: userByNickname.id, nickname: new RegExp(`^${decisionNickname}$`, 'i') })
+    : await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id) })
 
   if (decisionFromDB) {
     const decision = new TrackedDecision(decisionFromDB)

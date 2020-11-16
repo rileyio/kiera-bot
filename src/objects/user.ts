@@ -1,4 +1,4 @@
-import { ObjectId, ObjectID } from 'bson'
+import { ObjectId } from 'bson'
 import { TrackedChastiKey } from '@/objects/chastikey'
 
 export class TrackedUser {
@@ -13,9 +13,13 @@ export class TrackedUser {
   // ChastiKey Specific //
   public ChastiKey: TrackedChastiKey
 
+  // Decision Preferences //
+  public Decision: TrackedUserDecisionPrefs
+
   constructor(init: Partial<TrackedUser>) {
     Object.assign(this, init)
     this.ChastiKey = new TrackedChastiKey(init !== null ? init.ChastiKey : {})
+    this.Decision = new TrackedUserDecisionPrefs(init !== null ? init.Decision : {})
   }
 
   // public oauth(initOauth: Partial<TrackedUser> | TrackedUser) {
@@ -28,6 +32,14 @@ export class TrackedUser {
   // public reduceServers(connectedGuilds: Array<TrackedServer>) {
   //   this.guilds = this.guilds.filter(g => connectedGuilds.findIndex(gg => gg.id === g.id) > -1)
   // }
+}
+
+export class TrackedUserDecisionPrefs {
+  public nickname?: string
+
+  constructor(init: Partial<TrackedUserDecisionPrefs>) {
+    Object.assign(this, init)
+  }
 }
 
 export interface TrackedUserQuery {

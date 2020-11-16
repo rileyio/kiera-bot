@@ -158,6 +158,8 @@ Current Progress (Languages in focus where translations are being used):
 - `!decision "id" blacklisted users` - List users on Decision's Blacklist  
 - `!decision "id" unwhitelist server "serverID"` - Remove server from Decision's Server Whitelist  
 - `!decision "id" whitelist server "serverID"` - Add server to Decision's Whitelist  
+- `!decision nickname 5c68835bc5b65b2113c7ac7b "nickname-here"` - Set a custom nickname for a Decision roll  
+- `!decision user nickname NicknameHere` - Set a custom User nickname to prefix Decision rolls
 - `!decision log id` - Fetch the last 5 decision log entries  
 - `!decision new "name"` - Create new Decision roll  
 - `!decision "id" manager add @user#1234` - Add user as a Manager of the Decision roll's properties  

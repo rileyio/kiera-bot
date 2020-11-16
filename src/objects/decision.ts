@@ -2,6 +2,8 @@ import { ObjectID } from 'bson'
 
 export class TrackedDecision {
   public readonly _id: ObjectID = new ObjectID()
+  
+  public nickname?: string
   public name: string = ''
 
   /**

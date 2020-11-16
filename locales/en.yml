@@ -76,7 +76,7 @@ ChastiKey:
       *Does something look incorrect? Please contact **Kevin** the developer of ChastiKey if any numbers appear incorrect*
       {{#unless wasDateOverridden}}
       {{#if startDate}}
-      
+
       > This user has a start date specified for their Ticker: `{{startDate}}`
       {{/if}}
       {{/unless}}
@@ -295,6 +295,10 @@ Help:
       Description: Remove user as a Manager from the Decision roll
     TransferOwnership:
       Description: Transfer ownership of Decision roll
+    CustomizeNickname:
+      Description: Set a custom nickname for a Decision roll
+    CustomizeUserNickname:
+      Description: Set a custom User nickname to prefix Decision rolls
   Moderate:
     MuteUser:
       Description: Apply `Temporary Mute` role to user & preserve roles
@@ -408,6 +412,26 @@ Decision:
       {{user}} has been added to {{id}} as a Manager.
       Managers are able to perform all actions upon a Decision roll the same as the author with the exception of deleting it all together. This includes seeing and editing it in any of the online web portals as if it were their own.
     RemovedManager: '{{user}} has been removed as a Manager from {{id}}.'
+  Customize:
+    UserNicknameNotSet: |-
+      You must have a user nickname set before setting any decision roll nicknames.
+      Set a user nickname like this: `{{prefix}}decision user nickname NicknameHere`
+    UserNicknameValidCharacters: Username alternatives may only contain Letters and/or Numbers
+    UserNicknameSet: 'Decision Rolls that contain a nickname will now look like: `{{prefix}}decision roll {{nickname}}:decision-nickname`'
+    UserNicknameError: There was an error setting your Decision username nickname.
+    UserNicknameAlreadyInUse: That User Nickname is already in use.
+    NicknameSet: |-
+      **Decision Roll:** `{{name}}` (`{{id}}`)
+      **New Nickname Set:** `{{nickname}}`
+
+      To use this nickname in a decision roll, run like the following: `{{prefix}}decision roll {{username}}:{{nickname}}`
+      Or try a shorter version using: `{{prefix}}decision r {{username}}:{{nickname}}`
+    NicknameRemoved: |-
+      **Decision Roll:** `{{name}}` (`{{id}}`)
+      **Nickname Removed!**
+    NicknameNotRemoved: Unable to remove Decision Nickname, please check command input and try again.
+    NicknameValidCharacters: Decision Roll Nicknames may only contain Letters, Numbers and -
+    NicknameError: There was an error setting a nickname on this Decision roll.
 
 Generic:
   Info:
