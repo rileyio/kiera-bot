@@ -217,6 +217,15 @@ export class CommandRouter {
         this.bot.Log.Router.log(`Router -> Failed to match '${message.content}' to a route - ending routing`)
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
 
+        // Overwrite the help menu for the `ck` command unless it is preceded by `help`
+        if (args[0] == 'ck' && !(args.length >= 2 && args[1].toLowerCase() === 'help')) {
+          await message.channel.send(fallbackHelp(
+            this.bot.Localization.$render(kieraUser.locale, 'Generic.Error.CommandExactMatchFailedFallbackCK'),
+            this.bot.Localization.$render(kieraUser.locale, 'Generic.Error.CommandExactMatchFailedFallbackCKBody', { prefix })
+          ));
+          return;
+        }
+
         // Provide some feedback about the failed command(s)
         var exampleUseOfCommand = this.bot.Localization.$render(kieraUser.locale, 'Generic.Error.CommandExactMatchFailedFallback', { command: args[0] })
         var examplesToAppend = ``

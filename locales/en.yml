@@ -13,7 +13,7 @@ Locale:
       - `Emma <gh: rileyIO, discord: emma#1366>`
   Error:
     DoesNotExist: |-
-      That locale code (`{{locale}}`) does not match any that are available for Kiera. Try one of the following: 
+      That locale code (`{{locale}}`) does not match any that are available for Kiera. Try one of the following:
       {{{locales}}}
     NoneSpecified: |-
       Please select one of the following available locales:
@@ -103,7 +103,7 @@ ChastiKey:
         {{#if isVerified}}Verified to {{{verifiedTo}}}{{/if}}
         ‏‏‎ ‎
       LockStats: |-
-        Keyholder **`{{#if isSelfLocked}}Self Locked{{else}}{{{keyholderName}}}{{/if}}`** Status `Locked` 
+        Keyholder **`{{#if isSelfLocked}}Self Locked{{else}}{{{keyholderName}}}{{/if}}`** Status `Locked`
         Locked `{{lockedTime}}`
         Total time frozen `{{totalTimeFrozen}}`
         {{#unless isFixed}}
@@ -117,7 +117,7 @@ ChastiKey:
         {{/if}}
         Details {{#if isCumulative}}Cumulative{{else}}Non-Cumulative{{/if}} regularity `{{regularity}}` with `{{turnsMade}}` turns made.
 
-        Cards Picked/Discarded (Last `{{discardPileLength}}`, Newest First): 
+        Cards Picked/Discarded (Last `{{discardPileLength}}`, Newest First):
         {{{discardPile}}}
 
         {{#unless isHidden}}
@@ -140,7 +140,7 @@ ChastiKey:
     FastForward: Your account has been verified! Some data may still take **up to 15 minutes** to be cached and fully accessable.
     PreviouslyCompleted: Your account has already been verified! If there are any issues with this please reachout to `emma#1366`
     VerifyRequired: |-
-      This command requires your account be verified with ChastiKey using the following command: 
+      This command requires your account be verified with ChastiKey using the following command:
       `{{prefix}}ck verify`
 
       If you just did this in the last 15 minutes or less, you can speed up some of the verification update process by running `{{prefix}}ck verify` again.
@@ -168,7 +168,7 @@ ChastiKey:
         **`5` Fanatical Lockee 1st color** {{{fanaticalLockeeX}}}
         `55` Fanatical Lockee 2nd color {{{fanaticalLockeeY}}}
         `555` Fanatical Lockee 3rd color {{{fanaticalLockeeZ}}}
-        
+
         `101` Novice Keyholder {{{noviceKeyholder}}}
         `102` Keyholder {{{keyholder}}}
         `103` Established Keyholder {{{establishedKeyholder}}}
@@ -392,7 +392,7 @@ Decision:
     SetModeOptions: |-
       Mode options available are:
       > `0` = Basic (No limiting enabled)
-      > `1` = Temporarily Consume 
+      > `1` = Temporarily Consume
           (Make sure to set in seconds the reset time, Example: {{prefix}}decision "id" consume reset 60`)
       > `2` = Consume
           (Once the outcome has been used it will be out of rotation unless the author resets, Reset using: {{prefix}}decision "id" consume reset`)
@@ -443,6 +443,10 @@ Generic:
   Error:
     CommandExactMatchFailedOptions: '***Hint:** You can type:* `{{prefix}}help {{command}}`, Here are some examples using this command:'
     CommandExactMatchFailedFallback: 'Examples of commands in the `{{prefix}}{{command}}` group:'
+    CommandExactMatchFailedFallbackCK: 'Command Mismatch'
+    CommandExactMatchFailedFallbackCKBody: |-
+      Kiera doesn''t understand your request...
+      If you need help or are looking for the list of commands, try ``{{prefix}}ck help``
     CommandDisabledInChannel: The command `{{command}}` is not allowed in this channel.
     HelpCommandMissing: Unfortunately there's no help text for this command yet.
     Internal: Failed to complete command due to an internal issue! This may require further investigation. If you need support on this please visit `https://kierabot.xyz/support`
@@ -538,7 +542,7 @@ Poll:
   Edit:
     OptionAdded: |-
       Poll option has been added!
-        Emoji: {{emoji}} 
+        Emoji: {{emoji}}
         Description: {{description}}
 
       To remove this option use: "{{prefix}}poll remove option {{id}} {{optionID}}"
@@ -664,18 +668,18 @@ System:
     :::::::::::::::::::::::::::::::::::::::::
     --------------> Kiera Bot <--------------
     :::::::::::::::::::::::::::::::::::::::::
-       
+
     Version: {{version}}
     Discord Bot: {{user}}
-       
+
     Localization Languages: {{langs}}
     Localization Strings: {{strings}}
-       
+
     API Routes: {{routes}}
     Commands: {{commands}}
     Guilds: {{guilds}}
     Users: {{users}}
-       
+
     Database Ping: {{ping}}ms
-       
+
     =========================================

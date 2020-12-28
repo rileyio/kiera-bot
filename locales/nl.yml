@@ -1,12 +1,12 @@
 Stats:
   Info:
     About: |-
-      Hieronder vind je informatie over enige statistieken van Kiera: 
-      
+      Hieronder vind je informatie over enige statistieken van Kiera:
+
       Deze server heeft statistieken:  `{{serverState}}`
       Jouw statistieken: `{{userState}}`
       Jouw statistiek-aantal (van alle servers): `{{count}}`
-      
+
       **Deze statistieken bevatten:**
       - Datum en tijd
       - Server ID
@@ -14,19 +14,19 @@ Stats:
       - User ID
       -T ype van de statistiek (laatste actie, bijvoorbeeld: Bericht, Aangesloten bij de server, Reacties, De naam van het commando, enzovoort)
       - Als het een Kiera commando was, dan bevat het enkel het commando en het resultaat
-      
+
       **Deze statistieken bevatten geen:**
       - Berichttekst (niets dat in het bericht staat, zoals text, plaatjes, URL's, enzovoort)
       - Bericht-ID
       - Het resultaat van een commando
       - Gebruikersnamen of bijnamen
       - Alles in DM's, aangezien Kiera daar niet in kijkt.
-      
+
       **Wil je de statistieken uitschakelen?**
       - Voor de gebruiker: er worden geen statistieken meer bewaard (zie ook server en kanaal)
       - Voor het kanaal: er worden geen statistieken meer bewaard over het kanaal of de gebruikers in dat kanaal
-      - Voor de server: op heel de server worden geen statistieken meer bewaard (inclusief kanalen en gebruikers). 
-      
+      - Voor de server: op heel de server worden geen statistieken meer bewaard (inclusief kanalen en gebruikers).
+
   Channel:
     DeletionCancelled: Wissen statistieken van dit kanaal niet doorgevoerd. Antwoord niet ontvangen binnen 60 seconden.
     DeletionConfirm: Weet je zeker dat je alle statistieken van dit kanaal wilt wissen? Verzend dan **`yes`** binnen 60 seconden!
@@ -35,17 +35,17 @@ Stats:
     DeletionNoStats: Er zijn geen statistieken opgeslagen voor dit kanaal!
     Disabled: |-
       Alle statistieken voor dit kanaal zijn nu **uitgeschakeld**.
-      
+
       - Als je alle opgeslagen statistieken tot vandaag wilt wissen, voer dan dit commando uit: `{{prefix}}stats delete channel`.
       - Alleen uitschakelen werkt uitsluitend voor toekomstige gegevens
       - Als de kanaalstatistieken uitgeschakeld zijn, maar niet gewist, dan kunnen ze nog steeds voorkomen in de server of gebruikers-statistieken.
       - Het commando `{{prefix}}stats channel` is nu uitgeschakeld voor dit kanaal.
-      
-      Voor meer informatie over statistieken, gebruik `{{prefix}}stats about` 
+
+      Voor meer informatie over statistieken, gebruik `{{prefix}}stats about`
     DisabledInfo: 'De statistieken voor dit kanaal zijn op verzoek uitgeschakeld. (Let op: ze kunnen voorkomen in server- of gebruikers-statistieken totdat alle statistieken van dit kanaal zijn gewist)'
     Enabled: |-
-      Statistieken voor dit kanaal zijn nu **ingeschakeld**. 
-      
+      Statistieken voor dit kanaal zijn nu **ingeschakeld**.
+
       Voor meer informatie over statistieken, gebruik `{{prefix}}stats about`.
   Server:
     DeletionCancelled: Wissen statistieken van dit kanaal niet doorgevoerd. Antwoord niet ontvangen binnen 60 seconden.
@@ -55,22 +55,22 @@ Stats:
     DeletionNoStats: Er zijn geen statistieken opgeslagen voor deze server!
     Disabled: |-
       Alle statistieken voor deze server zijn nu **uitgeschakeld**
-      
+
       - Als je alle opgeslagen statistieken tot vandaag wilt wissen, voer dan dit commando uit: `{{prefix}}stats delete channel`.
       - Alleen uitschakelen werkt uitsluitend voor toekomstige gegevens
       - Als de kanaalstatistieken uitgeschakeld zijn, maar niet gewist, dan kunnen ze nog steeds voorkomen in de kanaal- of gebruikers-statistieken.
       - Het commando `{{prefix}}stats server` is nu uitgeschakeld.
-      
-      Voor meer informatie over statistieken, gebruik `{{prefix}}stats about` 
+
+      Voor meer informatie over statistieken, gebruik `{{prefix}}stats about`
     DisabledInfo: 'De statistieken van deze server zijn op verzoek uitgeschakeld. (Let op: ze kunnen voorkomen in kanaal- of gebruikers-statistieken totdat alle statistieken van dit kanaal zijn gewist)'
     Enabled: |-
-      Statistieken voor deze server zijn nu **ingeschakeld**. 
-      
+      Statistieken voor deze server zijn nu **ingeschakeld**.
+
       Voor meer informatie over statistieken, gebruik `{{prefix}}stats about`.
   User:
     Disabled: |-
       Alle statistieken voor je account zijn nu **uitgeschakeld** (voor alle servers waarop Kiera actief is)
-      
+
       - Als je alle opgeslagen statistieken tot vandaag wilt wissen, voer dan dit commando uit: `{{prefix}}stats delete user`.
       - Alleen uitschakelen werkt uitsluitend voor toekomstige gegevens
       - Als de kanaal statistieken uitgeschakeld zijn, maar niet gewist, dan kunnen ze nog steeds voorkomen in de totalen van de kanaal of server-statistieken.
@@ -78,11 +78,11 @@ Stats:
       - Wat is niet uitgeschakeld met dit commando:
       -  Je persoonlijke Kiera gebruikers audit log wat je voor jouw account kunt vinden op https://kierabot.xyz (de commando's die je hebt uitgevoerd, de resultaten hiervan, enzovoort)
       - Andere commando's zoals het "Decision log" of andere plekken waar het niet puur statistieken betreft.
-      
-      Voor meer informatie over statistieken, gebruik `{{prefix}}stats about` 
+
+      Voor meer informatie over statistieken, gebruik `{{prefix}}stats about`
     Enabled: |-
       De statistieken voor je account zijn weer ingeschakeld (op alle servers waar Kiera actief is)
-      
+
       Voor meer informatie over statistieken, gebruik het commando  `{{prefix}}stats about`.
 Decision:
   Edit:
@@ -107,9 +107,9 @@ Decision:
     RemovedManager: '{{user}} is verwijderd als manager van {{id}}.'
     SetConsumeReset: '''Decision consume'' reset is niet toegevoegd aan: {{value}}'
     SetModeOptions: |-
-      Beschikbare opties zijn: 
+      Beschikbare opties zijn:
       > `0` = Standaard (Geen limieten)
-      > `1` = Tijdelijk verwijderen 
+      > `1` = Tijdelijk verwijderen
       (Let erop dat de reset-tijd in seconden is, bijvoorbeeld {{prefix}}decision "id" consume reset 60`)
       > `2` = Verwijderen
       (Als een uitslag is geweest, dan wordt hij niet meer gebruikt totdat de eigenaar dit reset, je reset dit door:  {{prefix}}decision "id" consume reset`)
@@ -165,9 +165,9 @@ ChastiKey:
     # 1366`
     PreviouslyCompleted: Je account is al geverifieerd! Als er iets mis is, neem dan contact op met `emma.
     VerifyRequired: |-
-      Voor deze opdracht moet je account geverifieerd zijn met Chastikey. Gebruik hiervoor het volgende commando: 
+      Voor deze opdracht moet je account geverifieerd zijn met Chastikey. Gebruik hiervoor het volgende commando:
       `!ck verify`
-      
+
       Als je dit al hebt gedaan in de afgelopen 15 minuten, dan kun je de verificatie versnellen door `!ck verify` nogmaals uit te voeren
   # Ticker
   Ticker:
@@ -246,11 +246,11 @@ Locale:
     Deze vertaling is gemaakt door:
       - `HTuser <HTuser#28566> en Milady Eener <Milady Eener#1602>`
   Description: |-
-    
+
     "Nederlads.
-    
+
     {{contributors}}
-    
+
     Als je wilt helpen vertalen in een taal die je vloeiend spreekt, contact dan `emma#1366` om toegang te krijgen tot deze taal: `https://kierabot.xyz/translate` Niet alle talen staan hierin, als je een taal mist, laat het Emma weten en hij wordt toegevoegd"
   Error:
     DoesNotExist: |-
@@ -264,9 +264,9 @@ Locale:
   Success:
     Set: |-
       Landcode `{{locale}}` geselecteerd! Alle meldingen (die zijn vertaald) worden nu weergegeven in het Nederlands.
-      
+
       {{contributors}}
-      
+
       Als je wilt helpen bij deze vertaling, contact Emma#1366 en vraag om toegang op: `https://kierabot.xyz/translate`
   ShortDescription: Nederlandse taal
 Admin:
@@ -278,7 +278,7 @@ Admin:
     ```
   CommandCategoryCommands: >-
     De volgende commando's zijn beschikbaar in de categorie {{category}}:
-    
+
     ```
     {{commands}}
     ```
@@ -289,6 +289,10 @@ Generic:
   Error:
     CommandDisabledInChannel: Het commando  `{{command}}` is niet toegestaan in dit kanaal.
     CommandExactMatchFailedFallback: 'Voorbeelden van commando''s in de `{{prefix}}{{command}}` groep:'
+    CommandExactMatchFailedFallbackCK: 'Commando niet gevonden'
+    CommandExactMatchFailedFallbackCKBody: |-
+      Kiera kon dit commando niet vinden...
+      Voor een lijst van commandos, probeer ``{{prefix}}ck help``
     CommandExactMatchFailedOptions: '**Hint.** Het commando is:* `{{prefix}}help {{command}}`, hier een paar voorbeelden van dit commando: '
     HelpCommandMissing: Helaas is er nog geen helptekst beschikbaar voor dit commando
     Internal: Dit commando kan niet uitgevoerd worden door een intern probleem. Dit moet misschien uitgezocht worden. Heb je hier hulp bij nodig, bezoek dan `https://kierabot.xyz/support`
@@ -459,22 +463,22 @@ Poll:
   New: |-
     Nieuwe Poll ID:
       `{{id}}`
-    
+
     De volgende opties zijn beschikbaar om je poll aan te maken:
       - public (Default: true) **`true`** | **`false`** - Is de poll zichtbaar op de website of niet
       - open (Default: true) **`true`** | **`false`** - Of de user mag stemmen op de poll
       - question: `{{question}}`
-    
+
     Gebruik deze commando's om de bovenstaande opties te wijzigen:
       `{{prefix}}poll edit {{id}} open false`
       `{{prefix}}poll edit {{id}} public false`
       `{{prefix}}poll edit {{id}} title "Hier je titel"`
       `{{prefix}}poll edit {{id}} question "Hier je vraag"`
       `{{prefix}}poll edit {{id}} footer "Hier je eindtekst"`
-    
+
     Start de poll met (hiermee krijg je de tekst waarop mensen stemmen):
     `{{prefix}}poll start {{id}}`
-    
+
     Stop de poll met:
       `{{prefix}}poll stop {{id}}`
   Error:
@@ -483,7 +487,7 @@ Poll:
     PropertyNotFound: Deze poll optie bestaat niet!
     PropertyUpdated: |-
       Poll ID `{{id}}` property `{{property}}` geupdated!
-      
+
       **Van:** `{{from}}` 🡒 **Naar:** `{{to}}`
   Edit:
     OptionAdded: |-
@@ -500,19 +504,19 @@ System:
     :::::::::::::::::::::::::::::::::::::::::
     --------------> Kiera Bot <--------------
     :::::::::::::::::::::::::::::::::::::::::
-    
+
     Versie: {{version}}
     Discord robot: {{user}}
-    
+
     Aanwezige talen: {{langs}}
     Localization zinnen: {{strings}}
-    
+
     API Routes: {{routes}}
     Commando's: {{commands}}
     Servers: {{guilds}}
     Gebruikers: {{users}}
-    
+
     Database Ping: {{ping}}ms
-    
+
     =========================================
     Startup
