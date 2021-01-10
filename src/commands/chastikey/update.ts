@@ -302,8 +302,18 @@ export async function update(routed: RouterRouted) {
     discordUserHasRole.experiencedLockeeX ||
     discordUserHasRole.intermediateLockeeX ||
     discordUserHasRole.noviceLockeeX
-  const prefY = discordUserHasRole.fanaticalLockeeY || discordUserHasRole.experiencedLockeeY || discordUserHasRole.intermediateLockeeY || discordUserHasRole.noviceLockeeY
-  const prefZ = discordUserHasRole.fanaticalLockeeZ || discordUserHasRole.experiencedLockeeZ || discordUserHasRole.intermediateLockeeZ || discordUserHasRole.noviceLockeeZ
+  const prefY =
+    discordUserHasRole.fanaticalLockeeY ||
+    discordUserHasRole.devotedLockeeY ||
+    discordUserHasRole.experiencedLockeeY ||
+    discordUserHasRole.intermediateLockeeY ||
+    discordUserHasRole.noviceLockeeY
+  const prefZ =
+    discordUserHasRole.fanaticalLockeeZ ||
+    discordUserHasRole.devotedLockeeZ ||
+    discordUserHasRole.experiencedLockeeZ ||
+    discordUserHasRole.intermediateLockeeZ ||
+    discordUserHasRole.noviceLockeeZ
 
   // Ensure user has a color preference already selected, otherwise don't pick one
   if (prefY || prefX || prefZ) userHasPref = true

@@ -1,3 +1,6 @@
+7.2.1
+- Fixed: CK Update not updating users using the 3rd color role between the 2 highest roles.
+
 7.2.0
 - Fixed: Help command not working in DMs.
 - Fixed: Server joining and on startup server's database collection information.
