@@ -1,4 +1,7 @@
 7.2.1
+- Fixed: Discord API Intents update temporarily as a resolution.
+
+7.2.1
 - Fixed: CK Update not updating users using the 3rd color role between the 2 highest roles.
 
 7.2.0
