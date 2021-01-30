@@ -119,6 +119,7 @@ export class BotMonitor extends EventEmitter {
     // Set intents
     const intents = new Discord.Intents()
     intents.add(Discord.Intents.ALL)
+    intents.remove(['GUILD_PRESENCES'])
     this.Bot.Log.Bot.log('intents set from preset:', intents.toArray())
 
     // Create new Discord Client
