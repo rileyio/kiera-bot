@@ -41,8 +41,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "agenda": "^3.0.0",
-    "blizzard": "github:benweier/blizzard.js",
-    "blizzard.js": "github:benweier/blizzard.js",
+    "blizzard.js": "^3.2.0",
     "chastikey.js": "^2.5.1",
     "crypto-js": "^4.0.0",
     "discord.js": "^12.4.1",
