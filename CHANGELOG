@@ -1,3 +1,6 @@
+7.3.0
+- Updated: Roll command now supports dice rolls formatted like 2d8 (PR #47)
+
 7.2.2
 - Fixed: Discord API Intents update temporarily as a resolution.
 
