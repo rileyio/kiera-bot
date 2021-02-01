@@ -9,7 +9,7 @@ export const Routes = ExportRoutes({
   description: 'Help.Fun.Roll.Description',
   example: '{{prefix}}roll',
   name: 'roll-die',
-  validate: '/roll:string/count1?=number/count2?=number',
+  validate: '/roll:string/count1?=string/count2?=number',
   permissions: { serverOnly: false }
 })
 
@@ -19,6 +19,14 @@ export const Routes = ExportRoutes({
  * @param {RouterRouted} routed
  */
 export async function roll(routed: RouterRouted) {
+  // Check if the first argument matches the `2d8` spec.
+  if (routed.v.o.count1.match(/^[0-9]+d[0-9]+$/g)) {
+    // Split and assign them to their appropriate variable inputs to simulate a user inputting /roll <amount> <worth>
+    let [amount, worth] = routed.v.o.count1.split('d');
+    routed.v.o.count1 = +amount;
+    routed.v.o.count2 = +worth;
+  }
+
   if (routed.v.o.count1 && routed.v.o.count2) {
     var set = []
     for (let index = 0; index < routed.v.o.count1; index++) {
@@ -26,6 +34,12 @@ export async function roll(routed: RouterRouted) {
     }
     await routed.message.reply(rollDice(routed.v.o.count2 || 6, routed.v.o.count1, set))
     return true
+  }
+
+  // If there is a number specified as the second argument cast it to a number.
+  if (routed.v.o.count1) {
+    // Perform the conversion of string to num if possible.
+    routed.v.o.count1 = !isNaN(routed.v.o.count1) ? +routed.v.o.count1 : 6;
   }
 
   var set: Array<any> = [Random.int(1, routed.v.o.count1 || 6)]
