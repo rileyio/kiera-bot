@@ -96,7 +96,6 @@ export async function pingPong(routed: RouterRouted) {
     )
   }
 
-  routed.bot.Log.Command.log(`${routed.message.content} response => pong ${ms}ms`)
   return true
 }
 

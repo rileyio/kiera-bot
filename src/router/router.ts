@@ -173,8 +173,6 @@ export class CommandRouter {
 
     // When the Bot Command Prefix is present
     if (containsPrefix) {
-      this.bot.Log.Router.log(`Router -> incoming message: '${message.content}'`)
-
       // Remove prefix
       const messageContent = message.content.substr(prefix.length, message.content.length)
 
@@ -214,7 +212,6 @@ export class CommandRouter {
 
       // Stop if there's no specific route found
       if (route === undefined) {
-        this.bot.Log.Router.log(`Router -> Failed to match '${message.content}' to a route - ending routing`)
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
 
         // Provide some feedback about the failed command(s)
@@ -241,7 +238,6 @@ export class CommandRouter {
         // Track in an audit event
         this.bot.Audit.NewEntry({
           name: 'command pre-routing',
-          details: message.content,
           guild: { id: message.guild.id, name: message.guild.name, channel: (<TextChannel>message.channel).name },
           error: 'Failed to process command',
           runtime: routerStats.performance,
@@ -286,7 +282,6 @@ export class CommandRouter {
           // Track in an audit event
           this.bot.Audit.NewEntry({
             name: routed.route.name,
-            details: routed.message.content,
             guild: { id: 'DM', name: 'DM', channel: 'DM' },
             error: 'Command disabled by permission in this channel',
             runtime: routerStats.performance,
@@ -299,7 +294,6 @@ export class CommandRouter {
           // Track in an audit event
           this.bot.Audit.NewEntry({
             name: routed.route.name,
-            details: routed.message.content,
             guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
             error: 'Command disabled by permissions',
             runtime: routerStats.performance,
@@ -339,7 +333,6 @@ export class CommandRouter {
           // Track in an audit event
           this.bot.Audit.NewEntry({
             name: routed.route.name,
-            details: routed.message.content,
             guild: routed.isDM
               ? { id: 'dm', name: 'dm', channel: 'dm' }
               : { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
@@ -356,7 +349,6 @@ export class CommandRouter {
           // Track in an audit event
           this.bot.Audit.NewEntry({
             name: routed.route.name,
-            details: routed.message.content,
             guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
             error: 'Command failed or returned false inside controller',
             runtime: routerStats.performance,
