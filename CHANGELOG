@@ -1,5 +1,7 @@
 7.3.0
+- Fixed: CK Service requests not working - Requires removal of BNet commands/functionality until it can be reworked.
 - Updated: Roll command now supports dice rolls formatted like 2d8 (PR #47)
+- Updated: Trimmed/Reduction of Kiera command audit log.
 
 7.2.2
 - Fixed: Discord API Intents update temporarily as a resolution.
