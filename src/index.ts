@@ -102,7 +102,7 @@ export class Bot {
     ////////////////////////////////////////
     // Register 3rd party services /////////
     ////////////////////////////////////////
-    this.Service.BattleNet = new BattleNet()
+    // this.Service.BattleNet = new BattleNet()
     this.Service.ChastiKey = new ChastiKey(this)
 
     ////////////////////////////////////////
@@ -110,7 +110,7 @@ export class Bot {
     ////////////////////////////////////////
     try {
       /// Integrations / Services / 3rd party
-      await this.Service.BattleNet.setup(this)
+      // await this.Service.BattleNet.setup(this)
       await this.Service.ChastiKey.setup()
       /// Reserved...
       /// ...
