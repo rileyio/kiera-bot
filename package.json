@@ -50,7 +50,7 @@
     "fast-glob": "^3.2.2",
     "form-data": "^3.0.0",
     "got": "^10.7.0",
-    "handlebars": "^4.7.6",
+    "handlebars": "^4.7.7",
     "jsonwebtoken": "^8.5.1",
     "module-alias": "^2.2.2",
     "mongodb": "^3.5.5",
