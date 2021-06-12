@@ -7,6 +7,7 @@ import { performance } from 'perf_hooks'
 import { TrackedServerSetting } from '@/objects/server-setting'
 import { ChastiKeyManagedChanges } from '@/objects/chastikey'
 import { managedUpdate } from '@/embedded/chastikey-update'
+import { activeMutes } from '../moderate/moderate'
 
 export const Routes = ExportRoutes({
   type: 'message',
@@ -39,12 +40,59 @@ export async function update(routed: RouterRouted) {
     nickname: { start: 0, end: 0 }
   }
 
+  // Fetch all that have been mapped already
+  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedServerSetting>('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles/ })
+
+  // Already Mapped as Object
+  const alreadyMappedIDs = {
+    // Lockee
+    noviceLockeeX: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.1`),
+    noviceLockeeY: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.11`),
+    noviceLockeeZ: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.111`),
+    intermediateLockeeX: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.2`),
+    intermediateLockeeY: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.22`),
+    intermediateLockeeZ: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.222`),
+    experiencedLockeeX: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.3`),
+    experiencedLockeeY: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.33`),
+    experiencedLockeeZ: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.333`),
+    devotedLockeeX: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.4`),
+    devotedLockeeY: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.44`),
+    devotedLockeeZ: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.444`),
+    fanaticalLockeeX: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.5`),
+    fanaticalLockeeY: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.55`),
+    fanaticalLockeeZ: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.555`),
+    // Keyholder
+    noviceKeyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.101`),
+    keyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.102`),
+    establishedKeyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.103`),
+    distinguishedKeyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.104`),
+    renownedKeyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.105`),
+    // Specials
+    unlocked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.1`),
+    locked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.2`),
+    locktober2019: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.3`),
+    locktober2020: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.4`)
+  }
+
   // Check if user calling this command is targeting a different user
-  if (routed.v.o.user !== undefined) {
+  if (routed.v.o.user !== undefined && alreadyMapped.length) {
     // Restrict Update upon other users to Keyholder or above
-    const khRole = routed.message.guild.roles.cache.find((r) => r.name.toLowerCase() === 'keyholder')
+    const khRoles: Array<TrackedServerSetting> = Object.keys(alreadyMappedIDs)
+      .filter((n) => n.match(/keyholder/i))
+      .map((n) => {
+        if (alreadyMappedIDs[n]) return alreadyMappedIDs[n]
+      })
+
     // User calling this command must be higher than the khRole to call update upon another user than themself
-    if (routed.message.member.roles.highest.position < khRole.position) {
+    if (
+      !khRoles.find(
+        (r) =>
+          routed.message.guild
+            .member(routed.author.id)
+            .roles.cache.array()
+            .findIndex((rc) => rc.id === r.value) > -1
+      )
+    ) {
       await routed.message.reply(routed.$render('ChastiKey.Error.KeyholderOrAboveRoleRequired'))
       return false // Stop the user here
     }
@@ -57,7 +105,7 @@ export async function update(routed: RouterRouted) {
   var changesImplemented: Array<ChastiKeyManagedChanges> = []
 
   // Get user's current ChastiKey username from users collection or by the override
-  const user =
+  const dbUser =
     targetUserType !== 'Self'
       ? targetUserType === 'Snowflake'
         ? // When: Snowflake
@@ -85,12 +133,6 @@ export async function update(routed: RouterRouted) {
           routed.v.o.user
       : // When: Self
         routed.author.id
-
-  // If target user does not have a record on the server
-  if ((!user._id && targetUserType === 'CKUsername') || targetUserType === 'Snowflake') {
-    await routed.message.reply(routed.$render('ChastiKey.Error.UserNotFound'))
-    return false // Stop here
-  }
 
   // Get Data from new API
   const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({
@@ -136,45 +178,12 @@ export async function update(routed: RouterRouted) {
   // Fetch some stuff from Discord & ChastiKey
   const discordUser =
     targetUserType !== 'Self'
-      ? routed.message.guild.member(user.id)
+      ? await routed.message.guild.members.fetch(targetUserType === 'CKUsername' ? lockeeData.data.discordID : queryValue)
       : // User calling the command
         routed.message.member
 
   // Ensure user can actually be found (Has not left, or not some other error)
   if (!discordUser) return false // Stop here
-
-  // Fetch all that have been mapped already
-  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedServerSetting>('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles/ })
-  // Already Mapped as Object
-  const alreadyMappedIDs = {
-    // Lockee
-    noviceLockeeX: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.1`),
-    noviceLockeeY: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.11`),
-    noviceLockeeZ: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.111`),
-    intermediateLockeeX: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.2`),
-    intermediateLockeeY: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.22`),
-    intermediateLockeeZ: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.222`),
-    experiencedLockeeX: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.3`),
-    experiencedLockeeY: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.33`),
-    experiencedLockeeZ: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.333`),
-    devotedLockeeX: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.4`),
-    devotedLockeeY: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.44`),
-    devotedLockeeZ: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.444`),
-    fanaticalLockeeX: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.5`),
-    fanaticalLockeeY: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.55`),
-    fanaticalLockeeZ: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.555`),
-    // Keyholder
-    noviceKeyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.101`),
-    keyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.102`),
-    establishedKeyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.103`),
-    distinguishedKeyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.104`),
-    renownedKeyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.105`),
-    // Specials
-    unlocked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.1`),
-    locked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.2`),
-    locktober2019: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.3`),
-    locktober2020: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.4`)
-  }
 
   // Server Roles
   const role: { [name: string]: Discord.Role } = {
@@ -319,7 +328,7 @@ export async function update(routed: RouterRouted) {
   const cumulativeTimeLockedMonths = Math.round((lockeeData.data.cumulativeSecondsLocked / 2592000) * 100) / 100
 
   ///////////////////////////////////////
-  /// Role Update: Locked || Unlocked ///\
+  /// Role Update: Locked || Unlocked ///
   ///////////////////////////////////////
   // console.log('userHasPref:', userHasPref)
   // console.log('discordUserHasRole.unlocked:', discordUserHasRole.unlocked)
@@ -545,8 +554,8 @@ export async function update(routed: RouterRouted) {
 
     try {
       // Locktober Data (DB Cached)
-      const isLocktoberParticipant2019 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2019', { discordID: user.id })
-      const isLocktoberParticipant2020 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2020', { discordID: user.id })
+      const isLocktoberParticipant2019 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2019', { discordID: discordUser.id })
+      const isLocktoberParticipant2020 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2020', { discordID: discordUser.id })
 
       // * 2019 * //
       if (isLocktoberParticipant2019) {
@@ -607,7 +616,7 @@ export async function update(routed: RouterRouted) {
     const hasEmojiStatus = /🔒|🔓/.test(currentNickname)
     const hasEmojiLocked = /🔒/.test(currentNickname)
     const hasEmojiUnlocked = /🔓/.test(currentNickname)
-    const lockeeStatusPref = user.ChastiKey.preferences.lockee.showStatusInNickname
+    const lockeeStatusPref = dbUser.ChastiKey.preferences.lockee.showStatusInNickname
 
     // Check if kiera sits at or below the person calling -and- is not the server owner
     const isServerOwner = discordUser.id === routed.message.guild.ownerID
@@ -830,6 +839,6 @@ export async function update(routed: RouterRouted) {
 
   // results += '```'
 
-  await routed.message.channel.send(managedUpdate(routed.author, changesImplemented))
+  await routed.message.channel.send(managedUpdate(discordUser, changesImplemented))
   return true
 }

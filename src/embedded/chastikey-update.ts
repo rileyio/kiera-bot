@@ -1,16 +1,18 @@
 import { ChastiKeyManagedChanges } from '@/objects/chastikey'
-import { User } from 'discord.js'
+import { GuildMember } from 'discord.js'
 
-export function managedUpdate(user: User, updates: Array<ChastiKeyManagedChanges>) {
+export function managedUpdate(member: GuildMember, updates: Array<ChastiKeyManagedChanges>) {
   const lockeeUpdates = updates.filter((u, i) => u.category === 'lockee' && u.action !== 'header' && u.action !== 'performance')
   const keyholderUpdates = updates.filter((u, i) => u.category === 'keyholder' && u.action !== 'header' && u.action !== 'performance')
   const nicknameUpdates = updates.filter((u, i) => u.category === 'nickname' && u.action !== 'header' && u.action !== 'performance')
   const eventUpdates = updates.filter((u, i) => u.category === 'locktober' && u.action !== 'header' && u.action !== 'performance')
   const performance = updates.find((u, i) => u.action === 'performance-overall')
 
+  console.log('eventUpdates', eventUpdates)
+
   return {
     embed: {
-      title: `Summary of changes to \`@${user.username + '#' + user.discriminator}\``,
+      title: `Summary of changes to \`@${member.nickname || member.user.username + '#' + member.user.discriminator}\``,
       description: 'The following changes are managed by Kiera. Modifying any of these manually may result in Kiera overriding later when the `update` command is called again.',
       color: 9125611,
       timestamp: Date.now(),
@@ -19,17 +21,17 @@ export function managedUpdate(user: User, updates: Array<ChastiKeyManagedChanges
         text: `Processing time: ${performance.result}ms`
       },
       thumbnail: {
-        url: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`
+        url: `https://cdn.discordapp.com/avatars/${member.id}/${member.user.avatar}`
       },
       fields: [
         {
           name: 'Lockee Status Roles',
-          value: lockeeUpdates.length ? lockeeUpdates.map((u) => `${u.action === 'added' || u.action === 'changed' ? '✅ ' : '❎'}${u.result}\n`) : '✅ No changes',
+          value: lockeeUpdates.length ? lockeeUpdates.map((u) => `${u.action === 'added' || u.action === 'changed' ? '✅ ' : '❎ '}${u.result}`) : '✅ No changes',
           inline: true
         },
         {
           name: 'Keyholder Status Roles',
-          value: keyholderUpdates.length ? keyholderUpdates.map((u) => `${u.action === 'added' || u.action === 'changed' ? '✅ ' : '❎'}${u.result}\n`) : '✅ No changes',
+          value: keyholderUpdates.length ? keyholderUpdates.map((u) => `${u.action === 'added' || u.action === 'changed' ? '✅ ' : '❎ '}${u.result}`) : '✅ No changes',
           inline: true
         },
         {
@@ -38,7 +40,7 @@ export function managedUpdate(user: User, updates: Array<ChastiKeyManagedChanges
         },
         {
           name: 'Events',
-          value: eventUpdates.length ? eventUpdates.map((u) => `${u.action === 'added' || u.action === 'changed' ? '✅ ' : '❎'}${u.result}\n`) : '✅ No changes'
+          value: eventUpdates.length ? eventUpdates.map((u) => `${u.action === 'added' || u.action === 'changed' ? '✅ ' : '❎ '}${u.result}`) : '✅ No changes'
         }
       ]
     }
