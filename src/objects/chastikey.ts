@@ -8,6 +8,13 @@ export enum ChastiKeyTickerType {
   Both
 }
 
+export interface ChastiKeyManagedChanges {
+  action: 'changed' | 'added' | 'removed' | 'header' | 'performance' | 'performance-overall' | 'error'
+  category: 'n/a' | 'verify' | 'lockee' | 'locktober' | 'keyholder' | 'nickname'
+  type: 'role' | 'status'
+  result: number | string
+  successful?: boolean
+}
 /**
  * Kiera's Database Record Object for ChastiKey settings/profile
  * @export

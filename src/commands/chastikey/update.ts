@@ -5,6 +5,8 @@ import { TrackedUser } from '@/objects/user'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { performance } from 'perf_hooks'
 import { TrackedServerSetting } from '@/objects/server-setting'
+import { ChastiKeyManagedChanges } from '@/objects/chastikey'
+import { managedUpdate } from '@/embedded/chastikey-update'
 
 export const Routes = ExportRoutes({
   type: 'message',
@@ -52,12 +54,7 @@ export async function update(routed: RouterRouted) {
   const targetUserType: 'Self' | 'Snowflake' | 'CKUsername' = routed.v.o.user === undefined ? 'Self' : routed.message.mentions.members.first() ? 'Snowflake' : 'CKUsername'
 
   // Track changes made later - if any
-  var changesImplemented: Array<{
-    action: 'changed' | 'added' | 'removed' | 'header' | 'performance' | 'error'
-    category: 'n/a' | 'verify' | 'lockee' | 'locktober' | 'keyholder' | 'nickname'
-    type: 'role' | 'status'
-    result: number | string
-  }> = []
+  var changesImplemented: Array<ChastiKeyManagedChanges> = []
 
   // Get user's current ChastiKey username from users collection or by the override
   const user =
@@ -536,7 +533,7 @@ export async function update(routed: RouterRouted) {
   }
   // * Performance End: Lockee * //
   updatePerformance.lockee.end = performance.now()
-  changesImplemented.push({ action: 'performance', category: 'n/a', type: 'status', result: `${Math.round(updatePerformance.lockee.end - updatePerformance.lockee.start)}ms` })
+  changesImplemented.push({ action: 'performance', category: 'n/a', type: 'status', result: Math.round(updatePerformance.lockee.end - updatePerformance.lockee.start) })
 
   ///////////////////////////////////////
   /// Role Update: Locktober          ///
@@ -593,7 +590,7 @@ export async function update(routed: RouterRouted) {
       action: 'performance',
       category: 'n/a',
       type: 'status',
-      result: `${Math.round(updatePerformance.locktober.end - updatePerformance.locktober.start)}ms`
+      result: Math.round(updatePerformance.locktober.end - updatePerformance.locktober.start)
     })
   }
 
@@ -633,7 +630,8 @@ export async function update(routed: RouterRouted) {
     } else {
       // Show error for is server owner
       if (isServerOwner) changesImplemented.push({ action: 'error', category: 'nickname', type: 'status', result: routed.$render('Generic.Error.ThisActionFailedServerOwner') })
-      if (isPermissionsIssue) changesImplemented.push({ action: 'error', category: 'nickname', type: 'status', result: routed.$render('Generic.Error.RoleTooHightForThisAction') })
+      if (isPermissionsIssue)
+        changesImplemented.push({ action: 'error', category: 'nickname', type: 'status', result: routed.$render('Generic.Error.RoleTooHightForThisAction'), successful: false })
     }
   } catch (e) {
     console.log('CK Update Error updating Nickname', e)
@@ -645,7 +643,7 @@ export async function update(routed: RouterRouted) {
     action: 'performance',
     category: 'n/a',
     type: 'status',
-    result: `${Math.round(updatePerformance.nickname.end - updatePerformance.nickname.start)}ms`
+    result: Math.round(updatePerformance.nickname.end - updatePerformance.nickname.start)
   })
 
   ///////////////////////////////////////
@@ -805,33 +803,33 @@ export async function update(routed: RouterRouted) {
   })
   // * Performance End: Full * //
   updatePerformance.full.end = performance.now()
-  changesImplemented.push({ action: 'performance', category: 'n/a', type: 'status', result: `${Math.round(updatePerformance.full.end - updatePerformance.full.start)}ms` })
+  changesImplemented.push({ action: 'performance-overall', category: 'n/a', type: 'status', result: Math.round(updatePerformance.full.end - updatePerformance.full.start) })
 
   // Print results in chat of changes
-  var results: string = `Summary of changes to \`${discordUser.nickname || discordUser.user.username}#${discordUser.user.discriminator}\`\n\`\`\`diff\n`
-  var currentCategoryInPrintHasItems = false
+  // var results: string = `Summary of changes to \`${discordUser.nickname || discordUser.user.username}#${discordUser.user.discriminator}\`\n\`\`\`diff\n`
+  // var currentCategoryInPrintHasItems = false
 
-  changesImplemented.forEach((change, i) => {
-    // Print Header
-    if (change.action === 'header') {
-      results += `## [ ${change.result} ] ##\n`
-      currentCategoryInPrintHasItems = false
-    }
-    // Print + or - changes
-    if (change.action !== 'header' && change.action !== 'performance') {
-      results += `${change.action === 'added' || change.action === 'changed' ? '+' : '-'} ${change.action} ${change.type}: ${change.result}\n`
-      currentCategoryInPrintHasItems = true
-    }
-    // Print Performance
-    if (change.action === 'performance' && i < changesImplemented.length - 1) {
-      // If there's no changes in this section display a message saying so
-      if (!currentCategoryInPrintHasItems) results += '\nNo changes\n'
-      results += `\n===========================\n--- Time taken: ${change.result}\n\n`
-    }
-  })
+  // changesImplemented.forEach((change, i) => {
+  //   // Print Header
+  //   if (change.action === 'header') {
+  //     results += `## [ ${change.result} ] ##\n`
+  //     currentCategoryInPrintHasItems = false
+  //   }
+  //   // Print + or - changes
+  //   if (change.action !== 'header' && change.action !== 'performance') {
+  //     results += `${change.action === 'added' || change.action === 'changed' ? '+' : '-'} ${change.action} ${change.type}: ${change.result}\n`
+  //     currentCategoryInPrintHasItems = true
+  //   }
+  //   // Print Performance
+  //   if (change.action === 'performance' && i < changesImplemented.length - 1) {
+  //     // If there's no changes in this section display a message saying so
+  //     if (!currentCategoryInPrintHasItems) results += '\nNo changes\n'
+  //     results += `\n===========================\n--- Time taken: ${change.result}\n\n`
+  //   }
+  // })
 
-  results += '```'
+  // results += '```'
 
-  await routed.message.reply(results)
+  await routed.message.channel.send(managedUpdate(routed.author, changesImplemented))
   return true
 }
