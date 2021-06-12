@@ -29,7 +29,7 @@ export function managedUpdate(user: User, updates: Array<ChastiKeyManagedChanges
         },
         {
           name: 'Keyholder Status Roles',
-          value: keyholderUpdates.length ? keyholderUpdates.map((u) => `${u.action === 'added' || u.action === 'changed' ? '✅ ' : '❎'}${u.result}\n`) : '✅ No Changes',
+          value: keyholderUpdates.length ? keyholderUpdates.map((u) => `${u.action === 'added' || u.action === 'changed' ? '✅ ' : '❎'}${u.result}\n`) : '✅ No changes',
           inline: true
         },
         {
