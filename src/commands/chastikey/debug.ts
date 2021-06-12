@@ -11,14 +11,9 @@ export const Routes = ExportRoutes({
   example: '{{prefix}}ck debug UsernameHere',
   name: 'ck-debug-username',
   validate: '/ck:string/debug:string/user=string',
-  middleware: [Middleware.isModerator],
   permissions: {
     defaultEnabled: true,
-    serverOnly: true,
-    restrictedTo: [
-      '473856245166506014', // KevinCross#0001
-      '146439529824256000' // Emma#1366
-    ]
+    serverOnly: false
   }
 })
 
