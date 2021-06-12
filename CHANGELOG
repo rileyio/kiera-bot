@@ -3,6 +3,7 @@
 - Fixed: CK Update user @ tagging.
 - Updated: CK Debug command to be useable by all users.
 - Updated: CK Update output to an embedded message with an improved layout.
+- Updated: CK Update to now allow specific server owner mapped roles to call this command.
 
 7.3.0
 - Fixed: CK Service requests not working - Requires removal of BNet commands/functionality until it can be reworked.
