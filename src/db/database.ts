@@ -86,7 +86,7 @@ export class MongoDB {
         if (!err) {
           this.connection = { db: client.db(this.dbName), client: client, error: undefined }
           this.Bot.Log.Database.log('new db connection: database connected!')
-          return resolve()
+          return resolve(true)
         } else {
           this.Bot.Log.Database.error('>>> failed to connect to Database!')
 
