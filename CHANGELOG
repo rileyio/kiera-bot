@@ -1,4 +1,5 @@
 7.4.0
+- Fixed: Roll command with no params supplied not returning any output.
 - Updated: CK Debug command to be useable by all users.
 
 7.3.0
