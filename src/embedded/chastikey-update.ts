@@ -8,8 +8,6 @@ export function managedUpdate(member: GuildMember, updates: Array<ChastiKeyManag
   const eventUpdates = updates.filter((u, i) => u.category === 'locktober' && u.action !== 'header' && u.action !== 'performance')
   const performance = updates.find((u, i) => u.action === 'performance-overall')
 
-  console.log('eventUpdates', eventUpdates)
-
   return {
     embed: {
       title: `Summary of changes to \`@${member.nickname || member.user.username + '#' + member.user.discriminator}\``,
@@ -36,7 +34,7 @@ export function managedUpdate(member: GuildMember, updates: Array<ChastiKeyManag
         },
         {
           name: 'Nickname Management',
-          value: nicknameUpdates.length ? `${nicknameUpdates[0].successful ? '✅ Updated to ' : '❌ '}\`${nicknameUpdates[0].result}\`` : '✅ No changes'
+          value: nicknameUpdates.length ? `${nicknameUpdates[0].successful === false ? '✅ Updated to ' : '❌ '}\`${nicknameUpdates[0].result}\`` : '✅ No changes'
         },
         {
           name: 'Events',

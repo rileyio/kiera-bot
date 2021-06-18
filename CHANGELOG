@@ -1,3 +1,6 @@
+8.0.0
+- Fixed: CK Update output should not show an x emoji when successful.
+
 7.4.0
 - Fixed: Roll command with no params supplied not returning any output.
 - Fixed: CK Update user @ tagging.

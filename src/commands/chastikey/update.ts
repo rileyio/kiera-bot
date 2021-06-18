@@ -628,13 +628,13 @@ export async function update(routed: RouterRouted) {
         // console.log('Give 🔒 Emoji')
         // Set locked emoji
         await discordUser.setNickname(hasEmojiUnlocked ? currentNickname.replace('🔓', '🔒') : `${currentNickname} 🔒`)
-        changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${currentNickname} 🔒` })
+        changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${currentNickname} 🔒`, successful: true })
       }
       if (!hasLockedLock.length && (hasEmojiLocked || !hasEmojiStatus) && (lockeeStatusPref === 'always' || lockeeStatusPref === 'unlocked') && currentNickname.length < 32) {
         // console.log('Give 🔓 Emoji')
         // Set unlocked emoji
         await discordUser.setNickname(hasEmojiLocked ? currentNickname.replace('🔒', '🔓') : `${currentNickname} 🔓`)
-        changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${currentNickname} 🔓` })
+        changesImplemented.push({ action: 'added', category: 'nickname', type: 'status', result: `${currentNickname} 🔓`, successful: true })
       }
     } else {
       // Show error for is server owner
