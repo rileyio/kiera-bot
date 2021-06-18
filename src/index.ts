@@ -184,8 +184,7 @@ export class Bot {
             ownerID: guild.ownerID,
             name: guild.name,
             joinedTimestamp: guild.joinedTimestamp,
-            lastSeen: Date.now(),
-            prefix: undefined
+            lastSeen: Date.now()
           }
         },
         { atomic: true, upsert: true }
