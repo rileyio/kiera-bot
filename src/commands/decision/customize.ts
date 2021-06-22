@@ -3,7 +3,7 @@ import * as XRegExp from 'xregexp'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 import { ObjectID } from 'mongodb'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 
 export const Routes = ExportRoutes(
   {

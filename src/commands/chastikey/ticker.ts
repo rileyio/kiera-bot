@@ -2,7 +2,7 @@ import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { MessageAttachment } from 'discord.js'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 
 export const Routes = ExportRoutes(
   {

@@ -6,7 +6,7 @@ import { TrackedDecision } from '@/objects/decision'
 import { ObjectID } from 'bson'
 import { decisionFromSaved, decisionRealtime } from '@/embedded/decision-embed'
 import { TrackedDecisionLogEntry } from '@/objects/decision'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 
 export const Routes = ExportRoutes(
   {

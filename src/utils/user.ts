@@ -1,5 +1,5 @@
 import * as XRegex from 'xregexp'
-import { TrackedUserQuery } from '@/objects/user'
+import { TrackedUserQuery } from '@/objects/user/'
 import { GuildMember } from 'discord.js'
 
 export namespace User {

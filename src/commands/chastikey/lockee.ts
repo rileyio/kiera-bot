@@ -3,7 +3,7 @@ import * as Utils from '@/utils'
 import { ExportRoutes } from '@/router/routes-exporter'
 import { RouterRouted } from '@/router'
 import { lockeeHistory } from '@/embedded/chastikey-history'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 
 export const Routes = ExportRoutes(
   {

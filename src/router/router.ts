@@ -7,7 +7,7 @@ import { fallbackHelp } from '@/embedded/fallback-help'
 import { ProcessedPermissions } from './route-permissions'
 import { ServerStatisticType } from '../objects/statistics'
 import { MessageRoute, RouteConfiguration, RouterRouted, RouterStats } from '../objects/router/'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 import { TrackedServer } from '@/objects/server'
 
 const GLOBAL_PREFIX = process.env.BOT_MESSAGE_PREFIX

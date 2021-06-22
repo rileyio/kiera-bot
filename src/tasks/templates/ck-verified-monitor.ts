@@ -1,5 +1,5 @@
 import { Task } from '@/objects/task'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 
 export class ChastiKeyVerifiedRoleMonitor extends Task {
   private announcementMade: boolean = false
