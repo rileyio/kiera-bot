@@ -55,7 +55,10 @@ export async function khData(routed: WebRouted) {
   }
 
   // Get lockees under a KH
-  const cachedRunningLocks = await routed.Bot.DB.aggregate<RunningLocksLock>('ck-running-locks', [{ $match: { lockedBy: keyholderData.data.username } }, { $sort: { lockName: 1 } }])
+  const cachedRunningLocks = await routed.Bot.DB.aggregate<RunningLocksLock>('ck-running-locks', [
+    { $match: { lockedBy: keyholderData.data.username } },
+    { $sort: { lockName: 1 } }
+  ])
 
   // If there is no data in the kh dataset inform the user
   if (!keyholderData.data.timestampFirstKeyheld) {
@@ -168,8 +171,10 @@ export async function user(routed: WebRouted) {
     const lockeeDataLocks = lockeeData ? (lockeeData.response.status === 200 ? lockeeData.getLocked : []) : []
 
     // If the user has locks per the cache then query for those
-    const keyholderData = ckUser.noOfSharedLocks ? await routed.Bot.Service.ChastiKey.fetchAPIKeyholderData({ discordid: discordUser ? discordUser.id : undefined, username: ckUser.username }) : null
-    const asKeyholderSharedLocks = keyholderData ? (keyholderData.response.status === 200 ? keyholderData.locks.filter(l => l.sharedLockID !== '<hidden>') : []) : []
+    const keyholderData = ckUser.noOfSharedLocks
+      ? await routed.Bot.Service.ChastiKey.fetchAPIKeyholderData({ discordid: discordUser ? discordUser.id : undefined, username: ckUser.username })
+      : null
+    const asKeyholderSharedLocks = keyholderData ? (keyholderData.response.status === 200 ? keyholderData.locks.filter((l) => l.sharedLockID !== '<hidden>') : []) : []
 
     return routed.res.send({
       success: true,
