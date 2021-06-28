@@ -1,6 +1,7 @@
 8.0.0
 - Fixed: CK Update output should not show an x emoji when successful.
 - Fixed: Custom server prefix setting not persisting through restarts.
+- Updated: Stats outputs are now the past 30 days for all types (Server, Channel and User).
 - Added: More scheduled cleanup tasks for various data.
 
 7.4.0

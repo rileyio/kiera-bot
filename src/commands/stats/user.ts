@@ -2,6 +2,7 @@ import * as Utils from '@/utils'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { ServerStatisticType, StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 import { statsUser } from '@/embedded/stats-user'
+import { ObjectID } from 'mongodb'
 
 export const Routes = ExportRoutes({
   type: 'message',
@@ -37,7 +38,12 @@ export async function statsForUser(routed: RouterRouted) {
   const member = await routed.message.guild.members.fetch(userID)
   const data = await routed.bot.DB.aggregate<{ name?: string; channelID: string; messages: number; reactions: number }>('stats-servers', [
     {
-      $match: { $or: [{ type: ServerStatisticType.Message }, { type: ServerStatisticType.Reaction }], serverID: routed.message.guild.id, userID }
+      $match: {
+        _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) },
+        $or: [{ type: ServerStatisticType.Message }, { type: ServerStatisticType.Reaction }],
+        serverID: routed.message.guild.id,
+        userID
+      }
     },
     {
       $group: {

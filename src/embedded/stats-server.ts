@@ -61,7 +61,7 @@ export function statsTopServerChannels(stats: StatsTopServerChannelsData) {
 
 export function statsServer(stats: StatsServerData) {
   var fields = [] as Array<{ name: string; value: string }>
-  var descriptionBuilt = `Stats are collected using the UTC timezone. Stats shown are from the last 7 days.\n\n`
+  var descriptionBuilt = `Stats are collected using the UTC timezone. Stats shown are from the last 30 days.\n\n`
   // Add Server Age
   descriptionBuilt += `Server Created: \`${new Date(stats.serverAgeTimestamp).toLocaleDateString()}\` (\`${Utils.Date.calculateHumanTimeDDHHMM(
     Date.now() / 1000 - stats.serverAgeTimestamp / 1000

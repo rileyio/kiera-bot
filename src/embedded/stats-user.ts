@@ -20,7 +20,7 @@ interface StatsUsersData {
 }
 
 export function statsUser(stats: StatsUsersData) {
-  var descriptionBuilt = `\n`
+  var descriptionBuilt = `\nStats are collected using the UTC timezone. Stats shown are from the last 30 days.\n\n`
   descriptionBuilt += `Messages on server: \`${stats.messages}\`\n`
   descriptionBuilt += `Reactions on server: \`${stats.reactions}\`\n`
   descriptionBuilt += `Total channels reached: \`${stats.channelsReached}\`\n`

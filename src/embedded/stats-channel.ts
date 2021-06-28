@@ -15,7 +15,7 @@ interface StatsChannelsData {
 }
 
 export function statsChannel(stats: StatsChannelsData) {
-  var descriptionBuilt = `\n`
+  var descriptionBuilt = `\nStats are collected using the UTC timezone. Stats shown are from the last 30 days.\n\n`
   descriptionBuilt += `Channel Created: \`${new Date(stats.created).toLocaleDateString()}\` (\`${Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - stats.created / 1000)} ago\`)\n`
   descriptionBuilt += `Members: \`${stats.members}\`\n`
   descriptionBuilt += `NSFW: \`${stats.nsfw ? 'Yes' : 'No'}\`\n\n`

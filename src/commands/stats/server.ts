@@ -95,7 +95,7 @@ export async function statsByTopChannels(routed: RouterRouted) {
 export async function serverStats(routed: RouterRouted) {
   const topChannelsByMsgCount = await routed.bot.DB.aggregate<{ channelID: string; count: number; name?: string }>('stats-servers', [
     {
-      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 7) / 1000) }, type: ServerStatisticType.Message, serverID: routed.message.guild.id }
+      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Message, serverID: routed.message.guild.id }
     },
     {
       $group: {
@@ -115,7 +115,7 @@ export async function serverStats(routed: RouterRouted) {
 
   const topUsersByMsgCount = await routed.bot.DB.aggregate<{ userID: string; count: number; name?: string }>('stats-servers', [
     {
-      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 7) / 1000) }, type: ServerStatisticType.Message, serverID: routed.message.guild.id }
+      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Message, serverID: routed.message.guild.id }
     },
     {
       $group: {
@@ -135,7 +135,7 @@ export async function serverStats(routed: RouterRouted) {
 
   const topUsersByReactionsCount = await routed.bot.DB.aggregate<{ userID: string; count: number; name?: string }>('stats-servers', [
     {
-      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 7) / 1000) }, type: ServerStatisticType.Reaction, serverID: routed.message.guild.id }
+      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Reaction, serverID: routed.message.guild.id }
     },
     {
       $group: {
@@ -156,7 +156,7 @@ export async function serverStats(routed: RouterRouted) {
   const usersJoinedAndLeft = await routed.bot.DB.aggregate<{ type: ServerStatisticType; count: number }>('stats-servers', [
     {
       $match: {
-        _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 7) / 1000) },
+        _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) },
         $or: [{ type: ServerStatisticType.UserJoined }, { type: ServerStatisticType.UserLeft }],
         serverID: routed.message.guild.id
       }

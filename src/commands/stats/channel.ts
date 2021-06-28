@@ -3,6 +3,7 @@ import { RouterRouted, ExportRoutes } from '@/router'
 import { ServerStatisticType, StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 import { statsChannel } from '@/embedded/stats-channel'
 import { TextChannel } from 'discord.js'
+import { ObjectID } from 'mongodb'
 
 export const Routes = ExportRoutes({
   type: 'message',
@@ -32,7 +33,12 @@ export async function statsForChannel(routed: RouterRouted) {
 
   const data = await routed.bot.DB.aggregate<{ name?: string; userID: string; messages: number; reactions: number }>('stats-servers', [
     {
-      $match: { type: ServerStatisticType.Message, serverID: routed.message.guild.id, channelID }
+      $match: {
+        _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) },
+        type: ServerStatisticType.Message,
+        serverID: routed.message.guild.id,
+        channelID
+      }
     },
     {
       $group: {
