@@ -1,6 +1,6 @@
 {
   "name": "kiera-bot",
-  "version": "8.0.0",
+  "version": "8.0.0-beta-1",
   "main": "app/index.js",
   "repository": "https://github.com/rileyio/kiera-bot.git",
   "author": "Emma (RileyIO)",
@@ -42,7 +42,7 @@
     "@hapi/joi": "^17.1.1",
     "agenda": "^3.0.0",
     "blizzard.js": "^4.1.0",
-    "chastikey.js": "^2.5.1",
+    "chastikey.js": "github:ChastiKey/chastikey.js",
     "crypto-js": "^4.0.0",
     "discord.js": "^12.4.1",
     "dot-prop": "^5.2.0",
