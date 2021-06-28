@@ -5,12 +5,7 @@ export namespace ChastiKey {
     return joi
       .object()
       .keys({
-        username: joi
-          .string()
-          .alphanum()
-          .min(2)
-          .max(24)
-          .required()
+        username: joi.string().alphanum().min(2).max(24).required()
       })
       .optional()
   }
@@ -19,12 +14,7 @@ export namespace ChastiKey {
     return joi
       .object()
       .keys({
-        username: joi
-          .string()
-          .alphanum()
-          .min(2)
-          .max(24)
-          .required()
+        username: joi.string().alphanum().min(2).max(24).required()
       })
       .required()
   }
@@ -33,12 +23,7 @@ export namespace ChastiKey {
     return joi
       .object()
       .keys({
-        query: joi
-          .string()
-          .alphanum()
-          .min(2)
-          .max(32)
-          .required()
+        query: joi.string().alphanum().min(2).max(32).required()
       })
       .required()
   }
@@ -47,12 +32,7 @@ export namespace ChastiKey {
     return joi
       .object()
       .keys({
-        username: joi
-          .string()
-          .alphanum()
-          .min(2)
-          .max(32)
-          .required()
+        username: joi.string().alphanum().min(2).max(32).required()
       })
       .required()
   }
@@ -61,10 +41,7 @@ export namespace ChastiKey {
     return joi
       .object()
       .keys({
-        dateTime: joi
-          .date()
-          .iso()
-          .required()
+        date: joi.string().pattern(new RegExp('^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$')).required()
       })
       .optional()
   }

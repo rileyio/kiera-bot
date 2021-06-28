@@ -11,7 +11,7 @@ export type Collections =
   | 'ck-running-locks'
   | 'ck-locktober-2019'
   | 'ck-locktober-2020'
-  | 'ck-stats-hourly'
+  | 'ck-stats-daily'
   | 'ck-users'
   | 'command-permissions'
   | 'decision'

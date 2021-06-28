@@ -95,7 +95,8 @@ export class Bot {
       new Task.ChastiKeyAPILocktober2020(),
       // // new Task.ChastiKeyBackgroundLocktoberMonitor()
       new Task.ChastiKeyBackgroundVerifiedMonitor(),
-      new Task.ChastiKeyGenerateStatsScheduled()
+      new Task.ChastiKeyGenerateStatsScheduled(),
+      new Task.DBAgeCleanupScheduled()
       // new Task.StatsCleanerScheduled()
     ])
 

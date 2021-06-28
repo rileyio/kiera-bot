@@ -1,6 +1,7 @@
 8.0.0
 - Fixed: CK Update output should not show an x emoji when successful.
 - Fixed: Custom server prefix setting not persisting through restarts.
+- Added: More scheduled cleanup tasks for various data.
 
 7.4.0
 - Fixed: Roll command with no params supplied not returning any output.

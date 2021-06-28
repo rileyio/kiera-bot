@@ -14,15 +14,17 @@ export const Routes: Array<WebRoute> = [
 
 export async function locks(routed: WebRouted) {
   const v = routed.req.body === {} ? { valid: true, o: null } : await validate(Validation.ChastiKey.globalStats(), routed.req.body)
-  const dateTimeSpecified = v.valid
+  console.log(v, v.o !== null ? typeof v.o.date : null)
+  const dateSpecified = v.valid
   // Get latest compiled Stats from DB
-  const fromDB = dateTimeSpecified
-    ? await routed.Bot.DB.aggregate<any>('ck-stats-hourly', [
-        { $match: { dateTime: String(new Date(v.o.dateTime).toISOString()) } },
+  const fromDB = dateSpecified
+    ? await routed.Bot.DB.aggregate<any>('ck-stats-daily', [
+        { $match: { date: v.o.date } },
         {
           $project: {
             _id: 0,
             interval: 1,
+            date: 1,
             dateTime: 1,
             stats: {
               distributionByInterval: 1,
@@ -36,7 +38,7 @@ export async function locks(routed: WebRouted) {
               selfLocks: 1,
               botLocks: 1,
               keyholdersCount: 1,
-              keyholderRating: 1,
+              keyholderAvgRating: 1,
               distributionByLockedTimeFixed: 1,
               distributionByLockedTimeFixedTrusted: 1,
               distributionByLockedTimeVariable: 1,
@@ -46,10 +48,11 @@ export async function locks(routed: WebRouted) {
           }
         }
       ])
-    : await routed.Bot.DB.getLatest('ck-stats-hourly', {})
+    : await routed.Bot.DB.getLatest('ck-stats-daily', {})
+  console.log('fromDB', fromDB)
 
   const latest = fromDB[0]
-  const khFromDB = await routed.Bot.DB.aggregate('ck-stats-hourly', [
+  const khFromDB = await routed.Bot.DB.aggregate('ck-stats-daily', [
     { $match: { dateTime: latest.dateTime } },
     { $project: { _id: 0, keyholders: '$stats.keyholders' } },
     { $unwind: '$keyholders' },
@@ -92,19 +95,19 @@ export async function locks(routed: WebRouted) {
   ])
 
   // Get date & times available for historical
-  const historicalDates = await routed.Bot.DB.aggregate('ck-stats-hourly', [
+  const historicalDates = await routed.Bot.DB.aggregate('ck-stats-daily', [
     {
       $addFields: {
-        dateTime: '$dateTime'
+        date: '$date'
       }
     },
     {
-      $sort: { dateTime: -1 }
+      $sort: { date: -1 }
     },
     {
       $project: {
         _id: 0,
-        dateTime: 1
+        date: 1
       }
     }
   ])
@@ -113,7 +116,7 @@ export async function locks(routed: WebRouted) {
   latest['keyholders'] = khFromDB
 
   // Add historical stats ranges to latest
-  latest['ranges'] = historicalDates.map((d: { dateTime: string }) => `${new Date(d.dateTime).toISOString()}`)
+  latest['ranges'] = historicalDates.map((d: { date: string }) => `${new Date(d.date).toISOString()}`)
 
   return routed.res.json(latest)
 }

@@ -10,7 +10,12 @@ export class ChastiKeyGenerateStats extends Task {
   protected async process() {
     // Perform the scheduled task/job
     try {
-      await this.Bot.DB.add('ck-stats-hourly', { interval: '60min', dateTime: new Date().toISOString(), stats: await this.compileStats() })
+      await this.Bot.DB.add('ck-stats-daily', {
+        interval: '60min',
+        dateTime: new Date().toISOString(),
+        date: new Date().toISOString().substr(0, 10),
+        stats: await this.compileStats()
+      })
       this.lastRun = Date.now()
       return true
     } catch (error) {
@@ -127,7 +132,8 @@ export class ChastiKeyGenerateStats extends Task {
       yellowCards: 0,
       redCards: 0,
       doubleUpCards: 0,
-      freezeCards: 0
+      freezeCards: 0,
+      stickyCards: 0
     }
 
     // Counts
@@ -143,11 +149,11 @@ export class ChastiKeyGenerateStats extends Task {
 
     var _keyholdersAvgRating = cachedRunningLocksKHs.map((kh: { averageKeyholderRating: number }) => kh.averageKeyholderRating)
     var keyholders = cachedRunningLocksKHs.length
-    var keyholdersWithRating = _keyholdersAvgRating.filter(avg => avg > 0).length
+    var keyholdersWithRating = _keyholdersAvgRating.filter((avg) => avg > 0).length
     var ratings = _keyholdersAvgRating.reduce((cur, total) => (total = cur > 0 ? (total += cur) : total))
 
     // Process data and populate stats variables
-    cachedRunningLocks.forEach(lock => {
+    cachedRunningLocks.forEach((lock) => {
       // [ By Interval ]
       if (lock.fixed === 0) {
         if (lock.regularity === 0.25) distributionByInterval[0]++ // 15 minutes
@@ -262,6 +268,7 @@ export class ChastiKeyGenerateStats extends Task {
         distributionByCardsRemaining.redCards += lock.redCards
         distributionByCardsRemaining.doubleUpCards += lock.doubleUpCards
         distributionByCardsRemaining.freezeCards += lock.freezeCards
+        distributionByCardsRemaining.stickyCards += lock.stickyCards
       }
 
       // [ Count: KH Lock ]
