@@ -2,7 +2,7 @@ import * as Utils from '@/utils'
 import { User, Message } from 'discord.js'
 import { Bot } from '@/index'
 import { TrackedMessage } from '@/objects/message'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 import { MessageRoute, ProcessedPermissions, RouterStats, Validate, ValidationType } from '@/router'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE

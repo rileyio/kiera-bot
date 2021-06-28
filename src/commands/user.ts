@@ -1,6 +1,6 @@
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 import { RouterRouted, ExportRoutes } from '@/router'
 
 export const Routes = ExportRoutes(

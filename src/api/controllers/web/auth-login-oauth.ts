@@ -5,7 +5,7 @@ import * as Validation from '@/api/validations'
 import { WebRouted, WebRoute } from '@/api/web-router'
 import { TrackedSession } from '@/objects/session'
 import { validate } from '@/api/utils/validate'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 
 export const Routes: Array<WebRoute> = [
   {

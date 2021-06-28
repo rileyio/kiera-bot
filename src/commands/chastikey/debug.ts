@@ -1,6 +1,6 @@
 import * as Middleware from '@/middleware'
 import { RouterRouted, ExportRoutes } from '@/router'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 import { TrackedChastiKeyLock, ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
 import { UserData } from 'chastikey.js/app/objects'
 

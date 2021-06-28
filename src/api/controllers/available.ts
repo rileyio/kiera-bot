@@ -1,7 +1,7 @@
 import * as Middleware from '@/api/middleware'
 import { WebRouted, WebRoute } from '@/api/web-router'
 import { TrackedServerSetting } from '@/objects/server-setting'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 
 export const Routes: Array<WebRoute> = [
   // * Available * //

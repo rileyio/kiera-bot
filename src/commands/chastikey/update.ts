@@ -1,7 +1,7 @@
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import * as Discord from 'discord.js'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '@/objects/user/'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { performance } from 'perf_hooks'
 import { TrackedServerSetting } from '@/objects/server-setting'
