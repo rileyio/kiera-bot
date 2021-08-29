@@ -44,7 +44,7 @@
     "blizzard.js": "^4.1.0",
     "chastikey.js": "github:ChastiKey/chastikey.js",
     "crypto-js": "^4.0.0",
-    "discord.js": "^12.5.3",
+    "discord.js": "^13.1.0",
     "dot-prop": "^5.2.0",
     "dotenv": "^8.2.0",
     "fast-glob": "^3.2.2",
