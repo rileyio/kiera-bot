@@ -18,6 +18,6 @@ export const Routes = ExportRoutes({
  * @param {RouterRouted} routed
  */
 export async function flip(routed: RouterRouted) {
-  await routed.message.reply(flipCoin(Math.floor(Math.random() * Number(2))))
+  await routed.message.reply({ embeds: [flipCoin(Math.floor(Math.random() * Number(2)))]})
   return true
 }

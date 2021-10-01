@@ -68,16 +68,18 @@ export async function statsForChannel(routed: RouterRouted) {
   // Fetch channel details
   const channelDetails = routed.bot.client.channels.cache.find((c) => c.id === channelID) as TextChannel
 
-  await routed.message.channel.send(
-    statsChannel({
-      serverIcon: routed.message.guild.iconURL(),
-      name: channelDetails.name,
-      created: channelDetails.createdTimestamp,
-      members: channelDetails.members.size,
-      nsfw: channelDetails.nsfw,
-      data: mappedData
-    })
-  )
+  await routed.message.channel.send({
+    embeds: [
+      statsChannel({
+        serverIcon: routed.message.guild.iconURL(),
+        name: channelDetails.name,
+        created: channelDetails.createdTimestamp,
+        members: channelDetails.members.size,
+        nsfw: channelDetails.nsfw,
+        data: mappedData
+      })
+    ]
+  })
 
   return true
 }

@@ -118,12 +118,22 @@ export class BotMonitor extends EventEmitter {
 
     // Set intents
     const intents = new Discord.Intents()
-    intents.add(Discord.Intents.ALL)
-    intents.remove(['GUILD_PRESENCES'])
+    intents.add([
+      Discord.Intents.FLAGS.GUILDS,
+      Discord.Intents.FLAGS.GUILD_MEMBERS,
+      Discord.Intents.FLAGS.GUILD_BANS,
+      Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+      Discord.Intents.FLAGS.GUILD_MESSAGES,
+      Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+      Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
+      Discord.Intents.FLAGS.DIRECT_MESSAGES,
+      Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+      Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
+    ])
     this.Bot.Log.Bot.log('intents set from preset:', intents.toArray())
 
     // Create new Discord Client
-    this.Bot.client = new Discord.Client({ ws: { intents: intents.toArray() } })
+    this.Bot.client = new Discord.Client({ intents: intents.toArray() })
     // this.Bot.client = new Discord.Client()
 
     // Waiting for Discord.js Ready Event to fire...
@@ -135,6 +145,10 @@ export class BotMonitor extends EventEmitter {
         console.log('discord.js ready!')
         this.Bot.onReady()
         r(true)
+      })
+
+      this.Bot.client.on('error', () => {
+        console.log('discord.js NOT ready!')
       })
       /// Connect account ///
 

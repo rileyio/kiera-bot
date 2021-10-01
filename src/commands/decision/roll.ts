@@ -138,7 +138,7 @@ export async function runSavedDecision(routed: RouterRouted) {
     }
 
     const outcomeEmbed = decisionFromSaved(decision, outcome, { name: authorName, avatar: authorAvatar, id: authorID, server: { prefix: routed.prefix } })
-    await routed.message.reply(outcomeEmbed)
+    await routed.message.reply({ embeds: [outcomeEmbed] })
 
     // Track in log
     await routed.bot.DB.add(
@@ -147,9 +147,9 @@ export async function runSavedDecision(routed: RouterRouted) {
         callerID: routed.author.id,
         decisionID: String(decision._id),
         outcomeID: String(outcome._id),
-        serverID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.guild.id,
-        channelID: routed.message.channel.type === 'dm' ? 'DM' : routed.message.channel.id,
-        outcomeContent: outcomeEmbed.embed.description
+        serverID: routed.message.channel.type === 'DM' ? 'DM' : routed.message.guild.id,
+        channelID: routed.message.channel.type === 'DM' ? 'DM' : routed.message.channel.id,
+        outcomeContent: outcomeEmbed.description
       })
     )
 
@@ -160,6 +160,6 @@ export async function runSavedDecision(routed: RouterRouted) {
 
 export async function runRealtimeDecision(routed: RouterRouted) {
   const random = Random.int(0, routed.v.o.args.length - 1)
-  await routed.message.reply(decisionRealtime(routed.v.o.question, routed.v.o.args[random]))
+  await routed.message.reply({ embeds: [decisionRealtime(routed.v.o.question, routed.v.o.args[random])] })
   return true
 }

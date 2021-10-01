@@ -43,6 +43,6 @@ export async function eightBall(routed: RouterRouted) {
     'Very doubtful'
   ]
 
-  await routed.message.reply(eightBallResult(routed.v.o.question || '', outcomes[Math.floor(Math.random() * Number(outcomes.length)) + 1]))
+  await routed.message.reply({ embeds: [eightBallResult(routed.v.o.question || '', outcomes[Math.floor(Math.random() * Number(outcomes.length)) + 1])] })
   return true
 }

@@ -56,7 +56,7 @@ export class CommandRouter {
       // Track my own messages when they are seen
       // this.bot.BotMonitor.LiveStatistics.increment('messages-sent')
       // Track if its a dm as well
-      if (message.channel.type === 'dm') {
+      if (message.channel.type === 'DM') {
         // this.bot.BotMonitor.LiveStatistics.increment('dms-sent')
       }
       return // Hard block
@@ -78,7 +78,7 @@ export class CommandRouter {
 
     // Update stored record if it gets this far with any react changes
     // console.log('router sees:', message.reactions.cache.array())
-    storedMessage.update('reactions', message.reactions.cache.array())
+    storedMessage.update('reactions', [...message.reactions.cache.values()])
     await this.bot.DB.update('messages', { _id: storedMessage._id }, storedMessage)
 
     // Ensure stored message has a route name to properly route it
@@ -147,14 +147,14 @@ export class CommandRouter {
       // Track my own messages when they are seen
       this.bot.BotMonitor.LiveStatistics.increment('messages-sent')
       // Track if its a dm as well
-      if (message.channel.type === 'dm') {
+      if (message.channel.type === 'DM') {
         this.bot.BotMonitor.LiveStatistics.increment('dms-sent')
       }
       return // Hard block
     }
 
     // Messages incoming as DMs
-    if (message.channel.type === 'dm') {
+    if (message.channel.type === 'DM') {
       this.bot.BotMonitor.LiveStatistics.increment('dms-received')
     } else {
       if (message.author.bot === false) {
@@ -163,7 +163,7 @@ export class CommandRouter {
       }
     }
 
-    const server = message.channel.type === 'dm' ? { prefix: undefined } : await this.bot.DB.get<TrackedServer>('servers', { id: message.guild.id })
+    const server = message.channel.type === 'DM' ? { prefix: undefined } : await this.bot.DB.get<TrackedServer>('servers', { id: message.guild.id })
     // Halt here if the guild is unknown
     if (!server) return
 
@@ -232,7 +232,7 @@ export class CommandRouter {
         // If no commands are available, don't print the fallback (this typically means
         // the whole route has restrited coammnds)
         if (allCategoryRoutes.length === 0) return // stop here
-        await message.channel.send(fallbackHelp(exampleUseOfCommand, examplesToAppend))
+        await message.channel.send({ embeds: [fallbackHelp(exampleUseOfCommand, examplesToAppend)] })
 
         // End routing
         // Track in an audit event
@@ -258,7 +258,7 @@ export class CommandRouter {
         args: args,
         author: message.author,
         bot: this.bot,
-        isDM: message.channel.type === 'dm',
+        isDM: message.channel.type === 'DM',
         message: message,
         prefix,
         route: route,
@@ -377,9 +377,9 @@ export class CommandRouter {
   private async processPermissions(routed: RouterRouted): Promise<ProcessedPermissions> {
     var checks: ProcessedPermissions = {
       // Permissions of user
-      hasAdministrator: !routed.isDM ? routed.message.member.hasPermission('ADMINISTRATOR') : false,
-      hasManageChannel: !routed.isDM ? routed.message.member.permissionsIn(routed.message.channel).has('MANAGE_CHANNELS') : false,
-      hasManageGuild: !routed.isDM ? routed.message.member.hasPermission('MANAGE_GUILD') : false
+      hasAdministrator: !routed.isDM ? routed.message.member.permissions.has('ADMINISTRATOR') : false,
+      hasManageChannel: !routed.isDM ? routed.message.member.permissionsIn(routed.message.channel.id).has('MANAGE_CHANNELS') : false,
+      hasManageGuild: !routed.isDM ? routed.message.member.permissions.has('MANAGE_GUILD') : false
     }
 
     // [IF: serverOnly is set] Command is clearly meant for only servers

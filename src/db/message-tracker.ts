@@ -45,7 +45,7 @@ export class MsgTracker {
             // Flags
             flagTrack: true,
             // React tracking
-            reactions: message.reactions.cache.array(),
+            reactions: [...message.reactions.cache.values()],
             reactionRoute: message.reactionRoute
           })
         )
@@ -63,7 +63,7 @@ export class MsgTracker {
         // Flags
         flagTrack: true,
         // React tracking
-        reactions: message.reactions.cache.array(),
+        reactions: [...message.reactions.cache.values()],
         reactionRoute: message.reactionRoute
       })
     )

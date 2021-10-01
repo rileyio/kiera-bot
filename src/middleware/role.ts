@@ -3,11 +3,11 @@ import { RouterRouted } from '@/router'
 export function hasRole(role: string | Array<string>) {
   return async (routed: RouterRouted) => {
     // If its a DM, stop processing
-    if (routed.message.channel.type === 'dm') return
+    if (routed.message.channel.type === 'DM') return
 
     routed.bot.Log.Router.log(
       `user's roles`,
-      routed.message.member.roles.cache.array().map((r) => r.name.toLocaleLowerCase())
+      [...routed.message.member.roles.cache.values()].map((r) => r.name.toLocaleLowerCase())
     )
 
     // Test if its an array
@@ -17,7 +17,7 @@ export function hasRole(role: string | Array<string>) {
       role.forEach((r) => {
         // Skip further processing if a positive match is found
         if (contains) return
-        contains = routed.message.member.roles.cache.array().find((sr) => sr.name.toLocaleLowerCase() === r) !== undefined
+        contains = [...routed.message.member.roles.cache.values()].find((sr) => sr.name.toLocaleLowerCase() === r) !== undefined
 
         routed.bot.Log.Router.log('hasRole', r, contains)
       })
@@ -28,8 +28,8 @@ export function hasRole(role: string | Array<string>) {
     }
 
     // Test if its a single string
-    if (routed.message.member.roles.cache.array().find((r) => r.name.toLocaleLowerCase() === role)) {
-      routed.bot.Log.Router.log('hasRole', role, routed.message.member.roles.cache.array().find((r) => r.name.toLocaleLowerCase() === role) !== undefined)
+    if ([...routed.message.member.roles.cache.values()].find((r) => r.name.toLocaleLowerCase() === role)) {
+      routed.bot.Log.Router.log('hasRole', role, [...routed.message.member.roles.cache.values()].find((r) => r.name.toLocaleLowerCase() === role) !== undefined)
 
       return routed
     }

@@ -38,23 +38,21 @@ interface StatsServerData {
 export function statsTopServerChannels(stats: StatsTopServerChannelsData) {
   var descriptionBuilt = `\n`
 
-  stats.data.forEach(channel => {
+  stats.data.forEach((channel) => {
     descriptionBuilt += `\`${channel.count}\` ${channel.name}\n`
   })
 
   return {
-    embed: {
-      title: `Top ${stats.data.length} Channels by Messages`,
-      description: descriptionBuilt,
-      color: 7413873,
-      timestamp: new Date(),
-      footer: {
-        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: 'Observed by Kiera'
-      },
-      thumbnail: {
-        url: stats.serverIcon
-      }
+    title: `Top ${stats.data.length} Channels by Messages`,
+    description: descriptionBuilt,
+    color: 7413873,
+    timestamp: new Date(),
+    footer: {
+      iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+      text: 'Observed by Kiera'
+    },
+    thumbnail: {
+      url: stats.serverIcon
     }
   }
 }
@@ -71,10 +69,15 @@ export function statsServer(stats: StatsServerData) {
   // Add Server User Joined & Leave stats
   descriptionBuilt += `Members Join : Leave: \`${stats.usersJoined}\` : \`${stats.usersLeft}\`\n`
   if (stats.usersJoined !== 0 || stats.usersLeft !== 0)
-    descriptionBuilt += `Server Size ${stats.usersJoined - stats.usersLeft > 0 ? 'Increased by' : 'Decreased by'}: \`${Math.round(
-      Math.abs((Math.round(((stats.memberCount - (stats.memberCount - (stats.usersJoined - stats.usersLeft))) / (stats.memberCount - (stats.usersJoined - stats.usersLeft))) * 1000) / 1000) * 100) *
-        100
-    ) / 100}%\``
+    descriptionBuilt += `Server Size ${stats.usersJoined - stats.usersLeft > 0 ? 'Increased by' : 'Decreased by'}: \`${
+      Math.round(
+        Math.abs(
+          (Math.round(((stats.memberCount - (stats.memberCount - (stats.usersJoined - stats.usersLeft))) / (stats.memberCount - (stats.usersJoined - stats.usersLeft))) * 1000) /
+            1000) *
+            100
+        ) * 100
+      ) / 100
+    }%\``
 
   // Add channels
   var channelsField = { name: `Top ${stats.data.channels.length} Channels by Messages`, value: '' }
@@ -100,19 +103,17 @@ export function statsServer(stats: StatsServerData) {
   }
 
   return {
-    embed: {
-      title: `Server Statistics`,
-      description: descriptionBuilt,
-      color: 7413873,
-      timestamp: new Date(),
-      footer: {
-        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: 'Observed by Kiera'
-      },
-      thumbnail: {
-        url: stats.serverIcon
-      },
-      fields
-    }
+    title: `Server Statistics`,
+    description: descriptionBuilt,
+    color: 7413873,
+    timestamp: new Date(),
+    footer: {
+      iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+      text: 'Observed by Kiera'
+    },
+    thumbnail: {
+      url: stats.serverIcon
+    },
+    fields
   }
 }

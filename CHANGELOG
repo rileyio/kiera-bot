@@ -1,5 +1,6 @@
 8.0.0-beta-2
 - Updated: discord.js from v12 to v13.
+- Updated: CK Update output to no longer contain inline fields.
 
 8.0.0-beta-1
 - Fixed: CK Update output should not show an x emoji when successful.

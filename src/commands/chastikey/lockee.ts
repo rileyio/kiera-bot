@@ -74,7 +74,9 @@ export async function history(routed: RouterRouted) {
     return true // Stop here
   }
 
-  await routed.message.reply(lockeeHistory(lockeeData, { showRating: !kieraUser.__notStored ? kieraUser.ChastiKey.ticker.showStarRatingScore : true }, routed.routerStats))
+  await routed.message.reply({
+    embeds: [lockeeHistory(lockeeData, { showRating: !kieraUser.__notStored ? kieraUser.ChastiKey.ticker.showStarRatingScore : true }, routed.routerStats)]
+  })
   return true
 }
 
@@ -89,7 +91,7 @@ export async function toggleLockInNickname(routed: RouterRouted) {
 
     // When Cleared, Clear the Nickname currently set of any padlocks
     if (routed.v.o.mode === 'clear') {
-      const user = routed.message.guild.member(routed.message.author.id)
+      const user = routed.message.guild.members.cache.get(routed.message.author.id)
       const currentNickname = user.nickname || user.user.username
       await user.setNickname(currentNickname.replace(/🔒|🔓/, ''))
       await routed.message.reply(routed.$render('ChastiKey.Nickname.ModeChangedAndCleared'))

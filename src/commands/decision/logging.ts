@@ -43,7 +43,7 @@ export async function fetchDecisionLog(routed: RouterRouted) {
   }
 
   const decision = log[0]
-  await routed.message.channel.send(decisionLogLast5(decision, routed.author))
+  await routed.message.channel.send({ embeds: [decisionLogLast5(decision, routed.author)] })
 
   return true
 }

@@ -84,9 +84,9 @@ export async function deleteChannelStats(routed: RouterRouted) {
 
     try {
       // Filter to watch for the correct user & text to be sent (+ remove any whitespace)
-      const filter: CollectorFilter = (response: Message) => response.content.toLowerCase().replace(' ', '') === 'yes' && response.author.id === routed.author.id
+      const filter = (response: Message) => response.content.toLowerCase().replace(' ', '') === 'yes' && response.author.id === routed.author.id
       // Message collector w/Filter - Wait up to a max of 1 min for exactly 1 reply from the required user
-      const collected = await routed.message.channel.awaitMessages(filter, { max: 1, time: 60000, errors: ['time'] })
+      const collected = await routed.message.channel.awaitMessages({ filter, max: 1, time: 60000, errors: ['time'] })
       // Delete the previous message at this stage
       await Utils.Channel.deleteMessage(routed.message.channel as TextChannel, collected.first().id)
       // Upon valid message collection, begin deletion - notify user

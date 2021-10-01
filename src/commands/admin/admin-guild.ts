@@ -14,7 +14,7 @@ export const Routes = ExportRoutes({
 })
 
 export async function checkPermissions(routed: RouterRouted) {
-  const botUser = routed.message.guild.member(routed.bot.client.user.id)
+  const botUser = routed.message.guild.members.cache.get(routed.bot.client.user.id)
   const requestingUser = routed.message.member
 
   await routed.message.reply(`\`\`\`json
@@ -22,52 +22,52 @@ ${JSON.stringify(
   {
     bot: {
       channel: {
-        ADD_REACTIONS: botUser.hasPermission('ADD_REACTIONS'),
-        ATTACH_FILES: botUser.hasPermission('ATTACH_FILES'),
-        EMBED_LINKS: botUser.hasPermission('EMBED_LINKS'),
-        MANAGE_MESSAGES: botUser.hasPermission('MANAGE_MESSAGES'),
-        USE_EXTERNAL_EMOJIS: botUser.hasPermission('USE_EXTERNAL_EMOJIS'),
-        READ_MESSAGE_HISTORY: botUser.hasPermission('READ_MESSAGE_HISTORY'),
-        SEND_TTS_MESSAGES: botUser.hasPermission('SEND_TTS_MESSAGES')
+        ADD_REACTIONS: botUser.permissions.has('ADD_REACTIONS'),
+        ATTACH_FILES: botUser.permissions.has('ATTACH_FILES'),
+        EMBED_LINKS: botUser.permissions.has('EMBED_LINKS'),
+        MANAGE_MESSAGES: botUser.permissions.has('MANAGE_MESSAGES'),
+        USE_EXTERNAL_EMOJIS: botUser.permissions.has('USE_EXTERNAL_EMOJIS'),
+        READ_MESSAGE_HISTORY: botUser.permissions.has('READ_MESSAGE_HISTORY'),
+        SEND_TTS_MESSAGES: botUser.permissions.has('SEND_TTS_MESSAGES')
       },
       guild: {
-        ADMINISTRATOR: botUser.hasPermission('ADMINISTRATOR'),
-        BAN_MEMBERS: botUser.hasPermission('BAN_MEMBERS'),
-        CHANGE_NICKNAME: botUser.hasPermission('CHANGE_NICKNAME'),
-        CREATE_INSTANT_INVITE: botUser.hasPermission('CREATE_INSTANT_INVITE'),
-        KICK_MEMBERS: botUser.hasPermission('KICK_MEMBERS'),
-        MANAGE_CHANNELS: botUser.hasPermission('MANAGE_CHANNELS'),
-        MANAGE_GUILD: botUser.hasPermission('MANAGE_GUILD'),
-        MANAGE_NICKNAMES: botUser.hasPermission('MANAGE_NICKNAMES'),
-        MANAGE_ROLES: botUser.hasPermission('MANAGE_ROLES'),
-        MANAGE_EMOJIS: botUser.hasPermission('MANAGE_EMOJIS'),
-        VIEW_AUDIT_LOG: botUser.hasPermission('VIEW_AUDIT_LOG')
+        ADMINISTRATOR: botUser.permissions.has('ADMINISTRATOR'),
+        BAN_MEMBERS: botUser.permissions.has('BAN_MEMBERS'),
+        CHANGE_NICKNAME: botUser.permissions.has('CHANGE_NICKNAME'),
+        CREATE_INSTANT_INVITE: botUser.permissions.has('CREATE_INSTANT_INVITE'),
+        KICK_MEMBERS: botUser.permissions.has('KICK_MEMBERS'),
+        MANAGE_CHANNELS: botUser.permissions.has('MANAGE_CHANNELS'),
+        MANAGE_GUILD: botUser.permissions.has('MANAGE_GUILD'),
+        MANAGE_NICKNAMES: botUser.permissions.has('MANAGE_NICKNAMES'),
+        MANAGE_ROLES: botUser.permissions.has('MANAGE_ROLES'),
+        MANAGE_EMOJIS: botUser.permissions.has('MANAGE_EMOJIS_AND_STICKERS'),
+        VIEW_AUDIT_LOG: botUser.permissions.has('VIEW_AUDIT_LOG')
       }
     },
     user: {
       channel: {
-        ADD_REACTIONS: requestingUser.hasPermission('ADD_REACTIONS'),
-        ATTACH_FILES: requestingUser.hasPermission('ATTACH_FILES'),
-        EMBED_LINKS: requestingUser.hasPermission('EMBED_LINKS'),
-        MANAGE_MESSAGES: requestingUser.hasPermission('MANAGE_MESSAGES'),
-        USE_EXTERNAL_EMOJIS: requestingUser.hasPermission('USE_EXTERNAL_EMOJIS'),
-        READ_MESSAGE_HISTORY: requestingUser.hasPermission('READ_MESSAGE_HISTORY'),
-        SEND_MESSAGES: requestingUser.hasPermission('SEND_MESSAGES'),
-        SEND_TTS_MESSAGES: requestingUser.hasPermission('SEND_TTS_MESSAGES'),
-        VIEW_CHANNEL: requestingUser.hasPermission('VIEW_CHANNEL')
+        ADD_REACTIONS: requestingUser.permissions.has('ADD_REACTIONS'),
+        ATTACH_FILES: requestingUser.permissions.has('ATTACH_FILES'),
+        EMBED_LINKS: requestingUser.permissions.has('EMBED_LINKS'),
+        MANAGE_MESSAGES: requestingUser.permissions.has('MANAGE_MESSAGES'),
+        USE_EXTERNAL_EMOJIS: requestingUser.permissions.has('USE_EXTERNAL_EMOJIS'),
+        READ_MESSAGE_HISTORY: requestingUser.permissions.has('READ_MESSAGE_HISTORY'),
+        SEND_MESSAGES: requestingUser.permissions.has('SEND_MESSAGES'),
+        SEND_TTS_MESSAGES: requestingUser.permissions.has('SEND_TTS_MESSAGES'),
+        VIEW_CHANNEL: requestingUser.permissions.has('VIEW_CHANNEL')
       },
       guild: {
-        ADMINISTRATOR: requestingUser.hasPermission('ADMINISTRATOR'),
-        BAN_MEMBERS: requestingUser.hasPermission('BAN_MEMBERS'),
-        CHANGE_NICKNAME: requestingUser.hasPermission('CHANGE_NICKNAME'),
-        CREATE_INSTANT_INVITE: requestingUser.hasPermission('CREATE_INSTANT_INVITE'),
-        KICK_MEMBERS: requestingUser.hasPermission('KICK_MEMBERS'),
-        MANAGE_CHANNELS: requestingUser.hasPermission('MANAGE_CHANNELS'),
-        MANAGE_GUILD: requestingUser.hasPermission('MANAGE_GUILD'),
-        MANAGE_NICKNAMES: requestingUser.hasPermission('MANAGE_NICKNAMES'),
-        MANAGE_ROLES: requestingUser.hasPermission('MANAGE_ROLES'),
-        MANAGE_EMOJIS: requestingUser.hasPermission('MANAGE_EMOJIS'),
-        VIEW_AUDIT_LOG: requestingUser.hasPermission('VIEW_AUDIT_LOG')
+        ADMINISTRATOR: requestingUser.permissions.has('ADMINISTRATOR'),
+        BAN_MEMBERS: requestingUser.permissions.has('BAN_MEMBERS'),
+        CHANGE_NICKNAME: requestingUser.permissions.has('CHANGE_NICKNAME'),
+        CREATE_INSTANT_INVITE: requestingUser.permissions.has('CREATE_INSTANT_INVITE'),
+        KICK_MEMBERS: requestingUser.permissions.has('KICK_MEMBERS'),
+        MANAGE_CHANNELS: requestingUser.permissions.has('MANAGE_CHANNELS'),
+        MANAGE_GUILD: requestingUser.permissions.has('MANAGE_GUILD'),
+        MANAGE_NICKNAMES: requestingUser.permissions.has('MANAGE_NICKNAMES'),
+        MANAGE_ROLES: requestingUser.permissions.has('MANAGE_ROLES'),
+        MANAGE_EMOJIS: requestingUser.permissions.has('MANAGE_EMOJIS_AND_STICKERS'),
+        VIEW_AUDIT_LOG: requestingUser.permissions.has('VIEW_AUDIT_LOG')
       }
     }
   },

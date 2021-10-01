@@ -82,12 +82,14 @@ export async function statsByTopChannels(routed: RouterRouted) {
     // Limit to just the top 20
     .slice(0, 20)
 
-  await routed.message.channel.send(
-    statsTopServerChannels({
-      serverIcon: routed.message.guild.iconURL(),
-      data: mappedData
-    })
-  )
+  await routed.message.channel.send({
+    embeds: [
+      statsTopServerChannels({
+        serverIcon: routed.message.guild.iconURL(),
+        data: mappedData
+      })
+    ]
+  })
 
   return true
 }
@@ -207,16 +209,18 @@ export async function serverStats(routed: RouterRouted) {
   const mappedUsersJoined = usersJoinedAndLeft.find((s) => s.type === ServerStatisticType.UserJoined) || { type: ServerStatisticType.UserJoined, count: 0 }
   const mappedUsersLeft = usersJoinedAndLeft.find((s) => s.type === ServerStatisticType.UserLeft) || { type: ServerStatisticType.UserLeft, count: 0 }
 
-  await routed.message.channel.send(
-    statsServer({
-      serverAgeTimestamp: routed.message.guild.createdTimestamp,
-      serverIcon: routed.message.guild.iconURL(),
-      memberCount: routed.message.guild.memberCount,
-      usersJoined: mappedUsersJoined.count,
-      usersLeft: mappedUsersLeft.count,
-      data: { channels: mappedChannelData, users: mappedUserData, reactions: mappedUserReactionsData }
-    })
-  )
+  await routed.message.channel.send({
+    embeds: [
+      statsServer({
+        serverAgeTimestamp: routed.message.guild.createdTimestamp,
+        serverIcon: routed.message.guild.iconURL(),
+        memberCount: routed.message.guild.memberCount,
+        usersJoined: mappedUsersJoined.count,
+        usersLeft: mappedUsersLeft.count,
+        data: { channels: mappedChannelData, users: mappedUserData, reactions: mappedUserReactionsData }
+      })
+    ]
+  })
 
   return true
 }

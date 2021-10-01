@@ -34,9 +34,9 @@ export async function search(routed: RouterRouted) {
   const cachedTimestampFromFetch = new TrackedBotSetting(await routed.bot.DB.get('settings', { key: 'bot.task.chastikey.api.fetch.ChastiKeyAPIRunningLocks' }))
   const cachedTimestamp = cachedTimestampFromFetch.value
 
-  ckUsers = ckUsers.map(ckUser => {
+  ckUsers = ckUsers.map((ckUser) => {
     return new UserData(ckUser)
   })
-  await routed.message.channel.send(searchResults(ckUsers, routed.routerStats, cachedTimestamp))
+  await routed.message.channel.send({ embeds: [searchResults(ckUsers, routed.routerStats, cachedTimestamp)] })
   return true
 }

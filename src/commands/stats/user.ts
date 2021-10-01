@@ -90,21 +90,23 @@ export async function statsForUser(routed: RouterRouted) {
     return stat
   })
 
-  await routed.message.channel.send(
-    statsUser({
-      userID: member.id,
-      avatar: member.user.avatar,
-      username: member.user.username,
-      discriminator: member.user.discriminator,
-      nickname: member.nickname,
-      created: member.user.createdTimestamp,
-      joinedTimestamp: member.joinedTimestamp,
-      messages: numberOfMessages,
-      reactions: numberOfReactions,
-      channelsReached: numberOfChannels,
-      data: mappedData
-    })
-  )
+  await routed.message.channel.send({
+    embeds: [
+      statsUser({
+        userID: member.id,
+        avatar: member.user.avatar,
+        username: member.user.username,
+        discriminator: member.user.discriminator,
+        nickname: member.nickname,
+        created: member.user.createdTimestamp,
+        joinedTimestamp: member.joinedTimestamp,
+        messages: numberOfMessages,
+        reactions: numberOfReactions,
+        channelsReached: numberOfChannels,
+        data: mappedData
+      })
+    ]
+  })
 
   return true
 }

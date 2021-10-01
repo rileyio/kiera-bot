@@ -84,15 +84,7 @@ export async function update(routed: RouterRouted) {
       })
 
     // User calling this command must be higher than the khRole to call update upon another user than themself
-    if (
-      !khRoles.find(
-        (r) =>
-          routed.message.guild
-            .member(routed.author.id)
-            .roles.cache.array()
-            .findIndex((rc) => rc.id === r.value) > -1
-      )
-    ) {
+    if (!khRoles.find((r) => [...routed.message.guild.members.cache.get(routed.author.id).roles.cache.values()].findIndex((rc) => rc.id === r.value) > -1)) {
       await routed.message.reply(routed.$render('ChastiKey.Error.KeyholderOrAboveRoleRequired'))
       return false // Stop the user here
     }
@@ -619,8 +611,8 @@ export async function update(routed: RouterRouted) {
     const lockeeStatusPref = dbUser.ChastiKey.preferences.lockee.showStatusInNickname
 
     // Check if kiera sits at or below the person calling -and- is not the server owner
-    const isServerOwner = discordUser.id === routed.message.guild.ownerID
-    const isPermissionsIssue = discordUser.roles.highest.comparePositionTo(routed.message.guild.member(routed.bot.client.user.id).roles.highest) > 0
+    const isServerOwner = discordUser.id === routed.message.guild.ownerId
+    const isPermissionsIssue = discordUser.roles.highest.comparePositionTo(routed.message.guild.members.cache.get(routed.bot.client.user.id).roles.highest) > 0
 
     if (!isPermissionsIssue && !isServerOwner) {
       // When user is in an active lock but has the (unlocked -or- no) emoji
@@ -839,6 +831,6 @@ export async function update(routed: RouterRouted) {
 
   // results += '```'
 
-  await routed.message.channel.send(managedUpdate(discordUser, changesImplemented))
+  await routed.message.channel.send({ embeds: [managedUpdate(discordUser, changesImplemented)] })
   return true
 }

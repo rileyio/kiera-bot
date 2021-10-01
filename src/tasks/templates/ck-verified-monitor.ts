@@ -25,16 +25,16 @@ export class ChastiKeyVerifiedRoleMonitor extends Task {
     try {
       // Get users who are eligible from the db, but only users who have verified their discord ID
       const stored = await this.Bot.DB.getMultiple<TrackedUser>('users', { 'ChastiKey.isVerified': true })
-      const guilds = this.Bot.client.guilds.cache.filter(g => g.id === '473856867768991744' || g.id === '389204362959781899').array()
+      const guilds = [...this.Bot.client.guilds.cache.filter((g) => g.id === '473856867768991744' || g.id === '389204362959781899').values()]
 
       console.log(`CK Verified Role Monitor::Users Eligible (from users) = ${stored.length}`)
 
       // Loop through guilds
       for (let guildIndex = 0; guildIndex < guilds.length; guildIndex++) {
         const guild = guilds[guildIndex]
-        const guildMembers = guild.members.cache.array()
-        const role = guild.roles.cache.find(r => r.name === this.verifiedRole)
-        const usersWithRoleAlready = role.members.filter(m => m.roles.cache.find(r => r.name === this.verifiedRole) !== undefined).array()
+        const guildMembers = [...guild.members.cache.values()]
+        const role = guild.roles.cache.find((r) => r.name === this.verifiedRole)
+        const usersWithRoleAlready = [...role.members.filter((m) => m.roles.cache.find((r) => r.name === this.verifiedRole) !== undefined).values()]
 
         console.log(`CK Verified Role Monitor::Guild = ${guild.name} (${guild.members.cache.size}), Role = ${this.verifiedRole}, Users w/Role = ${usersWithRoleAlready.length}`)
 
@@ -42,7 +42,7 @@ export class ChastiKeyVerifiedRoleMonitor extends Task {
         for (let memberIndex = 0; memberIndex < guildMembers.length; memberIndex++) {
           const member = guildMembers[memberIndex]
           // Are they in the stored collection? Yes:
-          if (stored.findIndex(sm => sm.id === member.id) > -1) {
+          if (stored.findIndex((sm) => sm.id === member.id) > -1) {
             // Do they NOT already have the role? If this is the case, add it
             if (!member.roles.cache.has(role.id)) {
               console.log(`CK Verified Role Monitor::Giving verified role = ${role.name}, To = @${member.user.username}#${member.user.discriminator}`)
@@ -68,9 +68,9 @@ export class ChastiKeyVerifiedRoleMonitor extends Task {
               await this.sleep(100)
               //Print in Audit log
               await this.Bot.channel.auditLog.send(
-                `:robot: **CK Verified Role Monitor**\nRemoving verified role = \`${role.name}\`\nServer = \`${guild.name}\`\nFrom = \`@${member.nickname || member.user.username}#${
-                  member.user.discriminator
-                }\``
+                `:robot: **CK Verified Role Monitor**\nRemoving verified role = \`${role.name}\`\nServer = \`${guild.name}\`\nFrom = \`@${
+                  member.nickname || member.user.username
+                }#${member.user.discriminator}\``
               )
               await this.sleep(100)
             }
@@ -88,6 +88,6 @@ export class ChastiKeyVerifiedRoleMonitor extends Task {
   }
 
   private sleep(time: number) {
-    return new Promise(resolve => setTimeout(resolve, time))
+    return new Promise((resolve) => setTimeout(resolve, time))
   }
 }

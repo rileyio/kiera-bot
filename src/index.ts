@@ -172,7 +172,7 @@ export class Bot {
     // this.client.on('messageReactionRemove', (react, user) => this.onMessageCachedReactionRemove(react, user))
 
     /// Update guilds info stored ///
-    for (const guild of this.client.guilds.cache.array()) {
+    for (const guild of [...this.client.guilds.cache.values()]) {
       // Check if Guild info is cached
       // console.log('Guild Connection/Update in Servers Collection', guild.id, guild.name)
       await this.DB.update(
@@ -181,8 +181,7 @@ export class Bot {
         {
           $set: {
             id: guild.id,
-            region: guild.region,
-            ownerID: guild.ownerID,
+            ownerID: guild.ownerId,
             name: guild.name,
             joinedTimestamp: guild.joinedTimestamp,
             lastSeen: Date.now()
@@ -220,8 +219,7 @@ export class Bot {
       {
         $set: {
           id: guild.id,
-          region: guild.region,
-          ownerID: guild.ownerID,
+          ownerID: guild.ownerId,
           name: guild.name,
           joinedTimestamp: guild.joinedTimestamp,
           lastSeen: Date.now(),

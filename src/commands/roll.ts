@@ -33,7 +33,7 @@ export async function roll(routed: RouterRouted) {
       for (let index = 0; index < routed.v.o.count1; index++) {
         set.push(Random.int(1, routed.v.o.count2))
       }
-      await routed.message.reply(rollDice(routed.v.o.count2 || 6, routed.v.o.count1, set))
+      await routed.message.reply({ embeds: [rollDice(routed.v.o.count2 || 6, routed.v.o.count1, set)] })
       return true
     }
 
@@ -45,6 +45,6 @@ export async function roll(routed: RouterRouted) {
   }
 
   const set: Array<any> = [Random.int(1, routed.v.o.count1 || 6)]
-  await routed.message.reply(rollDie(Number(routed.v.o.count1 || 6), set))
+  await routed.message.reply({ embeds: [rollDie(Number(routed.v.o.count1 || 6), set)] })
   return true
 }

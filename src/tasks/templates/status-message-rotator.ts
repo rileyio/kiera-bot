@@ -29,8 +29,8 @@ export class StatusMessageRotator extends Task {
       const outcome = options[random]
 
       // Set the status
-      await this.Bot.client.user.setPresence({
-        activity: { name: sb(outcome, { size: this.Bot.client.guilds.cache.size }) || hasStoredStatus ? storedStatus.value : '' },
+      this.Bot.client.user.setPresence({
+        activities: [{ name: sb(outcome, { size: this.Bot.client.guilds.cache.size }) || hasStoredStatus ? storedStatus.value : '' }],
         status: 'online'
       })
 

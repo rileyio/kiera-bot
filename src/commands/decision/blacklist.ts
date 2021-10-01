@@ -66,7 +66,7 @@ export async function blacklistUser(routed: RouterRouted) {
   if (decisionFromDB) {
     // Check if user snowflake passed is valid
     const user: User = await routed.bot.client.users
-      .fetch(routed.v.o.user, false)
+      .fetch(routed.v.o.user)
       .then((u) => {
         return u
       })
@@ -118,7 +118,7 @@ export async function unblacklistUser(routed: RouterRouted) {
   if (decisionFromDB) {
     // Check if user snowflake passed is valid
     const user: User = await routed.bot.client.users
-      .fetch(routed.v.o.user, false)
+      .fetch(routed.v.o.user)
       .then((u) => {
         return u
       })
@@ -178,7 +178,7 @@ export async function showUserBlacklist(routed: RouterRouted) {
       for (var i = 0; i < decision.userBlacklist.length; i++) {
         const uid = decision.userBlacklist[i]
         const user: User = await routed.bot.client.users
-          .fetch(uid, false)
+          .fetch(uid)
           .then((u) => {
             return u
           })

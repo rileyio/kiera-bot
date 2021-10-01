@@ -31,53 +31,55 @@ export async function getBotStats(routed: RouterRouted) {
 
   const combined = `${timeToShowDays} ${timeToShowHours}:${timeToShowMins}:${timeToShowSecs}`
 
-  await routed.message.channel.send('Here are some of my statistics!!', {
-    embed: {
-      title: 'Bot Statistics',
-      color: 5472175,
-      timestamp: Date.now(),
-      footer: {
-        text: 'Generated'
-      },
-      fields: [
-        {
-          name: 'Uptime',
-          value: `\`${combined}\``,
-          inline: false
+  await routed.message.channel.send({
+    embeds: [
+      {
+        title: 'Bot Statistics',
+        color: 5472175,
+        timestamp: Date.now(),
+        footer: {
+          text: 'Generated'
         },
+        fields: [
+          {
+            name: 'Uptime',
+            value: `\`${combined}\``,
+            inline: false
+          },
 
-        {
-          name: '------------',
-          value: 'Messages',
-          inline: false
-        },
-        {
-          name: '~ Stat ~',
-          value: 'seen\nsent\ntracked',
-          inline: true
-        },
-        {
-          name: '#',
-          value: `\`${stats.messages.seen}\`\n\`${stats.messages.sent}\`\n\`${stats.messages.tracked}\``,
-          inline: true
-        },
-        {
-          name: '------------',
-          value: 'Commands',
-          inline: false
-        },
-        {
-          name: '~ Stat ~',
-          value: 'routed\ncompleted\ninvalid',
-          inline: true
-        },
-        {
-          name: '#',
-          value: `\`${stats.commands.routed}\`\n\`${stats.commands.completed}\`\n\`${stats.commands.invalid}\``,
-          inline: true
-        }
-      ]
-    }
+          {
+            name: '------------',
+            value: 'Messages',
+            inline: false
+          },
+          {
+            name: '~ Stat ~',
+            value: 'seen\nsent\ntracked',
+            inline: true
+          },
+          {
+            name: '#',
+            value: `\`${stats.messages.seen}\`\n\`${stats.messages.sent}\`\n\`${stats.messages.tracked}\``,
+            inline: true
+          },
+          {
+            name: '------------',
+            value: 'Commands',
+            inline: false
+          },
+          {
+            name: '~ Stat ~',
+            value: 'routed\ncompleted\ninvalid',
+            inline: true
+          },
+          {
+            name: '#',
+            value: `\`${stats.commands.routed}\`\n\`${stats.commands.completed}\`\n\`${stats.commands.invalid}\``,
+            inline: true
+          }
+        ]
+      }
+    ]
   })
 
   return true

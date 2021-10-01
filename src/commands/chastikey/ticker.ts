@@ -189,23 +189,19 @@ export async function getTicker(routed: RouterRouted) {
   // If the type is only for a single ticker, return just that
   routed.bot.Log.Command.log(Utils.ChastiKey.generateTickerURL(user.ChastiKey))
   if (user.ChastiKey.ticker.type === 1 || user.ChastiKey.ticker.type === 2) {
-    await routed.message.channel.send(
-      routed.$render('ChastiKey.Ticker.IncorrectTimer', { startDate: user.ChastiKey.ticker.date || false, wasDateOverridden: is3rdPassed && is3rdDate }),
-      {
-        files: [new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey), `${Date.now()}-ticker.png`)]
-      }
-    )
+    await routed.message.channel.send({
+      content: routed.$render('ChastiKey.Ticker.IncorrectTimer', { startDate: user.ChastiKey.ticker.date || false, wasDateOverridden: is3rdPassed && is3rdDate }),
+      files: [new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey), `${Date.now()}-ticker.png`)]
+    })
     return true
   } else {
-    await routed.message.channel.send(
-      routed.$render('ChastiKey.Ticker.IncorrectTimer', { startDate: user.ChastiKey.ticker.date || false, wasDateOverridden: is3rdPassed && is3rdDate }),
-      {
-        files: [
-          new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey, 1), `${Date.now()}-ticker-lockee.png`),
-          new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey, 2), `${Date.now()}-ticker-keyholder.png`)
-        ]
-      }
-    )
+    await routed.message.channel.send({
+      content: routed.$render('ChastiKey.Ticker.IncorrectTimer', { startDate: user.ChastiKey.ticker.date || false, wasDateOverridden: is3rdPassed && is3rdDate }),
+      files: [
+        new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey, 1), `${Date.now()}-ticker-lockee.png`),
+        new MessageAttachment(Utils.ChastiKey.generateTickerURL(user.ChastiKey, 2), `${Date.now()}-ticker-keyholder.png`)
+      ]
+    })
     return true
   }
 }

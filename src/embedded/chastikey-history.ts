@@ -120,15 +120,13 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
 
   // Embed Message Block
   const messageBlock = {
-    embed: {
-      title: `${lockeeData.data.discordID ? '<:verified:625628727820288000> ' : ''}\`${lockeeData.data.username}\` - ChastiKey Lockee Statistics - Historical View`,
-      description: description,
-      color: 9125611,
-      timestamp: Date.now(),
-      footer: {
-        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: `(${routerStats.performance}ms) Cached by Kiera`
-      }
+    title: `${lockeeData.data.discordID ? '<:verified:625628727820288000> ' : ''}\`${lockeeData.data.username}\` - ChastiKey Lockee Statistics - Historical View`,
+    description: description,
+    color: 9125611,
+    timestamp: Date.now(),
+    footer: {
+      iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+      text: `(${routerStats.performance}ms) Cached by Kiera`
     }
   }
 

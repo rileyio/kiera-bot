@@ -1,8 +1,8 @@
-export function flipCoin(outcome: number) {
+import { Message, MessageEmbed, MessagePayload } from 'discord.js'
+
+export function flipCoin(outcome: number): Partial<MessageEmbed> {
   return {
-    embed: {
-      title: outcome === 0 ? '`Heads`' : '`Tails`',
-      color: 14553782
-    }
+    title: outcome === 0 ? '`Heads`' : '`Tails`',
+    color: 14553782
   }
 }

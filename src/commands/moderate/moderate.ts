@@ -86,7 +86,7 @@ export async function mute(routed: RouterRouted) {
   }
 
   // Does user have a role above Kiera?
-  const untouchableRoles = targetUser.roles.cache.array().filter((r) => {
+  const untouchableRoles = [...targetUser.roles.cache.values()].filter((r) => {
     return r.position >= kieraInGuild.roles.highest.position || r.name === 'Nitro Booster'
   })
   const hasUntouchableRoles = untouchableRoles.length > 0
@@ -99,7 +99,9 @@ export async function mute(routed: RouterRouted) {
 
   // Now assign the user the mute role removing all previous as well
   // Remove the conflicting roles from the collection being updated
-  var rolesToRemove = hasUntouchableRoles ? targetUser.roles.cache.filter((r) => untouchableRoles.findIndex((rr) => rr.id === r.id) === -1).array() : targetUser.roles.cache.array()
+  var rolesToRemove = hasUntouchableRoles
+    ? [...targetUser.roles.cache.filter((r) => untouchableRoles.findIndex((rr) => rr.id === r.id) === -1).values()]
+    : [...targetUser.roles.cache.values()]
   // Remove @everyone as this is unmanagable
   rolesToRemove.splice(
     rolesToRemove.findIndex((rr) => rr.name === '@everyone'),

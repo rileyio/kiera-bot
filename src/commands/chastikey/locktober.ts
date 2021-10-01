@@ -59,12 +59,12 @@ export async function statsLocktober(routed: RouterRouted) {
   const apartOfLocktober = stored.findIndex((lockee) => lockee.discordID === routed.author.id) > -1
 
   // Set cached timestamp for running locks
-  const cachedTimestampFromFetch = await routed.bot.DB.get('scheduled-jobs', { name: 'ChastiKeyAPILocktober2020' }) as Agenda.JobAttributes
+  const cachedTimestampFromFetch = (await routed.bot.DB.get('scheduled-jobs', { name: 'ChastiKeyAPILocktober2020' })) as Agenda.JobAttributes
   const cachedTimestamp = cachedTimestampFromFetch.lastFinishedAt
 
-  await routed.message.channel.send(
-    locktoberStats({ participants: stored.length, verified: verifiedCount }, breakdownByKH, apartOfLocktober, true, routed.routerStats, cachedTimestamp)
-  )
+  await routed.message.channel.send({
+    embeds: [locktoberStats({ participants: stored.length, verified: verifiedCount }, breakdownByKH, apartOfLocktober, true, routed.routerStats, cachedTimestamp)]
+  })
   // Successful end
   return true
 }

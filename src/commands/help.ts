@@ -27,7 +27,7 @@ export const Routes = ExportRoutes(
 export async function genericFallback(routed: RouterRouted) {
   // Check ChastiKey enabled state in db
   var ckEnabledState =
-    routed.message.channel.type === 'dm'
+    routed.message.channel.type === 'DM'
       ? { value: false, state: true }
       : new TrackedServerSetting(
           await routed.bot.DB.get<TrackedServerSetting>('server-settings', {
@@ -51,15 +51,17 @@ export async function genericFallback(routed: RouterRouted) {
   helpBlock += Utils.en.help.mainStats + '\n'
 
   await routed.message.reply({
-    embed: {
-      title: `**Commands** *(Note: Some may not be server enabled)*`,
-      description: routed.$sb(helpBlock),
-      color: 9125611,
-      footer: {
-        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: `Generated from the current version ${routed.bot.version}`
+    embeds: [
+      {
+        title: `**Commands** *(Note: Some may not be server enabled)*`,
+        description: routed.$sb(helpBlock),
+        color: 9125611,
+        footer: {
+          iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+          text: `Generated from the current version ${routed.bot.version}`
+        }
       }
-    }
+    ]
   })
   return true
 }
@@ -67,7 +69,7 @@ export async function genericFallback(routed: RouterRouted) {
 export async function commandHelp(routed: RouterRouted) {
   // Check ChastiKey enabled state in db
   var ckEnabledState =
-    routed.message.channel.type === 'dm'
+    routed.message.channel.type === 'DM'
       ? { value: false, state: true }
       : new TrackedServerSetting(
           await routed.bot.DB.get<TrackedServerSetting>('server-settings', {
@@ -83,15 +85,17 @@ export async function commandHelp(routed: RouterRouted) {
   // Determine if there's a route,if not inform the user
   if (Utils.en.help[routed.v.o.command]) {
     await routed.message.reply({
-      embed: {
-        title: routed.$sb(`**\`{{prefix}}${routed.v.o.command}\` Command Usage**`),
-        description: routed.$sb(Utils.en.help[routed.v.o.command]),
-        color: 9125611,
-        footer: {
-          icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-          text: `Generated from the current version ${routed.bot.version}`
+      embeds: [
+        {
+          title: routed.$sb(`**\`{{prefix}}${routed.v.o.command}\` Command Usage**`),
+          description: routed.$sb(Utils.en.help[routed.v.o.command]),
+          color: 9125611,
+          footer: {
+            iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+            text: `Generated from the current version ${routed.bot.version}`
+          }
         }
-      }
+      ]
     })
   } else {
     await routed.message.reply(routed.$render('Generic.Error.HelpCommandMissing'))

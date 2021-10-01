@@ -76,9 +76,9 @@ export async function pingPong(routed: RouterRouted) {
   )
 
   const ms = Math.round((performance.now() - startTime) * 100) / 100
-  const response = await routed.message.reply(
-    pongResponse(routed.bot.BotMonitor.DBMonitor.pingTotalLatency / routed.bot.BotMonitor.DBMonitor.pingCount, routed.routerStats.performance)
-  )
+  const response = await routed.message.reply({
+    embeds: [pongResponse(routed.bot.BotMonitor.DBMonitor.pingTotalLatency / routed.bot.BotMonitor.DBMonitor.pingCount, routed.routerStats.performance)]
+  })
 
   if (!Array.isArray(response)) {
     await routed.bot.MsgTracker.trackMsg(
@@ -134,7 +134,7 @@ export async function setStatus(routed: RouterRouted) {
   )
 
   // Set the status
-  await routed.bot.client.user.setPresence({ activity: { name: routed.v.o.text || '' }, status: 'online' })
+  await routed.bot.client.user.setPresence({ activities: [{ name: routed.v.o.text || '' }], status: 'online' })
 
   return true
 }

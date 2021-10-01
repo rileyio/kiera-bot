@@ -51,7 +51,7 @@ export class TrackedMessageReaction {
     // When incoming is just a raw Discord.MessageReaction
     if (Object(init).hasOwnProperty('message')) {
       const r = <MessageReaction>init
-      this.users = r.users.cache.array().map(u => u.id)
+      this.users = [...r.users.cache.values()].map(u => u.id)
       this.count = r.count
       this.emoji = { id: r.emoji.id, name: r.emoji.name }
     } else {

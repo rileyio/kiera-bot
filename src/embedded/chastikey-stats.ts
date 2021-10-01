@@ -103,24 +103,22 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
   })
 
   const messageBlock = {
-    embed: {
-      title: routed.$render('ChastiKey.Stats.Lockee.Title', {
-        isVerified: lockeeData.data.discordID ? true : false,
-        verifiedEmoji: '<:verified:625628727820288000> ',
-        username: lockeeData.data.username
-      }),
-      description: description,
-      color: 9125611,
-      timestamp: Date.now(),
-      footer: {
-        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: `Runtime ${routed.routerStats.performance}ms :: Requested By ${routed.routerStats.user} :: Retrieved by Kiera`
-      },
-      // thumbnail: {
-      //   url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
-      // },
-      fields: fields
-    }
+    title: routed.$render('ChastiKey.Stats.Lockee.Title', {
+      isVerified: lockeeData.data.discordID ? true : false,
+      verifiedEmoji: '<:verified:625628727820288000> ',
+      username: lockeeData.data.username
+    }),
+    description: description,
+    color: 9125611,
+    timestamp: Date.now(),
+    footer: {
+      iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+      text: `Runtime ${routed.routerStats.performance}ms :: Requested By ${routed.routerStats.user} :: Retrieved by Kiera`
+    },
+    // thumbnail: {
+    //   url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
+    // },
+    fields: fields
   }
 
   // Left in for debugging locally
@@ -323,19 +321,17 @@ export function keyholderStats(
   }
 
   return {
-    embed: {
-      title: `${keyholderData.isVerified ? '<:verified:625628727820288000> ' : ''}\`${keyholderData.username}\` - ChastiKey Keyholder Statistics`,
-      description: description,
-      color: 9125611,
-      timestamp: cachedTimestamp,
-      footer: {
-        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
-      }
-      // thumbnail: {
-      //   url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
-      // }
+    title: `${keyholderData.isVerified ? '<:verified:625628727820288000> ' : ''}\`${keyholderData.username}\` - ChastiKey Keyholder Statistics`,
+    description: description,
+    color: 9125611,
+    timestamp: cachedTimestamp,
+    footer: {
+      iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+      text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
     }
+    // thumbnail: {
+    //   url: 'https://cdn.discordapp.com/icons/473856867768991744/bab9c92c0183853f180fea791be0c5f4.jpg?size=256'
+    // }
   }
 }
 
@@ -359,22 +355,20 @@ export function sharedKeyholdersStats(data: Array<TrackedSharedKeyholderStatisti
   })
 
   return {
-    embed: {
-      title: `Lockees with Multiple Keyholders`,
-      description: desc,
-      color: 9125611,
-      timestamp: cachedTimestamp,
-      footer: {
-        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
-      },
-      fields: data.map((lockee) => {
-        return {
-          name: lockee._id,
-          value: `Active Locks: \`${lockee.count}\`\nUnique Keyholders: \`${lockee.uniqueKHCount}\`\n\`\`\`${lockee.keyholders.sort().join(', ')}\`\`\``
-        }
-      })
-    }
+    title: `Lockees with Multiple Keyholders`,
+    description: desc,
+    color: 9125611,
+    timestamp: cachedTimestamp,
+    footer: {
+      iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+      text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
+    },
+    fields: data.map((lockee) => {
+      return {
+        name: lockee._id,
+        value: `Active Locks: \`${lockee.count}\`\nUnique Keyholders: \`${lockee.uniqueKHCount}\`\n\`\`\`${lockee.keyholders.sort().join(', ')}\`\`\``
+      }
+    })
   }
 }
 
@@ -395,18 +389,16 @@ export function keyholderLockees(data: Array<TrackedKeyholderLockeesStatistics>,
   const lockeeNames = data.map((l) => l._id)
 
   return {
-    embed: {
-      title: `Keyholder Lockees`,
-      description:
-        lockeeNames.length > 0
-          ? `These are all lockees \`(${lockeeNames.length})\` under keyholder \`${keyholderName}\` who are currently locked\n\`\`\`${lockeeNames.join(`, `)}\`\`\``
-          : `\`${keyholderName}\` has no lockees presently.`,
-      color: 9125611,
-      timestamp: cachedTimestamp,
-      footer: {
-        icon_url: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
-        text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
-      }
+    title: `Keyholder Lockees`,
+    description:
+      lockeeNames.length > 0
+        ? `These are all lockees \`(${lockeeNames.length})\` under keyholder \`${keyholderName}\` who are currently locked\n\`\`\`${lockeeNames.join(`, `)}\`\`\``
+        : `\`${keyholderName}\` has no lockees presently.`,
+    color: 9125611,
+    timestamp: cachedTimestamp,
+    footer: {
+      iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+      text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
     }
   }
 }

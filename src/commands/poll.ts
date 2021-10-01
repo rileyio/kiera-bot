@@ -246,7 +246,7 @@ export async function startPoll(routed: RouterRouted) {
     1
 
     // Print message to chat for members to vote upon
-    const messageSent = (await routed.message.channel.send(poll(storedPoll))) as Message
+    const messageSent = (await routed.message.channel.send({ embeds: [poll(storedPoll)] })) as Message
 
     // Track Message
     const messageID = await routed.bot.MsgTracker.trackNewMsg(messageSent, { reactionRoute: 'poll-react-vote' })

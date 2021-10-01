@@ -115,7 +115,7 @@ export async function getLockeeStats(routed: RouterRouted) {
         routed.user
 
   // Generate compiled stats
-  await routed.message.channel.send(lockeeStats(lockeeData, { showRating: kieraUser.ChastiKey.ticker.showStarRatingScore }, routed))
+  await routed.message.channel.send({ embeds: [lockeeStats(lockeeData, { showRating: kieraUser.ChastiKey.ticker.showStarRatingScore }, routed)] })
 
   return true
 }
@@ -215,12 +215,14 @@ export async function getKeyholderStats(routed: RouterRouted) {
   const cachedTimestamp = Number(cachedTimestampFromFetch.lastFinishedAt)
 
   // Send stats
-  await routed.message.channel.send(
-    keyholderStats(keyholderData.data, cachedRunningLocks, cachedTimestamp, routed.routerStats, {
-      showRating: user.ChastiKey.ticker.showStarRatingScore,
-      showAverage: user.ChastiKey.preferences.keyholder.showAverage
-    })
-  )
+  await routed.message.channel.send({
+    embeds: [
+      keyholderStats(keyholderData.data, cachedRunningLocks, cachedTimestamp, routed.routerStats, {
+        showRating: user.ChastiKey.ticker.showStarRatingScore,
+        showAverage: user.ChastiKey.preferences.keyholder.showAverage
+      })
+    ]
+  })
 
   // Successful end
   return true
@@ -275,7 +277,7 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
   const cachedTimestampFromFetch = await routed.bot.DB.get<{ name: string; lastFinishedAt: string }>('scheduled-jobs', { name: 'ChastiKeyAPIRunningLocks' })
   const cachedTimestamp = Number(cachedTimestampFromFetch.lastFinishedAt)
 
-  await routed.message.reply(sharedKeyholdersStats(activeLocks, routed.v.o.user, routed.routerStats, cachedTimestamp))
+  await routed.message.reply({ embeds: [sharedKeyholdersStats(activeLocks, routed.v.o.user, routed.routerStats, cachedTimestamp)] })
 
   // Successful end
   return true
@@ -330,7 +332,7 @@ export async function getKeyholderLockees(routed: RouterRouted) {
   const cachedTimestampFromFetch = await routed.bot.DB.get<{ name: string; lastFinishedAt: string }>('scheduled-jobs', { name: 'ChastiKeyAPIRunningLocks' })
   const cachedTimestamp = Number(cachedTimestampFromFetch.lastFinishedAt)
 
-  await routed.message.reply(keyholderLockees(activeLocks, keyholderData.data.username, routed.routerStats, cachedTimestamp))
+  await routed.message.reply({ embeds: [keyholderLockees(activeLocks, keyholderData.data.username, routed.routerStats, cachedTimestamp)] })
 
   // Successful end
   return true
