@@ -128,7 +128,8 @@ export async function mapSpecialRoles(routed: RouterRouted) {
     unlocked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.1`),
     locked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.2`),
     locktober2019: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.3`),
-    locktober2020: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.4`)
+    locktober2020: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.4`),
+    locktober2021: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.5`)
   }
 
   if (((routed.v.o.index >= 1 && routed.v.o.index <= 55) || (routed.v.o.index >= 101 && routed.v.o.index <= 105)) && routed.v.o.index && routed.v.o.roleid) {
@@ -156,7 +157,8 @@ export async function mapSpecialRoles(routed: RouterRouted) {
       unlocked: alreadyMappedIDs.unlocked ? `<@&${alreadyMappedIDs.unlocked.value}>` : ``,
       locked: alreadyMappedIDs.locked ? `<@&${alreadyMappedIDs.locked.value}>` : ``,
       locktober2019: alreadyMappedIDs.locktober2019 ? `<@&${alreadyMappedIDs.locktober2019.value}>` : ``,
-      locktober2020: alreadyMappedIDs.locktober2020 ? `<@&${alreadyMappedIDs.locktober2020.value}>` : ``
+      locktober2020: alreadyMappedIDs.locktober2020 ? `<@&${alreadyMappedIDs.locktober2020.value}>` : ``,
+      locktober2021: alreadyMappedIDs.locktober2021 ? `<@&${alreadyMappedIDs.locktober2021.value}>` : ``
     })
   )
 

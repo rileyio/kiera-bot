@@ -71,7 +71,8 @@ export async function update(routed: RouterRouted) {
     unlocked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.1`),
     locked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.2`),
     locktober2019: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.3`),
-    locktober2020: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.4`)
+    locktober2020: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.4`),
+    locktober2021: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.5`)
   }
 
   // Check if user calling this command is targeting a different user
@@ -183,6 +184,7 @@ export async function update(routed: RouterRouted) {
     unlocked: undefined,
     locktober2019: undefined,
     locktober2020: undefined,
+    locktober2021: undefined,
     renownedKeyholder: undefined,
     distinguishedKeyholder: undefined,
     establishedKeyholder: undefined,
@@ -211,6 +213,7 @@ export async function update(routed: RouterRouted) {
     unlocked: false,
     locktober2019: false,
     locktober2020: false,
+    locktober2021: false,
     renownedKeyholder: false,
     distinguishedKeyholder: false,
     establishedKeyholder: false,
@@ -239,6 +242,7 @@ export async function update(routed: RouterRouted) {
     if (alreadyMappedIDs.locked) if (r.id === alreadyMappedIDs.locked.value) role.locked = r
     if (alreadyMappedIDs.locktober2019) if (r.id === alreadyMappedIDs.locktober2019.value) role.locktober2019 = r
     if (alreadyMappedIDs.locktober2020) if (r.id === alreadyMappedIDs.locktober2020.value) role.locktober2020 = r
+    if (alreadyMappedIDs.locktober2021) if (r.id === alreadyMappedIDs.locktober2021.value) role.locktober2021 = r
     // Keyholder
     if (alreadyMappedIDs.renownedKeyholder) if (r.id === alreadyMappedIDs.renownedKeyholder.value) role.renownedKeyholder = r
     if (alreadyMappedIDs.distinguishedKeyholder) if (r.id === alreadyMappedIDs.distinguishedKeyholder.value) role.distinguishedKeyholder = r
@@ -267,6 +271,7 @@ export async function update(routed: RouterRouted) {
     if (alreadyMappedIDs.locked) if (r.id === alreadyMappedIDs.locked.value) discordUserHasRole.locked = true
     if (alreadyMappedIDs.locktober2019) if (r.id === alreadyMappedIDs.locktober2019.value) discordUserHasRole.locktober2019 = true
     if (alreadyMappedIDs.locktober2020) if (r.id === alreadyMappedIDs.locktober2020.value) discordUserHasRole.locktober2020 = true
+    if (alreadyMappedIDs.locktober2021) if (r.id === alreadyMappedIDs.locktober2021.value) discordUserHasRole.locktober2021 = true
     // Keyholder
     if (alreadyMappedIDs.renownedKeyholder) if (r.id === alreadyMappedIDs.renownedKeyholder.value) discordUserHasRole.renownedKeyholder = true
     if (alreadyMappedIDs.distinguishedKeyholder) if (r.id === alreadyMappedIDs.distinguishedKeyholder.value) discordUserHasRole.distinguishedKeyholder = true
@@ -539,7 +544,7 @@ export async function update(routed: RouterRouted) {
   ///////////////////////////////////////
   /// Role Update: Locktober          ///
   ///////////////////////////////////////
-  if (role.locktober2020 || role.locktober2019) {
+  if (role.locktober2021 || role.locktober2020 || role.locktober2019) {
     // * Performance Start: Locktober * //
     updatePerformance.locktober.start = performance.now()
     changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Locktober' })
@@ -548,6 +553,7 @@ export async function update(routed: RouterRouted) {
       // Locktober Data (DB Cached)
       const isLocktoberParticipant2019 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2019', { discordID: discordUser.id })
       const isLocktoberParticipant2020 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2020', { discordID: discordUser.id })
+      const isLocktoberParticipant2021 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2021', { discordID: discordUser.id })
 
       // * 2019 * //
       if (isLocktoberParticipant2019) {
@@ -580,6 +586,23 @@ export async function update(routed: RouterRouted) {
         if (discordUserHasRole.locktober2020) {
           await discordUser.roles.remove(role.locktober2020)
           changesImplemented.push({ action: 'removed', category: 'locktober', type: 'role', result: role.locktober2020.name })
+        }
+      }
+
+      // * 2021 * //
+      if (isLocktoberParticipant2021) {
+        // User is found in participants list, is missing the role, add the role
+        if (!discordUserHasRole.locktober2021) {
+          await discordUser.roles.add(role.locktober2021)
+          changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: role.locktober2021.name })
+        }
+      }
+      // Else: User is not longer in the participants list
+      else {
+        // User is NOT found in participants list, remove the role
+        if (discordUserHasRole.locktober2021) {
+          await discordUser.roles.remove(role.locktober2021)
+          changesImplemented.push({ action: 'removed', category: 'locktober', type: 'role', result: role.locktober2021.name })
         }
       }
     } catch (e) {

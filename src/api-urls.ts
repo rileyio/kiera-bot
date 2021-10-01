@@ -48,6 +48,7 @@ namespace ChastiKey {
    */
   export const CachedLocktober2019: string = `https://chastikey.com/api/kiera/locked_for_locktober.json`
   export const CachedLocktober2020: string = `https://chastikey.com/api/kiera/locked_for_locktober_2020.json`
+  export const CachedLocktober2021: string = `https://chastikey.com/api/kiera/locked_for_locktober_2021.json`
   /**
    * **Cached Dataset with Lockee data**
    * 

@@ -30,6 +30,7 @@ export async function getMyDataTotals(routed: WebRouted) {
     { thirdParty: false, scope: 'kiera', name: 'Users', count: await routed.Bot.DB.count('users', { id: routed.session.userID }) },
     { thirdParty: true, scope: 'chastikey', name: 'Locktober 2019', count: await routed.Bot.DB.count('ck-locktober-2019', { discordID: routed.session.userID }) },
     { thirdParty: true, scope: 'chastikey', name: 'Locktober 2020', count: await routed.Bot.DB.count('ck-locktober-2020', { discordID: routed.session.userID }) },
+    { thirdParty: true, scope: 'chastikey', name: 'Locktober 2021', count: await routed.Bot.DB.count('ck-locktober-2021', { discordID: routed.session.userID }) },
     { thirdParty: true, scope: 'chastikey', name: 'Running Locks', count: await routed.Bot.DB.count('ck-running-locks', { discordID: routed.session.userID }) },
     { thirdParty: true, scope: 'chastikey', name: 'Users', count: await routed.Bot.DB.count('ck-users', { discordID: routed.session.userID }) }
   ]

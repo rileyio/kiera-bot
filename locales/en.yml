@@ -185,6 +185,7 @@ ChastiKey:
         `2` Locked {{{locked}}}
         `3` Locktober 2019 {{{locktober2019}}}
         `4` Locktober 2020 {{{locktober2020}}}
+        `5` Locktober 2021 {{{locktober2021}}}
 
       Example usage: `{{{prefix}}}ck map special role 1 627557066382245888`
 

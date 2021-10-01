@@ -36,6 +36,13 @@ export class ChastiKeyAPILocktober2020 extends ChastiKeyAPIFetchAndStoreLegacy {
   dbCollection: Collections = 'ck-locktober-2020'
 }
 
+export class ChastiKeyAPILocktober2021 extends ChastiKeyAPIFetchAndStoreLegacy {
+  // Setting the props for this Task
+  name = 'ChastiKeyAPILocktober2021'
+  APIEndpoint = APIUrls.ChastiKey.CachedLocktober2021
+  dbCollection: Collections = 'ck-locktober-2021'
+}
+
 export class ChastiKeyBackgroundVerifiedMonitor extends ChastiKeyVerifiedRoleMonitor {
   // Setting the props for this Task
   name = 'ChastiKeyBackgroundVerifiedMonitor'

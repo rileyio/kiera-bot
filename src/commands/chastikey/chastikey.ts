@@ -227,7 +227,9 @@ export async function roleCounts(routed: RouterRouted) {
     ckVerified: 0,
     locked: 0,
     unlocked: 0,
-    locktober: 0,
+    locktober2019: 0,
+    locktober2020: 0,
+    locktober2021: 0,
     noviceKh: 0,
     keyholder: 0,
     established: 0,
@@ -245,7 +247,9 @@ export async function roleCounts(routed: RouterRouted) {
     if (r.name.toLowerCase() === 'chastikey verified') counts.ckVerified = r.members.size
     if (r.name.toLowerCase() === 'locked') counts.locked = r.members.size
     if (r.name.toLowerCase() === 'unlocked') counts.unlocked = r.members.size
-    if (r.name.toLowerCase() === 'locktober 2019') counts.locktober = r.members.size
+    if (r.name.toLowerCase() === 'locktober 2019') counts.locktober2019 = r.members.size
+    if (r.name.toLowerCase() === 'locktober 2020') counts.locktober2020 = r.members.size
+    if (r.name.toLowerCase() === 'locktober 2021') counts.locktober2021 = r.members.size
     // Keyholders
     if (r.name.toLowerCase() === 'renowned keyholder') counts.renowned = r.members.size
     if (r.name.toLowerCase() === 'distinguished keyholder') counts.distinguished = r.members.size
@@ -275,7 +279,9 @@ export async function roleCounts(routed: RouterRouted) {
   response += `Verified                 # ${counts.ckVerified} ${arrFrom(lgStr + 3 - strLen(counts.ckVerified)).join(' ')} ${rd(counts.ckVerified / cacheSize)}%\n`
   response += `Locked                   # ${counts.locked} ${arrFrom(lgStr + 3 - strLen(counts.locked)).join(' ')} ${rd(counts.locked / cacheSize)}%\n`
   response += `Unlocked                 # ${counts.unlocked} ${arrFrom(lgStr + 3 - strLen(counts.unlocked)).join(' ')} ${rd(counts.unlocked / cacheSize)}%\n`
-  response += `Locktober 2019           # ${counts.locktober} ${arrFrom(lgStr + 3 - strLen(counts.locktober)).join(' ')} ${rd(counts.locktober / cacheSize)}%\n`
+  response += `Locktober 2019           # ${counts.locktober2019} ${arrFrom(lgStr + 3 - strLen(counts.locktober2019)).join(' ')} ${rd(counts.locktober2019 / cacheSize)}%\n`
+  response += `Locktober 2020           # ${counts.locktober2020} ${arrFrom(lgStr + 3 - strLen(counts.locktober2020)).join(' ')} ${rd(counts.locktober2020 / cacheSize)}%\n`
+  response += `Locktober 2021           # ${counts.locktober2021} ${arrFrom(lgStr + 3 - strLen(counts.locktober2021)).join(' ')} ${rd(counts.locktober2021 / cacheSize)}%\n`
   response += `=========================================\n`
   response += `Renowned Keyholder       # ${counts.renowned} ${arrFrom(lgStr + 3 - strLen(counts.renowned)).join(' ')} ${rd(counts.renowned / cacheSize)}%\n`
   response += `Distinguished Keyholder  # ${counts.distinguished} ${arrFrom(lgStr + 3 - strLen(counts.distinguished)).join(' ')} ${rd(counts.distinguished / cacheSize)}%\n`

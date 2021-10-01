@@ -25,6 +25,7 @@ export async function debug(routed: RouterRouted) {
   const ckUser = await routed.bot.DB.get<UserData>('ck-users', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckLocktober2019 = await routed.bot.DB.get<{ username: string; discordID: string }>('ck-locktober-2019', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckLocktober2020 = await routed.bot.DB.get<{ username: string; discordID: string }>('ck-locktober-2020', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
+  const ckLocktober2021 = await routed.bot.DB.get<{ username: string; discordID: string }>('ck-locktober-2021', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckRunningLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
 
   var verifyIDAPIResp: ChastiKeyVerifyDiscordID
@@ -55,6 +56,11 @@ export async function debug(routed: RouterRouted) {
   if (ckLocktober2020) {
     response += `  -> discordID           = ${ckLocktober2020.discordID}\n`
     response += `  -> username            = ${ckLocktober2020.username}\n`
+  }
+  response += `\nIs in ck-locktober Data (from CK): ${ckLocktober2021 ? true : false}\n`
+  if (ckLocktober2021) {
+    response += `  -> discordID           = ${ckLocktober2021.discordID}\n`
+    response += `  -> username            = ${ckLocktober2021.username}\n`
   }
   response += `\nIs in ck-running-locks Data (from CK) (Count: ${ckRunningLocks.length}): ${ckRunningLocks.length > 0 ? true : false}\n`
   if (ckRunningLocks.length > 0) {

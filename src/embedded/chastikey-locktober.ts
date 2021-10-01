@@ -41,7 +41,7 @@ export function locktoberStats(
   description += `\`\`\``
 
   return {
-    title: `Locktober 2020 Stats`,
+    title: `Locktober 2021 Stats`,
     description: description,
     color: 14553782,
     timestamp: cachedTimestamp,
