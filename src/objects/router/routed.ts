@@ -1,5 +1,5 @@
 import * as Utils from '@/utils'
-import { User, Message } from 'discord.js'
+import { User, Message, MessagePayload, ReplyMessageOptions, BaseCommandInteraction, GuildMember, Guild, Channel, TextChannel } from 'discord.js'
 import { Bot } from '@/index'
 import { TrackedMessage } from '@/objects/message'
 import { TrackedUser } from '@/objects/user/'
@@ -17,7 +17,11 @@ export class RouterRouted {
   public args: Array<string>
   public author: User
   public bot: Bot
+  public channel: Channel | TextChannel
+  public guild: Guild
+  public interaction: BaseCommandInteraction
   public isDM: boolean
+  public member: GuildMember
   public message: Message
   public permissions: ProcessedPermissions
   public prefix: string
@@ -29,7 +33,7 @@ export class RouterRouted {
   public routerStats: RouterStats
   public state: 'added' | 'removed'
   public trackedMessage: TrackedMessage
-  public type: 'message' | 'reaction'
+  public type: 'message' | 'reaction' | 'interaction'
   public user: TrackedUser
   public v: {
     valid: boolean
@@ -43,7 +47,11 @@ export class RouterRouted {
     this.args = init.args
     this.author = init.author
     this.bot = init.bot
+    this.channel = init.channel
+    this.guild = init.guild
+    this.interaction = init.interaction
     this.isDM = init.isDM
+    this.member = init.member
     this.message = init.message
     this.permissions = init.permissions
     this.prefix = init.prefix
@@ -61,8 +69,10 @@ export class RouterRouted {
     this.user = init.user
     this.validateMatch = init.validateMatch
     // Generate v.*
-    const validate = new Validate(this.validateMatch)
-    this.v = validate.validateArgs(this.args)
+    if (this.type !== 'message') {
+      const validate = new Validate(this.validateMatch)
+      this.v = validate.validateArgs(this.args)
+    }
   }
 
   public $render<T>(key: string, data?: T): string
@@ -91,5 +101,16 @@ export class RouterRouted {
 
   public $sb(baseString: string, data?: any) {
     return Utils.sb(baseString, Object.assign({}, data, { prefix: this.prefix }))
+  }
+
+  public async reply(response: string | MessagePayload | ReplyMessageOptions) {
+    try {
+      if (this.route.slash) await this.interaction.reply(response)
+      else await this.message.reply(response)
+      return true
+    } catch (error) {
+      this.bot.Log.Router.error('Unable to .reply =>', error)
+      return false
+    }
   }
 }

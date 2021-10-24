@@ -1,5 +1,6 @@
 import * as XRegExp from 'xregexp'
 import { RouteConfiguration, RouterRouted, Validate } from '@/router'
+import { SlashCommandBuilder } from '@discordjs/builders'
 
 /**
  * Message routing configured to Object for use by the router
@@ -32,7 +33,8 @@ export class MessageRoute {
     serverOnly: boolean
     manageChannelReq: boolean
   }
-  public type: 'message' | 'reaction'
+  public slash?: SlashCommandBuilder
+  public type: 'message' | 'reaction' | 'interaction'
   public validate: string
   public validateAlias?: Array<string>
   public validation: Validate
@@ -43,15 +45,19 @@ export class MessageRoute {
     // Set command branch for sorting - only set this if the type is a message
     this.command = this.type === 'message' ? this.getCommand(route.validate) : undefined
     // Setup validation for route
-    this.validation = new Validate(route.validate)
+    this.validation = this.type === 'message' ? new Validate(route.validate) : undefined
     // Ensure permissions is setup properly
     this.permissions = this._defaultPermissions
     Object.assign(this.permissions, route.permissions)
     // Restricted should override defaultEnabled
     this.permissions.defaultEnabled = this.permissions.restricted === true ? false : this.permissions.defaultEnabled
+    // Ensure if the type is an interaction that the name is updated to match
+    if (this.slash) this.name = this.slash.name
   }
 
   public test(message: string) {
+    // Prevent error
+    if (this.type !== 'message') throw new Error('Type is not "message", unable to .test(message: string)')
     if (this.validation.test(message)) {
       return { validateSignature: this.validate, matched: true }
     } else {

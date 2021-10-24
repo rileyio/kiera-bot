@@ -11,6 +11,7 @@ export class TrackedServer {
   public enabled: { ChastiKey: boolean } = { ChastiKey: false }
   public lastSeen?: number
   public prefix?: string
+  public slashCommandsEnabled?: boolean = false
 
   constructor(init: Partial<TrackedServer>) {
     Object.assign(this, init || {})

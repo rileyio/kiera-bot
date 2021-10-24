@@ -1,4 +1,5 @@
 import { RouteConfigurationCategory, RouterRouted } from '@/router'
+import { SlashCommandBuilder } from '@discordjs/builders'
 
 /**
  * Discord Command Route
@@ -22,6 +23,7 @@ export interface RouteConfiguration {
     serverOnly?: boolean
     manageChannelReq?: boolean
   }
+  slash?: SlashCommandBuilder,
   type: 'message' | 'reaction'
   validate?: string
   validateAlias?: Array<string>

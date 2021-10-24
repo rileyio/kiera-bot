@@ -1,5 +1,5 @@
 import * as Utils from '../utils/'
-import { Message, User, TextChannel } from 'discord.js'
+import { Message, User, TextChannel, Interaction, GuildMember } from 'discord.js'
 import { Bot } from '@/index'
 import { TrackedMessage } from '../objects/message'
 import { CommandPermission } from '../objects/permission'
@@ -131,6 +131,148 @@ export class CommandRouter {
       // this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
       return // End routing here
     }
+  }
+
+  public async routeInteraction(interaction: Interaction) {
+    if (!interaction.isCommand()) return // Hard block
+    const { channel, commandName, guild, guildId, member, user } = interaction
+    const routerStats = new RouterStats(user)
+    const route = this.routes.find((r) => r.name === commandName)
+
+    // If no route matched, stop here
+    if (!route) {
+      this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
+      // Track in an audit event
+      this.bot.Audit.NewEntry({
+        name: 'command pre-routing',
+        guild: { id: guildId, name: guild.name, channel: channel.id },
+        error: 'Failed to process command',
+        runtime: routerStats.performance,
+        owner: user.id,
+        successful: false,
+        type: 'bot.command',
+        where: 'Discord'
+      })
+
+      return // End here
+    }
+
+    // Lookup Kiera User in DB
+    const kieraUser = new TrackedUser(
+      await this.bot.DB.get<TrackedUser>('users', { id: user.id })
+    )
+
+    // Check if not stored - will be no Discord ID
+    if (!kieraUser.id) kieraUser.__notStored = true
+
+    // Normal routed behaviour
+    var routed: RouterRouted = new RouterRouted({
+      author: user,
+      bot: this.bot,
+      channel: channel as TextChannel,
+      guild,
+      interaction,
+      isDM: channel.type === 'DM',
+      member: member as GuildMember,
+      route,
+      type: route.type,
+      user: kieraUser,
+      routerStats: routerStats
+    })
+
+    // Process Permissions
+    routed.permissions = await this.processPermissions(routed)
+    this.bot.Log.Router.log('Router -> Permissions Check Results:', routed.permissions)
+
+    if (!routed.permissions.pass) {
+      this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
+
+      if (routed.permissions.outcome === 'FailedServerOnlyRestriction') {
+        // Send message in response
+        await routed.message.reply(routed.$render('Generic.Error.CommandDisabledInChannel', { command: commandName }))
+
+        // Track in an audit event
+        this.bot.Audit.NewEntry({
+          name: routed.route.name,
+          guild: { id: 'DM', name: 'DM', channel: 'DM' },
+          error: 'Command disabled by permission in this channel',
+          runtime: routerStats.performance,
+          owner: routed.author.id,
+          successful: false,
+          type: 'bot.command',
+          where: 'Discord'
+        })
+      } else {
+        // Track in an audit event
+        this.bot.Audit.NewEntry({
+          name: routed.route.name,
+          guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: channel.id },
+          error: 'Command disabled by permissions',
+          runtime: routerStats.performance,
+          owner: routed.author.id,
+          successful: false,
+          type: 'bot.command',
+          where: 'Discord'
+        })
+      }
+
+      return // Hard Stop
+    }
+
+    const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
+    var mwareProcessed = 0
+
+    // Process middleware
+    for (const middleware of route.middleware) {
+      const fromMiddleware = await middleware(routed)
+      // If the returned item is empty stop here
+      if (!fromMiddleware) {
+        break
+      }
+      // When everything is ok, continue
+      mwareProcessed += 1
+    }
+
+    this.bot.Log.Router.log(`Router -> Route middleware processed: ${mwareProcessed} /${mwareCount}`)
+
+    // Stop execution of route if middleware is completed
+    if (mwareProcessed === mwareCount) {
+      this.bot.BotMonitor.LiveStatistics.increment('commands-routed')
+      const status = await route.controller(routed)
+      // Successful completion of command
+      if (status) {
+        this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
+        // Track in an audit event
+        this.bot.Audit.NewEntry({
+          name: routed.route.name,
+          guild: routed.isDM ? { id: 'dm', name: 'dm', channel: 'dm' } : { id: routed.guild.id, name: routed.guild.name, channel: channel.id },
+          owner: routed.author.id,
+          runtime: routerStats.performance,
+          successful: true,
+          type: 'bot.command',
+          where: 'Discord'
+        })
+      }
+      // Command failed or returned false inside controller
+      else {
+        this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
+        // Track in an audit event
+        this.bot.Audit.NewEntry({
+          name: routed.route.name,
+          guild: { id: routed.guild.id, name: routed.guild.name, channel: channel.id },
+          error: 'Command failed or returned false inside controller',
+          runtime: routerStats.performance,
+          owner: routed.author.id,
+          successful: false,
+          type: 'bot.command',
+          where: 'Discord'
+        })
+      }
+      return // End routing here
+    }
+
+    this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
+    return
   }
 
   /**
@@ -377,9 +519,9 @@ export class CommandRouter {
   private async processPermissions(routed: RouterRouted): Promise<ProcessedPermissions> {
     var checks: ProcessedPermissions = {
       // Permissions of user
-      hasAdministrator: !routed.isDM ? routed.message.member.permissions.has('ADMINISTRATOR') : false,
-      hasManageChannel: !routed.isDM ? routed.message.member.permissionsIn(routed.message.channel.id).has('MANAGE_CHANNELS') : false,
-      hasManageGuild: !routed.isDM ? routed.message.member.permissions.has('MANAGE_GUILD') : false
+      hasAdministrator: !routed.isDM ? routed.member.permissions.has('ADMINISTRATOR') : false,
+      hasManageChannel: !routed.isDM ? routed.member.permissionsIn(routed.channel.id).has('MANAGE_CHANNELS') : false,
+      hasManageGuild: !routed.isDM ? routed.member.permissions.has('MANAGE_GUILD') : false
     }
 
     // [IF: serverOnly is set] Command is clearly meant for only servers
@@ -391,7 +533,7 @@ export class CommandRouter {
 
     // [IF: Required user ID] Verify that the user calling is allowd to access (mostly legacy commands)
     if (routed.route.permissions.restrictedTo.length > 0) {
-      if (routed.route.permissions.restrictedTo.findIndex((snowflake) => snowflake === routed.message.author.id) > -1) {
+      if (routed.route.permissions.restrictedTo.findIndex((snowflake) => snowflake === routed.author.id) > -1) {
         checks.outcome = 'Pass'
         checks.pass = true
         return checks // stop here
@@ -426,13 +568,13 @@ export class CommandRouter {
     // Get the command permission if its in the DB
     var commandPermission = new CommandPermission(
       (await routed.bot.DB.get<CommandPermission>('command-permissions', {
-        serverID: !routed.isDM ? routed.message.guild.id : 'DM',
-        channelID: !routed.isDM ? routed.message.channel.id : 'DM',
+        serverID: !routed.isDM ? routed.guild.id : 'DM',
+        channelID: !routed.isDM ? routed.channel.id : 'DM',
         command: routed.route.name
       })) || {
         // Defaults to True
-        serverID: !routed.isDM ? routed.message.guild.id : 'DM',
-        channelID: routed.message.channel.id,
+        serverID: !routed.isDM ? routed.guild.id : 'DM',
+        channelID: routed.channel.id,
         command: routed.route.name,
         enabled: true
       }
