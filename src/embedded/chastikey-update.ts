@@ -2,10 +2,10 @@ import { ChastiKeyManagedChanges } from '@/objects/chastikey'
 import { GuildMember, MessageEmbed } from 'discord.js'
 
 export function managedUpdate(member: GuildMember, updates: Array<ChastiKeyManagedChanges>): Partial<MessageEmbed> {
-  const lockeeUpdates = updates.find((u, i) => u.category === 'lockee' && u.action !== 'header' && u.action !== 'performance')
+  const lockeeUpdates = updates.filter((u, i) => u.category === 'lockee' && u.action !== 'header' && u.action !== 'performance')
   const keyholderUpdates = updates.find((u, i) => u.category === 'keyholder' && u.action !== 'header' && u.action !== 'performance')
   const nicknameUpdates = updates.find((u, i) => u.category === 'nickname' && u.action !== 'header' && u.action !== 'performance')
-  const eventUpdates = updates.find((u, i) => u.category === 'locktober' && u.action !== 'header' && u.action !== 'performance')
+  const eventUpdates = updates.filter((u, i) => u.category === 'locktober' && u.action !== 'header' && u.action !== 'performance')
   const performance = updates.find((u, i) => u.action === 'performance-overall')
 
   return {
@@ -21,14 +21,22 @@ export function managedUpdate(member: GuildMember, updates: Array<ChastiKeyManag
       url: `https://cdn.discordapp.com/avatars/${member.id}/${member.user.avatar}`
     },
     fields: [
-      {
-        name: 'Lockee Status Roles',
-        value: lockeeUpdates ? `${lockeeUpdates.action === 'added' || lockeeUpdates.action === 'changed' ? '✅ ' : '❎ '}${lockeeUpdates.result}` : '✅ No changes',
-        inline: false
-      },
+      lockeeUpdates.length
+        ? {
+            name: 'Lockee Status Roles',
+            value: eventUpdates
+              .map((status) => (status ? `${status.action === 'added' || status.action === 'changed' ? '✅ ' : '❌ '}${status.result}` : '✅ No changes'))
+              .join('\n'),
+            inline: false
+          }
+        : {
+            name: 'Lockee Status Roles',
+            value: '✅ No changes',
+            inline: false
+          },
       {
         name: 'Keyholder Status Roles',
-        value: keyholderUpdates ? `${keyholderUpdates.action === 'added' || keyholderUpdates.action === 'changed' ? '✅ ' : '❎ '}${keyholderUpdates.result}` : '✅ No changes',
+        value: keyholderUpdates ? `${keyholderUpdates.action === 'added' || keyholderUpdates.action === 'changed' ? '✅ ' : '❌ '}${keyholderUpdates.result}` : '✅ No changes',
         inline: false
       },
       {
@@ -36,11 +44,18 @@ export function managedUpdate(member: GuildMember, updates: Array<ChastiKeyManag
         value: nicknameUpdates ? `${nicknameUpdates.successful === false ? '✅ Updated to ' : '❌ '}\`${nicknameUpdates.result}\`` : '✅ No changes',
         inline: false
       },
-      {
-        name: 'Events',
-        value: eventUpdates ? `${eventUpdates.action === 'added' || eventUpdates.action === 'changed' ? '✅ ' : '❎ '}${eventUpdates.result}` : '✅ No changes',
-        inline: false
-      }
+      // Events
+      eventUpdates.length
+        ? {
+            name: 'Events',
+            value: eventUpdates.map((event) => `${event.action === 'added' || event.action === 'changed' ? '✅ ' : '❌ '}${event.result}`).join(', '),
+            inline: false
+          }
+        : {
+            name: 'Events',
+            value: '✅ No changes',
+            inline: false
+          }
     ]
   }
 }
