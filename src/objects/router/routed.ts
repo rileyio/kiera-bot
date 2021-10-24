@@ -105,7 +105,7 @@ export class RouterRouted {
 
   public async reply(response: string | MessagePayload | ReplyMessageOptions) {
     try {
-      if (this.route.slash) await this.interaction.reply(response)
+      if (this.route.slash && this.interaction) await this.interaction.reply(response)
       else await this.message.reply(response)
       return true
     } catch (error) {
