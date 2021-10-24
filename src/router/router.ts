@@ -46,6 +46,7 @@ export class CommandRouter {
    * @memberof Router
    */
   public async routeReaction(message: Message, reaction: string, user: User, direction: 'added' | 'removed') {
+    const routerStats = new RouterStats(message.author)
     // Debug value set in .env
     if (process.env.BOT_BLOCK_REACTS === 'true') return // Should be set if 2 instances of bot are running
     // console.log('user', user)
@@ -93,18 +94,32 @@ export class CommandRouter {
     // Stop routing if no route match
     if (!route) return
 
+    // Lookup Kiera User in DB
+    const kieraUser = new TrackedUser(
+      await this.bot.DB.get<TrackedUser>('users', { id: user.id })
+    )
+
+    // Check if not stored - will be no Discord ID
+    if (!kieraUser.id) kieraUser.__notStored = true
+
     var routed = new RouterRouted({
       author: user,
       bot: this.bot,
+      channel: message.channel as TextChannel,
+      guild: message.guild,
+      isDM: message.channel.type === 'DM',
+      member: message.member,
+      message: message,
       reaction: {
         snowflake: user.id,
         reaction: reaction
       },
-      message: message,
       route: route,
+      routerStats: routerStats,
       state: direction,
       trackedMessage: storedMessage,
-      type: 'reaction'
+      type: 'reaction',
+      user: kieraUser
     })
 
     // Process middleware
@@ -400,7 +415,10 @@ export class CommandRouter {
         args: args,
         author: message.author,
         bot: this.bot,
+        channel: message.channel as TextChannel,
+        guild: message.guild,
         isDM: message.channel.type === 'DM',
+        member: message.member,
         message: message,
         prefix,
         route: route,
