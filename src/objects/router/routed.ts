@@ -69,7 +69,7 @@ export class RouterRouted {
     this.user = init.user
     this.validateMatch = init.validateMatch
     // Generate v.*
-    if (this.type !== 'message') {
+    if (this.type === 'message') {
       const validate = new Validate(this.validateMatch)
       this.v = validate.validateArgs(this.args)
     }
