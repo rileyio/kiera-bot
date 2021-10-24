@@ -1,5 +1,5 @@
 import * as Utils from '@/utils'
-import { User, Message, MessagePayload, ReplyMessageOptions, BaseCommandInteraction, GuildMember, Guild, Channel, TextChannel } from 'discord.js'
+import { User, Message, MessagePayload, ReplyMessageOptions, BaseCommandInteraction, GuildMember, Guild, Channel, TextChannel, CommandInteraction } from 'discord.js'
 import { Bot } from '@/index'
 import { TrackedMessage } from '@/objects/message'
 import { TrackedUser } from '@/objects/user/'
@@ -19,8 +19,9 @@ export class RouterRouted {
   public bot: Bot
   public channel: Channel | TextChannel
   public guild: Guild
-  public interaction: BaseCommandInteraction
+  public interaction: CommandInteraction
   public isDM: boolean
+  public isInteraction: boolean
   public member: GuildMember
   public message: Message
   public permissions: ProcessedPermissions
@@ -51,6 +52,7 @@ export class RouterRouted {
     this.guild = init.guild
     this.interaction = init.interaction
     this.isDM = init.isDM
+    this.isInteraction = init.isInteraction
     this.member = init.member
     this.message = init.message
     this.permissions = init.permissions
@@ -105,7 +107,7 @@ export class RouterRouted {
 
   public async reply(response: string | MessagePayload | ReplyMessageOptions) {
     try {
-      if (this.route.slash && this.interaction) await this.interaction.reply(response)
+      if (this.route.slash && this.interaction) await (this.interaction as BaseCommandInteraction).reply(response)
       else await this.message.reply(response)
       return true
     } catch (error) {
