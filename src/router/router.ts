@@ -188,6 +188,7 @@ export class CommandRouter {
       guild,
       interaction,
       isDM: channel.type === 'DM',
+      isInteraction: true,
       member: member as GuildMember,
       route,
       type: route.type,
