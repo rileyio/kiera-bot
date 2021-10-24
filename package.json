@@ -39,12 +39,14 @@
     "trailingComma": "none"
   },
   "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
     "@hapi/joi": "^17.1.1",
     "agenda": "^3.0.0",
     "blizzard.js": "^4.1.0",
     "chastikey.js": "github:ChastiKey/chastikey.js",
     "crypto-js": "^4.0.0",
-    "discord.js": "^13.1.0",
+    "discord-api-types": "^0.24.0",
+    "discord.js": "^13.2.0",
     "dot-prop": "^5.2.0",
     "dotenv": "^8.2.0",
     "fast-glob": "^3.2.2",
