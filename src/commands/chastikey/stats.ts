@@ -1,5 +1,6 @@
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
+import { SlashCommandBuilder } from '@discordjs/builders'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '@/embedded/chastikey-stats'
 import { TrackedUser } from '@/objects/user/'
@@ -8,32 +9,56 @@ export const Routes = ExportRoutes(
   {
     type: 'message',
     category: 'ChastiKey',
-    controller: getLockeeStats,
+    controller: ckStatsRouterSub,
     description: 'Help.ChastiKey.LockeeStats.Description',
     example: '{{prefix}}ck stats lockee',
-    name: 'ck-get-stats-lockee',
-    validate: '/ck:string/stats:string/lockee:string/user?=string',
-    validateAlias: ['/ck:string/sl:string/user?=string', '/ck:string/s:string/l:string/user?=string'],
     middleware: [Middleware.isCKVerified],
+    name: 'ck-get-stats-lockee',
     permissions: {
       defaultEnabled: false,
       serverOnly: false
-    }
+    },
+    slash: new SlashCommandBuilder()
+      .setName('ck')
+      .setDescription('View ChastiKey Stats')
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('stats')
+          .setDescription('View ChastiKey Lockee Stats')
+          .addStringOption((option) =>
+            option.setName('type').setDescription('Type of ChastiKey Stats to return').setRequired(true).addChoice('Lockee', 'lockee').addChoice('Keyholder', 'keyholder')
+          )
+          .addStringOption((option) => option.setName('username').setDescription('Specify a username to lookup a different user'))
+      ),
+    validate: '/ck:string/stats:string/lockee:string/user?=string',
+    validateAlias: ['/ck:string/sl:string/user?=string', '/ck:string/s:string/l:string/user?=string']
   },
   {
     type: 'message',
     category: 'ChastiKey',
-    controller: getKeyholderStats,
+    controller: ckStatsRouterSub,
     description: 'Help.ChastiKey.KeyholderStats.Description',
     example: '{{prefix}}ck stats keyholder UsernameHere',
-    name: 'ck-get-stats-keyholder',
-    validate: '/ck:string/stats:string/keyholder:string/user?=string',
-    validateAlias: ['/ck:string/sk:string/user?=string', '/ck:string/s:string/k:string/user?=string'],
     middleware: [Middleware.isCKVerified],
+    name: 'ck-get-stats-keyholder',
     permissions: {
       defaultEnabled: false,
       serverOnly: false
-    }
+    },
+    slash: new SlashCommandBuilder()
+      .setName('ck')
+      .setDescription('View ChastiKey Stats')
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('stats')
+          .setDescription('View ChastiKey Lockee Stats')
+          .addStringOption((option) =>
+            option.setName('type').setDescription('Type of ChastiKey Stats to return').setRequired(true).addChoice('Lockee', 'lockee').addChoice('Keyholder', 'keyholder')
+          )
+          .addStringOption((option) => option.setName('username').setDescription('Specify a username to lookup a different user'))
+      ),
+    validate: '/ck:string/stats:string/keyholder:string/user?=string',
+    validateAlias: ['/ck:string/sk:string/user?=string', '/ck:string/s:string/k:string/user?=string']
   },
   {
     type: 'message',
@@ -79,22 +104,35 @@ export const Routes = ExportRoutes(
   }
 )
 
+function ckStatsRouterSub(routed: RouterRouted) {
+  const interactionType = routed.isInteraction ? routed.interaction.options.get('type')?.value : null
+  if (routed.isInteraction) {
+    if (interactionType === 'lockee') return getLockeeStats(routed)
+    if (interactionType === 'keyholder') return getKeyholderStats(routed)
+  }
+  // Fallback - Legacy command call
+  return getLockeeStats(routed)
+}
+
 export async function getLockeeStats(routed: RouterRouted) {
+  // Check if username was specified from slash commands or from legacy command
+  const username = routed.isInteraction ? routed.interaction.options.get('username')?.value : routed.v.o.user
+
   // Get user from lockee data (Stats, User and Locks)
   const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({
-    username: routed.v.o.user ? routed.v.o.user : undefined,
-    discordid: !routed.v.o.user ? routed.author.id : undefined,
+    username: username ? username : undefined,
+    discordid: !username ? routed.author.id : undefined,
     showDeleted: true
   })
 
   // If the lookup is upon someone else with no data, return the standard response
   if (lockeeData.response.status !== 200) {
-    if (routed.v.o.username) {
+    if (username) {
       // Notify in chat what the issue could be for the target user
-      await routed.message.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
+      await routed.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
     } else {
       // Notify in chat what the issue could be for the user's own account
-      await routed.message.reply(routed.$render('ChastiKey.Error.SelfLookupErrorOrNotFound'))
+      await routed.reply(routed.$render('ChastiKey.Error.SelfLookupErrorOrNotFound'))
     }
     return true // Stop here
   }
@@ -107,7 +145,7 @@ export async function getLockeeStats(routed: RouterRouted) {
 
   // Get user's current ChastiKey username from users collection or by the override
   const kieraUser =
-    routed.v.o.user && lockeeData.data.discordID
+    username && lockeeData.data.discordID
       ? (await routed.bot.DB.get<TrackedUser>('users', { id: String(lockeeData.data.discordID) })) ||
         // Fallback: Create a mock record
         <TrackedUser>{ ChastiKey: { username: lockeeData.data.username, isVerified: false, ticker: { showStarRatingScore: true } } }
@@ -115,26 +153,29 @@ export async function getLockeeStats(routed: RouterRouted) {
         routed.user
 
   // Generate compiled stats
-  await routed.message.channel.send({ embeds: [lockeeStats(lockeeData, { showRating: kieraUser.ChastiKey.ticker.showStarRatingScore }, routed)] })
+  await routed.reply({ embeds: [lockeeStats(lockeeData, { showRating: kieraUser.ChastiKey.ticker.showStarRatingScore }, routed)] })
 
   return true
 }
 
 export async function getKeyholderStats(routed: RouterRouted) {
+  // Check if username was specified from slash commands or from legacy command
+  const username = routed.isInteraction ? routed.interaction.options.get('username')?.value : routed.v.o.user
+
   // Get user from lockee data (Stats, User and Locks)
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
-    username: routed.v.o.user ? routed.v.o.user : undefined,
-    discordid: !routed.v.o.user ? routed.author.id : undefined
+    username: username ? username : undefined,
+    discordid: !username ? routed.author.id : undefined
   })
 
   // If the lookup is upon someone else with no data, return the standard response
   if (keyholderData.response.status !== 200) {
-    if (routed.v.o.username) {
+    if (username) {
       // Notify in chat what the issue could be for the target user
-      await routed.message.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
+      await routed.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
     } else {
       // Notify in chat what the issue could be for the user's own account
-      await routed.message.reply(routed.$render('ChastiKey.Error.SelfLookupErrorOrNotFound'))
+      await routed.reply(routed.$render('ChastiKey.Error.SelfLookupErrorOrNotFound'))
     }
     return true // Stop here
   }
@@ -146,7 +187,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
   }
 
   // Get user's current ChastiKey username from users collection or by the override
-  var user = routed.v.o.user
+  var user = username
     ? new TrackedUser(
         await routed.bot.DB.get<TrackedUser>('users', {
           $or: [{ id: String(keyholderData.data.discordID) || 123 }, { 'ChastiKey.username': new RegExp(`^${keyholderData.data.username}$`, 'i') }]
@@ -164,12 +205,12 @@ export async function getKeyholderStats(routed: RouterRouted) {
         }
       })
     : new TrackedUser(
-        await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.author.id })
+        await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
       )
 
   // If the requested user has never keyheld
   if (keyholderData.data.timestampFirstKeyheld === 0) {
-    await routed.message.reply(routed.$render('ChastiKey.Stats.KeyholderNoLocks'))
+    await routed.reply(routed.$render('ChastiKey.Stats.KeyholderNoLocks'))
     return false // stop here
   }
 
@@ -215,7 +256,7 @@ export async function getKeyholderStats(routed: RouterRouted) {
   const cachedTimestamp = Number(cachedTimestampFromFetch.lastFinishedAt)
 
   // Send stats
-  await routed.message.channel.send({
+  await routed.reply({
     embeds: [
       keyholderStats(keyholderData.data, cachedRunningLocks, cachedTimestamp, routed.routerStats, {
         showRating: user.ChastiKey.ticker.showStarRatingScore,

@@ -1,7 +1,8 @@
 8.0.0-beta-3
 - Added: Support for Kiera to use Slash commands (Work in Progress to migrate certain commands to develop this further)
 - Added: Reply shorthand functionality for commands to reply to command author (Work in Progress with upgrading existing commands)
-- Update: CK Update will now list all events and lockee updates together instead of just a first match.
+- Updated: CK Update will now list all events and lockee updates together instead of just a first match.
+- Updated: CK Stats Lockee & Keyholder commands to enable slash commands.
 
 8.0.0-beta-2
 - Updated: discord.js from v12 to v13.
