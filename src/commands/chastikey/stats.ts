@@ -5,118 +5,55 @@ import { RouterRouted, ExportRoutes } from '@/router'
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '@/embedded/chastikey-stats'
 import { TrackedUser } from '@/objects/user/'
 
-export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'ChastiKey',
-    controller: ckStatsRouterSub,
-    description: 'Help.ChastiKey.LockeeStats.Description',
-    example: '{{prefix}}ck stats lockee',
-    middleware: [Middleware.isCKVerified],
-    name: 'ck-get-stats-lockee',
-    permissions: {
-      defaultEnabled: false,
-      serverOnly: false
-    },
-    slash: new SlashCommandBuilder()
-      .setName('ck')
-      .setDescription('View ChastiKey Stats')
-      .addSubcommand((subcommand) =>
-        subcommand
-          .setName('stats')
-          .setDescription('View ChastiKey Lockee Stats')
-          .addStringOption((option) =>
-            option.setName('type').setDescription('Type of ChastiKey Stats to return').setRequired(true).addChoice('Lockee', 'lockee').addChoice('Keyholder', 'keyholder')
-          )
-          .addStringOption((option) => option.setName('username').setDescription('Specify a username to lookup a different user'))
-      ),
-    validate: '/ck:string/stats:string/lockee:string/user?=string',
-    validateAlias: ['/ck:string/sl:string/user?=string', '/ck:string/s:string/l:string/user?=string']
+export const Routes = ExportRoutes({
+  type: 'message',
+  category: 'ChastiKey',
+  controller: ckStatsRouterSub,
+  description: 'Help.ChastiKey.LockeeStats.Description',
+  example: '{{prefix}}ck stats lockee',
+  middleware: [Middleware.isCKVerified],
+  name: 'ck-get-stats-lockee',
+  permissions: {
+    defaultEnabled: false,
+    serverOnly: false
   },
-  {
-    type: 'message',
-    category: 'ChastiKey',
-    controller: ckStatsRouterSub,
-    description: 'Help.ChastiKey.KeyholderStats.Description',
-    example: '{{prefix}}ck stats keyholder UsernameHere',
-    middleware: [Middleware.isCKVerified],
-    name: 'ck-get-stats-keyholder',
-    permissions: {
-      defaultEnabled: false,
-      serverOnly: false
-    },
-    slash: new SlashCommandBuilder()
-      .setName('ck')
-      .setDescription('View ChastiKey Stats')
-      .addSubcommand((subcommand) =>
-        subcommand
-          .setName('stats')
-          .setDescription('View ChastiKey Lockee Stats')
-          .addStringOption((option) =>
-            option.setName('type').setDescription('Type of ChastiKey Stats to return').setRequired(true).addChoice('Lockee', 'lockee').addChoice('Keyholder', 'keyholder')
-          )
-          .addStringOption((option) => option.setName('username').setDescription('Specify a username to lookup a different user'))
-      ),
-    validate: '/ck:string/stats:string/keyholder:string/user?=string',
-    validateAlias: ['/ck:string/sk:string/user?=string', '/ck:string/s:string/k:string/user?=string']
-  },
-  {
-    type: 'message',
-    category: 'ChastiKey',
-    controller: getCheckLockeeMultiLocked,
-    description: 'Help.ChastiKey.CheckKeyholderMultilocked.Description',
-    example: '{{prefix}}ck check multilocked KeyHolderName',
-    name: 'ck-check-multilocked',
-    validate: '/ck:string/check:string/multilocked:string/user?=string',
-    middleware: [Middleware.isCKVerified],
-    permissions: {
-      defaultEnabled: false,
-      serverOnly: false
-    }
-  },
-  {
-    type: 'message',
-    category: 'ChastiKey',
-    controller: getKeyholderLockees,
-    description: 'Help.ChastiKey.KeyholderLockees.Description',
-    example: '{{prefix}}ck keyholder lockees',
-    name: 'ck-keyholder-lockees',
-    validate: '/ck:string/keyholder:string/lockees:string',
-    middleware: [Middleware.isCKVerified],
-    permissions: {
-      defaultEnabled: false,
-      serverOnly: false
-    }
-  },
-  {
-    type: 'message',
-    category: 'ChastiKey',
-    controller: setKHAverageDisplay,
-    description: 'Help.ChastiKey.ToggleKeyholderAverageDisplayed.Description',
-    example: '{{prefix}}ck keyholder set average show',
-    name: 'ck-set-kh-average-display',
-    validate: '/ck:string/keyholder:string/set:string/average:string/state=string',
-    middleware: [Middleware.isCKVerified],
-    permissions: {
-      defaultEnabled: false,
-      serverOnly: false
-    }
-  }
-)
+  slash: new SlashCommandBuilder()
+    .setName('ck')
+    .setDescription('View ChastiKey Stats')
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('stats')
+        .setDescription('View ChastiKey Lockee Stats')
+        .addStringOption((option) =>
+          option
+            .setName('type')
+            .setDescription('Type of ChastiKey Stats to return')
+            .setRequired(true)
+            .addChoice('Lockee', 'lockee')
+            .addChoice('Lockees', 'lockees')
+            .addChoice('Keyholder', 'keyholder')
+            .addChoice('Multilocked', 'multilocked')
+        )
+        .addStringOption((option) => option.setName('username').setDescription('Specify a username to lookup a different user'))
+    ),
+  validate: '/ck:string/stats:string/lockee:string/user?=string'
+})
 
 function ckStatsRouterSub(routed: RouterRouted) {
   const interactionType = routed.isInteraction ? routed.interaction.options.get('type')?.value : null
   if (routed.isInteraction) {
     if (interactionType === 'lockee') return getLockeeStats(routed)
+    if (interactionType === 'lockees') return getKeyholderLockees(routed)
     if (interactionType === 'keyholder') return getKeyholderStats(routed)
+    if (interactionType === 'multilocked') return getCheckLockeeMultiLocked(routed)
   }
   // Fallback - Legacy command call
   return getLockeeStats(routed)
 }
 
-export async function getLockeeStats(routed: RouterRouted) {
+async function getLockeeStats(routed: RouterRouted) {
   // Check if username was specified from slash commands or from legacy command
-  const username = routed.isInteraction ? routed.interaction.options.get('username')?.value : routed.v.o.user
+  const username = routed.interaction.options.get('username')?.value as string
 
   // Get user from lockee data (Stats, User and Locks)
   const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({
@@ -158,9 +95,9 @@ export async function getLockeeStats(routed: RouterRouted) {
   return true
 }
 
-export async function getKeyholderStats(routed: RouterRouted) {
+async function getKeyholderStats(routed: RouterRouted) {
   // Check if username was specified from slash commands or from legacy command
-  const username = routed.isInteraction ? routed.interaction.options.get('username')?.value : routed.v.o.user
+  const username = routed.interaction.options.get('username')?.value as string
 
   // Get user from lockee data (Stats, User and Locks)
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
@@ -269,17 +206,20 @@ export async function getKeyholderStats(routed: RouterRouted) {
   return true
 }
 
-export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
+async function getCheckLockeeMultiLocked(routed: RouterRouted) {
+  // Check if username was specified from slash commands or from legacy command
+  const username = routed.interaction.options.get('username')?.value as string
+
   // Get user from lockee data (Stats, User and Locks)
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
-    username: routed.v.o.user ? routed.v.o.user : undefined,
-    discordid: !routed.v.o.user ? routed.author.id : undefined
+    username: username ? username : undefined,
+    discordid: username ? undefined : routed.author.id
   })
 
   // If the lookup is upon someone else with no data, return the standard response
   if (keyholderData.response.status !== 200) {
     // Notify in chat what the issue could be
-    await routed.message.reply(routed.$render('ChastiKey.Error.UserNotFound'))
+    await routed.reply(routed.$render('ChastiKey.Error.UserNotFound'))
     return true // Stop here
   }
 
@@ -318,22 +258,26 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
   const cachedTimestampFromFetch = await routed.bot.DB.get<{ name: string; lastFinishedAt: string }>('scheduled-jobs', { name: 'ChastiKeyAPIRunningLocks' })
   const cachedTimestamp = Number(cachedTimestampFromFetch.lastFinishedAt)
 
-  await routed.message.reply({ embeds: [sharedKeyholdersStats(activeLocks, routed.v.o.user, routed.routerStats, cachedTimestamp)] })
+  await routed.reply({ embeds: [sharedKeyholdersStats(activeLocks, keyholderData.data.username, routed.routerStats, cachedTimestamp)] })
 
   // Successful end
   return true
 }
 
-export async function getKeyholderLockees(routed: RouterRouted) {
+async function getKeyholderLockees(routed: RouterRouted) {
+  // Check if username was specified from slash commands or from legacy command
+  const username = routed.interaction.options.get('username')?.value as string
+
   // Get user from lockee data (Stats, User and Locks)
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
-    discordid: routed.author.id
+    username: username ? username : undefined,
+    discordid: username ? undefined : routed.author.id
   })
 
   // If the lookup is upon someone else with no data, return the standard response
   if (keyholderData.response.status !== 200) {
     // Notify in chat what the issue could be
-    await routed.message.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
+    await routed.reply(routed.$render('ChastiKey.Error.UserLookupErrorOrNotFound'))
     return true // Stop here
   }
 
@@ -373,30 +317,8 @@ export async function getKeyholderLockees(routed: RouterRouted) {
   const cachedTimestampFromFetch = await routed.bot.DB.get<{ name: string; lastFinishedAt: string }>('scheduled-jobs', { name: 'ChastiKeyAPIRunningLocks' })
   const cachedTimestamp = Number(cachedTimestampFromFetch.lastFinishedAt)
 
-  await routed.message.reply({ embeds: [keyholderLockees(activeLocks, keyholderData.data.username, routed.routerStats, cachedTimestamp)] })
+  await routed.reply({ embeds: [keyholderLockees(activeLocks, keyholderData.data.username, routed.routerStats, cachedTimestamp)] })
 
   // Successful end
   return true
-}
-
-export async function setKHAverageDisplay(routed: RouterRouted) {
-  // True or False sent
-  if (routed.v.o.state.toLowerCase() === 'show' || routed.v.o.state.toLowerCase() === 'hide') {
-    await routed.bot.DB.update(
-      'users',
-      { id: routed.author.id },
-      { $set: { 'ChastiKey.preferences.keyholder.showAverage': `show` ? routed.v.o.state === 'show' : false } },
-      { atomic: true }
-    )
-
-    await routed.message.reply(`:white_check_mark: ChastiKey Preference: \`Display keyholder time average\` is now ${routed.v.o.state === 'show' ? '`shown`' : '`hidden`'}`)
-    routed.bot.Log.Command.log(`{{prefix}}ck keyholder set average show ${routed.v.o.state}`)
-
-    return true
-  } else {
-    await routed.message.reply(`Failed to set ChastiKey Rating Display, format must be like: \`show\``)
-    routed.bot.Log.Command.log(`{{prefix}}ck keyholder set average show ${routed.v.o.state}`)
-
-    return true
-  }
 }
