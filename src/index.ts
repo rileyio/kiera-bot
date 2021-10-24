@@ -1,8 +1,10 @@
 const { version } = require('../package.json')
+const { REST } = require('@discordjs/rest')
 import * as Discord from 'discord.js'
 import * as Task from '@/tasks'
 import * as Utils from '@/utils'
 import Localization from '@/localization'
+import { Routes } from 'discord-api-types/v9'
 import { MsgTracker, MongoDB } from '@/db'
 import { CommandRouter, routeLoader } from '@/router'
 import { BotMonitor } from '@/monitor'
@@ -161,6 +163,8 @@ export class Bot {
 
     /// Incoming message router ///
     this.client.on('message', async (msg) => await this.onMessage(msg))
+    /// Incoming message router (v8.0-beta-3 and newer commands) ///
+    this.client.on('interactionCreate', async (int) => await this.onInteraction(int))
     ///Server connect/disconnect///
     this.client.on('guildCreate', async (guild) => this.onGuildCreate(guild))
     this.client.on('guildDelete', async (guild) => this.onGuildDelete(guild))
@@ -197,10 +201,28 @@ export class Bot {
     // Setup Bot utilized channels
     this.channel.auditLog = this.client.channels.cache.get(process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
     this.channel.announcementsChannel = this.client.channels.cache.get(process.env.DISCORD_ANNOUNCEMENTS_CHANNEL) as Discord.TextChannel
+
+    // Register Slash commands on Kiera's Development server
+    const commands = []
+    for (const commandRoute of this.Router.routes) commandRoute.slash ? commands.push(commandRoute.slash.toJSON()) : null
+
+    const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_APP_TOKEN)
+
+    try {
+      console.log('Started refreshing application (/) commands.')
+      await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, process.env.DISCORD_BOT_OFFICAL_DISCORD), { body: commands })
+      console.log('Successfully reloaded application (/) commands.')
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   private async onMessage(message: Discord.Message) {
     await this.Router.routeMessage(message)
+  }
+
+  private async onInteraction(interaction: Discord.Interaction) {
+    await this.Router.routeInteraction(interaction)
   }
 
   private async onMessageCachedReactionAdd(message: Discord.Message, reaction: string, user: Discord.User) {
@@ -224,7 +246,8 @@ export class Bot {
           name: guild.name,
           joinedTimestamp: guild.joinedTimestamp,
           lastSeen: Date.now(),
-          prefix: undefined
+          prefix: undefined,
+          slashCommandsEnabled: false
         }
       },
       { atomic: true, upsert: true }
