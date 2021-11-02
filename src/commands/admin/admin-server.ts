@@ -1,4 +1,3 @@
-import { SlashCommandBuilder } from '@discordjs/builders'
 import { performance } from 'perf_hooks'
 import { RouterRouted, ExportRoutes } from '@/router'
 import { TrackedMessage } from '@/objects/message'
@@ -6,17 +5,6 @@ import { pongResponse } from '@/embedded/ping-pong'
 import { TrackedBotSetting } from '@/objects/setting'
 
 export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'Info',
-    controller: versionCheck,
-    description: 'Help.Admin.BotVersion.Description',
-    example: '{{prefix}}version',
-    name: 'admin-version',
-    slash: new SlashCommandBuilder().setName('version').setDescription('Display current Kiera version'),
-    validate: '/version:string',
-    permissions: { serverOnly: false }
-  },
   {
     type: 'message',
     category: 'Info',
@@ -99,15 +87,6 @@ export async function pingPong(routed: RouterRouted) {
   }
 
   return true
-}
-
-/**
- * Gets the bot's current `package.json` version string
- * @export
- * @param {RouterRouted} routed
- */
-export async function versionCheck(routed: RouterRouted) {
-  return routed.reply(`Running on version \`${routed.bot.version}\``)
 }
 
 export async function forceRestart(routed: RouterRouted) {
