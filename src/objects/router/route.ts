@@ -24,7 +24,7 @@ export interface RouteConfiguration {
     manageChannelReq?: boolean
   }
   slash?: SlashCommandBuilder | Omit<any, any>
-  type: 'message' | 'reaction'
+  type: 'message' | 'reaction' | 'interaction'
   validate?: string
   validateAlias?: Array<string>
 }
