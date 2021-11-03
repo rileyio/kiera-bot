@@ -24,7 +24,7 @@ export function managedUpdate(member: GuildMember, updates: Array<ChastiKeyManag
       lockeeUpdates.length
         ? {
             name: 'Lockee Status Roles',
-            value: eventUpdates
+            value: lockeeUpdates
               .map((status) => (status ? `${status.action === 'added' || status.action === 'changed' ? '✅ ' : '❌ '}${status.result}` : '✅ No changes'))
               .join('\n'),
             inline: false

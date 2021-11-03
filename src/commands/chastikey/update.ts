@@ -1,29 +1,11 @@
-import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
 import * as Discord from 'discord.js'
 import { TrackedUser } from '@/objects/user/'
-import { RouterRouted, ExportRoutes } from '@/router'
+import { RouterRouted } from '@/router'
 import { performance } from 'perf_hooks'
 import { TrackedServerSetting } from '@/objects/server-setting'
 import { ChastiKeyManagedChanges } from '@/objects/chastikey'
 import { managedUpdate } from '@/embedded/chastikey-update'
-import { activeMutes } from '../moderate/moderate'
-
-export const Routes = ExportRoutes({
-  type: 'message',
-  category: 'ChastiKey',
-  controller: update,
-  description: 'Help.ChastiKey.Update.Description',
-  example: '{{prefix}}ck update',
-  name: 'ck-update',
-  validate: '/ck:string/update:string/user?=string',
-  validateAlias: ['/ck:string/u:string/user?=string'],
-  middleware: [Middleware.isCKVerified],
-  permissions: {
-    defaultEnabled: true,
-    serverOnly: true
-  }
-})
 
 /**
  * ChastiKey Update (For: Roles)
@@ -40,8 +22,11 @@ export async function update(routed: RouterRouted) {
     nickname: { start: 0, end: 0 }
   }
 
+  // Check if username was specified from slash commands or from legacy command
+  const mentionedUser = routed.interaction.options.getMentionable('user') as Discord.GuildMember
+
   // Fetch all that have been mapped already
-  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedServerSetting>('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles/ })
+  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedServerSetting>('server-settings', { serverID: routed.guild.id, key: /^server\.ck\.roles/ })
 
   // Already Mapped as Object
   const alreadyMappedIDs = {
@@ -75,62 +60,19 @@ export async function update(routed: RouterRouted) {
     locktober2021: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.5`)
   }
 
-  // Check if user calling this command is targeting a different user
-  if (routed.v.o.user !== undefined && alreadyMapped.length) {
-    // Restrict Update upon other users to Keyholder or above
-    const khRoles: Array<TrackedServerSetting> = Object.keys(alreadyMappedIDs)
-      .filter((n) => n.match(/keyholder/i))
-      .map((n) => {
-        if (alreadyMappedIDs[n]) return alreadyMappedIDs[n]
-      })
-
-    // User calling this command must be higher than the khRole to call update upon another user than themself
-    if (!khRoles.find((r) => [...routed.message.guild.members.cache.get(routed.author.id).roles.cache.values()].findIndex((rc) => rc.id === r.value) > -1)) {
-      await routed.message.reply(routed.$render('ChastiKey.Error.KeyholderOrAboveRoleRequired'))
-      return false // Stop the user here
-    }
-  }
-
-  // The user being targeted is Type
-  const targetUserType: 'Self' | 'Snowflake' | 'CKUsername' = routed.v.o.user === undefined ? 'Self' : routed.message.mentions.members.first() ? 'Snowflake' : 'CKUsername'
-
   // Track changes made later - if any
   var changesImplemented: Array<ChastiKeyManagedChanges> = []
 
   // Get user's current ChastiKey username from users collection or by the override
-  const dbUser =
-    targetUserType !== 'Self'
-      ? targetUserType === 'Snowflake'
-        ? // When: Snowflake
-          await routed.bot.DB.get<TrackedUser>('users', { id: routed.message.mentions.members.first().id })
-        : // When: CKUsername
-          await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${routed.v.o.user}$`, 'i') })
-      : // When: Self
-        await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
-
-  const queryBy =
-    routed.v.o.user !== undefined
-      ? targetUserType === 'Snowflake'
-        ? // When: Snowflake
-          `Snowflake`
-        : // When: CKUsername
-          `Username`
-      : // When: Self
-        `Snowflake`
-  const queryValue =
-    routed.v.o.user !== undefined
-      ? targetUserType === 'Snowflake'
-        ? // When: Snowflake
-          routed.message.mentions.members.first().id
-        : // When: CKUsername
-          routed.v.o.user
-      : // When: Self
-        routed.author.id
+  const dbUser = mentionedUser
+    ? // When: Snowflake
+      await routed.bot.DB.get<TrackedUser>('users', { id: mentionedUser.id })
+    : // When: Self
+      await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
 
   // Get Data from new API
   const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({
-    username: queryBy === 'Username' ? queryValue : undefined,
-    discordid: queryBy === 'Snowflake' ? queryValue : undefined,
+    discordid: mentionedUser ? mentionedUser.id : routed.author.id,
     showDeleted: true
   })
 
@@ -145,8 +87,7 @@ export async function update(routed: RouterRouted) {
 
   // Get Data from new API
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
-    username: queryBy === 'Username' ? queryValue : undefined,
-    discordid: queryBy === 'Snowflake' ? queryValue : undefined
+    discordid: mentionedUser ? mentionedUser.id : routed.author.id
   })
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -169,11 +110,10 @@ export async function update(routed: RouterRouted) {
   const hasLockedLock = lockeeData.getLocked
 
   // Fetch some stuff from Discord & ChastiKey
-  const discordUser =
-    targetUserType !== 'Self'
-      ? await routed.message.guild.members.fetch(targetUserType === 'CKUsername' ? lockeeData.data.discordID : queryValue)
-      : // User calling the command
-        routed.message.member
+  const discordUser = !mentionedUser
+    ? await routed.guild.members.fetch(mentionedUser ? mentionedUser.id : routed.author.id)
+    : // User calling the command
+      routed.member
 
   // Ensure user can actually be found (Has not left, or not some other error)
   if (!discordUser) return false // Stop here
@@ -237,7 +177,7 @@ export async function update(routed: RouterRouted) {
   }
 
   // Loop once finding roles for the above variables
-  routed.message.guild.roles.cache.forEach((r) => {
+  routed.guild.roles.cache.forEach((r) => {
     if (alreadyMappedIDs.unlocked) if (r.id === alreadyMappedIDs.unlocked.value) role.unlocked = r
     if (alreadyMappedIDs.locked) if (r.id === alreadyMappedIDs.locked.value) role.locked = r
     if (alreadyMappedIDs.locktober2019) if (r.id === alreadyMappedIDs.locktober2019.value) role.locktober2019 = r
@@ -634,8 +574,8 @@ export async function update(routed: RouterRouted) {
     const lockeeStatusPref = dbUser.ChastiKey.preferences.lockee.showStatusInNickname
 
     // Check if kiera sits at or below the person calling -and- is not the server owner
-    const isServerOwner = discordUser.id === routed.message.guild.ownerId
-    const isPermissionsIssue = discordUser.roles.highest.comparePositionTo(routed.message.guild.members.cache.get(routed.bot.client.user.id).roles.highest) > 0
+    const isServerOwner = discordUser.id === routed.guild.ownerId
+    const isPermissionsIssue = discordUser.roles.highest.comparePositionTo(routed.guild.members.cache.get(routed.bot.client.user.id).roles.highest) > 0
 
     if (!isPermissionsIssue && !isServerOwner) {
       // When user is in an active lock but has the (unlocked -or- no) emoji
@@ -854,6 +794,6 @@ export async function update(routed: RouterRouted) {
 
   // results += '```'
 
-  await routed.message.channel.send({ embeds: [managedUpdate(discordUser, changesImplemented)] })
+  await routed.reply({ embeds: [managedUpdate(discordUser, changesImplemented)] })
   return true
 }
