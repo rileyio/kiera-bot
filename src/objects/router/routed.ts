@@ -105,10 +105,12 @@ export class RouterRouted {
     return Utils.sb(baseString, Object.assign({}, data, { prefix: this.prefix }))
   }
 
-  public async reply(response: string | MessagePayload | ReplyMessageOptions) {
+  public async reply(response: string | MessagePayload | ReplyMessageOptions, ephemeral?: boolean) {
     try {
-      if (this.route.slash && this.interaction) await (this.interaction as BaseCommandInteraction).reply(response)
-      else await this.message.reply(response)
+      if (this.route.slash && this.interaction) {
+        if (typeof response === 'object') await (this.interaction as BaseCommandInteraction).reply(Object.assign(response, { ephemeral }))
+        else await (this.interaction as BaseCommandInteraction).reply({ content: response, ephemeral })
+      } else await this.message.reply(response)
       return true
     } catch (error) {
       this.bot.Log.Router.error('Unable to .reply =>', error)
