@@ -107,6 +107,8 @@ Current Progress (Languages in focus where translations are being used):
 
 ## Commands
 
+> **[>= v8.0]** Bolded commands have been converted to slash commands.
+
 #### Admin
 
 - `!admin channel purge` - [**Restricted:** Server Admin] Purge all messages in channel  
@@ -119,7 +121,7 @@ Current Progress (Languages in focus where translations are being used):
 - `!check permissions` - Check Yours and Kiera's permissions
 - `!ping` - Check Kiera's Ping/Latency
 - `!restart bot` - [**Restricted:** Pre-defined users] Restart Kiera Bot application
-- `!version` - Display current Kiera version
+- **`/version` - Display current Kiera version**
 
 #### BNet
 
@@ -129,26 +131,26 @@ Current Progress (Languages in focus where translations are being used):
 
 #### ChastiKey (3rd party service)
 
-- `!ck check multilocked KeyHolderName` - List of Keyholder's lockees who have 2 or more Keyholders
+- **`/ck stats multilocked KeyHolderName` - List of Keyholder's lockees who have 2 or more Keyholders**  
 - `!ck debug UsernameHere` [**Restricted:** Pre-defined users]
-- `!ck keyholder lockees` - List of Keyholder's lockees
+- **`/ck stats lockees` - List of Keyholder's lockees**  
 - `!ck keyholder set average show` - Enable/Disable your rating visibility in stats commands
 - `!ck lockee history` - Show lockee's history breakdown
 - `!ck lockee nickname status always` - Set preference if Kiera should manage nickname with 🔒 and 🔓
 - `!ck map exp role # @role` - Set/Customize mapping of CK Experience roles for your server
 - `!ck map special role # @role` - Set/Customize mapping of CK Special roles for your server
 - `!ck search UsernameHere` - Search based off ChastiKey username
-- `!ck stats keyholder UsernameHere` - View Keyholder stats
+- **`/ck stats keyholder UsernameHere` - View Keyholder stats**  
 - `!ck stats locktober` - ChastiKey Locktober event statistics
-- `!ck stats lockee` - View Lockee stats
+- **`/ck stats lockee` - View Lockee stats**  
 - `!ck recover combos 5` - Retrieve your completed lock combinations
 - `!ck role counts` - List of ChastiKey Discord Roles & statistics
 - `!ck ticker` - View ChastiKey Ticker
 - `!ck ticker set type 2` - Set your default displayed ticker when you call the ticker command
 - `!ck ticker set date 2019-01-27` - Set a start date for your ticker data
 - `!ck ticker set rating show` - Enable/Disable your ticker & stats rating display
-- `!ck update` - Sync your ChastiKey profile with Discord
-- `!ck verify` - Link Discord account with ChastiKey App account
+- **`/ck update` - Sync your ChastiKey profile with Discord**  
+- **`/ck verify` - Link Discord account with ChastiKey App account**  
 - `!ck web` - Generate session for external Kiera + ChastiKey web portal
 
 #### Decision Rollers
@@ -179,7 +181,7 @@ Current Progress (Languages in focus where translations are being used):
 
 #### General
 
-- `!register` Registers the user with the bot
+- **`/register` Registers the user with the bot**  
 
 #### Moderation
 
@@ -207,8 +209,8 @@ Current Progress (Languages in focus where translations are being used):
 - `!stats enable server` - Enable Server Statistics collection  
 - `!stats delete server` - Delete Server Statistics collected  
 - `!stats top channels` - View top channels on server by Statistics  
-- `!stats server` - View Statistics for Server  
-- `!stats about` - About Statistics  
+- **`/stats server` - View Statistics for Server**  
+- **`/stats about` - About Statistics**  
 - `!stats disable user` - Disable your User Statistics collection  
 - `!stats enable user` - Enable your User Statistics collection  
 - `!stats delete user` - Delete your User Statistics collected  
