@@ -1,57 +1,9 @@
-import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
-import { SlashCommandBuilder } from '@discordjs/builders'
-import { RouterRouted, ExportRoutes } from '@/router'
+import { RouterRouted } from '@/router'
 import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '@/embedded/chastikey-stats'
 import { TrackedUser } from '@/objects/user/'
 
-export const Routes = ExportRoutes({
-  type: 'message',
-  category: 'ChastiKey',
-  controller: ckStatsRouterSub,
-  description: 'Help.ChastiKey.LockeeStats.Description',
-  example: '{{prefix}}ck stats lockee',
-  middleware: [Middleware.isCKVerified],
-  name: 'ck-get-stats-lockee',
-  permissions: {
-    defaultEnabled: false,
-    serverOnly: false
-  },
-  slash: new SlashCommandBuilder()
-    .setName('ck')
-    .setDescription('View ChastiKey Stats')
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName('stats')
-        .setDescription('View ChastiKey Lockee Stats')
-        .addStringOption((option) =>
-          option
-            .setName('type')
-            .setDescription('Type of ChastiKey Stats to return')
-            .setRequired(true)
-            .addChoice('Lockee', 'lockee')
-            .addChoice('Lockees', 'lockees')
-            .addChoice('Keyholder', 'keyholder')
-            .addChoice('Multilocked', 'multilocked')
-        )
-        .addStringOption((option) => option.setName('username').setDescription('Specify a username to lookup a different user'))
-    ),
-  validate: '/ck:string/stats:string/lockee:string/user?=string'
-})
-
-function ckStatsRouterSub(routed: RouterRouted) {
-  const interactionType = routed.isInteraction ? routed.interaction.options.get('type')?.value : null
-  if (routed.isInteraction) {
-    if (interactionType === 'lockee') return getLockeeStats(routed)
-    if (interactionType === 'lockees') return getKeyholderLockees(routed)
-    if (interactionType === 'keyholder') return getKeyholderStats(routed)
-    if (interactionType === 'multilocked') return getCheckLockeeMultiLocked(routed)
-  }
-  // Fallback - Legacy command call
-  return getLockeeStats(routed)
-}
-
-async function getLockeeStats(routed: RouterRouted) {
+export async function getLockeeStats(routed: RouterRouted) {
   // Check if username was specified from slash commands or from legacy command
   const username = routed.interaction.options.get('username')?.value as string
 
@@ -95,7 +47,7 @@ async function getLockeeStats(routed: RouterRouted) {
   return true
 }
 
-async function getKeyholderStats(routed: RouterRouted) {
+export async function getKeyholderStats(routed: RouterRouted) {
   // Check if username was specified from slash commands or from legacy command
   const username = routed.interaction.options.get('username')?.value as string
 
@@ -206,7 +158,7 @@ async function getKeyholderStats(routed: RouterRouted) {
   return true
 }
 
-async function getCheckLockeeMultiLocked(routed: RouterRouted) {
+export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
   // Check if username was specified from slash commands or from legacy command
   const username = routed.interaction.options.get('username')?.value as string
 
@@ -264,7 +216,7 @@ async function getCheckLockeeMultiLocked(routed: RouterRouted) {
   return true
 }
 
-async function getKeyholderLockees(routed: RouterRouted) {
+export async function getKeyholderLockees(routed: RouterRouted) {
   // Check if username was specified from slash commands or from legacy command
   const username = routed.interaction.options.get('username')?.value as string
 
