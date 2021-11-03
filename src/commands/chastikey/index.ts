@@ -1,6 +1,7 @@
 import * as Middleware from '@/middleware'
 import * as CKStats from '@/commands/chastikey/stats'
 import * as CKUpdate from '@/commands/chastikey/update'
+import * as CKVerify from '@/commands/chastikey/verify'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { RouterRouted, ExportRoutes } from '@/router'
 
@@ -33,12 +34,15 @@ export const Routes = ExportRoutes({
         )
         .addStringOption((option) => option.setName('username').setDescription('Specify a username to lookup a different user'))
     )
+    // * /ck update
     .addSubcommand((subcommand) =>
       subcommand
         .setName('update')
         .setDescription('Sync your ChastiKey profile with Discord	')
         .addMentionableOption((option) => option.setName('user').setDescription('@ The user you wish to perform the update upon'))
     )
+    // * /ck verify
+    .addSubcommand((subcommand) => subcommand.setName('verify').setDescription('Sync your ChastiKey profile with Discord'))
 })
 
 function ckStatsRouterSub(routed: RouterRouted) {
@@ -55,4 +59,7 @@ function ckStatsRouterSub(routed: RouterRouted) {
 
   // Update
   if (subCommand === 'update') return CKUpdate.update(routed)
+
+  // Verify
+  if (subCommand === 'verify') return CKVerify.verify(routed)
 }
