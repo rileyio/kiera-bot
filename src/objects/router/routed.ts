@@ -118,3 +118,79 @@ export class RouterRouted {
     }
   }
 }
+
+export class RoutedInteraction {
+  public args: Array<string>
+  public author: User
+  public bot: Bot
+  public channel: Channel | TextChannel
+  public guild: Guild
+  public interaction: CommandInteraction
+  public isDM: boolean
+  public isInteraction: boolean
+  public member: GuildMember
+  public permissions: ProcessedPermissions
+  public prefix: string
+  public route: MessageRoute
+  public routerStats: RouterStats
+  public trackedMessage: TrackedMessage
+  public type: 'interaction'
+  public user: TrackedUser
+
+  constructor(init: Partial<RouterRouted>) {
+    // Object.assign(this, init)
+    this.args = init.args
+    this.author = init.author
+    this.bot = init.bot
+    this.channel = init.channel
+    this.guild = init.guild
+    this.interaction = init.interaction
+    this.isDM = init.isDM
+    this.isInteraction = init.isInteraction
+    this.member = init.member
+    this.permissions = init.permissions
+    this.prefix = init.prefix
+    this.route = init.route
+    this.routerStats = init.routerStats
+    this.trackedMessage = init.trackedMessage
+    this.user = init.user
+  }
+
+  public $render<T>(key: string, data?: T): string
+  public $render<T>(locale: string, key: string, data?: T): string
+  public $render<T>(locale: string, key?: string | T, data?: T): string {
+    // When a locale override is passed too
+    if (typeof locale === 'string' && typeof key === 'string') {
+      return this.bot.Localization.$render(locale, key as string, Object.assign({}, arguments[2], { prefix: this.prefix }))
+    }
+
+    // Use locale from this.user
+    return this.bot.Localization.$render(this.user ? this.user.locale : DEFAULT_LOCALE, locale, Object.assign({}, key, { prefix: this.prefix }) as T)
+  }
+
+  public $localeExists(key: string) {
+    return this.bot.Localization.$localeExists(key)
+  }
+
+  public $localeContributors(locale: string) {
+    return this.bot.Localization.$localeContributors(locale) || ''
+  }
+
+  public $locales() {
+    return this.bot.Localization.$locales()
+  }
+
+  public $sb(baseString: string, data?: any) {
+    return Utils.sb(baseString, Object.assign({}, data, { prefix: this.prefix }))
+  }
+
+  public async reply(response: string | MessagePayload | ReplyMessageOptions, ephemeral?: boolean) {
+    try {
+      if (typeof response === 'object') await (this.interaction as BaseCommandInteraction).reply(Object.assign(response, { ephemeral }))
+      else await (this.interaction as BaseCommandInteraction).reply({ content: response, ephemeral })
+    } catch (error) {
+      this.bot.Log.Router.error('Unable to .reply =>', error)
+      return false
+    }
+  }
+}

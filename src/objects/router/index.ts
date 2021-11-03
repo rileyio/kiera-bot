@@ -1,4 +1,4 @@
 export { RouteConfiguration } from './route'
 export { MessageRoute } from './message'
-export { RouterRouted } from './routed'
+export { RouterRouted, RoutedInteraction } from './routed'
 export { RouterStats } from './stats'
