@@ -1,56 +1,24 @@
 import * as Utils from '@/utils'
-import { RouterRouted, ExportRoutes } from '@/router'
+import { RouterRouted, ExportRoutes, RoutedInteraction } from '@/router'
 import { statsTopServerChannels, statsServer } from '@/embedded/stats-server'
 import { ServerStatisticType, StatisticsSetting, StatisticsSettingType, ServerStatistic } from '@/objects/statistics'
 import { ObjectID } from 'bson'
 
-export const Routes = ExportRoutes(
-  {
-    type: 'message',
-    category: 'Stats',
-    controller: statsByTopChannels,
-    description: 'Help.Stats.ViewTopChannelsByStats.Description',
-    example: '{{prefix}}stats top channels',
-    name: 'stats-top-channels',
-    validate: '/stats:string/top:string/channels:string',
-    middleware: [],
-    permissions: {
-      defaultEnabled: true,
-      serverOnly: true,
-      restricted: false
-    }
-  },
-  {
-    type: 'message',
-    category: 'Stats',
-    controller: serverStats,
-    description: 'Help.Stats.ViewServerStats.Description',
-    example: '{{prefix}}stats server',
-    name: 'stats-server',
-    validate: '/stats:string/server:string',
-    middleware: [],
-    permissions: {
-      defaultEnabled: true,
-      serverOnly: true,
-      restricted: false
-    }
-  },
-  {
-    type: 'message',
-    category: 'Stats',
-    controller: aboutStats,
-    description: 'Help.Stats.AboutStats.Description',
-    example: '{{prefix}}stats about',
-    name: 'stats-about',
-    validate: '/stats:string/about:string',
-    middleware: [],
-    permissions: {
-      defaultEnabled: true,
-      restricted: false,
-      serverOnly: true
-    }
+export const Routes = ExportRoutes({
+  type: 'message',
+  category: 'Stats',
+  controller: statsByTopChannels,
+  description: 'Help.Stats.ViewTopChannelsByStats.Description',
+  example: '{{prefix}}stats top channels',
+  name: 'stats-top-channels',
+  validate: '/stats:string/top:string/channels:string',
+  middleware: [],
+  permissions: {
+    defaultEnabled: true,
+    serverOnly: true,
+    restricted: false
   }
-)
+})
 
 export async function statsByTopChannels(routed: RouterRouted) {
   const data = await routed.bot.DB.aggregate<{ channelID: string; count: number; name?: string }>('stats-servers', [
@@ -94,10 +62,10 @@ export async function statsByTopChannels(routed: RouterRouted) {
   return true
 }
 
-export async function serverStats(routed: RouterRouted) {
+export async function serverStats(routed: RoutedInteraction) {
   const topChannelsByMsgCount = await routed.bot.DB.aggregate<{ channelID: string; count: number; name?: string }>('stats-servers', [
     {
-      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Message, serverID: routed.message.guild.id }
+      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Message, serverID: routed.guild.id }
     },
     {
       $group: {
@@ -117,7 +85,7 @@ export async function serverStats(routed: RouterRouted) {
 
   const topUsersByMsgCount = await routed.bot.DB.aggregate<{ userID: string; count: number; name?: string }>('stats-servers', [
     {
-      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Message, serverID: routed.message.guild.id }
+      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Message, serverID: routed.guild.id }
     },
     {
       $group: {
@@ -137,7 +105,7 @@ export async function serverStats(routed: RouterRouted) {
 
   const topUsersByReactionsCount = await routed.bot.DB.aggregate<{ userID: string; count: number; name?: string }>('stats-servers', [
     {
-      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Reaction, serverID: routed.message.guild.id }
+      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Reaction, serverID: routed.guild.id }
     },
     {
       $group: {
@@ -160,7 +128,7 @@ export async function serverStats(routed: RouterRouted) {
       $match: {
         _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) },
         $or: [{ type: ServerStatisticType.UserJoined }, { type: ServerStatisticType.UserLeft }],
-        serverID: routed.message.guild.id
+        serverID: routed.guild.id
       }
     },
     {
@@ -209,40 +177,16 @@ export async function serverStats(routed: RouterRouted) {
   const mappedUsersJoined = usersJoinedAndLeft.find((s) => s.type === ServerStatisticType.UserJoined) || { type: ServerStatisticType.UserJoined, count: 0 }
   const mappedUsersLeft = usersJoinedAndLeft.find((s) => s.type === ServerStatisticType.UserLeft) || { type: ServerStatisticType.UserLeft, count: 0 }
 
-  await routed.message.channel.send({
+  return await routed.reply({
     embeds: [
       statsServer({
-        serverAgeTimestamp: routed.message.guild.createdTimestamp,
-        serverIcon: routed.message.guild.iconURL(),
-        memberCount: routed.message.guild.memberCount,
+        serverAgeTimestamp: routed.guild.createdTimestamp,
+        serverIcon: routed.guild.iconURL(),
+        memberCount: routed.guild.memberCount,
         usersJoined: mappedUsersJoined.count,
         usersLeft: mappedUsersLeft.count,
         data: { channels: mappedChannelData, users: mappedUserData, reactions: mappedUserReactionsData }
       })
     ]
   })
-
-  return true
-}
-
-export async function aboutStats(routed: RouterRouted) {
-  // Get states
-  const serverStatsEnabled = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', {
-    serverID: routed.message.guild.id,
-    setting: StatisticsSettingType.ServerEnableStats
-  })
-
-  const statsDisabledUser = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { userID: routed.author.id, setting: StatisticsSettingType.UserDisableStats })
-
-  // Get user total stats count
-  const statsCount = await routed.bot.DB.count<ServerStatistic>('stats-servers', { userID: routed.author.id })
-
-  await routed.message.reply(
-    routed.$render('Stats.Info.About', {
-      serverState: serverStatsEnabled ? 'Enabled' : 'Disabled',
-      userState: statsDisabledUser ? 'Disabled' : 'Enabled',
-      count: statsCount
-    })
-  )
-  return true
 }

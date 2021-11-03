@@ -1,5 +1,5 @@
 import * as Utils from '@/utils'
-import { ServerStatisticType } from '@/objects/statistics'
+import { EmbedField, MessageEmbed } from 'discord.js'
 
 interface StatsTopServerChannelsData {
   serverIcon: string
@@ -57,8 +57,8 @@ export function statsTopServerChannels(stats: StatsTopServerChannelsData) {
   }
 }
 
-export function statsServer(stats: StatsServerData) {
-  var fields = [] as Array<{ name: string; value: string }>
+export function statsServer(stats: StatsServerData): Partial<MessageEmbed> {
+  var fields = [] as Array<EmbedField>
   var descriptionBuilt = `Stats are collected using the UTC timezone. Stats shown are from the last 30 days.\n\n`
   // Add Server Age
   descriptionBuilt += `Server Created: \`${new Date(stats.serverAgeTimestamp).toLocaleDateString()}\` (\`${Utils.Date.calculateHumanTimeDDHHMM(
@@ -80,14 +80,14 @@ export function statsServer(stats: StatsServerData) {
     }%\``
 
   // Add channels
-  var channelsField = { name: `Top ${stats.data.channels.length} Channels by Messages`, value: '' }
+  var channelsField = { name: `Top ${stats.data.channels.length} Channels by Messages`, value: '', inline: false }
   stats.data.channels.forEach((channel, i) => {
     channelsField.value += `\`${channel.count}\` ${channel.name}\n`
   })
   fields.push(channelsField)
 
   // Add users
-  var usersField = { name: `Top ${stats.data.users.length} Members by Messages`, value: '' }
+  var usersField = { name: `Top ${stats.data.users.length} Members by Messages`, value: '', inline: false }
   stats.data.users.forEach((user, i) => {
     usersField.value += `\`${user.count}\` ${user.name}\n`
   })
@@ -95,7 +95,7 @@ export function statsServer(stats: StatsServerData) {
 
   // Add users by reactions
   if (stats.data.reactions.length > 0) {
-    var reactionsField = { name: `Top ${stats.data.reactions.length} Members by Reactions`, value: '' }
+    var reactionsField = { name: `Top ${stats.data.reactions.length} Members by Reactions`, value: '', inline: false }
     stats.data.reactions.forEach((user, i) => {
       reactionsField.value += `\`${user.count}\` ${user.name}\n`
     })
@@ -106,7 +106,7 @@ export function statsServer(stats: StatsServerData) {
     title: `Server Statistics`,
     description: descriptionBuilt,
     color: 7413873,
-    timestamp: new Date(),
+    timestamp: new Date().getUTCMilliseconds(),
     footer: {
       iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
       text: 'Observed by Kiera'
