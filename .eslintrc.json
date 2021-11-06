@@ -1,0 +1,35 @@
+{
+  "extends": ["plugin:@typescript-eslint/recommended"],
+  "rules": {
+    "new-parens": "error",
+    "no-caller": "error",
+    "no-trailing-spaces": "error",
+    "quote-props": ["error", "as-needed"],
+    "quotes": [
+      "error",
+      "single",
+      {
+        "allowTemplateLiterals": true
+      }
+    ],
+    "sort-imports": [
+      "error",
+      {
+        "allowSeparatedGroups": false,
+        "ignoreCase": false,
+        "ignoreDeclarationSort": false,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+      }
+    ],
+    "sort-keys": [
+      "error",
+      "asc",
+      {
+        "caseSensitive": true,
+        "minKeys": 2,
+        "natural": false
+      }
+    ]
+  }
+}

@@ -12,8 +12,8 @@
     "clean": "trash app",
     "dev": "tsc -w",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
-    "start:nodebug": "node ./app/start.js",
     "start": "DEBUG='kiera-bot:*' node ./app/start.js",
+    "start:nodebug": "node ./app/start.js",
     "start:term:debug": "DEBUG='kiera-bot:*' node ./app/start.js",
     "test": "run-s clean build test:n",
     "test:n": "ava --tap --serial | tnyan",
@@ -31,42 +31,6 @@
     "sources": [
       "app/**/*.js"
     ]
-  },
-  "eslintConfig": {
-    "extends": [
-      "plugin:@typescript-eslint/recommended"
-    ],
-    "rules": {
-      "new-parens": "error",
-      "no-caller": "error",
-      "no-trailing-spaces": "error",
-      "quotes": [
-        "error",
-        "single",
-        {
-          "allowTemplateLiterals": true
-        }
-      ],
-      "quote-props": [
-        "error",
-        "as-needed"
-      ],
-      "sort-imports": [
-        "error",
-        {
-          "ignoreCase": false,
-          "ignoreDeclarationSort": false,
-          "ignoreMemberSort": false,
-          "memberSyntaxSortOrder": [
-            "none",
-            "all",
-            "multiple",
-            "single"
-          ],
-          "allowSeparatedGroups": false
-        }
-      ]
-    }
   },
   "dependencies": {
     "@discordjs/rest": "^0.1.0-canary.0",
