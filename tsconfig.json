@@ -1,21 +1,22 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es6",
-    "removeComments": true,
+    "baseUrl": ".",
+    "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "preserveConstEnums": true,
-    "declaration": false,
-    "outDir": "./app",
     "inlineSourceMap": true,
-    "skipLibCheck": true,
-    "typeRoots": ["src/typings", "./node_modules/@types/"],
     "lib": ["es6", "es2016"],
-    "baseUrl": ".",
+    "module": "commonjs",
+    "outDir": "./app",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "preserveConstEnums": true,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "target": "es6",
+    "typeRoots": ["src/typings", "./node_modules/@types/"]
   },
   "exclude": ["node_modules", "app"],
   "include": ["src/**/*.ts"]
