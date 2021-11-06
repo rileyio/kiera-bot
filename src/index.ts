@@ -73,7 +73,7 @@ export class Bot {
     ////////////////////////////////////////
     this.Audit = new Audit(this)
     this.BotMonitor = new BotMonitor(this)
-    this.Router = new CommandRouter(routeLoader(this.Log.Router), this)
+    this.Router = new CommandRouter(await routeLoader(this.Log.Router), this)
     this.MsgTracker = new MsgTracker(this)
     this.Task = new Task.TaskManager(this)
 
