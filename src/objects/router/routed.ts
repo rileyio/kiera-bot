@@ -1,9 +1,11 @@
 import * as Utils from '@/utils'
-import { User, Message, MessagePayload, ReplyMessageOptions, BaseCommandInteraction, GuildMember, Guild, Channel, TextChannel, CommandInteraction } from 'discord.js'
+
+import { BaseCommandInteraction, Channel, CommandInteraction, Guild, GuildMember, Message, MessagePayload, ReplyMessageOptions, TextChannel, User } from 'discord.js'
+import { MessageRoute, ProcessedPermissions, RouterStats, Validate, ValidationType } from '@/router'
+
 import { Bot } from '@/index'
 import { TrackedMessage } from '@/objects/message'
 import { TrackedUser } from '@/objects/user/'
-import { MessageRoute, ProcessedPermissions, RouterStats, Validate, ValidationType } from '@/router'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
 
@@ -59,8 +61,8 @@ export class RouterRouted {
     this.prefix = init.prefix
     this.reaction = init.reaction
       ? {
-          snowflake: init.reaction.snowflake,
-          reaction: init.reaction.reaction
+          reaction: init.reaction.reaction,
+          snowflake: init.reaction.snowflake
         }
       : undefined
     this.route = init.route
@@ -82,7 +84,7 @@ export class RouterRouted {
   public $render<T>(locale: string, key?: string | T, data?: T): string {
     // When a locale override is passed too
     if (typeof locale === 'string' && typeof key === 'string') {
-      return this.bot.Localization.$render(locale, key as string, Object.assign({}, arguments[2], { prefix: this.prefix }))
+      return this.bot.Localization.$render(locale, key as string, Object.assign({}, data, { prefix: this.prefix }))
     }
 
     // Use locale from this.user
@@ -161,7 +163,7 @@ export class RoutedInteraction {
   public $render<T>(locale: string, key?: string | T, data?: T): string {
     // When a locale override is passed too
     if (typeof locale === 'string' && typeof key === 'string') {
-      return this.bot.Localization.$render(locale, key as string, Object.assign({}, arguments[2], { prefix: this.prefix }))
+      return this.bot.Localization.$render(locale, key as string, Object.assign({}, data, { prefix: this.prefix }))
     }
 
     // Use locale from this.user
@@ -189,7 +191,7 @@ export class RoutedInteraction {
       if (typeof response === 'object') await (this.interaction as BaseCommandInteraction).reply(Object.assign(response, { ephemeral }))
       else await (this.interaction as BaseCommandInteraction).reply({ content: response, ephemeral })
     } catch (error) {
-      this.bot.Log.Router.error('Unable to .reply =>', error)
+      this.bot.Log.Router.error('Unable to .reply =>', error, response)
       return false
     }
   }
