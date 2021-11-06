@@ -1,18 +1,20 @@
-const { version } = require('../package.json')
-const { REST } = require('@discordjs/rest')
 import * as Discord from 'discord.js'
 import * as Task from '@/tasks'
 import * as Utils from '@/utils'
-import Localization from '@/localization'
-import { Routes } from 'discord-api-types/v9'
-import { MsgTracker, MongoDB } from '@/db'
+
 import { CommandRouter, routeLoader } from '@/router'
-import { BotMonitor } from '@/monitor'
+import { MongoDB, MsgTracker } from '@/db'
+
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
-import { Statistics } from '@/statistics'
-import { ServerStatisticType } from './objects/statistics'
+import { BotMonitor } from '@/monitor'
 import { ChastiKey } from './integrations/ChastiKey'
+import Localization from '@/localization'
+import { REST } from '@discordjs/rest'
+import { Routes } from 'discord-api-types/v9'
+import { ServerStatisticType } from './objects/statistics'
+import { Statistics } from '@/statistics'
+import { version } from '@/../package.json'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
 
@@ -31,8 +33,8 @@ export class Bot {
   public version: string
 
   public channel: { auditLog: Discord.TextChannel; announcementsChannel: Discord.TextChannel } = {
-    auditLog: null,
-    announcementsChannel: null
+    announcementsChannel: null,
+    auditLog: null
   }
 
   // Audit Manager
@@ -132,14 +134,14 @@ export class Bot {
     ////////////////////////////////////////
     this.Log.Bot.log(
       this.Localization.$render(DEFAULT_LOCALE, 'System.Startup', {
-        routes: this.BotMonitor.WebAPI.configuredRoutes.length,
         commands: this.Router.routes.length,
         guilds: this.client.guilds.cache.size,
-        users: await this.DB.count('users', {}),
-        ping: this.BotMonitor.DBMonitor.pingTotalLatency / this.BotMonitor.DBMonitor.pingCount,
         langs: this.Localization.langs,
+        ping: this.BotMonitor.DBMonitor.pingTotalLatency / this.BotMonitor.DBMonitor.pingCount,
+        routes: this.BotMonitor.WebAPI.configuredRoutes.length,
         strings: this.Localization.stringsCount,
         user: this.client.user.tag,
+        users: await this.DB.count('users', {}),
         version: this.version
       })
     )
@@ -186,10 +188,10 @@ export class Bot {
         {
           $set: {
             id: guild.id,
-            ownerID: guild.ownerId,
-            name: guild.name,
             joinedTimestamp: guild.joinedTimestamp,
-            lastSeen: Date.now()
+            lastSeen: Date.now(),
+            name: guild.name,
+            ownerID: guild.ownerId
           }
         },
         { atomic: true, upsert: true }
@@ -210,7 +212,9 @@ export class Bot {
 
     try {
       console.log('Started refreshing application (/) commands.')
-      await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, process.env.DISCORD_BOT_OFFICAL_DISCORD), { body: commands })
+      // ! Disabling ESLINT for the following line of code till shit gets fixed in the source libs
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, process.env.DISCORD_BOT_OFFICAL_DISCORD) as any, { body: commands })
       console.log('Successfully reloaded application (/) commands.')
     } catch (error) {
       console.error(error)
@@ -242,10 +246,10 @@ export class Bot {
       {
         $set: {
           id: guild.id,
-          ownerID: guild.ownerId,
-          name: guild.name,
           joinedTimestamp: guild.joinedTimestamp,
           lastSeen: Date.now(),
+          name: guild.name,
+          ownerID: guild.ownerId,
           prefix: undefined,
           slashCommandsEnabled: false
         }
