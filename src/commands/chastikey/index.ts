@@ -1,12 +1,13 @@
-import * as Middleware from '@/middleware'
 import * as CKStats from '@/commands/chastikey/stats'
 import * as CKUpdate from '@/commands/chastikey/update'
 import * as CKVerify from '@/commands/chastikey/verify'
+import * as Middleware from '@/middleware'
+
+import { ExportRoutes, RouterRouted } from '@/router'
+
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { RouterRouted, ExportRoutes } from '@/router'
 
 export const Routes = ExportRoutes({
-  type: 'interaction',
   category: 'ChastiKey',
   controller: ckStatsRouterSub,
   middleware: [Middleware.isCKVerified],
@@ -18,6 +19,7 @@ export const Routes = ExportRoutes({
   slash: new SlashCommandBuilder()
     .setName('ck')
     .setDescription('View ChastiKey Stats')
+    .setDefaultPermission(false)
     .addSubcommand((subcommand) =>
       subcommand
         .setName('stats')
@@ -33,16 +35,15 @@ export const Routes = ExportRoutes({
             .addChoice('Multilocked', 'multilocked')
         )
         .addStringOption((option) => option.setName('username').setDescription('Specify a username to lookup a different user'))
-    )
-    // * /ck update
+    ) // * /ck update
     .addSubcommand((subcommand) =>
       subcommand
         .setName('update')
         .setDescription('Sync your ChastiKey profile with Discord	')
         .addMentionableOption((option) => option.setName('user').setDescription('@ The user you wish to perform the update upon'))
-    )
-    // * /ck verify
-    .addSubcommand((subcommand) => subcommand.setName('verify').setDescription('Sync your ChastiKey profile with Discord'))
+    ) // * /ck verify
+    .addSubcommand((subcommand) => subcommand.setName('verify').setDescription('Sync your ChastiKey profile with Discord')),
+  type: 'interaction'
 })
 
 function ckStatsRouterSub(routed: RouterRouted) {
