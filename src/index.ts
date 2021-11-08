@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { version } = require('../package.json')
+
 import * as Discord from 'discord.js'
 import * as Task from '@/tasks'
 import * as Utils from '@/utils'
@@ -14,7 +17,6 @@ import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v9'
 import { ServerStatisticType } from './objects/statistics'
 import { Statistics } from '@/statistics'
-import { version } from '@/../package.json'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
 

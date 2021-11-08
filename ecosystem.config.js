@@ -16,7 +16,7 @@ module.exports = {
     max_memory_restart: '1G',
     max_restarts: 1,
     name: 'kiera-bot',
-    script: './app/src/start.js',
+    script: './app/start.js',
     watch: ['app', 'locales']
   }],
   deploy: {

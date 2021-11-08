@@ -13,7 +13,6 @@
     },
     "preserveConstEnums": true,
     "removeComments": true,
-    "resolveJsonModule": true,
     "skipLibCheck": true,
     "target": "es6",
     "typeRoots": ["src/typings", "./node_modules/@types/"]
