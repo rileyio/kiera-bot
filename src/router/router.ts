@@ -1,14 +1,16 @@
 import * as Utils from '../utils/'
-import { Message, User, TextChannel, Interaction, GuildMember } from 'discord.js'
+
+import { GuildMember, Interaction, Message, TextChannel, User } from 'discord.js'
+import { MessageRoute, RouteConfiguration, RouterRouted, RouterStats } from '../objects/router/'
+
 import { Bot } from '@/index'
-import { TrackedMessage } from '../objects/message'
 import { CommandPermission } from '../objects/permission'
-import { fallbackHelp } from '@/embedded/fallback-help'
 import { ProcessedPermissions } from './route-permissions'
 import { ServerStatisticType } from '../objects/statistics'
-import { MessageRoute, RouteConfiguration, RouterRouted, RouterStats } from '../objects/router/'
-import { TrackedUser } from '@/objects/user/'
+import { TrackedMessage } from '../objects/message'
 import { TrackedServer } from '@/objects/server'
+import { TrackedUser } from '@/objects/user/'
+import { fallbackHelp } from '@/embedded/fallback-help'
 
 const GLOBAL_PREFIX = process.env.BOT_MESSAGE_PREFIX
 
@@ -24,7 +26,7 @@ export class CommandRouter {
   constructor(routes: Array<RouteConfiguration>, bot?: Bot) {
     this.bot = bot
     // Alert if duplicate route name is detected
-    var _dupRouteCheck = {}
+    const _dupRouteCheck = {}
     routes.forEach((r) => {
       if (_dupRouteCheck[r.name] !== undefined) this.bot.Log.Router.log(`!! Duplicate route name detected ${r.name}`)
       else _dupRouteCheck[r.name] = 1
@@ -69,7 +71,7 @@ export class CommandRouter {
     }
 
     // Lookup tracked message in db
-    var storedMessage = await this.bot.DB.get<TrackedMessage>('messages', { id: message.id })
+    let storedMessage = await this.bot.DB.get<TrackedMessage>('messages', { id: message.id })
 
     // Stop routing if no message is tracked
     if (!storedMessage) return
@@ -102,7 +104,7 @@ export class CommandRouter {
     // Check if not stored - will be no Discord ID
     if (!kieraUser.id) kieraUser.__notStored = true
 
-    var routed = new RouterRouted({
+    const routed = new RouterRouted({
       author: user,
       bot: this.bot,
       channel: message.channel as TextChannel,
@@ -111,8 +113,8 @@ export class CommandRouter {
       member: message.member,
       message: message,
       reaction: {
-        snowflake: user.id,
-        reaction: reaction
+        reaction: reaction,
+        snowflake: user.id
       },
       route: route,
       routerStats: routerStats,
@@ -124,7 +126,7 @@ export class CommandRouter {
 
     // Process middleware
     const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
-    var mwareProcessed = 0
+    let mwareProcessed = 0
 
     for (const middleware of route.middleware) {
       const fromMiddleware = await middleware(routed)
@@ -159,11 +161,15 @@ export class CommandRouter {
       this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       // Track in an audit event
       this.bot.Audit.NewEntry({
-        name: 'command pre-routing',
-        guild: { id: guildId, name: guild.name, channel: channel.id },
         error: 'Failed to process command',
-        runtime: routerStats.performance,
+        guild: {
+          channel: channel.id,
+          id: guildId,
+          name: guild.name
+        },
+        name: 'command pre-routing',
         owner: user.id,
+        runtime: routerStats.performance,
         successful: false,
         type: 'bot.command',
         where: 'Discord'
@@ -181,7 +187,7 @@ export class CommandRouter {
     if (!kieraUser.id) kieraUser.__notStored = true
 
     // Normal routed behaviour
-    var routed: RouterRouted = new RouterRouted({
+    const routed: RouterRouted = new RouterRouted({
       author: user,
       bot: this.bot,
       channel: channel as TextChannel,
@@ -191,9 +197,9 @@ export class CommandRouter {
       isInteraction: true,
       member: member as GuildMember,
       route,
+      routerStats: routerStats,
       type: route.type,
-      user: kieraUser,
-      routerStats: routerStats
+      user: kieraUser
     })
 
     // Process Permissions
@@ -209,11 +215,15 @@ export class CommandRouter {
 
         // Track in an audit event
         this.bot.Audit.NewEntry({
-          name: routed.route.name,
-          guild: { id: 'DM', name: 'DM', channel: 'DM' },
           error: 'Command disabled by permission in this channel',
-          runtime: routerStats.performance,
+          guild: {
+            channel: 'DM',
+            id: 'DM',
+            name: 'DM'
+          },
+          name: routed.route.name,
           owner: routed.author.id,
+          runtime: routerStats.performance,
           successful: false,
           type: 'bot.command',
           where: 'Discord'
@@ -221,11 +231,15 @@ export class CommandRouter {
       } else {
         // Track in an audit event
         this.bot.Audit.NewEntry({
-          name: routed.route.name,
-          guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: channel.id },
           error: 'Command disabled by permissions',
-          runtime: routerStats.performance,
+          guild: {
+            channel: channel.id,
+            id: routed.message.guild.id,
+            name: routed.message.guild.name
+          },
+          name: routed.route.name,
           owner: routed.author.id,
+          runtime: routerStats.performance,
           successful: false,
           type: 'bot.command',
           where: 'Discord'
@@ -236,7 +250,7 @@ export class CommandRouter {
     }
 
     const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
-    var mwareProcessed = 0
+    let mwareProcessed = 0
 
     // Process middleware
     for (const middleware of route.middleware) {
@@ -260,8 +274,18 @@ export class CommandRouter {
         this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
         // Track in an audit event
         this.bot.Audit.NewEntry({
+          guild: routed.isDM
+            ? {
+                channel: 'dm',
+                id: 'dm',
+                name: 'dm'
+              }
+            : {
+                channel: channel.id,
+                id: routed.guild.id,
+                name: routed.guild.name
+              },
           name: routed.route.name,
-          guild: routed.isDM ? { id: 'dm', name: 'dm', channel: 'dm' } : { id: routed.guild.id, name: routed.guild.name, channel: channel.id },
           owner: routed.author.id,
           runtime: routerStats.performance,
           successful: true,
@@ -274,11 +298,15 @@ export class CommandRouter {
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
         // Track in an audit event
         this.bot.Audit.NewEntry({
-          name: routed.route.name,
-          guild: { id: routed.guild.id, name: routed.guild.name, channel: channel.id },
           error: 'Command failed or returned false inside controller',
-          runtime: routerStats.performance,
+          guild: {
+            channel: channel.id,
+            id: routed.guild.id,
+            name: routed.guild.name
+          },
+          name: routed.route.name,
           owner: routed.author.id,
+          runtime: routerStats.performance,
           successful: false,
           type: 'bot.command',
           where: 'Discord'
@@ -345,8 +373,8 @@ export class CommandRouter {
       if (routes.length === 0) return
 
       // Try to find a route
-      var allCategoryRoutes = [] as Array<MessageRoute>
-      var validateOutcome: { validateSignature: string; matched: boolean }
+      const allCategoryRoutes = [] as Array<MessageRoute>
+      let validateOutcome: { validateSignature: string; matched: boolean }
 
       const route = routes.find((r) => {
         // Add to examples
@@ -373,11 +401,11 @@ export class CommandRouter {
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
 
         // Provide some feedback about the failed command(s)
-        var exampleUseOfCommand = this.bot.Localization.$render(kieraUser.locale, 'Generic.Error.CommandExactMatchFailedFallback', { command: args[0] })
-        var examplesToAppend = ``
+        const exampleUseOfCommand = this.bot.Localization.$render(kieraUser.locale, 'Generic.Error.CommandExactMatchFailedFallback', { command: args[0] })
+        let examplesToAppend = ``
         for (let index = 0; index < allCategoryRoutes.length; index++) {
           const routeHint = allCategoryRoutes[index]
-          var routeExample = `\`${Utils.sb(routeHint.example, { prefix })}\` `
+          let routeExample = `\`${Utils.sb(routeHint.example, { prefix })}\` `
           // Add description (if one is present to example)
           routeExample += routeHint.description && typeof routeHint.description === 'string' ? `\n└ ${this.bot.Localization.$render(kieraUser.locale, routeHint.description)}` : ''
           // Add newline if applicable
@@ -395,11 +423,15 @@ export class CommandRouter {
         // End routing
         // Track in an audit event
         this.bot.Audit.NewEntry({
-          name: 'command pre-routing',
-          guild: { id: message.guild.id, name: message.guild.name, channel: (<TextChannel>message.channel).name },
           error: 'Failed to process command',
-          runtime: routerStats.performance,
+          guild: {
+            channel: (<TextChannel>message.channel).name,
+            id: message.guild.id,
+            name: message.guild.name
+          },
+          name: 'command pre-routing',
           owner: message.author.id,
+          runtime: routerStats.performance,
           successful: false,
           type: 'bot.command',
           where: 'Discord'
@@ -412,20 +444,20 @@ export class CommandRouter {
       // this.bot.Log.Router.log('Router -> Route:', route)
 
       // Normal routed behaviour
-      var routed: RouterRouted = new RouterRouted({
-        args: args,
+      const routed: RouterRouted = new RouterRouted({
+        args,
         author: message.author,
         bot: this.bot,
         channel: message.channel as TextChannel,
         guild: message.guild,
         isDM: message.channel.type === 'DM',
         member: message.member,
-        message: message,
+        message,
         prefix,
         route: route,
+        routerStats: routerStats,
         type: 'message',
         user: kieraUser,
-        routerStats: routerStats,
         validateMatch: validateOutcome.validateSignature
       })
 
@@ -442,11 +474,15 @@ export class CommandRouter {
 
           // Track in an audit event
           this.bot.Audit.NewEntry({
-            name: routed.route.name,
-            guild: { id: 'DM', name: 'DM', channel: 'DM' },
             error: 'Command disabled by permission in this channel',
-            runtime: routerStats.performance,
+            guild: {
+              channel: 'DM',
+              id: 'DM',
+              name: 'DM'
+            },
+            name: routed.route.name,
             owner: routed.message.author.id,
+            runtime: routerStats.performance,
             successful: false,
             type: 'bot.command',
             where: 'Discord'
@@ -454,11 +490,15 @@ export class CommandRouter {
         } else {
           // Track in an audit event
           this.bot.Audit.NewEntry({
-            name: routed.route.name,
-            guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
             error: 'Command disabled by permissions',
-            runtime: routerStats.performance,
+            guild: {
+              channel: (<TextChannel>message.channel).name,
+              id: routed.message.guild.id,
+              name: routed.message.guild.name
+            },
+            name: routed.route.name,
             owner: routed.message.author.id,
+            runtime: routerStats.performance,
             successful: false,
             type: 'bot.command',
             where: 'Discord'
@@ -469,7 +509,7 @@ export class CommandRouter {
       }
 
       const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
-      var mwareProcessed = 0
+      let mwareProcessed = 0
 
       // Process middleware
       for (const middleware of route.middleware) {
@@ -493,10 +533,18 @@ export class CommandRouter {
           this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
           // Track in an audit event
           this.bot.Audit.NewEntry({
-            name: routed.route.name,
             guild: routed.isDM
-              ? { id: 'dm', name: 'dm', channel: 'dm' }
-              : { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
+              ? {
+                  channel: 'dm',
+                  id: 'dm',
+                  name: 'dm'
+                }
+              : {
+                  channel: (<TextChannel>message.channel).name,
+                  id: routed.message.guild.id,
+                  name: routed.message.guild.name
+                },
+            name: routed.route.name,
             owner: routed.message.author.id,
             runtime: routerStats.performance,
             successful: true,
@@ -509,11 +557,15 @@ export class CommandRouter {
           this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
           // Track in an audit event
           this.bot.Audit.NewEntry({
-            name: routed.route.name,
-            guild: { id: routed.message.guild.id, name: routed.message.guild.name, channel: (<TextChannel>message.channel).name },
             error: 'Command failed or returned false inside controller',
-            runtime: routerStats.performance,
+            guild: {
+              channel: (<TextChannel>message.channel).name,
+              id: routed.message.guild.id,
+              name: routed.message.guild.name
+            },
+            name: routed.route.name,
             owner: routed.message.author.id,
+            runtime: routerStats.performance,
             successful: false,
             type: 'bot.command',
             where: 'Discord'
@@ -536,7 +588,7 @@ export class CommandRouter {
    * @memberof Router
    */
   private async processPermissions(routed: RouterRouted): Promise<ProcessedPermissions> {
-    var checks: ProcessedPermissions = {
+    const checks: ProcessedPermissions = {
       // Permissions of user
       hasAdministrator: !routed.isDM ? routed.member.permissions.has('ADMINISTRATOR') : false,
       hasManageChannel: !routed.isDM ? routed.member.permissionsIn(routed.channel.id).has('MANAGE_CHANNELS') : false,
@@ -585,17 +637,17 @@ export class CommandRouter {
 
     // Skip if a DM, as no one would have set a permission for a channel for this
     // Get the command permission if its in the DB
-    var commandPermission = new CommandPermission(
+    const commandPermission = new CommandPermission(
       (await routed.bot.DB.get<CommandPermission>('command-permissions', {
-        serverID: !routed.isDM ? routed.guild.id : 'DM',
         channelID: !routed.isDM ? routed.channel.id : 'DM',
-        command: routed.route.name
+        command: routed.route.name,
+        serverID: !routed.isDM ? routed.guild.id : 'DM'
       })) || {
-        // Defaults to True
-        serverID: !routed.isDM ? routed.guild.id : 'DM',
         channelID: routed.channel.id,
         command: routed.route.name,
-        enabled: true
+        enabled: true,
+        // Defaults to True
+        serverID: !routed.isDM ? routed.guild.id : 'DM'
       }
     )
 
