@@ -33,11 +33,7 @@ export class Bot {
   }
   public MsgTracker: MsgTracker
   public version: string
-
-  public channel: { auditLog: Discord.TextChannel; announcementsChannel: Discord.TextChannel } = {
-    announcementsChannel: null,
-    auditLog: null
-  }
+  public channel: { auditLog: Discord.TextChannel; announcementsChannel: Discord.TextChannel } = { announcementsChannel: null, auditLog: null }
 
   // Audit Manager
   public Audit: Audit
@@ -202,9 +198,10 @@ export class Bot {
   }
 
   public async onReady() {
+    const officialDiscord = await this.client.guilds.fetch(process.env.DISCORD_BOT_OFFICAL_DISCORD)
     // Setup Bot utilized channels
-    this.channel.auditLog = this.client.channels.cache.get(process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
-    this.channel.announcementsChannel = this.client.channels.cache.get(process.env.DISCORD_ANNOUNCEMENTS_CHANNEL) as Discord.TextChannel
+    this.channel.auditLog = officialDiscord.channels.cache.get(process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
+    this.channel.announcementsChannel = officialDiscord.channels.cache.get(process.env.DISCORD_ANNOUNCEMENTS_CHANNEL) as Discord.TextChannel
 
     // Register Slash commands on Kiera's Development server
     const commands = []

@@ -103,7 +103,8 @@ export class BotMonitor extends EventEmitter {
 
     if (this.status.db && this.status.stats && this.status.api) {
       this.unhealthyRecovered = true
-      await this.Bot.channel.announcementsChannel.send(`:hammer_pick: **Services Auto Restored:** I've successfully recovered myself :blush:`)
+      if (this.Bot.channel.announcementsChannel)
+        await this.Bot.channel.announcementsChannel.send(`:hammer_pick: **Services Auto Restored:** I've successfully recovered myself :blush:`)
     } else {
       this.unhealthyRecovered = false
       // If unhealthy, alert an admin (Only if Discord was able to actually connect)
@@ -166,7 +167,8 @@ export class BotMonitor extends EventEmitter {
       maintainersMention += `<@${m}> `
     })
 
-    await this.Bot.channel.announcementsChannel.send(`:warning: **Critical:** Bot Maintenance Required!
+    if (this.Bot.channel.announcementsChannel)
+      await this.Bot.channel.announcementsChannel.send(`:warning: **Critical:** Bot Maintenance Required!
 
 One of the bot maintainers: ${maintainersMention} will need to address this issue.
 
@@ -187,7 +189,8 @@ Stats ............. ${this.status.stats ? '✓ Started' : '✕ Down'}\`\`\``)
     const t = Number(process.env.DB_MONITOR_PING_FAILED_THRESHOLD || 10)
     if (this.DBMonitor.pingFailedCount >= t) {
       if (this.unhealthyRecoveryCount === 0)
-        await this.Bot.channel.announcementsChannel.send(`:warning: **Database Alert:** The Database has failed ${t} pings.. Will attempt to auto correct shortly..`)
+        if (this.Bot.channel.announcementsChannel)
+          await this.Bot.channel.announcementsChannel.send(`:warning: **Database Alert:** The Database has failed ${t} pings.. Will attempt to auto correct shortly..`)
 
       await this.tryUnhealthyRecovery()
     }
