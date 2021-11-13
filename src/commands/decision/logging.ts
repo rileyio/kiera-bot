@@ -1,39 +1,41 @@
 import * as Middleware from '@/middleware'
-import { RouterRouted, ExportRoutes } from '@/router'
+
+import { ExportRoutes, RouterRouted } from '@/router'
+
+import { ObjectId } from 'bson'
 import { TrackedDecision } from '@/objects/decision'
-import { ObjectID } from 'bson'
 import { decisionLogLast5 } from '@/embedded/decision-log'
 
 export const Routes = ExportRoutes({
-  type: 'message',
   category: 'Fun',
   controller: fetchDecisionLog,
   description: 'Help.Decision.Log.Description',
   example: '{{prefix}}decision log id',
+  middleware: [Middleware.isUserRegistered],
   name: 'decision-log',
-  validate: '/decision:string/log:string/id=string',
-  middleware: [Middleware.isUserRegistered]
+  type: 'message',
+  validate: '/decision:string/log:string/id=string'
 })
 
 export async function fetchDecisionLog(routed: RouterRouted) {
   const log: Array<TrackedDecision> = await routed.bot.DB.aggregate('decision', [
-    { $match: { _id: new ObjectID(routed.v.o.id), $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }] } },
+    { $match: { $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }], _id: new ObjectId(routed.v.o.id) } },
     { $project: { _id: { $toString: '$_id' }, name: 1, options: 1 } },
     {
       $lookup: {
-        from: 'decision-log',
-        localField: '_id',
+        as: 'log',
         foreignField: 'decisionID',
-        as: 'log'
+        from: 'decision-log',
+        localField: '_id'
       }
     },
     { $unwind: '$log' },
     { $sort: { 'log._id': -1 } },
     { $limit: 5 },
     {
-      $group: { _id: '$_id', name: { $first: '$name' }, options: { $first: '$options' }, log: { $push: '$log' } }
+      $group: { _id: '$_id', log: { $push: '$log' }, name: { $first: '$name' }, options: { $first: '$options' } }
     },
-    { $project: { _id: 1, name: 1, options: 1, log: 1 } }
+    { $project: { _id: 1, log: 1, name: 1, options: 1 } }
   ])
 
   if (!log) {

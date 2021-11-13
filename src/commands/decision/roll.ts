@@ -1,34 +1,35 @@
 import * as Middleware from '@/middleware'
 import * as Random from 'random'
 import * as XRegExp from 'xregexp'
-import { RouterRouted, ExportRoutes } from '@/router'
-import { TrackedDecision } from '@/objects/decision'
-import { ObjectID } from 'bson'
+
+import { ExportRoutes, RouterRouted } from '@/router'
 import { decisionFromSaved, decisionRealtime } from '@/embedded/decision-embed'
-import { TrackedDecisionLogEntry } from '@/objects/decision'
+
+import { ObjectId } from 'bson'
+import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
 
 export const Routes = ExportRoutes(
   {
-    type: 'message',
     category: 'Fun',
     controller: runSavedDecision,
     description: 'Help.Decision.Roll.Description',
     example: '{{prefix}}decision roll "id"',
+    middleware: [Middleware.isUserRegistered],
     name: 'decision-run-saved',
+    type: 'message',
     validate: '/decision:string/roll:string/id=string',
-    validateAlias: ['/decision:string/r:string/id=string'],
-    middleware: [Middleware.isUserRegistered]
+    validateAlias: ['/decision:string/r:string/id=string']
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: runRealtimeDecision,
     description: 'Help.Decision.RollRealtime.Description',
     example: '{{prefix}}decision "Question here" "Option 1" "Option 2" "etc.."',
+    middleware: [Middleware.isUserRegistered],
     name: 'decision-realtime',
-    validate: '/decision:string/question=string/args...string',
-    middleware: [Middleware.isUserRegistered]
+    type: 'message',
+    validate: '/decision:string/question=string/args...string'
   }
 )
 
@@ -38,12 +39,10 @@ export async function runSavedDecision(routed: RouterRouted) {
   const shortMatch = isShort ? XRegExp.exec(routed.v.o.id, shortRegex) : null
   const userNickname = isShort ? shortMatch['username'] : null
   const decisionNickname = isShort ? shortMatch['nickname'] : null
-  const userByNickname = new TrackedUser(
-    isShort ? await routed.bot.DB.get<TrackedUser>('users', { 'Decision.nickname': new RegExp(`^${userNickname}$`, 'i') }) : {}
-  )
+  const userByNickname = new TrackedUser(isShort ? await routed.bot.DB.get('users', { 'Decision.nickname': String(new RegExp(`^${userNickname}$`, 'i')) }) : {})
   const decisionFromDB = isShort
-    ? await routed.bot.DB.get<TrackedDecision>('decision', { authorID: userByNickname.id, nickname: new RegExp(`^${decisionNickname}$`, 'i') })
-    : await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id) })
+    ? await routed.bot.DB.get('decision', { authorID: userByNickname.id, nickname: String(new RegExp(`^${decisionNickname}$`, 'i')) })
+    : await routed.bot.DB.get('decision', { _id: new ObjectId(routed.v.o.id) })
 
   if (decisionFromDB) {
     const decision = new TrackedDecision(decisionFromDB)
@@ -68,9 +67,9 @@ export async function runSavedDecision(routed: RouterRouted) {
     }
 
     // Lookup author
-    var authorName: string
-    var authorAvatar: string
-    var authorID: string
+    let authorName: string
+    let authorAvatar: string
+    let authorID: string
 
     try {
       const authorLookup = await routed.message.guild.members.fetch(decision.authorID)
@@ -84,7 +83,7 @@ export async function runSavedDecision(routed: RouterRouted) {
       authorID = decision.authorID
     }
 
-    var optionsPool = []
+    let optionsPool = []
 
     // When 'consumeMode' is Temporarily Consume, remove options from the pool depending on the setting
     if (decision.consumeMode === 'Temporarily Consume') {
@@ -137,21 +136,18 @@ export async function runSavedDecision(routed: RouterRouted) {
       )
     }
 
-    const outcomeEmbed = decisionFromSaved(decision, outcome, { name: authorName, avatar: authorAvatar, id: authorID, server: { prefix: routed.prefix } })
+    const outcomeEmbed = decisionFromSaved(decision, outcome, { avatar: authorAvatar, id: authorID, name: authorName, server: { prefix: routed.prefix } })
     await routed.message.reply({ embeds: [outcomeEmbed] })
 
     // Track in log
-    await routed.bot.DB.add(
-      'decision-log',
-      new TrackedDecisionLogEntry({
-        callerID: routed.author.id,
-        decisionID: String(decision._id),
-        outcomeID: String(outcome._id),
-        serverID: routed.message.channel.type === 'DM' ? 'DM' : routed.message.guild.id,
-        channelID: routed.message.channel.type === 'DM' ? 'DM' : routed.message.channel.id,
-        outcomeContent: outcomeEmbed.description
-      })
-    )
+    await routed.bot.DB.add('decision-log', {
+      callerID: routed.author.id,
+      channelID: routed.message.channel.type === 'DM' ? 'DM' : routed.message.channel.id,
+      decisionID: String(decision._id),
+      outcomeContent: outcomeEmbed.description,
+      outcomeID: String(outcome._id),
+      serverID: routed.message.channel.type === 'DM' ? 'DM' : routed.message.guild.id
+    })
 
     return true
   }

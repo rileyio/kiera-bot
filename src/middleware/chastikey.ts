@@ -3,7 +3,7 @@ import { UserData } from 'chastikey.js/app/objects'
 
 export async function isCKVerified(routed: RouterRouted) {
   const ckUser = new UserData(
-    await routed.bot.DB.get<UserData>('ck-users', { discordID: routed.author.id })
+    await routed.bot.DB.get('ck-users', { discordID: routed.author.id })
   )
 
   // When user has a DiscordID in the 'ck-users' data but none with kiera (this means they linked their Discord account)

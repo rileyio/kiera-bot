@@ -11,7 +11,7 @@ export class Statistics {
     // Load Servers whitelist into memory to save processing time looking up each time
     ;(async () => {
       console.log('loading stats settings from DB')
-      const loaded = await this.Bot.DB.getMultiple<StatisticsSetting>('stats-settings', {
+      const loaded = await this.Bot.DB.getMultiple('stats-settings', {
         setting: StatisticsSettingType.ServerEnableStats
       })
 
@@ -48,7 +48,7 @@ export class Statistics {
     ;(async () => {
       try {
         // Check Stats Settings if server is tracking & if the user has stats turned off
-        const statsSettings = await this.Bot.DB.getMultiple<StatisticsSetting>('stats-settings', {
+        const statsSettings = await this.Bot.DB.getMultiple('stats-settings', {
           $or: [
             { setting: StatisticsSettingType.ServerDisableStats, serverID },
             { setting: StatisticsSettingType.ChannelDisableStats, channelID },

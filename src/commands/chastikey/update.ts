@@ -1,18 +1,18 @@
-import * as Utils from '@/utils'
+/* eslint-disable sort-keys */
 import * as Discord from 'discord.js'
-import { TrackedUser } from '@/objects/user/'
-import { RouterRouted } from '@/router'
-import { performance } from 'perf_hooks'
-import { TrackedServerSetting } from '@/objects/server-setting'
+import * as Utils from '@/utils'
+
 import { ChastiKeyManagedChanges } from '@/objects/chastikey'
+import { RoutedInteraction } from '@/router'
 import { managedUpdate } from '@/embedded/chastikey-update'
+import { performance } from 'perf_hooks'
 
 /**
  * ChastiKey Update (For: Roles)
  * @export
  * @param {RouterRouted} routed
  */
-export async function update(routed: RouterRouted) {
+export async function update(routed: RoutedInteraction) {
   const updatePerformance = {
     full: { start: performance.now(), end: 0 },
     verify: { start: 0, end: 0 },
@@ -26,7 +26,7 @@ export async function update(routed: RouterRouted) {
   const mentionedUser = routed.interaction.options.getMentionable('user') as Discord.GuildMember
 
   // Fetch all that have been mapped already
-  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedServerSetting>('server-settings', { serverID: routed.guild.id, key: /^server\.ck\.roles/ })
+  const alreadyMapped = await routed.bot.DB.getMultiple('server-settings', { serverID: routed.guild.id, key: /^server\.ck\.roles/ })
 
   // Already Mapped as Object
   const alreadyMappedIDs = {
@@ -61,14 +61,14 @@ export async function update(routed: RouterRouted) {
   }
 
   // Track changes made later - if any
-  var changesImplemented: Array<ChastiKeyManagedChanges> = []
+  const changesImplemented: Array<ChastiKeyManagedChanges> = []
 
   // Get user's current ChastiKey username from users collection or by the override
   const dbUser = mentionedUser
     ? // When: Snowflake
-      await routed.bot.DB.get<TrackedUser>('users', { id: mentionedUser.id })
+      await routed.bot.DB.get('users', { id: mentionedUser.id })
     : // When: Self
-      await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
+      await routed.bot.DB.get('users', { id: routed.author.id })
 
   // Get Data from new API
   const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({
@@ -148,7 +148,7 @@ export async function update(routed: RouterRouted) {
   }
 
   // User Roles
-  var discordUserHasRole = {
+  const discordUserHasRole = {
     locked: false,
     unlocked: false,
     locktober2019: false,
@@ -237,8 +237,8 @@ export async function update(routed: RouterRouted) {
   })
 
   // Determine which color the user prefers, Y or X
-  var userHasPref = false
-  var isChangingLockeeExpRole = false
+  let userHasPref = false
+  let isChangingLockeeExpRole = false
   const prefX =
     discordUserHasRole.fanaticalLockeeX ||
     discordUserHasRole.devotedLockeeX ||
@@ -491,9 +491,9 @@ export async function update(routed: RouterRouted) {
 
     try {
       // Locktober Data (DB Cached)
-      const isLocktoberParticipant2019 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2019', { discordID: discordUser.id })
-      const isLocktoberParticipant2020 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2020', { discordID: discordUser.id })
-      const isLocktoberParticipant2021 = await routed.bot.DB.verify<{ username: string; discordID: string }>('ck-locktober-2021', { discordID: discordUser.id })
+      const isLocktoberParticipant2019 = await routed.bot.DB.verify('ck-locktober-2019', { discordID: discordUser.id })
+      const isLocktoberParticipant2020 = await routed.bot.DB.verify('ck-locktober-2020', { discordID: discordUser.id })
+      const isLocktoberParticipant2021 = await routed.bot.DB.verify('ck-locktober-2021', { discordID: discordUser.id })
 
       // * 2019 * //
       if (isLocktoberParticipant2019) {

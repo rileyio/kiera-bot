@@ -1,8 +1,8 @@
-import test from 'ava'
 import { AuthKey } from './authkey'
+import test from 'ava'
 
-var authKey = new AuthKey()
-var key
+const authKey = new AuthKey()
+let key: string
 
 test('AuthKey:Generate => create new key', t => {
   t.plan(2)

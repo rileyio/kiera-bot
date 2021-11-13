@@ -1,7 +1,7 @@
-import { ObjectID } from 'bson'
+import { ObjectId } from 'bson'
 
 export class TrackedServerSetting {
-  public _id: ObjectID
+  public _id: ObjectId
   public key: string
   public serverID: string
   public state: boolean

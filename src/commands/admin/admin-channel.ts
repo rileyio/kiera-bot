@@ -1,9 +1,9 @@
 import * as Utils from '@/utils'
-import { RouterRouted, ExportRoutes } from '@/router'
+
+import { ExportRoutes, RouterRouted } from '@/router'
 import { TextChannel } from 'discord.js'
 
 export const Routes = ExportRoutes({
-  type: 'message',
   category: 'Admin',
   controller: purgeChannelMessages,
   description: 'Help.Admin.ChannelPurge.Description',
@@ -13,6 +13,7 @@ export const Routes = ExportRoutes({
     defaultEnabled: false,
     serverAdminOnly: true
   },
+  type: 'message',
   validate: '/admin:string/channel:string/purge:string'
 })
 
@@ -22,6 +23,5 @@ export const Routes = ExportRoutes({
  * @param {RouterRouted} routed
  */
 export async function purgeChannelMessages(routed: RouterRouted) {
-  await Utils.Channel.cleanTextChat(<TextChannel>routed.message.channel, routed.bot.Log.Scheduled)
-  return true
+  return Utils.Channel.cleanTextChat(<TextChannel>routed.message.channel, routed.bot.Log.Scheduled)
 }

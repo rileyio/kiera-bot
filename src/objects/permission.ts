@@ -1,12 +1,12 @@
-import { ObjectID } from 'bson'
 import { GuildChannel } from 'discord.js'
+import { ObjectId } from 'bson'
 
 export interface TextChannelExtended extends GuildChannel {
   permissions: Array<any>
 }
 
 export class CommandPermission {
-  public readonly _id: ObjectID
+  public readonly _id: ObjectId
   /**
    * Discord server ID
    * @memberof CommandPermission
@@ -24,7 +24,7 @@ export class CommandPermission {
    * @type {boolean}
    * @memberof CommandPermission
    */
-  public enabled: boolean = true
+  public enabled = true
   public example?: string
   public category?: string
 

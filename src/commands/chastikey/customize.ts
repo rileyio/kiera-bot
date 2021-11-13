@@ -1,35 +1,36 @@
+/* eslint-disable sort-keys */
 import * as Middleware from '@/middleware'
-import { TrackedServerSetting } from '@/objects/server-setting'
-import { RouterRouted, ExportRoutes } from '@/router'
+
+import { ExportRoutes, RouterRouted } from '@/router'
 
 export const Routes = ExportRoutes(
   {
-    type: 'message',
     category: 'ChastiKey',
     controller: mapExpRole,
     description: 'Help.ChastiKey.CustomizeExpRole.Description',
     example: '{{prefix}}ck map exp role 1 627557066382245888',
-    name: 'ck-map-exp-roles',
-    validate: '/ck:string/map:string/exp:string/role:string/index?=number/roleid?=string',
     middleware: [Middleware.isCKVerified],
+    name: 'ck-map-exp-roles',
     permissions: {
-      serverOnly: true,
-      serverAdminOnly: true
-    }
+      serverAdminOnly: true,
+      serverOnly: true
+    },
+    type: 'message',
+    validate: '/ck:string/map:string/exp:string/role:string/index?=number/roleid?=string'
   },
   {
-    type: 'message',
     category: 'ChastiKey',
     controller: mapSpecialRoles,
     description: 'Help.ChastiKey.CustomizeSpecialRole.Description',
     example: '{{prefix}}ck map special role 1 627557066382245888',
-    name: 'ck-map-special-roles',
-    validate: '/ck:string/map:string/special:string/role:string/index?=number/roleid?=string',
     middleware: [Middleware.isCKVerified],
+    name: 'ck-map-special-roles',
     permissions: {
-      serverOnly: true,
-      serverAdminOnly: true
-    }
+      serverAdminOnly: true,
+      serverOnly: true
+    },
+    type: 'message',
+    validate: '/ck:string/map:string/special:string/role:string/index?=number/roleid?=string'
   }
 )
 
@@ -40,7 +41,10 @@ export const Routes = ExportRoutes(
  */
 export async function mapExpRole(routed: RouterRouted) {
   // Fetch all that have been mapped already
-  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedServerSetting>('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles\.exp/ })
+  const alreadyMapped = await routed.bot.DB.getMultiple('server-settings', {
+    key: /^server\.ck\.roles\.exp/,
+    serverID: routed.message.guild.id
+  })
   // Already Mapped as Object
   const alreadyMappedIDs = {
     // Lockee
@@ -72,7 +76,7 @@ export async function mapExpRole(routed: RouterRouted) {
     const targetRole = isTagged ? routed.message.mentions.roles.first() : await routed.message.guild.roles.fetch(String(routed.v.o.roleid))
 
     if (targetRole) {
-      const upsertResult = await routed.bot.DB.update<TrackedServerSetting>(
+      const upsertResult = await routed.bot.DB.update(
         'server-settings',
         { serverID: routed.message.guild.id, key: `server.ck.roles.exp.${routed.v.o.index}` },
         { value: targetRole.id },
@@ -122,7 +126,7 @@ export async function mapExpRole(routed: RouterRouted) {
  */
 export async function mapSpecialRoles(routed: RouterRouted) {
   // Fetch all that have been mapped already
-  const alreadyMapped = await routed.bot.DB.getMultiple<TrackedServerSetting>('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles\.special/ })
+  const alreadyMapped = await routed.bot.DB.getMultiple('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles\.special/ })
   // Already Mapped as Object
   const alreadyMappedIDs = {
     unlocked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.1`),
@@ -137,7 +141,7 @@ export async function mapSpecialRoles(routed: RouterRouted) {
     const targetRole = isTagged ? routed.message.mentions.roles.first() : await routed.message.guild.roles.fetch(String(routed.v.o.roleid))
 
     if (targetRole) {
-      const upsertResult = await routed.bot.DB.update<TrackedServerSetting>(
+      const upsertResult = await routed.bot.DB.update(
         'server-settings',
         { serverID: routed.message.guild.id, key: `server.ck.roles.special.${routed.v.o.index}` },
         { value: targetRole.id },
@@ -154,11 +158,11 @@ export async function mapSpecialRoles(routed: RouterRouted) {
 
   await routed.message.reply(
     routed.$render('ChastiKey.Customize.MapSpecialRole', {
-      unlocked: alreadyMappedIDs.unlocked ? `<@&${alreadyMappedIDs.unlocked.value}>` : ``,
       locked: alreadyMappedIDs.locked ? `<@&${alreadyMappedIDs.locked.value}>` : ``,
       locktober2019: alreadyMappedIDs.locktober2019 ? `<@&${alreadyMappedIDs.locktober2019.value}>` : ``,
       locktober2020: alreadyMappedIDs.locktober2020 ? `<@&${alreadyMappedIDs.locktober2020.value}>` : ``,
-      locktober2021: alreadyMappedIDs.locktober2021 ? `<@&${alreadyMappedIDs.locktober2021.value}>` : ``
+      locktober2021: alreadyMappedIDs.locktober2021 ? `<@&${alreadyMappedIDs.locktober2021.value}>` : ``,
+      unlocked: alreadyMappedIDs.unlocked ? `<@&${alreadyMappedIDs.unlocked.value}>` : ``
     })
   )
 

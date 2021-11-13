@@ -1,6 +1,9 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
-import test from 'ava'
+
 import * as Utils from '@/utils'
+
+import test from 'ava'
 
 test('Utils:getArgs => Ensure proper parsing of args', t => {
   t.plan(2)

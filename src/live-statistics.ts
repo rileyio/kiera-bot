@@ -1,7 +1,9 @@
-import { Bot } from '@/index'
-import { BotStatistics, BotStatistic } from './objects/statistics'
-import { EventEmitter } from 'events'
 import * as Helper from './utils/stats'
+
+import { BotStatistic, BotStatistics } from './objects/statistics'
+
+import { Bot } from '@/index'
+import { EventEmitter } from 'events'
 
 export class LiveStatistics extends EventEmitter {
   private uptimeInterval: NodeJS.Timer
@@ -33,7 +35,7 @@ export class LiveStatistics extends EventEmitter {
     clearInterval(this.dbUpdateInterval)
   }
 
-  public increment(stat: BotStatistic, valueOverride?: number) {
+  public increment(stat: BotStatistic) {
     switch (stat) {
       case 'discord-api-calls':
         this.BotStatistics.discordAPICalls += 1
@@ -75,7 +77,7 @@ export class LiveStatistics extends EventEmitter {
     }
 
     // Get existing stats from DB
-    const botStats = await this.Bot.DB.get<BotStatistics>('stats-bot', {})
+    const botStats = await this.Bot.DB.get('stats-bot', {})
     // Init stats
     this.BotStatistics.startup(botStats)
 

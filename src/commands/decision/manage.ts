@@ -1,91 +1,93 @@
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
-import { RouterRouted, ExportRoutes } from '@/router'
+
+import { ExportRoutes, RouterRouted } from '@/router'
+import { Message, TextChannel } from 'discord.js'
 import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
-import { ObjectID } from 'bson'
+
+import { ObjectId } from 'bson'
 import { TrackedDecisionLogEntry } from '@/objects/decision'
-import { CollectorFilter, Message, TextChannel } from 'discord.js'
 
 export const Routes = ExportRoutes(
   {
-    type: 'message',
     category: 'Fun',
     controller: newDecision,
     description: 'Help.Decision.New.Description',
     example: '{{prefix}}decision new "name"',
+    middleware: [Middleware.isUserRegistered],
     name: 'decision-new',
-    validate: '/decision:string/new:string/name=string',
-    middleware: [Middleware.isUserRegistered]
+    type: 'message',
+    validate: '/decision:string/new:string/name=string'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: addDecisionManager,
     description: 'Help.Decision.AddManager.Description',
     example: '{{prefix}}decision "id" manager add @user#1234',
+    middleware: [Middleware.isUserRegistered],
     name: 'decision-add-manager',
-    validate: '/decision:string/id=string/manager:string/add:string/user=string',
-    middleware: [Middleware.isUserRegistered]
+    type: 'message',
+    validate: '/decision:string/id=string/manager:string/add:string/user=string'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: removeDecisionManager,
     description: 'Help.Decision.RemoveManager.Description',
     example: '{{prefix}}decision "id" manager remove @user#1234',
+    middleware: [Middleware.isUserRegistered],
     name: 'decision-remove-manager',
-    validate: '/decision:string/id=string/manager:string/remove:string/user=string',
-    middleware: [Middleware.isUserRegistered]
+    type: 'message',
+    validate: '/decision:string/id=string/manager:string/remove:string/user=string'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: transferDecisionOwnership,
     description: 'Help.Decision.TransferOwnership.Description',
     example: '{{prefix}}decision "id" ownership transfer @user#1234',
+    middleware: [Middleware.isUserRegistered],
     name: 'decision-transfer-ownership',
-    validate: '/decision:string/id=string/ownership:string/transfer:string/user=string',
-    middleware: [Middleware.isUserRegistered]
+    type: 'message',
+    validate: '/decision:string/id=string/ownership:string/transfer:string/user=string'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: newDecisionEntry,
     description: 'Help.Decision.NewEntry.Description',
     example: '{{prefix}}decision "id" outcome add "Your decision entry here"',
+    middleware: [Middleware.isUserRegistered],
     name: 'decision-new-outcome',
-    validate: '/decision:string/id=string/outcome:string/add:string/text=string',
-    middleware: [Middleware.isUserRegistered]
+    type: 'message',
+    validate: '/decision:string/id=string/outcome:string/add:string/text=string'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: setDecisionConsumeMode,
     description: 'Help.Decision.SetConsumeMode.Description',
     example: '{{prefix}}decision "id" consume mode 0',
+    middleware: [Middleware.isUserRegistered],
     name: 'decision-set-consume-mode',
-    validate: '/decision:string/id=string/consume:string/mode:string/setting=number',
-    middleware: [Middleware.isUserRegistered]
+    type: 'message',
+    validate: '/decision:string/id=string/consume:string/mode:string/setting=number'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: setConsumeReset,
     description: 'Help.Decision.ResetConsumed.Description',
     example: '{{prefix}}decision "id" consume reset 0',
+    middleware: [Middleware.isUserRegistered],
     name: 'decision-set-consume-reset',
-    validate: '/decision:string/id=string/consume:string/reset:string/value?=number',
-    middleware: [Middleware.isUserRegistered]
+    type: 'message',
+    validate: '/decision:string/id=string/consume:string/reset:string/value?=number'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: generateNewDecisionID,
     description: 'Help.Decision.GenerateNewID.Description',
     example: '{{prefix}}decision "oldID" new id',
+    middleware: [Middleware.isUserRegistered],
     name: 'decision-new-decision-id',
-    validate: '/decision:string/oldid=string/new:string/id:string',
-    middleware: [Middleware.isUserRegistered]
+    type: 'message',
+    validate: '/decision:string/oldid=string/new:string/id:string'
   }
 )
 
@@ -97,8 +99,8 @@ export const Routes = ExportRoutes(
 export async function newDecision(routed: RouterRouted) {
   // Create a new question &
   const decision = new TrackedDecision({
-    name: routed.v.o.name,
     authorID: routed.message.author.id,
+    name: routed.v.o.name,
     serverID: routed.message.guild.id
   })
   const updated = await routed.bot.DB.add('decision', decision)
@@ -112,13 +114,13 @@ export async function newDecision(routed: RouterRouted) {
 
 export async function newDecisionEntry(routed: RouterRouted) {
   // Get the saved decision from the db (Only the creator can edit)
-  var decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
-    _id: new ObjectID(routed.v.o.id),
-    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
+  const decisionFromDB = await routed.bot.DB.get('decision', {
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }],
+    _id: new ObjectId(routed.v.o.id)
   })
 
   if (decisionFromDB) {
-    var decision = new TrackedDecision(decisionFromDB)
+    const decision = new TrackedDecision(decisionFromDB)
     decision.options.push(new TrackedDecisionOption({ text: routed.v.o.text }))
     await routed.bot.DB.update('decision', { _id: decision._id }, decision)
     await routed.message.reply(routed.$render('Decision.Edit.NewEntry', { added: routed.v.o.text }))
@@ -128,26 +130,26 @@ export async function newDecisionEntry(routed: RouterRouted) {
 }
 
 export async function generateNewDecisionID(routed: RouterRouted) {
-  const oldDecision = await routed.bot.DB.get<TrackedDecision>('decision', {
-    _id: new ObjectID(routed.v.o.oldid),
-    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
+  const oldDecision = await routed.bot.DB.get('decision', {
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }],
+    _id: new ObjectId(routed.v.o.oldid)
   })
 
   if (oldDecision) {
-    const oldID = new ObjectID(oldDecision._id)
-    const newID = new ObjectID()
+    const oldID = new ObjectId(oldDecision._id)
+    const newID = new ObjectId()
 
     // Update Decision ID in object
     const decision = new TrackedDecision(Object.assign(oldDecision, { _id: newID }))
 
     // Insert with new Decision ID into decision collection
-    await routed.bot.DB.add<TrackedDecision>('decision', decision)
+    await routed.bot.DB.add('decision', decision)
 
     // Remove Old Decision from decision collection
     await routed.bot.DB.remove('decision', { _id: oldID })
 
     // Fetch any records from the decision-log collection to be updated
-    await routed.bot.DB.update<TrackedDecisionLogEntry>(
+    await routed.bot.DB.update(
       'decision-log',
       {
         decisionID: oldID.toString()
@@ -157,7 +159,12 @@ export async function generateNewDecisionID(routed: RouterRouted) {
     )
 
     // Notify user via DM of the new ID
-    await routed.message.author.send(routed.$render('Decision.Edit.NewIDAssigned', { oldID: oldID.toString(), newID: newID.toString() }))
+    await routed.message.author.send(
+      routed.$render('Decision.Edit.NewIDAssigned', {
+        newID: newID.toString(),
+        oldID: oldID.toString()
+      })
+    )
     return true
   }
 
@@ -166,13 +173,13 @@ export async function generateNewDecisionID(routed: RouterRouted) {
 
 export async function setDecisionConsumeMode(routed: RouterRouted) {
   // Get the saved decision from the db (Only the creator can edit)
-  var decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
-    _id: new ObjectID(routed.v.o.id),
-    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
+  const decisionFromDB = await routed.bot.DB.get('decision', {
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }],
+    _id: new ObjectId(routed.v.o.id)
   })
 
   if (decisionFromDB) {
-    var decision = new TrackedDecision(decisionFromDB)
+    const decision = new TrackedDecision(decisionFromDB)
     switch (routed.v.o.setting) {
       case 0:
         await routed.bot.DB.update('decision', { _id: decision._id }, { $set: { consumeMode: 'Basic' } }, { atomic: true })
@@ -199,13 +206,13 @@ export async function setDecisionConsumeMode(routed: RouterRouted) {
 
 export async function setConsumeReset(routed: RouterRouted) {
   // Get the saved decision from the db (Only the creator can edit)
-  var decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', {
-    _id: new ObjectID(routed.v.o.id),
-    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }]
+  const decisionFromDB = await routed.bot.DB.get('decision', {
+    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }],
+    _id: new ObjectId(routed.v.o.id)
   })
 
   if (decisionFromDB) {
-    var decision = new TrackedDecision(decisionFromDB)
+    const decision = new TrackedDecision(decisionFromDB)
 
     // When a number ( >0 ) is passed as the value
     if (routed.v.o.value > 0 || Number.isNaN(Number(routed.v.o.value)) === false) {
@@ -240,7 +247,12 @@ export async function setConsumeReset(routed: RouterRouted) {
         const filter = (response: Message) =>
           response.content.toLowerCase().replace(' ', '') === routed.$render('Generic.Word.UppercaseYes').toLowerCase() && response.author.id === routed.author.id
         // Message collector w/Filter - Wait up to a max of 1 min for exactly 1 reply from the required user
-        const collected = await routed.message.channel.awaitMessages({ filter, max: 1, time: 60000, errors: ['time'] })
+        const collected = await routed.message.channel.awaitMessages({
+          errors: ['time'],
+          filter,
+          max: 1,
+          time: 60000
+        })
         // Delete the previous message at this stage
         await Utils.Channel.deleteMessage(routed.message.channel as TextChannel, collected.first().id)
         // Upon valid message collection, begin deletion - notify user
@@ -266,7 +278,7 @@ export async function setConsumeReset(routed: RouterRouted) {
 }
 
 export async function addDecisionManager(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.author.id })
+  const decisionFromDB = await routed.bot.DB.get('decision', { _id: new ObjectId(routed.v.o.id), authorID: routed.author.id })
   const mentionedUser = routed.message.mentions.members.first()
 
   if (decisionFromDB && mentionedUser) {
@@ -276,14 +288,14 @@ export async function addDecisionManager(routed: RouterRouted) {
     // Update managers
     if (!isAlreadyManager) decision.managers.push(mentionedUser.id)
 
-    await routed.bot.DB.update('decision', { _id: new ObjectID(routed.v.o.id) }, { $set: { managers: decision.managers } }, { atomic: true })
+    await routed.bot.DB.update('decision', { _id: new ObjectId(routed.v.o.id) }, { $set: { managers: decision.managers } }, { atomic: true })
     await routed.message.reply(routed.$render('Decision.Edit.AddedManager', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
     return true
   }
 }
 
 export async function removeDecisionManager(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.author.id })
+  const decisionFromDB = await routed.bot.DB.get('decision', { _id: new ObjectId(routed.v.o.id), authorID: routed.author.id })
   const mentionedUser = routed.message.mentions.members.first()
 
   if (decisionFromDB && mentionedUser) {
@@ -298,14 +310,14 @@ export async function removeDecisionManager(routed: RouterRouted) {
       )
     }
 
-    await routed.bot.DB.update('decision', { _id: new ObjectID(routed.v.o.id) }, { $set: { managers: decision.managers } }, { atomic: true })
+    await routed.bot.DB.update('decision', { _id: new ObjectId(routed.v.o.id) }, { $set: { managers: decision.managers } }, { atomic: true })
     await routed.message.reply(routed.$render('Decision.Edit.RemovedManager', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
     return true
   }
 }
 
 export async function transferDecisionOwnership(routed: RouterRouted) {
-  const decisionFromDB = await routed.bot.DB.get<TrackedDecision>('decision', { _id: new ObjectID(routed.v.o.id), authorID: routed.author.id })
+  const decisionFromDB = await routed.bot.DB.get('decision', { _id: new ObjectId(routed.v.o.id), authorID: routed.author.id })
   const mentionedUser = routed.message.mentions.members.first()
 
   if (decisionFromDB && mentionedUser) {

@@ -1,33 +1,35 @@
-import * as errors from 'restify-errors'
-import * as jwt from 'jsonwebtoken'
 import * as Middleware from '@/api/middleware'
 import * as Validation from '@/api/validations'
-import { WebRouted, WebRoute } from '@/api/web-router'
+import * as errors from 'restify-errors'
+import * as jwt from 'jsonwebtoken'
+
+import { WebRoute, WebRouted } from '@/api/web-router'
+
 import { TrackedSession } from '@/objects/session'
-import { validate } from '@/api/utils/validate'
 import { TrackedUser } from '@/objects/user/'
+import { validate } from '@/api/utils/validate'
 
 export const Routes: Array<WebRoute> = [
   {
     controller: auth,
     method: 'post',
+    middleware: [Middleware.validateWebSecret],
     name: 'web-auth',
-    path: '/api/web/oauth',
-    middleware: [Middleware.validateWebSecret]
+    path: '/api/web/oauth'
   },
   {
     controller: verifySession,
     method: 'post',
+    middleware: [Middleware.validateSession],
     name: 'web-session-verify',
-    path: '/api/web/verify',
-    middleware: [Middleware.validateSession]
+    path: '/api/web/verify'
   },
   {
     controller: oauthLogout,
     method: 'post',
+    middleware: [Middleware.validateSession],
     name: 'web-logout',
-    path: '/api/web/logout',
-    middleware: [Middleware.validateSession]
+    path: '/api/web/logout'
   }
 ]
 
@@ -44,9 +46,9 @@ export async function auth(routed: WebRouted) {
 
   // Begin creating new session
   const storedSession = new TrackedSession({
-    userID: routed.req.body.id,
+    generatedFor: 'kiera-web',
     sessionExpiry: Date.now() / 1000 + 86400 * 7,
-    generatedFor: 'kiera-web'
+    userID: routed.req.body.id
   })
 
   // Valid at this point
@@ -64,15 +66,15 @@ export async function auth(routed: WebRouted) {
   if (kieraUser.__notStored) await routed.Bot.DB.add('users', new TrackedUser({ id: discordUser.id }))
 
   // Store on TrackedSession
-  await routed.Bot.DB.add<TrackedSession>('sessions', storedSession)
+  await routed.Bot.DB.add('sessions', storedSession)
 
   // Valid at this point
   return routed.res.send({
+    discriminator: discordUser.discriminator,
+    session: storedSession.session,
     success: true,
     userID: discordUser.id,
-    session: storedSession.session,
-    username: discordUser.username,
-    discriminator: discordUser.discriminator
+    username: discordUser.username
   })
 }
 
@@ -82,11 +84,11 @@ export async function verifySession(routed: WebRouted) {
 
     // Valid at this point
     return routed.res.send({
+      avatar: discordUser.avatar,
+      discriminator: discordUser.discriminator,
       success: true,
       userID: discordUser.id,
-      username: discordUser.username,
-      discriminator: discordUser.discriminator,
-      avatar: discordUser.avatar
+      username: discordUser.username
     })
   } catch (error) {
     return routed.next(new errors.BadRequestError())
@@ -95,7 +97,7 @@ export async function verifySession(routed: WebRouted) {
 
 export async function oauthLogout(routed: WebRouted) {
   // Update TrackedSession
-  await routed.Bot.DB.update<TrackedSession>(
+  await routed.Bot.DB.update(
     'sessions',
     { _id: routed.session._id },
     {

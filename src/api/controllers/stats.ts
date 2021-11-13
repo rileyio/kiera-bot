@@ -1,4 +1,4 @@
-import { WebRouted, WebRoute } from '@/api/web-router'
+import { WebRoute, WebRouted } from '@/api/web-router'
 
 export const Routes: Array<WebRoute> = [
   {

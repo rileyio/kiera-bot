@@ -1,20 +1,18 @@
 import * as Middleware from '@/api/middleware'
-import { WebRouted, WebRoute } from '@/api/web-router'
-import { AuditEntry } from '@/objects/audit'
+import { WebRoute, WebRouted } from '@/api/web-router'
 
 export const Routes: Array<WebRoute> = [
-  // * Audit * //
   {
     controller: getEntries,
     method: 'post',
+    middleware: [Middleware.validateSession],
     name: 'audit-log',
-    path: '/api/audit',
-    middleware: [Middleware.validateSession]
+    path: '/api/audit'
   }
 ]
 
 export async function getEntries(routed: WebRouted) {
-  var auditEntries = await routed.Bot.DB.getLatest<AuditEntry>(
+  const auditEntries = await routed.Bot.DB.getLatest(
     'audit-log',
     {
       owner: routed.session.userID

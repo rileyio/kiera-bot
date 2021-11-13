@@ -1,7 +1,8 @@
-import { TrackedMessage } from '@/objects/message'
+import { Message, TextChannel } from 'discord.js'
+
 import { Bot } from '@/index'
-import { TextChannel, Message } from 'discord.js'
 import { Logging } from '@/utils'
+import { TrackedMessage } from '@/objects/message'
 
 export class MsgTracker {
   private Bot: Bot
@@ -39,14 +40,14 @@ export class MsgTracker {
         return await this.trackMsg(
           new TrackedMessage({
             authorID: message.author.id,
-            id: message.id,
-            messageCreatedAt: message.createdAt.getTime(),
             channelId: message.channel.id,
             // Flags
             flagTrack: true,
             // React tracking
-            reactions: [...message.reactions.cache.values()],
-            reactionRoute: message.reactionRoute
+            id: message.id,
+            messageCreatedAt: message.createdAt.getTime(),
+            reactionRoute: message.reactionRoute,
+            reactions: [...message.reactions.cache.values()]
           })
         )
       }
@@ -57,14 +58,14 @@ export class MsgTracker {
     return await this.trackMsg(
       new TrackedMessage({
         authorID: message.author.id,
-        id: message.id,
-        messageCreatedAt: message.createdAt.getTime(),
         channelId: message.channel.id,
         // Flags
         flagTrack: true,
+        id: message.id,
+        messageCreatedAt: message.createdAt.getTime(),
         // React tracking
-        reactions: [...message.reactions.cache.values()],
-        reactionRoute: message.reactionRoute
+        reactionRoute: message.reactionRoute,
+        reactions: [...message.reactions.cache.values()]
       })
     )
   }
@@ -85,7 +86,7 @@ export class MsgTracker {
     const now = Date.now()
 
     // Check for any messages past the memory threshold
-    var toCleanupArray = this.msgTrackingArr.filter((msg) => {
+    const toCleanupArray = this.msgTrackingArr.filter((msg) => {
       // Calculate message age
       const age = Math.round(now - msg.messageCreatedAt)
       if (age > msg.storageKeepInMemFor) {
@@ -112,8 +113,8 @@ export class MsgTracker {
     // Continue with cleanup
     const now = Date.now()
     // Array to track messages from the same server
-    var messagesByChannel: { [channel: string]: Array<string> } = {}
-    var messagesFound = 0
+    const messagesByChannel: { [channel: string]: Array<string> } = {}
+    let messagesFound = 0
 
     // Check for any messages past 10 seconds old
     for (const key in this.msgTrackingArr) {
@@ -158,7 +159,7 @@ export class MsgTracker {
     this.msgDeletionCleanupInProgress = false
   }
 
-  private async removeMemTrackedMsg(id: string, keepInDB: boolean = true) {
+  private async removeMemTrackedMsg(id: string, keepInDB = true) {
     // Find msg id's index
     const foundMsgIndex = this.msgTrackingArr.findIndex((msg) => msg.id === id)
     // Remove msg from tracking

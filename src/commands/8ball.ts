@@ -1,15 +1,18 @@
-import { RouterRouted, ExportRoutes } from '@/router'
+import { ExportRoutes, RouterRouted } from '@/router'
+
 import { eightBallResult } from '@/embedded/8ball-embed'
 
 export const Routes = ExportRoutes({
-  type: 'message',
   category: 'Fun',
   controller: eightBall,
   description: 'Help.Fun.EightBall.Description',
   example: '{{prefix}}8ball',
   name: '8ball',
-  validate: '/8ball:string/question?=string',
-  permissions: { serverOnly: false }
+  permissions: {
+    serverOnly: false
+  },
+  type: 'message',
+  validate: '/8ball:string/question?=string'
 })
 
 /**

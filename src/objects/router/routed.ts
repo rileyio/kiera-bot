@@ -15,7 +15,9 @@ const DEFAULT_LOCALE = process.env.BOT_LOCALE
  * @export
  * @class RouterRouted
  */
-export class RouterRouted {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// export class RouterRouted<T extends { [key: string]: any } = undefined> {
+export class RouterRouted<T = undefined> {
   public args: Array<string>
   public author: User
   public bot: Bot
@@ -41,11 +43,12 @@ export class RouterRouted {
   public v: {
     valid: boolean
     validated: ValidationType[]
-    o: { [key: string]: any }
+    // o: T
+    o: T | { [key: string]: any }
   }
   public validateMatch?: string
 
-  constructor(init: Partial<RouterRouted>) {
+  constructor(init: Partial<RouterRouted<T>>) {
     // Object.assign(this, init)
     this.args = init.args
     this.author = init.author
@@ -103,7 +106,7 @@ export class RouterRouted {
     return this.bot.Localization.$locales()
   }
 
-  public $sb(baseString: string, data?: any) {
+  public $sb<T>(baseString: string, data?: T) {
     return Utils.sb(baseString, Object.assign({}, data, { prefix: this.prefix }))
   }
 
@@ -139,7 +142,7 @@ export class RoutedInteraction {
   public type: 'interaction'
   public user: TrackedUser
 
-  constructor(init: Partial<RouterRouted>) {
+  constructor(init: Partial<RoutedInteraction>) {
     // Object.assign(this, init)
     this.args = init.args
     this.author = init.author
@@ -182,7 +185,7 @@ export class RoutedInteraction {
     return this.bot.Localization.$locales()
   }
 
-  public $sb(baseString: string, data?: any) {
+  public $sb<T>(baseString: string, data?: T) {
     return Utils.sb(baseString, Object.assign({}, data, { prefix: this.prefix }))
   }
 

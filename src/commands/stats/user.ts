@@ -1,30 +1,37 @@
 import * as Utils from '@/utils'
-import { RouterRouted, ExportRoutes } from '@/router'
-import { ServerStatisticType, StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
+
+import { ExportRoutes, RouterRouted } from '@/router'
+import { ServerStatisticType, StatisticsSettingType } from '@/objects/statistics'
+
+import { ObjectId } from 'mongodb'
 import { statsUser } from '@/embedded/stats-user'
-import { ObjectID } from 'mongodb'
 
 export const Routes = ExportRoutes({
-  type: 'message',
   category: 'Stats',
   controller: statsForUser,
   description: 'Help.Stats.ViewUserStats.Description',
   example: '{{prefix}}stats user',
-  name: 'stats-user',
-  validate: '/stats:string/user:string/id?=string-number',
   middleware: [],
+  name: 'stats-user',
   permissions: {
     defaultEnabled: true,
-    serverOnly: true,
-    restricted: false
-  }
+    restricted: false,
+    serverOnly: true
+  },
+  type: 'message',
+  validate: '/stats:string/user:string/id?=string-number'
 })
 
 export async function statsForUser(routed: RouterRouted) {
   const userID = routed.v.o.id !== undefined ? `${routed.v.o.id}` : routed.author.id
 
   // Check for stats disabled setting from user
-  if (await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { userID, setting: StatisticsSettingType.UserDisableStats })) {
+  if (
+    await routed.bot.DB.verify('stats-settings', {
+      setting: StatisticsSettingType.UserDisableStats,
+      userID
+    })
+  ) {
     routed.v.o.id !== undefined
       ? await routed.message.reply(
           `This user has requested their stats be disabled - (Note: They may appear in channel or server statistics unless they've deleted all stored statistics.)`
@@ -39,8 +46,18 @@ export async function statsForUser(routed: RouterRouted) {
   const data = await routed.bot.DB.aggregate<{ name?: string; channelID: string; messages: number; reactions: number }>('stats-servers', [
     {
       $match: {
-        _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) },
-        $or: [{ type: ServerStatisticType.Message }, { type: ServerStatisticType.Reaction }],
+        _id: {
+          $gt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000)
+        },
+        // eslint-disable-next-line sort-keys
+        $or: [
+          {
+            type: ServerStatisticType.Message
+          },
+          {
+            type: ServerStatisticType.Reaction
+          }
+        ],
         serverID: routed.message.guild.id,
         userID
       }
@@ -50,11 +67,13 @@ export async function statsForUser(routed: RouterRouted) {
         _id: '$channelID',
         messages: {
           $sum: {
+            // eslint-disable-next-line sort-keys
             $cond: { if: { $eq: ['$type', ServerStatisticType.Message] }, then: 1, else: 0 }
           }
         },
         reactions: {
           $sum: {
+            // eslint-disable-next-line sort-keys
             $cond: { if: { $eq: ['$type', ServerStatisticType.Reaction] }, then: 1, else: 0 }
           }
         }
@@ -93,17 +112,17 @@ export async function statsForUser(routed: RouterRouted) {
   await routed.message.channel.send({
     embeds: [
       statsUser({
-        userID: member.id,
         avatar: member.user.avatar,
-        username: member.user.username,
-        discriminator: member.user.discriminator,
-        nickname: member.nickname,
+        channelsReached: numberOfChannels,
         created: member.user.createdTimestamp,
+        data: mappedData,
+        discriminator: member.user.discriminator,
         joinedTimestamp: member.joinedTimestamp,
         messages: numberOfMessages,
+        nickname: member.nickname,
         reactions: numberOfReactions,
-        channelsReached: numberOfChannels,
-        data: mappedData
+        userID: member.id,
+        username: member.user.username
       })
     ]
   })

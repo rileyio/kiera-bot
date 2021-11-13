@@ -1,12 +1,12 @@
-import { Task } from '@/objects/task'
 import { Collections } from '@/db'
+import { Task } from '@/objects/task'
 
 export type ChastiKeyAPIFetchAndStoreMethod = 'fetchAPIUserDataCache' | 'fetchAPIRunningLocksDataCache'
 export type ChastiKeyAPIFetchAndStoreArray = 'locks' | 'users'
 
 export class ChastiKeyAPIFetchAndStore extends Task {
-  public reload: boolean = true
-  public dbCollection: Collections
+  public reload = true
+  public dbCollection: keyof Collections
   public method: ChastiKeyAPIFetchAndStoreMethod
   public respArray: ChastiKeyAPIFetchAndStoreArray
 

@@ -1,48 +1,50 @@
 import * as Utils from '@/utils'
-import { RouterRouted, ExportRoutes } from '@/router'
-import { StatisticsSetting, StatisticsSettingType, ServerStatistic } from '@/objects/statistics'
+
+import { ExportRoutes, RouterRouted } from '@/router'
 import { Message, TextChannel } from 'discord.js'
+import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
+
 import { promptUserConfirm } from '@/utils/prompt'
 
 export const Routes = ExportRoutes(
   {
-    type: 'message',
     category: 'Stats',
     controller: diableUserStats,
     description: 'Help.Stats.DisableUserStats.Description',
     example: '{{prefix}}stats disable user',
     name: 'stats-disable-user',
-    validate: '/stats:string/disable:string/user:string',
     permissions: {
       defaultEnabled: true,
       restricted: false
-    }
+    },
+    type: 'message',
+    validate: '/stats:string/disable:string/user:string'
   },
   {
-    type: 'message',
     category: 'Stats',
     controller: enableUserStats,
     description: 'Help.Stats.EnableUserStats.Description',
     example: '{{prefix}}stats enable user',
     name: 'stats-enable-user',
-    validate: '/stats:string/enable:string/user:string',
     permissions: {
       defaultEnabled: true,
       restricted: false
-    }
+    },
+    type: 'message',
+    validate: '/stats:string/enable:string/user:string'
   },
   {
-    type: 'message',
     category: 'Stats',
     controller: deleteUserStats,
     description: 'Help.Stats.DeleteUserStats.Description',
     example: '{{prefix}}stats delete user',
     name: 'stats-delete-user',
-    validate: '/stats:string/delete:string/user:string',
     permissions: {
       defaultEnabled: true,
       restricted: false
-    }
+    },
+    type: 'message',
+    validate: '/stats:string/delete:string/user:string'
   }
 )
 
@@ -50,8 +52,8 @@ export async function diableUserStats(routed: RouterRouted) {
   await routed.bot.DB.add(
     'stats-settings',
     new StatisticsSetting({
-      userID: routed.author.id,
-      setting: StatisticsSettingType.UserDisableStats
+      setting: StatisticsSettingType.UserDisableStats,
+      userID: routed.author.id
     })
   )
 
@@ -60,9 +62,9 @@ export async function diableUserStats(routed: RouterRouted) {
 }
 
 export async function enableUserStats(routed: RouterRouted) {
-  const removed = await routed.bot.DB.remove<StatisticsSetting>('stats-settings', {
-    userID: routed.author.id,
-    setting: StatisticsSettingType.UserDisableStats
+  const removed = await routed.bot.DB.remove('stats-settings', {
+    setting: StatisticsSettingType.UserDisableStats,
+    userID: routed.author.id
   })
 
   if (removed > 0) await routed.message.reply(routed.$render('Stats.User.StatsEnabled'))
@@ -75,8 +77,8 @@ export async function deleteUserStats(routed: RouterRouted) {
 
   if (count > 0) {
     const confirmed = await promptUserConfirm(routed, {
-      expectedValidResponse: 'yes',
       deleteResponseAtEnd: true,
+      expectedValidResponse: 'yes',
       firstMessage: 'To confirm deleting all stats pertaining to your account, send **`yes`** in the next 60 seconds!',
       onTimeoutErrorMessage: 'Your account Stats Deletion Cancelled! Reply not received before timeout (1 minute).'
     })
@@ -85,7 +87,7 @@ export async function deleteUserStats(routed: RouterRouted) {
       // Upon valid message collection, begin deletion - notify user
       const pleaseWaitMessage = (await routed.message.reply('Confirmation Received! Your Stats Deletion in progress... please wait')) as Message
       // Delete from DB
-      const removed = await routed.bot.DB.remove<ServerStatistic>(
+      const removed = await routed.bot.DB.remove(
         'stats-servers',
         {
           userID: routed.author.id

@@ -1,38 +1,36 @@
-import * as Middleware from '@/middleware'
-import { RouterRouted, ExportRoutes } from '@/router'
-import { TrackedUser } from '@/objects/user/'
-import { TrackedChastiKeyLock, ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
-import { UserData } from 'chastikey.js/app/objects'
+import { ExportRoutes, RouterRouted } from '@/router'
+
+import { ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
 
 export const Routes = ExportRoutes({
-  type: 'message',
   category: 'ChastiKey',
   controller: debug,
   example: '{{prefix}}ck debug UsernameHere',
   name: 'ck-debug-username',
-  validate: '/ck:string/debug:string/user=string',
   permissions: {
     defaultEnabled: true,
     serverOnly: false
-  }
+  },
+  type: 'message',
+  validate: '/ck:string/debug:string/user=string'
 })
 
 export async function debug(routed: RouterRouted) {
   const usernameRegex = new RegExp(`^${routed.v.o.user}$`, 'i')
   const asDiscordID = Number(routed.v.o.user) ? routed.v.o.user : 123
 
-  const kieraUser = await routed.bot.DB.get<TrackedUser>('users', { $or: [{ 'ChastiKey.username': usernameRegex }, { id: routed.v.o.user }] })
-  const ckUser = await routed.bot.DB.get<UserData>('ck-users', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
-  const ckLocktober2019 = await routed.bot.DB.get<{ username: string; discordID: string }>('ck-locktober-2019', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
-  const ckLocktober2020 = await routed.bot.DB.get<{ username: string; discordID: string }>('ck-locktober-2020', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
-  const ckLocktober2021 = await routed.bot.DB.get<{ username: string; discordID: string }>('ck-locktober-2021', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
-  const ckRunningLocks = await routed.bot.DB.getMultiple<TrackedChastiKeyLock>('ck-running-locks', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
+  const kieraUser = await routed.bot.DB.get('users', { $or: [{ 'ChastiKey.username': usernameRegex }, { id: routed.v.o.user }] })
+  const ckUser = await routed.bot.DB.get('ck-users', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
+  const ckLocktober2019 = await routed.bot.DB.get('ck-locktober-2019', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
+  const ckLocktober2020 = await routed.bot.DB.get('ck-locktober-2020', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
+  const ckLocktober2021 = await routed.bot.DB.get('ck-locktober-2021', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
+  const ckRunningLocks = await routed.bot.DB.getMultiple('ck-running-locks', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
 
-  var verifyIDAPIResp: ChastiKeyVerifyDiscordID
+  let verifyIDAPIResp: ChastiKeyVerifyDiscordID
   if (asDiscordID === 123) verifyIDAPIResp = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ username: routed.v.o.user })
   if (asDiscordID !== 123) verifyIDAPIResp = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ discordID: asDiscordID })
 
-  var response = `**ChastiKey User Debug**\n`
+  let response = `**ChastiKey User Debug**\n`
   response += '```'
   response += `Is Registered with Kiera: ${kieraUser ? true : false}\n`
   if (kieraUser) {

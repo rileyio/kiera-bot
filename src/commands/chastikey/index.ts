@@ -3,7 +3,7 @@ import * as CKUpdate from '@/commands/chastikey/update'
 import * as CKVerify from '@/commands/chastikey/verify'
 import * as Middleware from '@/middleware'
 
-import { ExportRoutes, RouterRouted } from '@/router'
+import { ExportRoutes, RoutedInteraction } from '@/router'
 
 import { SlashCommandBuilder } from '@discordjs/builders'
 
@@ -11,7 +11,7 @@ export const Routes = ExportRoutes({
   category: 'ChastiKey',
   controller: ckStatsRouterSub,
   middleware: [Middleware.isCKVerified],
-  name: 'ck-get-stats-lockee',
+  name: 'ck',
   permissions: {
     defaultEnabled: false,
     serverOnly: false
@@ -46,7 +46,7 @@ export const Routes = ExportRoutes({
   type: 'interaction'
 })
 
-function ckStatsRouterSub(routed: RouterRouted) {
+function ckStatsRouterSub(routed: RoutedInteraction) {
   const subCommand = routed.interaction.options.getSubcommand()
   const interactionType = routed.interaction.options.get('type')?.value
 

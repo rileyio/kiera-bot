@@ -1,31 +1,33 @@
 import * as Utils from '@/utils'
-import { RouterRouted, ExportRoutes } from '@/router'
+
+import { ExportRoutes, RouterRouted } from '@/router'
 import { ServerStatisticType, StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
-import { statsChannel } from '@/embedded/stats-channel'
+
+import { ObjectId } from 'mongodb'
 import { TextChannel } from 'discord.js'
-import { ObjectID } from 'mongodb'
+import { statsChannel } from '@/embedded/stats-channel'
 
 export const Routes = ExportRoutes({
-  type: 'message',
   category: 'Stats',
   controller: statsForChannel,
   description: 'Help.Stats.ViewChannelStats.Description',
   example: '{{prefix}}stats channel',
-  name: 'stats-channels',
-  validate: '/stats:string/channel:string/id?=string-number',
   middleware: [],
+  name: 'stats-channels',
   permissions: {
     defaultEnabled: true,
-    serverOnly: true,
-    restricted: false
-  }
+    restricted: false,
+    serverOnly: true
+  },
+  type: 'message',
+  validate: '/stats:string/channel:string/id?=string-number'
 })
 
 export async function statsForChannel(routed: RouterRouted) {
   const channelID = routed.v.o.id !== undefined ? `${routed.v.o.id}` : routed.message.channel.id
 
   // Check for stats disabled setting on channel
-  if (await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { channelID, setting: StatisticsSettingType.ChannelDisableStats })) {
+  if (await routed.bot.DB.verify('stats-settings', { channelID, setting: StatisticsSettingType.ChannelDisableStats })) {
     await routed.message.reply(routed.$render('Stats.Channel.DisabledInfo'))
 
     return true // Stop here
@@ -34,10 +36,12 @@ export async function statsForChannel(routed: RouterRouted) {
   const data = await routed.bot.DB.aggregate<{ name?: string; userID: string; messages: number; reactions: number }>('stats-servers', [
     {
       $match: {
-        _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) },
-        type: ServerStatisticType.Message,
+        _id: {
+          $gt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000)
+        },
+        channelID,
         serverID: routed.message.guild.id,
-        channelID
+        type: ServerStatisticType.Message
       }
     },
     {
@@ -50,8 +54,8 @@ export async function statsForChannel(routed: RouterRouted) {
     {
       $project: {
         _id: 0,
-        userID: '$_id',
-        messages: 1
+        messages: 1,
+        userID: '$_id'
       }
     }
   ])
@@ -71,12 +75,12 @@ export async function statsForChannel(routed: RouterRouted) {
   await routed.message.channel.send({
     embeds: [
       statsChannel({
-        serverIcon: routed.message.guild.iconURL(),
-        name: channelDetails.name,
         created: channelDetails.createdTimestamp,
+        data: mappedData,
         members: channelDetails.members.size,
+        name: channelDetails.name,
         nsfw: channelDetails.nsfw,
-        data: mappedData
+        serverIcon: routed.message.guild.iconURL()
       })
     ]
   })

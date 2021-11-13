@@ -1,5 +1,6 @@
-import * as _Debug from 'debug'
 import * as Winston from 'winston'
+import * as _Debug from 'debug'
+
 import { Types } from '@/utils'
 
 export namespace Logging {

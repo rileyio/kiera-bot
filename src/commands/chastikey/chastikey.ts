@@ -1,52 +1,54 @@
+import * as Discord from 'discord.js'
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
-import * as Discord from 'discord.js'
-import { TrackedUser } from '@/objects/user/'
-import { RouterRouted, ExportRoutes } from '@/router'
+
+import { ExportRoutes, RouterRouted } from '@/router'
+
 import { TrackedSession } from '@/objects/session'
+import { TrackedUser } from '@/objects/user/'
 
 export const Routes = ExportRoutes(
   {
-    type: 'message',
     category: 'ChastiKey',
     controller: recoverCombos,
     description: 'Help.ChastiKey.RecoverCombinations.Description',
     example: '{{prefix}}ck recover combos 5',
-    name: 'ck-account-recover-combos',
-    validate: '/ck:string/recover:string/combos:string/count?=number',
     middleware: [Middleware.isCKVerified],
+    name: 'ck-account-recover-combos',
     permissions: {
       defaultEnabled: true,
       serverOnly: false
-    }
+    },
+    type: 'message',
+    validate: '/ck:string/recover:string/combos:string/count?=number'
   },
   {
-    type: 'message',
     category: 'ChastiKey',
     controller: roleCounts,
     description: 'Help.ChastiKey.RoleCounts.Description',
     example: '{{prefix}}ck role counts',
-    name: 'ck-role-counts',
-    validate: '/ck:string/role:string/counts:string',
     middleware: [],
+    name: 'ck-role-counts',
     permissions: {
       defaultEnabled: true,
       serverOnly: true
-    }
+    },
+    type: 'message',
+    validate: '/ck:string/role:string/counts:string'
   },
   {
-    type: 'message',
     category: 'ChastiKey',
     controller: extSession,
     description: 'Help.ChastiKey.CKWeb.Description',
     example: '{{prefix}}ck web',
-    name: 'ck-ext-session',
-    validate: '/ck:string/web:string',
     middleware: [Middleware.isCKVerified],
+    name: 'ck-ext-session',
     permissions: {
       defaultEnabled: true,
       serverOnly: false
-    }
+    },
+    type: 'message',
+    validate: '/ck:string/web:string'
   }
 )
 
@@ -70,8 +72,8 @@ export async function recoverCombos(routed: RouterRouted) {
 
   // Get user's past locks
   const resp = await routed.bot.Service.ChastiKey.fetchAPICombinations({
-    username: routed.v.o.user ? routed.v.o.user : undefined,
-    discordid: !routed.v.o.user ? routed.author.id : undefined
+    discordid: !routed.v.o.user ? routed.author.id : undefined,
+    username: routed.v.o.user ? routed.v.o.user : undefined
   })
 
   // Stop if error in lookup
@@ -88,8 +90,8 @@ export async function recoverCombos(routed: RouterRouted) {
 
   // Sort locks to display an accurate account of past locks
   const sortedLocks = resp.locks.sort((lA, lB) => {
-    var x = lA.timestampUnlocked
-    var y = lB.timestampUnlocked
+    const x = lA.timestampUnlocked
+    const y = lB.timestampUnlocked
     if (x > y) {
       return -1
     }
@@ -102,8 +104,7 @@ export async function recoverCombos(routed: RouterRouted) {
   // Get last x # of locks
   const selectedLocks = sortedLocks.slice(0, getCount)
 
-  var message = `Here are your last (${getCount}) **unlocked** locks (Both Deleted and Not):\n`
-
+  let message = `Here are your last (${getCount}) **unlocked** locks (Both Deleted and Not):\n`
   message += `\`\`\``
 
   selectedLocks.forEach((l, i) => {
@@ -123,25 +124,24 @@ export async function recoverCombos(routed: RouterRouted) {
 }
 
 export async function roleCounts(routed: RouterRouted) {
-  var lgStr = 1
-
+  let lgStr = 1
   const counts = {
     ckVerified: 0,
+    devoted: 0,
+    distinguished: 0,
+    established: 0,
+    experienced: 0,
+    fanatical: 0,
+    intermediate: 0,
+    keyholder: 0,
     locked: 0,
-    unlocked: 0,
     locktober2019: 0,
     locktober2020: 0,
     locktober2021: 0,
     noviceKh: 0,
-    keyholder: 0,
-    established: 0,
-    distinguished: 0,
+    noviceLockee: 0,
     renowned: 0,
-    fanatical: 0,
-    devoted: 0,
-    experienced: 0,
-    intermediate: 0,
-    noviceLockee: 0
+    unlocked: 0
   }
 
   routed.message.guild.roles.cache.forEach((r) => {
@@ -172,7 +172,7 @@ export async function roleCounts(routed: RouterRouted) {
     if (lgStr < String(counts[key]).length) lgStr = String(counts[key]).length
   })
 
-  var response = `:bar_chart: **Server Role Statistics**\n`
+  let response = `:bar_chart: **Server Role Statistics**\n`
   const cacheSize = routed.message.guild.members.cache.size
 
   response += `\`\`\``
@@ -203,7 +203,7 @@ export async function roleCounts(routed: RouterRouted) {
 }
 
 function rd(perc: number) {
-  var moddedPerc: string
+  let moddedPerc: string
   // Calculate with decimal place adjusted
   moddedPerc = parseFloat(String(perc * 100)).toFixed(2)
 
@@ -222,12 +222,12 @@ function arrFrom(array: number) {
 
 export async function extSession(routed: RouterRouted) {
   // Create new Session Object
-  const newSession = new TrackedSession({ userID: routed.author.id, generatedFor: 'kiera-ck' })
+  const newSession = new TrackedSession({ generatedFor: 'kiera-ck', userID: routed.author.id })
   // Generate OTL and store in sessions table
   newSession.newOTL()
 
   // Store new Session w/OTL
-  await routed.bot.DB.add<TrackedSession>('sessions', newSession)
+  await routed.bot.DB.add('sessions', newSession)
 
   // Inform user of their OTL
   await routed.message.author.send(

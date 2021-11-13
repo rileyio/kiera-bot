@@ -1,4 +1,4 @@
-import { ObjectID } from 'bson'
+import { ObjectId } from 'bson'
 
 export type BotStatistic =
   | 'discord-api-calls'
@@ -12,9 +12,9 @@ export type BotStatistic =
   | 'dms-sent'
 
 export class BotStatistics {
-  public _id: ObjectID
+  public _id: ObjectId
   public name: string = process.env.DISCORD_APP_NAME
-  public uptime: number = 0
+  public uptime = 0
   public startTimestamp: number = Date.now()
 
   public version: string
@@ -25,23 +25,38 @@ export class BotStatistics {
     tracked: 0
   }
   public commands = {
-    routed: 0,
+    byCommand: {},
     completed: 0,
     invalid: 0,
-    byCommand: {}
+    routed: 0
   }
   public dms = {
     received: 0,
     sent: 0
   }
   public users = {
-    total: 0,
-    registered: 0
+    registered: 0,
+    total: 0
   }
   public servers = {
     total: 0
   }
-  public discordAPICalls: number = 0
+  public discordAPICalls = 0
+
+  // public get stats() {
+  //   return {
+  //     commands: this.commands,
+  //     discordAPICalls: this.discordAPICalls,
+  //     dms: this.dms,
+  //     messages: this.messages,
+  //     name: this.name,
+  //     servers: this.servers,
+  //     startTimestamp: this.startTimestamp,
+  //     uptime: this.uptime,
+  //     users: this.users,
+  //     version: this.version
+  //   }
+  // }
 
   constructor(init: Partial<BotStatistics>) {
     this.version = init.version
@@ -88,7 +103,7 @@ export enum ServerStatisticType {
  * @class ServerStatistic
  */
 export class ServerStatistic {
-  public readonly _id: ObjectID
+  public readonly _id: ObjectId
   public serverID: string
   public userID: string
   public channelID: string
@@ -118,7 +133,7 @@ export enum StatisticsSettingType {
 }
 
 export class StatisticsSetting {
-  public readonly _id?: ObjectID
+  public readonly _id?: ObjectId
   public userID?: string
   public serverID?: string
   public channelID?: string

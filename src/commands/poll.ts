@@ -1,79 +1,81 @@
 import * as Utils from '@/utils'
-import { RouterRouted, ExportRoutes } from '@/router'
-import { TrackedPoll } from '@/objects/poll'
-import { ObjectID } from 'bson'
+
+import { ExportRoutes, RouterRouted } from '@/router'
+
 import { Message } from 'discord.js'
+import { ObjectId } from 'bson'
+import { TrackedPoll } from '@/objects/poll'
 import { poll } from '@/embedded/poll'
 
 export const Routes = ExportRoutes(
   {
-    type: 'message',
     category: 'Fun',
     controller: voteNew,
     description: 'Help.Poll.New.Description',
     example: '{{prefix}}poll new "Is Kiera the cat cute?"',
     name: 'poll-new',
+    type: 'message',
     validate: '/poll:string/new:string/question=string'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: voteEdit,
     description: 'Help.Poll.Edit.Description',
     example: '{{prefix}}poll edit 5cfcf44614e8a64034ca89f3 public false',
     name: 'poll-edit',
+    type: 'message',
     validate: '/poll:string/edit:string/id=string/property=string/update=string'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: startPoll,
     description: 'Help.Poll.Start.Description',
     example: '{{prefix}}poll start 5cfcf44614e8a64034ca89f3',
     name: 'poll-start',
+    type: 'message',
     validate: '/poll:string/start:string/id=string'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: stopPoll,
     description: 'Help.Poll.Stop.Description',
     example: '{{prefix}}poll stop 5cfcf44614e8a64034ca89f3',
     name: 'poll-stop',
+    type: 'message',
     validate: '/poll:string/stop:string/id=string'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: pickRandomVote,
     description: 'Help.Poll.PickRandomVote.Description',
     example: '{{prefix}}poll pick random 5cfcf44614e8a64034ca89f3 :thumbsup:',
     name: 'poll-pick-random-vote',
+    type: 'message',
     validate: '/poll:string/pick:string/random:string/id=string/emoji=string'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: addOption,
     description: 'Help.Poll.AddOption.Description',
     example: '{{prefix}}poll add option 5cfcf44614e8a64034ca89f3 :thumbsup: "Optional description here"',
     name: 'poll-add-option',
+    type: 'message',
     validate: '/poll:string/add:string/option:string/id=string/emoji=string/description?=string'
   },
   {
-    type: 'message',
     category: 'Fun',
     controller: removeOption,
     description: 'Help.Poll.RemoveOption.Description',
     example: '{{prefix}}poll add option 5cfcf44614e8a64034ca89f3 :thumbsup:',
     name: 'poll-remove-option',
+    type: 'message',
     validate: '/poll:string/remove:string/option:string/id=string/optionID=string'
   },
   {
-    type: 'reaction',
     category: 'Fun',
     controller: handleReact,
-    name: 'poll-react-vote'
+    name: 'poll-react-vote',
+    type: 'reaction'
   }
 )
 
@@ -109,15 +111,15 @@ export async function voteNew(routed: RouterRouted) {
  */
 export async function voteEdit(routed: RouterRouted) {
   // Find poll in db
-  var storedPoll = await routed.bot.DB.get<TrackedPoll>('polls', {
-    _id: new ObjectID(routed.v.o.id),
+  let storedPoll = await routed.bot.DB.get('polls', {
+    _id: new ObjectId(routed.v.o.id),
     authorID: routed.author.id
   })
 
   if (storedPoll) {
     // Construct poll for prop & helpers from class
     storedPoll = new TrackedPoll(storedPoll)
-    var _previousValue: any
+    let _previousValue: any
 
     switch (routed.v.o.property) {
       case 'open':
@@ -148,15 +150,15 @@ export async function voteEdit(routed: RouterRouted) {
     }
 
     // Perform DB Update
-    const updateCount = await routed.bot.DB.update<TrackedPoll>('polls', { _id: new ObjectID(routed.v.o.id) }, storedPoll)
+    const updateCount = await routed.bot.DB.update('polls', { _id: new ObjectId(routed.v.o.id) }, storedPoll)
 
     // Update successful
     if (updateCount > 0)
       await routed.message.reply(
         routed.$sb(routed.$render('Poll.Error.PropertyUpdated'), {
+          from: _previousValue,
           id: routed.v.o.id,
           property: routed.v.o.property,
-          from: _previousValue,
           to: routed.v.o.update
         })
       )
@@ -179,8 +181,8 @@ export async function voteEdit(routed: RouterRouted) {
 export async function handleReact(routed: RouterRouted) {
   // Reaction added
   // Find poll in db
-  var storedPoll = await routed.bot.DB.get<TrackedPoll>('polls', {
-    messageID: new ObjectID(routed.trackedMessage._id)
+  let storedPoll = await routed.bot.DB.get('polls', {
+    messageID: new ObjectId(routed.trackedMessage._id)
   })
 
   if (storedPoll) {
@@ -196,15 +198,15 @@ export async function handleReact(routed: RouterRouted) {
       storedPoll.addVote(routed.author.id, routed.message.guild.id, routed.reaction.reaction)
 
       // Update in DB
-      const updateCount = await routed.bot.DB.update<TrackedPoll>('polls', { messageID: new ObjectID(routed.trackedMessage._id) }, storedPoll)
+      const updateCount = await routed.bot.DB.update('polls', { messageID: new ObjectId(routed.trackedMessage._id) }, storedPoll)
 
       if (updateCount > 0) await routed.author.send(routed.$render('Poll.Interaction.VoteCast'))
       return true // Stop here
     } else {
-      var deleteCount = await routed.bot.DB.update<TrackedPoll>(
+      const deleteCount = await routed.bot.DB.update(
         'polls',
-        <any>{
-          messageID: new ObjectID(routed.trackedMessage._id),
+        {
+          messageID: new ObjectId(routed.trackedMessage._id),
           'votes.authorID': routed.author.id,
           'votes.vote': routed.reaction.reaction
         },
@@ -229,9 +231,9 @@ export async function handleReact(routed: RouterRouted) {
  */
 export async function startPoll(routed: RouterRouted) {
   // Find poll in db
-  var storedPoll = await routed.bot.DB.get<TrackedPoll>('polls', {
-    // Lookup by given ObjectID in args
-    _id: new ObjectID(routed.v.o.id)
+  let storedPoll = await routed.bot.DB.get('polls', {
+    // Lookup by given ObjectId in args
+    _id: new ObjectId(routed.v.o.id)
   })
 
   if (storedPoll) {
@@ -256,7 +258,7 @@ export async function startPoll(routed: RouterRouted) {
     storedPoll.messageSnowflake = messageSent.id
 
     // Update in db
-    await routed.bot.DB.update<TrackedPoll>('polls', { _id: new ObjectID(routed.v.o.id) }, storedPoll)
+    await routed.bot.DB.update('polls', { _id: new ObjectId(routed.v.o.id) }, storedPoll)
     // await routed.message.reply('```json\n' + JSON.stringify(storedPoll, null, 2) + '```')
   } else {
     await routed.message.reply(routed.$render('Poll.Error.NotFoundInDB'))
@@ -274,9 +276,9 @@ export async function startPoll(routed: RouterRouted) {
  */
 export async function stopPoll(routed: RouterRouted) {
   // Find poll in db
-  var storedPoll = await routed.bot.DB.get<TrackedPoll>('polls', {
-    // Lookup by given ObjectID in args
-    _id: new ObjectID(routed.v.o.id)
+  let storedPoll = await routed.bot.DB.get('polls', {
+    // Lookup by given ObjectId in args
+    _id: new ObjectId(routed.v.o.id)
   })
 
   if (storedPoll) {
@@ -296,7 +298,7 @@ export async function stopPoll(routed: RouterRouted) {
     storedPoll.isOpen = false
 
     // Update in db
-    await routed.bot.DB.update<TrackedPoll>('polls', { _id: new ObjectID(routed.v.o.id) }, storedPoll)
+    await routed.bot.DB.update('polls', { _id: new ObjectId(routed.v.o.id) }, storedPoll)
   } else {
     await routed.message.reply(routed.$render('Poll.Error.NotFoundInDB'))
   }
@@ -313,9 +315,9 @@ export async function stopPoll(routed: RouterRouted) {
  */
 export async function pickRandomVote(routed: RouterRouted) {
   // Find poll in db
-  var storedPoll = await routed.bot.DB.get<TrackedPoll>('polls', {
-    // Lookup by given ObjectID in args
-    _id: new ObjectID(routed.v.o.id)
+  let storedPoll = await routed.bot.DB.get('polls', {
+    // Lookup by given ObjectId in args
+    _id: new ObjectId(routed.v.o.id)
   })
 
   if (storedPoll) {
@@ -352,9 +354,9 @@ export async function pickRandomVote(routed: RouterRouted) {
  */
 export async function addOption(routed: RouterRouted) {
   // Find poll in db
-  var storedPoll = await routed.bot.DB.get<TrackedPoll>('polls', {
-    // Lookup by given ObjectID in args
-    _id: new ObjectID(routed.v.o.id)
+  let storedPoll = await routed.bot.DB.get('polls', {
+    // Lookup by given ObjectId in args
+    _id: new ObjectId(routed.v.o.id)
   })
 
   if (storedPoll) {
@@ -370,14 +372,14 @@ export async function addOption(routed: RouterRouted) {
     const optionID = storedPoll.addVoteOption(routed.v.o.emoji, routed.v.o.description)
 
     // Update in db
-    await routed.bot.DB.update<TrackedPoll>('polls', { _id: new ObjectID(routed.v.o.id) }, storedPoll)
+    await routed.bot.DB.update('polls', { _id: new ObjectId(routed.v.o.id) }, storedPoll)
 
     await routed.message.reply(
       routed.$render('Poll.Edit.OptionAdded', {
-        id: routed.v.o.id,
-        optionID: optionID,
+        description: routed.v.o.description || '',
         emoji: routed.v.o.emoji,
-        description: routed.v.o.description || ''
+        id: routed.v.o.id,
+        optionID: optionID
       })
     )
   }
@@ -394,9 +396,9 @@ export async function addOption(routed: RouterRouted) {
  */
 export async function removeOption(routed: RouterRouted) {
   // Find poll in db
-  var storedPoll = await routed.bot.DB.get<TrackedPoll>('polls', {
-    // Lookup by given ObjectID in args
-    _id: new ObjectID(routed.v.o.id)
+  let storedPoll = await routed.bot.DB.get('polls', {
+    // Lookup by given ObjectId in args
+    _id: new ObjectId(routed.v.o.id)
   })
 
   if (storedPoll) {
@@ -409,10 +411,10 @@ export async function removeOption(routed: RouterRouted) {
       return false // Stop Here
     }
 
-    var deleteCount = await routed.bot.DB.update<TrackedPoll>(
+    const deleteCount = await routed.bot.DB.update(
       'polls',
-      <any>{ _id: new ObjectID(routed.v.o.id), 'emojiOptions._id': new ObjectID(routed.v.o.optionID) },
-      { $pull: { emojiOptions: { _id: new ObjectID(routed.v.o.optionID) } } },
+      { _id: new ObjectId(routed.v.o.id), 'emojiOptions._id': new ObjectId(routed.v.o.optionID) },
+      { $pull: { emojiOptions: { _id: new ObjectId(routed.v.o.optionID) } } },
       { atomic: true }
     )
 

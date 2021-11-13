@@ -13,7 +13,7 @@ export function getArgs(msg: string) {
   return msg.replace(XRegex(`/(?!["][^"]\B)\s+(?![^"]+["]\B)/`, 'g'), ' ').split(/(?!["][^"]\B)\s+(?![^"]+["]\B)/g)
 }
 
-export * from './chastikey'
+export * as ChastiKey from './chastikey'
 export * from './channel'
 export * from './client-event-handler'
 export * from './date'

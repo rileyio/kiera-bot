@@ -1,10 +1,10 @@
-import got from 'got'
-import { Task } from '@/objects/task'
 import { Collections } from '@/db'
+import { Task } from '@/objects/task'
+import got from 'got'
 
 export class ChastiKeyAPIFetchAndStoreLegacy extends Task {
   public APIEndpoint: string
-  public dbCollection: Collections
+  public dbCollection: keyof Collections
   public strip: string
 
   // Config for this task

@@ -1,19 +1,21 @@
-import { RouterRouted, ExportRoutes } from '@/router'
+import { ExportRoutes, RouterRouted } from '@/router'
 
 export const Routes = ExportRoutes({
-  type: 'message',
   category: 'Info',
   controller: commandUsageStats,
   description: 'Help.Stats.StatsByCommands.Description',
   example: '{{prefix}}stats commands',
   name: 'stats-commands',
-  validate: '/stats:string/commands:string',
-  permissions: { serverOnly: false }
+  permissions: {
+    serverOnly: false
+  },
+  type: 'message',
+  validate: '/stats:string/commands:string'
 })
 
 export async function commandUsageStats(routed: RouterRouted) {
   // Get Audit trail for commands from DB to run stats on
-  var collection = (await routed.bot.DB.aggregate<{ _id: string; count: number }>('audit-log', [
+  let collection = (await routed.bot.DB.aggregate<{ _id: string; count: number }>('audit-log', [
     {
       $match: { type: 'bot.command' }
     },
@@ -26,26 +28,26 @@ export async function commandUsageStats(routed: RouterRouted) {
     { $sort: { count: -1 } }
   ])) as Array<{ _id: string; count: number; percent?: number }>
 
-  var total = 0
-  var text = `Statistics by command usage:
+  let total = 0
+  let text = `Statistics by command usage:
 \`\`\`md
 `
 
   // Determine total
-  collection.forEach(item => {
+  collection.forEach((item) => {
     total += item.count
   })
   console.log('Total:', total)
 
   // Calculate each item's percentage of the total
-  collection = collection.map(item => {
+  collection = collection.map((item) => {
     item['percent'] = item.count / total
     return item
   })
   console.log('Collection:', collection)
 
   // Generate text visualisation
-  for (var i = 0; i < collection.length && i < 10; i++) {
+  for (let i = 0; i < collection.length && i < 10; i++) {
     text +=
       `# ${collection[i]._id} (${collection[i].count})\n` +
       `  ` +

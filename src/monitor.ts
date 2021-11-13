@@ -1,7 +1,8 @@
 import * as Discord from 'discord.js'
+
 import { Bot } from '@/index'
-import { EventEmitter } from 'events'
 import { DatabaseMonitor } from './db/monitor'
+import { EventEmitter } from 'events'
 import { LiveStatistics } from './live-statistics'
 import { WebAPI } from './api/web-api'
 
@@ -11,17 +12,17 @@ export class BotMonitor extends EventEmitter {
   public WebAPI: WebAPI
   public LiveStatistics: LiveStatistics
   public status = {
-    discord: false,
-    db: false,
     api: false,
+    db: false,
+    discord: false,
     stats: false
   }
 
   // States
   public unhealthyStartup: boolean
-  public unhealthyRecovered: boolean = false
+  public unhealthyRecovered = false
   public unhealthyRecovering: boolean
-  public unhealthyRecoveryCount: number = 0
+  public unhealthyRecoveryCount = 0
 
   constructor(bot: Bot) {
     super()
@@ -158,7 +159,7 @@ export class BotMonitor extends EventEmitter {
 
   private async helpMe() {
     const maintainers = process.env.DISCORD_ANNOUNCEMENTS_MAINTAINERS_MENTION.split(',')
-    var maintainersMention = ``
+    let maintainersMention = ``
 
     // Build maintainers mentions
     maintainers.forEach((m) => {

@@ -1,21 +1,23 @@
 import * as Agenda from 'agenda'
 import * as Middleware from '@/middleware'
-import { RouterRouted, ExportRoutes } from '@/router'
+
+import { ExportRoutes, RouterRouted } from '@/router'
+
 import { locktoberStats } from '@/embedded/chastikey-locktober'
 
 export const Routes = ExportRoutes({
-  type: 'message',
   category: 'ChastiKey',
   controller: statsLocktober,
   description: 'Help.ChastiKey.LocktoberStats.Description',
   example: '{{prefix}}ck stats locktober',
-  name: 'ck-stats-locktober',
-  validate: '/ck:string/stats:string/locktober:string',
   middleware: [Middleware.isCKVerified],
+  name: 'ck-stats-locktober',
   permissions: {
     defaultEnabled: true,
     serverOnly: false
-  }
+  },
+  type: 'message',
+  validate: '/ck:string/stats:string/locktober:string'
 })
 
 /**
@@ -26,7 +28,7 @@ export const Routes = ExportRoutes({
 export async function statsLocktober(routed: RouterRouted) {
   const verifiedCount = await routed.bot.DB.count('ck-users', { discordID: { $ne: null } })
   // Get Locktober stats from DB
-  const stored = await routed.bot.DB.getMultiple<{ username: string; discordID: string }>('ck-locktober-2021', { discordID: { $ne: '' } })
+  const stored = await routed.bot.DB.getMultiple('ck-locktober-2021', { discordID: { $ne: '' } })
   // Get Eligible user's locks from DB
   const queryIDs = stored.map((s) => s.discordID)
   const breakdownByKH = await routed.bot.DB.aggregate<{ _id: string; count: number; uniqueCount: number }>('ck-running-locks', [
@@ -34,17 +36,30 @@ export async function statsLocktober(routed: RouterRouted) {
     {
       $group: {
         _id: '$lockedBy',
+        count: {
+          $sum: 1
+        },
         locks: {
           $addToSet: '$secondsLocked'
-        },
-        count: { $sum: 1 }
+        }
       }
     },
     {
       $project: {
         _id: 1,
-        uniqueCount: { $cond: { if: { $isArray: '$locks' }, then: { $size: '$locks' }, else: 0 } },
-        count: 1
+        count: 1,
+        // eslint-disable-next-line sort-keys
+        uniqueCount: {
+          $cond: {
+            else: 0,
+            if: {
+              $isArray: '$locks'
+            },
+            then: {
+              $size: '$locks'
+            }
+          }
+        }
       }
     },
     { $sort: { count: -1 } }

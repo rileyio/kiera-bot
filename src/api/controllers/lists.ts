@@ -1,7 +1,9 @@
 import * as Validation from '@/api/validations'
 import * as errors from 'restify-errors'
+
+import { WebRoute, WebRouted } from '@/api/web-router'
+
 import { validate } from '@/api/utils/validate'
-import { WebRouted, WebRoute } from '@/api/web-router'
 
 export const Routes: Array<WebRoute> = [
   // * Lists **/
@@ -16,26 +18,26 @@ export const Routes: Array<WebRoute> = [
 export async function get(routed: WebRouted) {
   const v = await validate(Validation.Lists.get(), routed.req.body)
   const payload = {
-    users: [],
-    servers: []
+    servers: [],
+    users: []
   }
 
   // this.DEBUG_WEBAPI('req params', v.o)
 
   if (v.valid) {
-    var users = await routed.Bot.DB.getMultiple(
+    const users = await routed.Bot.DB.getMultiple(
       'users',
       {
-        username: { $regex: new RegExp(`^${v.o.input}`), $options: 'i' }
+        username: { $options: 'i', $regex: new RegExp(`^${v.o.input}`) }
       },
-      { username: 1, discriminator: 1 }
+      { discriminator: 1, username: 1 }
     )
-    var servers = await routed.Bot.DB.getMultiple(
+    const servers = await routed.Bot.DB.getMultiple(
       'servers',
       {
-        name: { $regex: new RegExp(`^${v.o.input}`), $options: 'i' }
+        name: { $options: 'i', $regex: new RegExp(`^${v.o.input}`) }
       },
-      { name: 1, region: 1, ownerID: 1 }
+      { name: 1, ownerID: 1, region: 1 }
     )
 
     payload.servers = servers

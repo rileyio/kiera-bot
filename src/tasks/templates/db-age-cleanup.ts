@@ -1,5 +1,5 @@
+import { ObjectId } from 'mongodb'
 import { Task } from '@/objects/task'
-import { ObjectID } from 'mongodb'
 
 export class DBAgeCleanup extends Task {
   // Config for this task
@@ -15,7 +15,7 @@ export class DBAgeCleanup extends Task {
       const auditLogIDs = (
         await this.Bot.DB.aggregate('audit-log', [
           {
-            $match: { _id: { $lt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) } }
+            $match: { _id: { $lt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) } }
           },
           {
             $sort: { _id: -1 }
@@ -24,7 +24,7 @@ export class DBAgeCleanup extends Task {
             $project: { _id: 1 }
           }
         ])
-      ).map((d: { _id: ObjectID }) => {
+      ).map((d: { _id: ObjectId }) => {
         return d._id
       })
 
@@ -39,7 +39,7 @@ export class DBAgeCleanup extends Task {
       const ckHistorical = (
         await this.Bot.DB.aggregate('ck-stats-daily', [
           {
-            $match: { _id: { $lt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) } }
+            $match: { _id: { $lt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) } }
           },
           {
             $sort: { _id: -1 }
@@ -48,7 +48,7 @@ export class DBAgeCleanup extends Task {
             $project: { _id: 1 }
           }
         ])
-      ).map((d: { _id: ObjectID }) => {
+      ).map((d: { _id: ObjectId }) => {
         return d._id
       })
 
@@ -63,7 +63,7 @@ export class DBAgeCleanup extends Task {
       const decisionLog = (
         await this.Bot.DB.aggregate('ck-stats-daily', [
           {
-            $match: { _id: { $lt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) } }
+            $match: { _id: { $lt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) } }
           },
           {
             $sort: { _id: -1 }
@@ -72,7 +72,7 @@ export class DBAgeCleanup extends Task {
             $project: { _id: 1 }
           }
         ])
-      ).map((d: { _id: ObjectID }) => {
+      ).map((d: { _id: ObjectId }) => {
         return d._id
       })
 

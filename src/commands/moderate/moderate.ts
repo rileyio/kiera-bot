@@ -1,61 +1,63 @@
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
+
 import { ExportRoutes, RouterRouted } from '@/router'
-import { TrackedMutedUser } from '@/objects/user/'
+
 import { GuildMember } from 'discord.js'
+import { TrackedMutedUser } from '@/objects/user/'
 
 export const Routes = ExportRoutes(
   {
-    type: 'message',
     category: 'Moderate',
     controller: mute,
     description: 'Help.Moderate.MuteUser',
     example: '{{prefix}}mod mute 526039977247899649',
-    name: 'mod-mute-user',
-    validate: '/mod:string/mute:string/user=string/reason?=string',
     middleware: [Middleware.isModerator],
+    name: 'mod-mute-user',
     permissions: {
       serverOnly: true
-    }
+    },
+    type: 'message',
+    validate: '/mod:string/mute:string/user=string/reason?=string'
   },
   {
-    type: 'message',
     category: 'Moderate',
     controller: unMute,
     description: 'Help.Moderate.UnmuteUser',
     example: '{{prefix}}mod unmute 526039977247899649',
-    name: 'mod-unmute-user',
-    validate: '/mod:string/unmute:string/user=string',
     middleware: [Middleware.isModerator],
+    name: 'mod-unmute-user',
     permissions: {
       serverOnly: true
-    }
+    },
+    type: 'message',
+    validate: '/mod:string/unmute:string/user=string'
   },
   {
-    type: 'message',
     category: 'Moderate',
     controller: activeMutes,
     description: 'Help.Moderate.MuteListMuted',
     example: '{{prefix}}mod list muted',
-    name: 'mod-muted-list',
-    validate: '/mod:string/list:string/muted:string',
     middleware: [Middleware.isModerator],
+    name: 'mod-muted-list',
     permissions: {
       serverOnly: true
-    }
+    },
+    type: 'message',
+    validate: '/mod:string/list:string/muted:string'
   },
   {
-    type: 'message',
     category: 'Moderate',
     controller: lookupMutes,
     description: 'Help.Moderate.MuteLookup',
     example: '{{prefix}}mod lookup mute 526039977247899649',
-    name: 'mod-mute-lookup-list',
-    validate: '/mod:string/lookup:string/mute:string/user=string',
     middleware: [Middleware.isModerator],
+    name: 'mod-mute-lookup-list',
     permissions: {
       serverOnly: true
-    }
+    },
+    type: 'message',
+    validate: '/mod:string/lookup:string/mute:string/user=string'
   }
 )
 
@@ -77,7 +79,10 @@ export async function mute(routed: RouterRouted) {
   }
 
   // See if one is already active and stored for this user
-  const hasActiveMuteAlready = await routed.bot.DB.verify<TrackedMutedUser>('muted-users', { id: targetUser.id, active: true })
+  const hasActiveMuteAlready = await routed.bot.DB.verify('muted-users', {
+    active: true,
+    id: targetUser.id
+  })
 
   // If they already have one active, let the caller of this command know
   if (hasActiveMuteAlready) {
@@ -99,7 +104,7 @@ export async function mute(routed: RouterRouted) {
 
   // Now assign the user the mute role removing all previous as well
   // Remove the conflicting roles from the collection being updated
-  var rolesToRemove = hasUntouchableRoles
+  const rolesToRemove = hasUntouchableRoles
     ? [...targetUser.roles.cache.filter((r) => untouchableRoles.findIndex((rr) => rr.id === r.id) === -1).values()]
     : [...targetUser.roles.cache.values()]
   // Remove @everyone as this is unmanagable
@@ -128,10 +133,10 @@ export async function mute(routed: RouterRouted) {
 
   // Confirm action before proceeding
   const confirmed = await Utils.promptUserConfirm(routed, {
-    expectedValidResponse: 'yes',
-    expectedValidCancel: 'no',
     deleteFirstMessageAtEnd: true,
     deleteResponseAtEnd: true,
+    expectedValidCancel: 'no',
+    expectedValidResponse: 'yes',
     firstMessage: routed.$render('Moderate.Mute.ConfirmMutePrompt'),
     onTimeoutErrorMessage: routed.$render('Moderate.Mute.CancelledMute')
   })
@@ -150,19 +155,22 @@ export async function mute(routed: RouterRouted) {
   }
 
   const mutedUserRecord = new TrackedMutedUser({
-    id: targetUser.id,
-    username: targetUser.user.username,
     discriminator: targetUser.user.discriminator,
-    nickname: targetUser.nickname,
-    serverID: routed.message.guild.id,
-    reason: routed.v.o.reason || reasonCombined || '<blank>',
+    id: targetUser.id,
+    mutedByDiscriminator: routed.author.discriminator,
     mutedById: routed.author.id,
     mutedByUsername: routed.author.username,
-    mutedByDiscriminator: routed.author.discriminator,
+    nickname: targetUser.nickname,
+    reason: routed.v.o.reason || reasonCombined || '<blank>',
     removeAt: muteLengthIsNumber ? Date.now() + parseFloat(muteLenthString) * 3600000 : undefined,
     roles: rolesToRemove.map((r) => {
-      return { id: r.id, name: r.name }
-    })
+      return {
+        id: r.id,
+        name: r.name
+      }
+    }),
+    serverID: routed.message.guild.id,
+    username: targetUser.user.username
   })
 
   // Store a record of the muted user's info into Kiera's DB for later if/when unmuted to return roles
@@ -171,13 +179,13 @@ export async function mute(routed: RouterRouted) {
   // Reponse to command caller
   await routed.message.channel.send(
     routed.$render('Moderate.Mute.New', {
-      id: targetUser.id,
-      username: targetUser.user.username,
       discriminator: targetUser.user.discriminator,
-      removeAt: new Date(mutedUserRecord.removeAt).toUTCString(),
-      reason: mutedUserRecord.reason,
+      id: targetUser.id,
       mutedBy: `${mutedUserRecord.mutedByUsername}#${mutedUserRecord.mutedByDiscriminator}`,
-      rolesPreserved: mutedUserRecord.roles.map((r) => r.name).join(' ')
+      reason: mutedUserRecord.reason,
+      removeAt: new Date(mutedUserRecord.removeAt).toUTCString(),
+      rolesPreserved: mutedUserRecord.roles.map((r) => r.name).join(' '),
+      username: targetUser.user.username
     })
   )
   return true
@@ -204,7 +212,10 @@ export async function unMute(routed: RouterRouted) {
 
   // Query user's Mute record in Kiera's DB
   const mutedUserRecord = new TrackedMutedUser(
-    await routed.bot.DB.get<TrackedMutedUser>('muted-users', { id: targetUser.id, active: true })
+    await routed.bot.DB.get('muted-users', {
+      active: true,
+      id: targetUser.id
+    })
   )
 
   if (!mutedUserRecord._id) {
@@ -213,14 +224,17 @@ export async function unMute(routed: RouterRouted) {
   }
 
   // Update Mute record
-  await routed.bot.DB.update<TrackedMutedUser>(
+  await routed.bot.DB.update(
     'muted-users',
-    { id: mutedUserRecord.id, active: true },
+    {
+      active: true,
+      id: mutedUserRecord.id
+    },
     {
       $set: {
         active: false,
-        removedBy: routed.author.id,
-        removedAt: Date.now()
+        removedAt: Date.now(),
+        removedBy: routed.author.id
       }
     },
     { atomic: true }
@@ -233,25 +247,25 @@ export async function unMute(routed: RouterRouted) {
   await routed.message.channel.send(
     targetUser
       ? routed.$render('Moderate.Unmute.EntryUnmute', {
-          id: targetUser.id,
-          username: targetUser.user.username,
-          discriminator: targetUser.user.discriminator,
           dateFormatted: new Date(mutedUserRecord.timestamp).toUTCString(),
+          discriminator: targetUser.user.discriminator,
+          id: targetUser.id,
+          mutedBy: `${mutedUserRecord.mutedByUsername}#${mutedUserRecord.mutedByDiscriminator}`,
+          reason: mutedUserRecord.reason,
           removeAt: new Date(mutedUserRecord.removeAt).toUTCString(),
           removedAt: new Date(Date.now()).toUTCString(),
-          reason: mutedUserRecord.reason,
-          mutedBy: `${mutedUserRecord.mutedByUsername}#${mutedUserRecord.mutedByDiscriminator}`,
-          rolesRestored: mutedUserRecord.roles.map((r) => r.name).join(' ')
+          rolesRestored: mutedUserRecord.roles.map((r) => r.name).join(' '),
+          username: targetUser.user.username
         })
       : routed.$render('Moderate.Unmute.EntryUnmute', {
-          id: mutedUserRecord.id,
-          username: mutedUserRecord.username,
-          discriminator: mutedUserRecord.discriminator,
           dateFormatted: new Date(mutedUserRecord.timestamp).toUTCString(),
+          discriminator: mutedUserRecord.discriminator,
+          id: mutedUserRecord.id,
+          mutedBy: `${mutedUserRecord.mutedByUsername}#${mutedUserRecord.mutedByDiscriminator}`,
+          reason: mutedUserRecord.reason,
           removeAt: new Date(mutedUserRecord.removeAt).toUTCString(),
           removedAt: new Date(Date.now()).toUTCString(),
-          reason: mutedUserRecord.reason,
-          mutedBy: `${mutedUserRecord.mutedByUsername}#${mutedUserRecord.mutedByDiscriminator}`
+          username: mutedUserRecord.username
         })
   )
 
@@ -259,16 +273,19 @@ export async function unMute(routed: RouterRouted) {
 }
 
 export async function activeMutes(routed: RouterRouted) {
-  const mutedRecordsRaw = await routed.bot.DB.getMultiple<TrackedMutedUser>('muted-users', { serverID: routed.message.guild.id, active: true })
+  const mutedRecordsRaw = await routed.bot.DB.getMultiple('muted-users', {
+    active: true,
+    serverID: routed.message.guild.id
+  })
   const mutedRecords = mutedRecordsRaw.map((m) => new TrackedMutedUser(m))
 
-  var response = ``
+  let response = ``
   response += routed.$render('Moderate.Mute.ListLookup')
   response += '```'
 
   for (let index = 0; index < mutedRecords.length; index++) {
     const m = mutedRecords[index]
-    var userOnServer: GuildMember
+    let userOnServer: GuildMember
     try {
       await routed.message.guild.members.fetch(m.id)
     } catch (error) {
@@ -278,23 +295,23 @@ export async function activeMutes(routed: RouterRouted) {
     // If still on the server
     if (userOnServer) {
       response += routed.$render('Moderate.Mute.ListEntryUser', {
-        id: m.id,
-        username: userOnServer.user.username,
-        discriminator: userOnServer.user.discriminator,
         dateFormatted: new Date(m.timestamp).toUTCString(),
-        removeAt: new Date(m.removeAt).toUTCString(),
+        discriminator: userOnServer.user.discriminator,
+        id: m.id,
+        mutedBy: `${m.mutedByUsername}#${m.mutedByDiscriminator}`,
         reason: m.reason,
-        mutedBy: `${m.mutedByUsername}#${m.mutedByDiscriminator}`
+        removeAt: new Date(m.removeAt).toUTCString(),
+        username: userOnServer.user.username
       })
     } else {
       response += routed.$render('Moderate.Mute.ListEntryUser', {
-        id: m.id,
-        username: m.username,
-        discriminator: m.discriminator,
         dateFormatted: new Date(m.timestamp).toUTCString(),
-        removeAt: new Date(m.removeAt).toUTCString(),
+        discriminator: m.discriminator,
+        id: m.id,
+        mutedBy: `${m.mutedByUsername}#${m.mutedByDiscriminator}`,
         reason: m.reason,
-        mutedBy: `${m.mutedByUsername}#${m.mutedByDiscriminator}`
+        removeAt: new Date(m.removeAt).toUTCString(),
+        username: m.username
       })
     }
   }
@@ -306,7 +323,10 @@ export async function activeMutes(routed: RouterRouted) {
 
 export async function lookupMutes(routed: RouterRouted) {
   const targetUser = await routed.message.guild.members.fetch(routed.v.o.user)
-  const mutedRecordsRaw = await routed.bot.DB.getMultiple<TrackedMutedUser>('muted-users', { serverID: routed.message.guild.id, id: targetUser.id })
+  const mutedRecordsRaw = await routed.bot.DB.getMultiple('muted-users', {
+    id: targetUser.id,
+    serverID: routed.message.guild.id
+  })
 
   // Could not find user
   if (!mutedRecordsRaw) {
@@ -322,30 +342,30 @@ export async function lookupMutes(routed: RouterRouted) {
 
   const mutedRecords = mutedRecordsRaw.map((m) => new TrackedMutedUser(m))
 
-  var response = ``
+  let response = ``
   response += routed.$render('Moderate.Mute.EntryLookup')
   response += '```'
   mutedRecords.forEach((m) => {
     // If still on the server
     if (targetUser) {
       response += routed.$render('Moderate.Mute.ListEntryUser', {
-        id: m.id,
-        username: targetUser.user.username,
-        discriminator: targetUser.user.discriminator,
         dateFormatted: new Date(m.timestamp).toUTCString(),
-        removeAt: new Date(m.removeAt).toUTCString(),
+        discriminator: targetUser.user.discriminator,
+        id: m.id,
+        mutedBy: `@${m.mutedByUsername}#${m.mutedByDiscriminator}`,
         reason: m.reason,
-        mutedBy: `@${m.mutedByUsername}#${m.mutedByDiscriminator}`
+        removeAt: new Date(m.removeAt).toUTCString(),
+        username: targetUser.user.username
       })
     } else {
       response += routed.$render('Moderate.Mute.ListEntryUser', {
-        id: m.id,
-        username: m.username,
-        discriminator: m.discriminator,
         dateFormatted: new Date(m.timestamp).toUTCString(),
-        removeAt: new Date(m.removeAt).toUTCString(),
+        discriminator: m.discriminator,
+        id: m.id,
+        mutedBy: `@${m.mutedByUsername}#${m.mutedByDiscriminator}`,
         reason: m.reason,
-        mutedBy: `@${m.mutedByUsername}#${m.mutedByDiscriminator}`
+        removeAt: new Date(m.removeAt).toUTCString(),
+        username: m.username
       })
     }
   })

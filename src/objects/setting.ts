@@ -1,7 +1,7 @@
-import { ObjectID } from 'bson'
+import { ObjectId } from 'bson'
 
 export class TrackedBotSetting {
-  public readonly _id?: ObjectID
+  public readonly _id?: ObjectId
   public added: number
   public author: 'kiera-bot' | string
   public description?: string

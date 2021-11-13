@@ -1,4 +1,4 @@
-import { ObjectID } from 'bson'
+import { ObjectId } from 'bson'
 import { RunningLocksLock } from 'chastikey.js/app/objects'
 
 export enum ChastiKeyTickerType {
@@ -6,6 +6,11 @@ export enum ChastiKeyTickerType {
   Keyholder,
   Lockee,
   Both
+}
+
+export type ChastiKeyLocktoberData = {
+  username: string
+  discordID: string
 }
 
 export interface ChastiKeyManagedChanges {
@@ -21,13 +26,13 @@ export interface ChastiKeyManagedChanges {
  * @class TrackedChastiKey
  */
 export class TrackedChastiKey {
-  public username: string = ''
+  public username = ''
   public ticker: TrackedChastiKeyTicker
   public preferences: TrackedChastiKeyPreferences
-  public isVerified: boolean = false
-  public isVerifiedInData: boolean = false
-  public verificationCode: string = ''
-  public verificationCodeRequestedAt: number = 0
+  public isVerified = false
+  public isVerifiedInData = false
+  public verificationCode = ''
+  public verificationCodeRequestedAt = 0
 
   constructor(init: Partial<TrackedChastiKey>) {
     Object.assign(this, init)
@@ -48,7 +53,7 @@ export class TrackedChastiKey {
  */
 export class TrackedChastiKeyTicker {
   public type: ChastiKeyTickerType = ChastiKeyTickerType.Lockee
-  public showStarRatingScore: boolean = false
+  public showStarRatingScore = false
   public date: string
 
   constructor(init: Partial<TrackedChastiKeyTicker>) {
@@ -84,7 +89,7 @@ export class TrackedChastiKeyPreferences {
  */
 export class TrackedChastiKeyLock extends RunningLocksLock {
   // Kiera props
-  public readonly _id: ObjectID
+  public readonly _id: ObjectId
   // ChastiKey Extra Props from DB Query
   public secondsLocked: number
 }
@@ -150,7 +155,7 @@ export class TrackedChastiKeyUserTotalLockedTime {
  * @class ChastiKeyVerifyResponse
  */
 export class ChastiKeyVerifyResponse {
-  public success: boolean = false
+  public success = false
   /**
    * Known responses:
    * - `Your DiscordID has already been registered.`
@@ -162,9 +167,9 @@ export class ChastiKeyVerifyResponse {
    * @type {string}
    * @memberof ChastiKeyVerifyResponse
    */
-  public reason: string = ''
+  public reason = ''
   public code: string
-  public isVerified: boolean = false
+  public isVerified = false
 
   constructor(init: Partial<ChastiKeyVerifyResponse>) {
     Object.assign(this, init)
@@ -176,8 +181,8 @@ export class ChastiKeyVerifyDiscordID {
   public message: string
   public timestampGenerated: number
   public discordID: string = null
-  public username: string = ''
-  public verified: boolean = false
+  public username = ''
+  public verified = false
 
   constructor(init: Partial<ChastiKeyVerifyDiscordID>) {
     Object.assign(this, init)

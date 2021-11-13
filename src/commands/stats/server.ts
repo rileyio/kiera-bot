@@ -1,29 +1,31 @@
 import * as Utils from '@/utils'
-import { RouterRouted, ExportRoutes, RoutedInteraction } from '@/router'
-import { statsTopServerChannels, statsServer } from '@/embedded/stats-server'
-import { ServerStatisticType, StatisticsSetting, StatisticsSettingType, ServerStatistic } from '@/objects/statistics'
-import { ObjectID } from 'bson'
+
+import { ExportRoutes, RoutedInteraction, RouterRouted } from '@/router'
+import { statsServer, statsTopServerChannels } from '@/embedded/stats-server'
+
+import { ObjectId } from 'bson'
+import { ServerStatisticType } from '@/objects/statistics'
 
 export const Routes = ExportRoutes({
-  type: 'message',
   category: 'Stats',
   controller: statsByTopChannels,
   description: 'Help.Stats.ViewTopChannelsByStats.Description',
   example: '{{prefix}}stats top channels',
-  name: 'stats-top-channels',
-  validate: '/stats:string/top:string/channels:string',
   middleware: [],
+  name: 'stats-top-channels',
   permissions: {
     defaultEnabled: true,
-    serverOnly: true,
-    restricted: false
-  }
+    restricted: false,
+    serverOnly: true
+  },
+  type: 'message',
+  validate: '/stats:string/top:string/channels:string'
 })
 
 export async function statsByTopChannels(routed: RouterRouted) {
   const data = await routed.bot.DB.aggregate<{ channelID: string; count: number; name?: string }>('stats-servers', [
     {
-      $match: { type: ServerStatisticType.Message, serverID: routed.message.guild.id }
+      $match: { serverID: routed.message.guild.id, type: ServerStatisticType.Message }
     },
     {
       $group: {
@@ -53,8 +55,8 @@ export async function statsByTopChannels(routed: RouterRouted) {
   await routed.message.channel.send({
     embeds: [
       statsTopServerChannels({
-        serverIcon: routed.message.guild.iconURL(),
-        data: mappedData
+        data: mappedData,
+        serverIcon: routed.message.guild.iconURL()
       })
     ]
   })
@@ -65,7 +67,7 @@ export async function statsByTopChannels(routed: RouterRouted) {
 export async function serverStats(routed: RoutedInteraction) {
   const topChannelsByMsgCount = await routed.bot.DB.aggregate<{ channelID: string; count: number; name?: string }>('stats-servers', [
     {
-      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Message, serverID: routed.guild.id }
+      $match: { _id: { $gt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, serverID: routed.guild.id, type: ServerStatisticType.Message }
     },
     {
       $group: {
@@ -85,7 +87,7 @@ export async function serverStats(routed: RoutedInteraction) {
 
   const topUsersByMsgCount = await routed.bot.DB.aggregate<{ userID: string; count: number; name?: string }>('stats-servers', [
     {
-      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Message, serverID: routed.guild.id }
+      $match: { _id: { $gt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, serverID: routed.guild.id, type: ServerStatisticType.Message }
     },
     {
       $group: {
@@ -97,15 +99,15 @@ export async function serverStats(routed: RoutedInteraction) {
     {
       $project: {
         _id: 0,
-        userID: '$_id',
-        count: 1
+        count: 1,
+        userID: '$_id'
       }
     }
   ])
 
   const topUsersByReactionsCount = await routed.bot.DB.aggregate<{ userID: string; count: number; name?: string }>('stats-servers', [
     {
-      $match: { _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, type: ServerStatisticType.Reaction, serverID: routed.guild.id }
+      $match: { _id: { $gt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, serverID: routed.guild.id, type: ServerStatisticType.Reaction }
     },
     {
       $group: {
@@ -117,8 +119,8 @@ export async function serverStats(routed: RoutedInteraction) {
     {
       $project: {
         _id: 0,
-        userID: '$_id',
-        count: 1
+        count: 1,
+        userID: '$_id'
       }
     }
   ])
@@ -126,8 +128,17 @@ export async function serverStats(routed: RoutedInteraction) {
   const usersJoinedAndLeft = await routed.bot.DB.aggregate<{ type: ServerStatisticType; count: number }>('stats-servers', [
     {
       $match: {
-        _id: { $gt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) },
-        $or: [{ type: ServerStatisticType.UserJoined }, { type: ServerStatisticType.UserLeft }],
+        $or: [
+          {
+            type: ServerStatisticType.UserJoined
+          },
+          {
+            type: ServerStatisticType.UserLeft
+          }
+        ],
+        _id: {
+          $gt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000)
+        },
         serverID: routed.guild.id
       }
     },
@@ -140,8 +151,8 @@ export async function serverStats(routed: RoutedInteraction) {
     {
       $project: {
         _id: 0,
-        type: '$_id',
-        count: 1
+        count: 1,
+        type: '$_id'
       }
     }
   ])
@@ -174,18 +185,22 @@ export async function serverStats(routed: RoutedInteraction) {
     })
 
   // Map Users Joined
-  const mappedUsersJoined = usersJoinedAndLeft.find((s) => s.type === ServerStatisticType.UserJoined) || { type: ServerStatisticType.UserJoined, count: 0 }
-  const mappedUsersLeft = usersJoinedAndLeft.find((s) => s.type === ServerStatisticType.UserLeft) || { type: ServerStatisticType.UserLeft, count: 0 }
+  const mappedUsersJoined = usersJoinedAndLeft.find((s) => s.type === ServerStatisticType.UserJoined) || { count: 0, type: ServerStatisticType.UserJoined }
+  const mappedUsersLeft = usersJoinedAndLeft.find((s) => s.type === ServerStatisticType.UserLeft) || { count: 0, type: ServerStatisticType.UserLeft }
 
   return await routed.reply({
     embeds: [
       statsServer({
+        data: {
+          channels: mappedChannelData,
+          reactions: mappedUserReactionsData,
+          users: mappedUserData
+        },
+        memberCount: routed.guild.memberCount,
         serverAgeTimestamp: routed.guild.createdTimestamp,
         serverIcon: routed.guild.iconURL(),
-        memberCount: routed.guild.memberCount,
         usersJoined: mappedUsersJoined.count,
-        usersLeft: mappedUsersLeft.count,
-        data: { channels: mappedChannelData, users: mappedUserData, reactions: mappedUserReactionsData }
+        usersLeft: mappedUsersLeft.count
       })
     ]
   })

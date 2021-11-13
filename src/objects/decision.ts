@@ -1,17 +1,17 @@
-import { ObjectID } from 'bson'
+import { ObjectId } from 'bson'
 
 export class TrackedDecision {
-  public readonly _id: ObjectID = new ObjectID()
-  
+  public readonly _id: ObjectId
+
   public nickname?: string
-  public name: string = ''
+  public name = ''
 
   /**
    * Description of roll
    * @type {string}
    * @memberof TrackedDecision
    */
-  public description: string = ''
+  public description = ''
 
   /**
    * Possible outcomes
@@ -29,7 +29,7 @@ export class TrackedDecision {
 
   /**
    * Discord Server ID
-   * @type {ObjectID}
+   * @type {ObjectId}
    * @memberof TrackedDecision
    */
   public serverID: string
@@ -46,14 +46,14 @@ export class TrackedDecision {
    * @type {boolean}
    * @memberof TrackedDecision
    */
-  public enabled: boolean = true
+  public enabled = true
 
   /**
    * Number of times used
    * @type {number}
    * @memberof Decision
    */
-  public counter: number = 0
+  public counter = 0
 
   public serverWhitelist: Array<string> = []
   public userWhitelist: Array<string> = []
@@ -70,7 +70,7 @@ export class TrackedDecision {
   public log?: Array<TrackedDecisionLogEntry>
 
   public consumeMode: 'Basic' | 'Temporarily Consume' | 'Consume' = 'Basic'
-  public consumeReset: number = 0 // Seconds
+  public consumeReset = 0 // Seconds
 
   constructor(init?: Partial<TrackedDecision>) {
     Object.assign(this, init || {})
@@ -79,7 +79,7 @@ export class TrackedDecision {
 }
 
 export class TrackedDecisionOption {
-  public _id: ObjectID = new ObjectID()
+  public _id: ObjectId = new ObjectId()
 
   /**
    * Random decision outcome
@@ -93,7 +93,7 @@ export class TrackedDecisionOption {
    * @type {boolean}
    * @memberof TrackedDecisionOption
    */
-  public enabled: boolean = true
+  public enabled = true
 
   /**
    * The type and how to format it when displaying
@@ -111,7 +111,7 @@ export class TrackedDecisionOption {
 }
 
 export class TrackedDecisionLogEntry {
-  public _id: Object = new ObjectID()
+  public _id: ObjectId | string
   public callerID: string
   public decisionID: string
   public outcomeID: string

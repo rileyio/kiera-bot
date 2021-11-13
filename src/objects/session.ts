@@ -1,36 +1,37 @@
-import { ObjectID } from 'bson'
 import * as crypto from 'crypto-js'
 
+import { ObjectId } from 'bson'
+
 export class TrackedSession {
-  public readonly _id: ObjectID
+  public readonly _id: ObjectId
 
   /**
    * Discord User ID (Snowflake)
    * @type {string}
    * @memberof Session
    */
-  public userID: string = ''
+  public userID = ''
 
   /**
    * Session token
    * @type {string}
    * @memberof Session
    */
-  public session: string = ''
+  public session = ''
 
   /**
    * When the session is set to expire
    * @type {number}
    * @memberof TrackedSession
    */
-  public sessionExpiry: number = 0
+  public sessionExpiry = 0
 
   /**
    * One time login code
    * @type {string}
    * @memberof Session
    */
-  public otl: string = ''
+  public otl = ''
 
   /**
    * One time login code's usage status
@@ -39,14 +40,14 @@ export class TrackedSession {
    * @type {boolean}
    * @memberof Session
    */
-  public otlConsumed: boolean = false
+  public otlConsumed = false
 
   /**
    * One time login expiry timestamp (5 mins from creation)
    * @type {number}
    * @memberof TrackedSession
    */
-  public otlExpiry: number = 0
+  public otlExpiry = 0
 
   /**
    * Tracking for which webportal session is for
@@ -60,7 +61,7 @@ export class TrackedSession {
    * @type {boolean}
    * @memberof TrackedSession
    */
-  public terminated: boolean = false
+  public terminated = false
 
   constructor(init?: Partial<TrackedSession>) {
     Object.assign(this, init || {})

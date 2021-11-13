@@ -1,68 +1,71 @@
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
-import { RouterRouted, ExportRoutes } from '@/router'
+
+import { ExportRoutes, RouterRouted } from '@/router'
+
 import { MessageAttachment } from 'discord.js'
 import { TrackedUser } from '@/objects/user/'
 
 export const Routes = ExportRoutes(
   {
-    type: 'message',
     category: 'ChastiKey',
     controller: setTickerType,
     description: 'Help.ChastiKey.SetTickerType.Description',
     example: '{{prefix}}ck ticker set type 2',
-    name: 'ck-set-tickerType',
-    validate: '/ck:string/ticker:string/set:string/type:string/number=number',
     middleware: [Middleware.isCKVerified],
+    name: 'ck-set-tickerType',
     permissions: {
       defaultEnabled: false,
       serverOnly: false
-    }
+    },
+    type: 'message',
+    validate: '/ck:string/ticker:string/set:string/type:string/number=number'
   },
   {
-    type: 'message',
     category: 'ChastiKey',
     controller: setTickerDate,
     description: 'Help.ChastiKey.SetTickerDate.Description',
     example: '{{prefix}}ck ticker set date 2019-01-27',
-    name: 'ck-set-tickerDate',
-    validate: '/ck:string/ticker:string/set:string/date:string/number=string',
     middleware: [Middleware.isCKVerified],
+    name: 'ck-set-tickerDate',
     permissions: {
       defaultEnabled: false,
       serverOnly: false
-    }
+    },
+    type: 'message',
+    validate: '/ck:string/ticker:string/set:string/date:string/number=string'
   },
   {
-    type: 'message',
     category: 'ChastiKey',
     controller: setTickerRatingDisplay,
     description: 'Help.ChastiKey.ToggleTickerRating.Description',
     example: '{{prefix}}ck ticker set rating show',
-    name: 'ck-set-ratingDisplay',
-    validate: '/ck:string/ticker:string/set:string/rating:string/state=string',
     middleware: [Middleware.isCKVerified],
+    name: 'ck-set-ratingDisplay',
     permissions: {
       defaultEnabled: false,
       serverOnly: false
-    }
+    },
+    type: 'message',
+    validate: '/ck:string/ticker:string/set:string/rating:string/state=string'
   },
   {
-    type: 'message',
     category: 'ChastiKey',
     controller: getTicker,
     description: 'Help.ChastiKey.Ticker.Description',
     example: '{{prefix}}ck ticker',
-    name: 'ck-get-ticker',
-    validate: '/ck:string/ticker:string/typeOrUser?=string/type?=number/date?=string',
-    validateAlias: ['/ck:string/t:string/typeOrUser?=string/type?=number/date?=string'],
     middleware: [Middleware.isCKVerified],
+    name: 'ck-get-ticker',
     permissions: {
       defaultEnabled: false,
       serverOnly: false
-    }
+    },
+    type: 'message',
+    validate: '/ck:string/ticker:string/typeOrUser?=string/type?=number/date?=string',
+    validateAlias: ['/ck:string/t:string/typeOrUser?=string/type?=number/date?=string']
   }
 )
+
 /**
  * Sets user's Ticker Type
  *
@@ -72,8 +75,8 @@ export const Routes = ExportRoutes(
  * @param {RouterRouted} routed
  */
 export async function setTickerType(routed: RouterRouted) {
-  var newTickerType: number
-  var newTickerTypeAsString: string
+  let newTickerType: number
+  let newTickerTypeAsString: string
 
   switch (routed.v.o.number) {
     case 1:
@@ -164,9 +167,7 @@ export async function getTicker(routed: RouterRouted) {
   const type = is1stInt ? Number(routed.v.o.typeOrUser) : is2ndPassed && is2ndInt ? Number(routed.v.o.type) : undefined
 
   const user = new TrackedUser(
-    isUsernamePassed
-      ? await routed.bot.DB.get<TrackedUser>('users', { 'ChastiKey.username': new RegExp(`^${username}$`, 'i') })
-      : await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
+    isUsernamePassed ? await routed.bot.DB.get('users', { 'ChastiKey.username': new RegExp(`^${username}$`, 'i') }) : await routed.bot.DB.get('users', { id: routed.author.id })
   )
 
   // If the user has passed a type as an argument, use that over what was saved as their default

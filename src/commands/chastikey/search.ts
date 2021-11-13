@@ -1,29 +1,31 @@
 import * as Middleware from '@/middleware'
-import { RouterRouted, ExportRoutes } from '@/router'
-import { searchResults } from '@/embedded/chastikey-search'
+
+import { ExportRoutes, RouterRouted } from '@/router'
+
 import { TrackedBotSetting } from '@/objects/setting'
 import { UserData } from 'chastikey.js/app/objects'
+import { searchResults } from '@/embedded/chastikey-search'
 
 export const Routes = ExportRoutes({
-  type: 'message',
   category: 'ChastiKey',
   controller: search,
   description: 'Help.ChastiKey.UsernameSearch.Description',
   example: '{{prefix}}ck search UsernameHere',
-  name: 'ck-search-username',
-  validate: '/ck:string/search:string/like=string',
   middleware: [Middleware.isCKVerified],
+  name: 'ck-search-username',
   permissions: {
     defaultEnabled: true,
     serverOnly: true
-  }
+  },
+  type: 'message',
+  validate: '/ck:string/search:string/like=string'
 })
 
 export async function search(routed: RouterRouted) {
   const usernameRegex = new RegExp(routed.v.o.like, 'i')
 
   // Search for users, Exluding those who requested to hide their stats
-  var ckUsers = await routed.bot.DB.aggregate<UserData>('ck-users', [
+  let ckUsers = await routed.bot.DB.aggregate<UserData>('ck-users', [
     {
       $match: { username: usernameRegex }
     },

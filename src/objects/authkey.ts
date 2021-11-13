@@ -1,12 +1,13 @@
-import { ObjectID } from 'bson'
 import * as crypto from 'crypto-js'
 
+import { ObjectId } from 'bson'
+
 export class AuthKey {
-  public readonly _id: ObjectID
-  public uid: ObjectID
+  public readonly _id: ObjectId
+  public uid: ObjectId
   public hash: string
-  public used: number = 0
-  public isActive: boolean = true
+  public used = 0
+  public isActive = true
 
   constructor(init?: Partial<AuthKey>) {
     Object.assign(this, init || {})
@@ -22,10 +23,7 @@ export class AuthKey {
   }
 
   public generate(username: string, index: number) {
-    const key = `${username}:${index}:${crypto
-      .SHA256(Math.random().toString())
-      .toString()
-      .substr(0, 8)}`
+    const key = `${username}:${index}:${crypto.SHA256(Math.random().toString()).toString().substr(0, 8)}`
     this.hash = username + `:${index}:` + crypto.SHA256(key)
 
     // Return user's key and not storing

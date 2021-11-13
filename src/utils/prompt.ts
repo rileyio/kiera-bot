@@ -1,5 +1,7 @@
 import * as Utils from '@/utils'
-import { CollectorFilter, Message, Collection, TextChannel } from 'discord.js'
+
+import { Collection, Message, TextChannel } from 'discord.js'
+
 import { RouterRouted } from '@/router'
 
 export interface PromptUserInput {
@@ -23,7 +25,7 @@ export interface PromptUserConfirm {
 }
 
 export async function promptUserInput(routed: RouterRouted, options: PromptUserInput) {
-  return new Promise<Collection<string, Message>>(async (resolve, reject) => {
+  return new Promise<Collection<string, Message>>(async (resolve) => {
     // Send first message in prompt process
     const firstMessage = await routed.message.reply(options.firstMessage)
 
@@ -68,7 +70,7 @@ export async function promptUserConfirm(routed: RouterRouted, options: PromptUse
         : (response: Message) => response.author.id === routed.author.id
 
     // Message collector w/Filter - Wait up to a max of 1 min for exactly 1 reply from the required user
-    const collected = await routed.message.channel.awaitMessages({ filter, max: 1, time: options.waitFor || 60000, errors: ['time'] })
+    const collected = await routed.message.channel.awaitMessages({ errors: ['time'], filter, max: 1, time: options.waitFor || 60000 })
 
     if (options.deleteFirstMessageAtEnd) {
       // Delete the first message send at this stage

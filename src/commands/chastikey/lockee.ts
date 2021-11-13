@@ -1,39 +1,40 @@
 import * as Middleware from '@/middleware'
 import * as Utils from '@/utils'
+
 import { ExportRoutes } from '@/router/routes-exporter'
 import { RouterRouted } from '@/router'
-import { lockeeHistory } from '@/embedded/chastikey-history'
 import { TrackedUser } from '@/objects/user/'
+import { lockeeHistory } from '@/embedded/chastikey-history'
 
 export const Routes = ExportRoutes(
   {
-    type: 'message',
     category: 'ChastiKey',
     controller: history,
     description: 'Help.ChastiKey.LockeeHistory.Description',
     example: '{{prefix}}ck lockee history',
-    name: 'ck-lockee-history',
-    validate: '/ck:string/lockee:string/history:string/username?=string',
-    validateAlias: ['/ck:string/lh:string/username?=string'],
     middleware: [Middleware.isCKVerified],
+    name: 'ck-lockee-history',
     permissions: {
       defaultEnabled: true,
       serverOnly: false
-    }
+    },
+    type: 'message',
+    validate: '/ck:string/lockee:string/history:string/username?=string',
+    validateAlias: ['/ck:string/lh:string/username?=string']
   },
   {
-    type: 'message',
     category: 'ChastiKey',
     controller: toggleLockInNickname,
     example: '{{prefix}}ck lockee nickname status always',
-    name: 'ck-lockee-nickname-status',
-    validate: '/ck:string/lockee:string/nickname:string/status:string/mode=string',
-    validateAlias: ['/ck:string/nickname:string/mode=string'],
     middleware: [Middleware.isCKVerified],
+    name: 'ck-lockee-nickname-status',
     permissions: {
       defaultEnabled: true,
       serverOnly: true
-    }
+    },
+    type: 'message',
+    validate: '/ck:string/lockee:string/nickname:string/status:string/mode=string',
+    validateAlias: ['/ck:string/nickname:string/mode=string']
   }
 )
 
@@ -52,8 +53,8 @@ export async function history(routed: RouterRouted) {
       : kieraUser.ChastiKey.username.toLowerCase() === routed.v.o.username.toLowerCase()
       ? kieraUser.id
       : undefined,
-    username: kieraUser.__notStored && routed.v.o.username ? routed.v.o.username : undefined,
-    showDeleted: true
+    showDeleted: true,
+    username: kieraUser.__notStored && routed.v.o.username ? routed.v.o.username : undefined
   })
 
   // If the lookup is upon someone else with no data, return the standard response

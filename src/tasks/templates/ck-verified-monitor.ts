@@ -1,8 +1,7 @@
 import { Task } from '@/objects/task'
-import { TrackedUser } from '@/objects/user/'
 
 export class ChastiKeyVerifiedRoleMonitor extends Task {
-  private announcementMade: boolean = false
+  private announcementMade = false
   public verifiedRole: string
 
   // Config for this task
@@ -24,7 +23,7 @@ export class ChastiKeyVerifiedRoleMonitor extends Task {
     // Perform the scheduled task/job
     try {
       // Get users who are eligible from the db, but only users who have verified their discord ID
-      const stored = await this.Bot.DB.getMultiple<TrackedUser>('users', { 'ChastiKey.isVerified': true })
+      const stored = await this.Bot.DB.getMultiple('users', { 'ChastiKey.isVerified': true })
       const guilds = [...this.Bot.client.guilds.cache.filter((g) => g.id === '473856867768991744' || g.id === '389204362959781899').values()]
 
       console.log(`CK Verified Role Monitor::Users Eligible (from users) = ${stored.length}`)

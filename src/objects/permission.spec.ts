@@ -1,13 +1,13 @@
-import test from 'ava'
 import { CommandPermission } from './permission'
+import test from 'ava'
 
-var permission1 = new CommandPermission({
-  serverID: '111111222223333333',
+const permission1 = new CommandPermission({
   channelID: '222222222222222222',
   command: 'ping',
-  enabled: false
+  enabled: false,
+  serverID: '111111222223333333'
 })
 
-test('CommandPermission => Test if permission is disabled', t => {
+test('CommandPermission => Test if permission is disabled', (t) => {
   t.is(permission1.isAllowed(), false)
 })

@@ -1,30 +1,29 @@
-import * as Middleware from '@/api/middleware'
-import { WebRouted, WebRoute } from '@/api/web-router'
-import { TrackedServerSetting } from '@/objects/server-setting'
-import { TrackedUser } from '@/objects/user/'
+import * as Middleware from '@/api/middleware';
+
+import { WebRoute, WebRouted } from '@/api/web-router';
+
+import { TrackedUser } from '@/objects/user/';
 
 export const Routes: Array<WebRoute> = [
-  // * Available * //
   {
     controller: settings,
     method: 'post',
+    middleware: [Middleware.validateSession],
     name: 'available-settings',
-    path: '/api/available/settings',
-    middleware: [Middleware.validateSession]
+    path: '/api/available/settings'
   },
   {
     controller: userGeneric,
     method: 'post',
+    middleware: [Middleware.validateSession],
     name: 'available-user',
-    path: '/api/available/user',
-    middleware: [Middleware.validateSession]
+    path: '/api/available/user'
   }
 ]
 
 export async function settings(routed: WebRouted) {
   // this.DEBUG_WEBAPI('req params', v.o)
-
-  var templateNotifications = await routed.Bot.DB.getMultiple<TrackedServerSetting>('available-server-settings', {}, { _id: 0 })
+  const templateNotifications = await routed.Bot.DB.getMultiple('available-server-settings', {}, { _id: 0 })
   return routed.res.send(templateNotifications)
 }
 

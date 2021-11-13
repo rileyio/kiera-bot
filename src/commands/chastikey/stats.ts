@@ -1,17 +1,20 @@
 import * as Utils from '@/utils'
-import { RouterRouted } from '@/router'
-import { lockeeStats, keyholderStats, sharedKeyholdersStats, keyholderLockees } from '@/embedded/chastikey-stats'
+
+import { TrackedKeyholderLockeesStatistics, TrackedSharedKeyholderStatistics } from '@/embedded/chastikey-stats'
+import { keyholderLockees, keyholderStats, lockeeStats, sharedKeyholdersStats } from '@/embedded/chastikey-stats'
+
+import { RoutedInteraction } from '@/router'
 import { TrackedUser } from '@/objects/user/'
 
-export async function getLockeeStats(routed: RouterRouted) {
+export async function getLockeeStats(routed: RoutedInteraction) {
   // Check if username was specified from slash commands or from legacy command
   const username = routed.interaction.options.get('username')?.value as string
 
   // Get user from lockee data (Stats, User and Locks)
   const lockeeData = await routed.bot.Service.ChastiKey.fetchAPILockeeData({
-    username: username ? username : undefined,
     discordid: !username ? routed.author.id : undefined,
-    showDeleted: true
+    showDeleted: true,
+    username: username ? username : undefined
   })
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -35,9 +38,9 @@ export async function getLockeeStats(routed: RouterRouted) {
   // Get user's current ChastiKey username from users collection or by the override
   const kieraUser =
     username && lockeeData.data.discordID
-      ? (await routed.bot.DB.get<TrackedUser>('users', { id: String(lockeeData.data.discordID) })) ||
+      ? (await routed.bot.DB.get('users', { id: String(lockeeData.data.discordID) })) ||
         // Fallback: Create a mock record
-        <TrackedUser>{ ChastiKey: { username: lockeeData.data.username, isVerified: false, ticker: { showStarRatingScore: true } } }
+        <TrackedUser>{ ChastiKey: { isVerified: false, ticker: { showStarRatingScore: true }, username: lockeeData.data.username } }
       : // Else when its the caller themself: Lookup the user by Discord ID
         routed.user
 
@@ -47,14 +50,14 @@ export async function getLockeeStats(routed: RouterRouted) {
   return true
 }
 
-export async function getKeyholderStats(routed: RouterRouted) {
+export async function getKeyholderStats(routed: RoutedInteraction) {
   // Check if username was specified from slash commands or from legacy command
   const username = routed.interaction.options.get('username')?.value as string
 
   // Get user from lockee data (Stats, User and Locks)
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
-    username: username ? username : undefined,
-    discordid: !username ? routed.author.id : undefined
+    discordid: !username ? routed.author.id : undefined,
+    username: username ? username : undefined
   })
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -76,26 +79,29 @@ export async function getKeyholderStats(routed: RouterRouted) {
   }
 
   // Get user's current ChastiKey username from users collection or by the override
-  var user = username
+  const user = username
     ? new TrackedUser(
-        await routed.bot.DB.get<TrackedUser>('users', {
-          $or: [{ id: String(keyholderData.data.discordID) || 123 }, { 'ChastiKey.username': new RegExp(`^${keyholderData.data.username}$`, 'i') }]
+        await routed.bot.DB.get('users', {
+          $or: [{ id: String(keyholderData.data.discordID) || 123 }, { 'ChastiKey.username': String(new RegExp(`^${keyholderData.data.username}$`, 'i')) }]
         })
       ) ||
       // Fallback: Create a mock record
+      // TODO: Fix or just remove when CK is deprecated
       new TrackedUser(<any>{
-        __notStored: true,
         ChastiKey: {
-          username: keyholderData.data.username,
           preferences: {
-            keyholder: { showAverage: false }
+            keyholder: {
+              showAverage: false
+            }
           },
-          ticker: { showStarRatingScore: true }
-        }
+          ticker: {
+            showStarRatingScore: true
+          },
+          username: keyholderData.data.username
+        },
+        __notStored: true
       })
-    : new TrackedUser(
-        await routed.bot.DB.get<TrackedUser>('users', { id: routed.author.id })
-      )
+    : new TrackedUser(await routed.bot.DB.get('users', { id: routed.author.id }))
 
   // If the requested user has never keyheld
   if (keyholderData.data.timestampFirstKeyheld === 0) {
@@ -111,45 +117,46 @@ export async function getKeyholderStats(routed: RouterRouted) {
     {
       $group: {
         _id: '$username',
-        locksArrayByLockedTime: { $addToSet: '$timestampLocked' },
+        count: { $sum: 1 },
         locks: {
           $push: {
+            cumulative: { $toBool: '$cumulative' },
             fixed: { $toBool: '$fixed' },
-            timerHidden: { $toBool: '$timerHidden' },
-            lockFrozenByKeyholder: { $toBool: '$lockFrozenByKeyholder' },
-            lockFrozenByCard: { $toBool: '$lockFrozenByCard' },
             keyholder: '$lockedBy',
+            lockFrozenByCard: { $toBool: '$lockFrozenByCard' },
+            lockFrozenByKeyholder: { $toBool: '$lockFrozenByKeyholder' },
             noOfTurns: '$noOfTurns',
             secondsLocked: { $subtract: [Date.now() / 1000, '$timestampLocked'] },
             sharedLockName: '$lockName',
-            cumulative: { $toBool: '$cumulative' }
+            timerHidden: { $toBool: '$timerHidden' }
           }
         },
-        count: { $sum: 1 }
+        locksArrayByLockedTime: { $addToSet: '$timestampLocked' }
       }
     },
     {
       $project: {
         _id: 1,
+        count: 1,
         keyholders: 1,
         locks: 1,
-        uniqueCount: { $cond: { if: { $isArray: '$locksArrayByLockedTime' }, then: { $size: '$locksArrayByLockedTime' }, else: 0 } },
-        count: 1
+        // eslint-disable-next-line sort-keys
+        uniqueCount: { $cond: { if: { $isArray: '$locksArrayByLockedTime' }, then: { $size: '$locksArrayByLockedTime' }, else: 0 } }
       }
     },
     { $sort: { count: -1 } }
   ])
 
   // Set cached timestamp for running locks - this SHOULD be close or the same as the KH re-cached time
-  const cachedTimestampFromFetch = await routed.bot.DB.get<{ name: string; lastFinishedAt: string }>('scheduled-jobs', { name: 'ChastiKeyAPIRunningLocks' })
+  const cachedTimestampFromFetch = await routed.bot.DB.get('scheduled-jobs', { name: 'ChastiKeyAPIRunningLocks' })
   const cachedTimestamp = Number(cachedTimestampFromFetch.lastFinishedAt)
 
   // Send stats
   await routed.reply({
     embeds: [
       keyholderStats(keyholderData.data, cachedRunningLocks, cachedTimestamp, routed.routerStats, {
-        showRating: user.ChastiKey.ticker.showStarRatingScore,
-        showAverage: user.ChastiKey.preferences.keyholder.showAverage
+        showAverage: user.ChastiKey.preferences.keyholder.showAverage,
+        showRating: user.ChastiKey.ticker.showStarRatingScore
       })
     ]
   })
@@ -158,14 +165,14 @@ export async function getKeyholderStats(routed: RouterRouted) {
   return true
 }
 
-export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
+export async function getCheckLockeeMultiLocked(routed: RoutedInteraction) {
   // Check if username was specified from slash commands or from legacy command
   const username = routed.interaction.options.get('username')?.value as string
 
   // Get user from lockee data (Stats, User and Locks)
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
-    username: username ? username : undefined,
-    discordid: username ? undefined : routed.author.id
+    discordid: username ? undefined : routed.author.id,
+    username: username ? username : undefined
   })
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -182,32 +189,33 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
   }
 
   // Get multiple KH locks from db
-  const activeLocks = await routed.bot.DB.aggregate<any>('ck-running-locks', [
+  const activeLocks = await routed.bot.DB.aggregate<TrackedSharedKeyholderStatistics>('ck-running-locks', [
     {
       $match: { lockedBy: { $ne: null } }
     },
     {
       $group: {
         _id: '$username',
+        count: { $sum: 1 },
         keyholders: {
           $addToSet: '$lockedBy'
-        },
-        count: { $sum: 1 }
+        }
       }
     },
     {
       $project: {
-        uniqueKHCount: { $cond: { if: { $isArray: '$keyholders' }, then: { $size: '$keyholders' }, else: 0 } },
+        count: 1,
         keyholders: 1,
-        count: 1
+        // eslint-disable-next-line sort-keys
+        uniqueKHCount: { $cond: { if: { $isArray: '$keyholders' }, then: { $size: '$keyholders' }, else: 0 } }
       }
     },
-    { $match: { count: { $gt: 1 }, uniqueKHCount: { $gt: 1 }, keyholders: { $in: [keyholderData.data.username] } } },
+    { $match: { count: { $gt: 1 }, keyholders: { $in: [keyholderData.data.username] }, uniqueKHCount: { $gt: 1 } } },
     { $sort: { count: -1 } }
   ])
 
   // Set cached timestamp for running locks
-  const cachedTimestampFromFetch = await routed.bot.DB.get<{ name: string; lastFinishedAt: string }>('scheduled-jobs', { name: 'ChastiKeyAPIRunningLocks' })
+  const cachedTimestampFromFetch = await routed.bot.DB.get('scheduled-jobs', { name: 'ChastiKeyAPIRunningLocks' })
   const cachedTimestamp = Number(cachedTimestampFromFetch.lastFinishedAt)
 
   await routed.reply({ embeds: [sharedKeyholdersStats(activeLocks, keyholderData.data.username, routed.routerStats, cachedTimestamp)] })
@@ -216,14 +224,14 @@ export async function getCheckLockeeMultiLocked(routed: RouterRouted) {
   return true
 }
 
-export async function getKeyholderLockees(routed: RouterRouted) {
+export async function getKeyholderLockees(routed: RoutedInteraction) {
   // Check if username was specified from slash commands or from legacy command
   const username = routed.interaction.options.get('username')?.value as string
 
   // Get user from lockee data (Stats, User and Locks)
   const keyholderData = await routed.bot.Service.ChastiKey.fetchAPIKeyholderData({
-    username: username ? username : undefined,
-    discordid: username ? undefined : routed.author.id
+    discordid: username ? undefined : routed.author.id,
+    username: username ? username : undefined
   })
 
   // If the lookup is upon someone else with no data, return the standard response
@@ -240,33 +248,43 @@ export async function getKeyholderLockees(routed: RouterRouted) {
   }
 
   // Get lockees under a KH
-  const activeLocks = await routed.bot.DB.aggregate<any>('ck-running-locks', [
+  const activeLocks = await routed.bot.DB.aggregate<TrackedKeyholderLockeesStatistics>('ck-running-locks', [
     {
       $match: { lockedBy: keyholderData.data.username }
     },
     {
       $group: {
         _id: '$username',
+        count: {
+          $sum: 1
+        },
         keyholders: {
           $addToSet: '$lockedBy'
         },
         locks: {
           $push: {
-            fixed: { $toBool: '$fixed' },
-            timerHidden: { $toBool: '$timerHidden' },
-            lockFrozenByKeyholder: { $toBool: '$lockFrozenByKeyholder' },
-            lockFrozenByCard: { $toBool: '$lockFrozenByCard' },
-            keyholder: '$lockedBy'
+            fixed: {
+              $toBool: '$fixed'
+            },
+            keyholder: '$lockedBy',
+            lockFrozenByCard: {
+              $toBool: '$lockFrozenByCard'
+            },
+            lockFrozenByKeyholder: {
+              $toBool: '$lockFrozenByKeyholder'
+            },
+            timerHidden: {
+              $toBool: '$timerHidden'
+            }
           }
-        },
-        count: { $sum: 1 }
+        }
       }
     },
     { $sort: { count: -1 } }
   ])
 
   // Set cached timestamp for running locks
-  const cachedTimestampFromFetch = await routed.bot.DB.get<{ name: string; lastFinishedAt: string }>('scheduled-jobs', { name: 'ChastiKeyAPIRunningLocks' })
+  const cachedTimestampFromFetch = await routed.bot.DB.get('scheduled-jobs', { name: 'ChastiKeyAPIRunningLocks' })
   const cachedTimestamp = Number(cachedTimestampFromFetch.lastFinishedAt)
 
   await routed.reply({ embeds: [keyholderLockees(activeLocks, keyholderData.data.username, routed.routerStats, cachedTimestamp)] })

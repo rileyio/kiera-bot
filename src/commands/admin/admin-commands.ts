@@ -1,56 +1,70 @@
-import { RouterRouted, ExportRoutes } from '@/router'
-import { TrackedServer } from '@/objects/server'
+import { ExportRoutes, RouterRouted } from '@/router'
+
+import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes(
   {
+    category: 'Admin',
+    controller: listCommandCategories,
+    description: 'Help.Admin.CommandCategories.Description',
+    example: '{{prefix}}admin commands',
+    name: 'admin-commands-slash',
+    permissions: {
+      serverAdminOnly: true
+    },
+    slash: new SlashCommandBuilder().setName('admin').setDescription('Server Administrator Commands to adjust functionality of Kiera'),
     type: 'message',
+    validate: '/admin:string/commands:string'
+  },
+  {
     category: 'Admin',
     controller: listCommandCategories,
     description: 'Help.Admin.CommandCategories.Description',
     example: '{{prefix}}admin commands',
     name: 'admin-command-categories',
-    validate: '/admin:string/commands:string',
     permissions: {
       serverAdminOnly: true
-    }
+    },
+    type: 'message',
+    validate: '/admin:string/commands:string'
   },
   {
-    type: 'message',
     category: 'Admin',
     controller: listCategoryCommands,
     description: 'Help.Admin.CategoryCommands.Description',
     example: '{{prefix}}admin category Fun',
     name: 'admin-category-commands',
-    validate: '/admin:string/commands:string/category:string/category=string',
     permissions: {
       serverAdminOnly: true
-    }
+    },
+    type: 'message',
+    validate: '/admin:string/commands:string/category:string/category=string'
   },
   {
-    type: 'message',
     category: 'Admin',
     controller: commandRestrict,
     description: 'Help.Admin.CommandRestrict',
     example: '{{prefix}}admin restrict command 8ball',
     name: 'admin-command-restrict',
-    validate: '/admin:string/commands:string/category:string/category=string',
     permissions: {
       serverAdminOnly: true
-    }
+    },
+    type: 'message',
+    validate: '/admin:string/commands:string/category:string/category=string'
   },
   {
-    type: 'message',
     category: 'Admin',
     controller: setPrefix,
     description: 'Help.Admin.SetPrefix.Description',
     example: '{{prefix}}admin prefix use #',
     name: 'admin-prefix-use',
-    validate: '/admin:string/prefix:string/use:string/newPrefix=string',
-    validateAlias: ['/admin:string/prefix:string/newPrefix=string'],
     permissions: {
       serverAdminOnly: true,
       serverOnly: true
-    }
+    },
+    type: 'message',
+    validate: '/admin:string/prefix:string/use:string/newPrefix=string',
+    validateAlias: ['/admin:string/prefix:string/newPrefix=string']
   }
 )
 
@@ -61,10 +75,10 @@ export const Routes = ExportRoutes(
  * @returns
  */
 export async function listCommandCategories(routed: RouterRouted) {
-  var categories = {}
-  var responseString = ``
-  var longestName = 0
-  var largestNumber = 0
+  const categories = {}
+  let responseString: string
+  let longestName = 0
+  let largestNumber = 0
 
   routed.bot.Router.routes.forEach((route) => {
     // Track category and how many times its seen across all commands
@@ -75,12 +89,12 @@ export async function listCommandCategories(routed: RouterRouted) {
     if (largestNumber < String(route.category || 0).length) largestNumber = String(route.category || 0).length
   })
 
-  var categoryNames = Object.keys(categories)
+  const categoryNames = Object.keys(categories)
 
   // Sort A > Z
   categoryNames.sort((a, b) => {
-    var x = a.toLowerCase()
-    var y = b.toLowerCase()
+    const x = a.toLowerCase()
+    const y = b.toLowerCase()
     if (x < y) {
       return -1
     }
@@ -108,19 +122,19 @@ export async function listCommandCategories(routed: RouterRouted) {
  * @returns
  */
 export async function listCategoryCommands(routed: RouterRouted) {
-  var commands = []
-  var responseString = ``
-  var longestName = 0
-  var largestNumber = 0
+  const commands = []
+  let responseString: string
+  let longestName = 0
+  let largestNumber = 0
 
   // Get commands under this category
   routed.bot.Router.routes.forEach((route) => {
     if (route.category.toLowerCase() === routed.v.o.category.toLowerCase()) {
       // Track command name, example, and if it's restricted
       commands.push({
+        example: route.example,
         name: route.name,
-        restricted: route.permissions.restrictedTo.length > 0 || route.permissions.serverAdminOnly || !route.permissions.defaultEnabled,
-        example: route.example
+        restricted: route.permissions.restrictedTo.length > 0 || route.permissions.serverAdminOnly || !route.permissions.defaultEnabled
       })
       // Track which command name is the longest
       if (longestName < route.name.length) longestName = route.name.length
@@ -130,8 +144,8 @@ export async function listCategoryCommands(routed: RouterRouted) {
 
   // Sort A > Z
   commands.sort((a, b) => {
-    var x = a.name.toLowerCase()
-    var y = b.name.toLowerCase()
+    const x = a.name.toLowerCase()
+    const y = b.name.toLowerCase()
     if (x < y) {
       return -1
     }
@@ -159,7 +173,7 @@ export async function commandRestrict(routed: RouterRouted) {
 
 export async function setPrefix(routed: RouterRouted) {
   try {
-    const updated = await routed.bot.DB.update<TrackedServer>('servers', { id: routed.guild.id }, { prefix: routed.v.o.newPrefix })
+    const updated = await routed.bot.DB.update('servers', { id: routed.guild.id }, { prefix: routed.v.o.newPrefix })
     if (updated) await routed.message.reply(routed.$render('Admin.PrefixUpdated', { newPrefix: routed.v.o.newPrefix }))
     else routed.message.reply(routed.$render('Admin.PrefixNotUpdated'))
   } catch (error) {

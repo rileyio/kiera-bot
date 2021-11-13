@@ -1,10 +1,10 @@
+import * as Handlebars from 'handlebars'
 // import got from 'got'
 // import * as FormData from 'form-data'
 import * as YAML from 'yaml'
+import * as dotProp from 'dot-prop'
 import * as fs from 'fs'
 import * as glob from 'fast-glob'
-import * as dotProp from 'dot-prop'
-import * as Handlebars from 'handlebars'
 
 // TODO: Remove following later - using for Local & rendering setup
 import { sb } from '@/utils'
@@ -190,8 +190,8 @@ export default class Localization {
    * @memberof Localization
    */
   public $locales() {
-    var longestLocaleCode = 5
-    var longestLocaleName = 0
+    const longestLocaleCode = 5
+    let longestLocaleName = 0
 
     // Find longest name
     Object.keys(this.loaded).forEach((l) => {

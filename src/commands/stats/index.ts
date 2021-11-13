@@ -1,11 +1,12 @@
-import * as Middleware from '@/middleware'
 import * as About from '@/commands/stats/about'
+import * as Middleware from '@/middleware'
 import * as StatsServer from '@/commands/stats/server'
-import { SlashCommandBuilder } from '@discordjs/builders'
+
 import { ExportRoutes, RoutedInteraction } from '@/router'
 
+import { SlashCommandBuilder } from '@discordjs/builders'
+
 export const Routes = ExportRoutes({
-  type: 'interaction',
   category: 'Stats',
   controller: stats,
   middleware: [Middleware.isCKVerified],
@@ -16,11 +17,11 @@ export const Routes = ExportRoutes({
   },
   slash: new SlashCommandBuilder()
     .setName('stats')
-    .setDescription('Server/Channel/User Stats')
-    // .addSubcommand((subcommand) => subcommand.setName('server').setDescription('Server Stats'))
+    .setDescription('Server/Channel/User Stats') // .addSubcommand((subcommand) => subcommand.setName('server').setDescription('Server Stats'))
     .addStringOption((option) =>
       option.setName('type').setDescription('Server Stats').setRequired(true).addChoice('About', 'about').addChoice('Channel', 'channel').addChoice('User', 'user')
-    )
+    ),
+  type: 'interaction'
 })
 
 function stats(routed: RoutedInteraction) {

@@ -1,44 +1,37 @@
 import * as Utils from '@/utils'
-import { RouterRouted, ExportRoutes } from '@/router'
+
+import { ExportRoutes, RouterRouted } from '@/router'
+
 import { TrackedServerSetting } from '@/objects/server-setting'
 
-export const Routes = ExportRoutes(
-  // {
-  //   type: 'message',
-  //   category: 'Info',
-  //   controller: commandHelp,
-  //   example: '{{prefix}}help poll',
-  //   name: 'help-command',
-  //   validate: '/help:string/command=string',
-  //   permissions: { serverOnly: false }
-  // },
-  {
-    type: 'message',
-    category: 'Info',
-    controller: genericFallback,
-    description: 'Help.Help.General.Description',
-    example: '{{prefix}}help',
-    name: 'help',
-    validate: '/help:string',
-    permissions: { serverOnly: false }
-  }
-)
+export const Routes = ExportRoutes({
+  category: 'Info',
+  controller: genericFallback,
+  description: 'Help.Help.General.Description',
+  example: '{{prefix}}help',
+  name: 'help',
+  permissions: {
+    serverOnly: false
+  },
+  type: 'message',
+  validate: '/help:string'
+})
 
 export async function genericFallback(routed: RouterRouted) {
   // Check ChastiKey enabled state in db
-  var ckEnabledState =
+  const ckEnabledState =
     routed.message.channel.type === 'DM'
-      ? { value: false, state: true }
+      ? { state: true, value: false }
       : new TrackedServerSetting(
-          await routed.bot.DB.get<TrackedServerSetting>('server-settings', {
-            serverID: routed.message.guild.id,
+          await routed.bot.DB.get('server-settings', {
             key: 'server.chastikey.enabled',
+            serverID: routed.message.guild.id,
             state: true
           })
         )
 
   // Create HelpBlock from all indivisual command strings
-  var helpBlock = Utils.en.help.main + '\n'
+  let helpBlock = Utils.en.help.main + '\n'
   helpBlock += Utils.en.help.mainRegister + '\n'
   helpBlock += Utils.en.help.main8Ball + '\n'
   helpBlock += Utils.en.help.mainAdmin + '\n'
@@ -53,13 +46,13 @@ export async function genericFallback(routed: RouterRouted) {
   await routed.message.reply({
     embeds: [
       {
-        title: `**Commands** *(Note: Some may not be server enabled)*`,
-        description: routed.$sb(helpBlock),
         color: 9125611,
+        description: routed.$sb(helpBlock),
         footer: {
           iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
           text: `Generated from the current version ${routed.bot.version}`
-        }
+        },
+        title: `**Commands** *(Note: Some may not be server enabled)*`
       }
     ]
   })
@@ -68,13 +61,13 @@ export async function genericFallback(routed: RouterRouted) {
 
 export async function commandHelp(routed: RouterRouted) {
   // Check ChastiKey enabled state in db
-  var ckEnabledState =
+  const ckEnabledState =
     routed.message.channel.type === 'DM'
-      ? { value: false, state: true }
+      ? { state: true, value: false }
       : new TrackedServerSetting(
-          await routed.bot.DB.get<TrackedServerSetting>('server-settings', {
-            serverID: routed.message.guild.id,
+          await routed.bot.DB.get('server-settings', {
             key: 'server.chastikey.enabled',
+            serverID: routed.message.guild.id,
             state: true
           })
         )
@@ -87,13 +80,13 @@ export async function commandHelp(routed: RouterRouted) {
     await routed.message.reply({
       embeds: [
         {
-          title: routed.$sb(`**\`{{prefix}}${routed.v.o.command}\` Command Usage**`),
-          description: routed.$sb(Utils.en.help[routed.v.o.command]),
           color: 9125611,
+          description: routed.$sb(Utils.en.help[routed.v.o.command]),
           footer: {
             iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
             text: `Generated from the current version ${routed.bot.version}`
-          }
+          },
+          title: routed.$sb(`**\`{{prefix}}${routed.v.o.command}\` Command Usage**`)
         }
       ]
     })

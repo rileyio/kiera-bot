@@ -1,6 +1,7 @@
 import * as Random from 'random'
-import { TrackedBotSetting } from '@/objects/setting'
+
 import { Task } from '@/objects/task'
+import { TrackedBotSetting } from '@/objects/setting'
 import { sb } from '@/utils'
 
 export class StatusMessageRotator extends Task {
@@ -16,7 +17,7 @@ export class StatusMessageRotator extends Task {
     try {
       // Get any stored status message(s)
       const storedStatus = new TrackedBotSetting(
-        await this.Bot.DB.get<TrackedBotSetting>('settings', { key: 'bot.status.message' })
+        await this.Bot.DB.get('settings', { key: 'bot.status.message' })
       )
       const hasStoredStatus = !!storedStatus._id && storedStatus.value
 

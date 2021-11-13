@@ -1,16 +1,16 @@
-import { MongoDBLoader } from '@/db'
-import { EventEmitter } from 'events'
-import { performance } from 'perf_hooks'
 import { Bot } from '@/index'
+import { EventEmitter } from 'events'
+import { MongoDBLoader } from '@/db'
+import { performance } from 'perf_hooks'
 
 export class DatabaseMonitor extends EventEmitter {
   private Bot: Bot
   private monitorInterval: NodeJS.Timer
-  public isWaiting: boolean = false
-  public isMonitorRunning: boolean = false
-  public pingCount: number = 0
-  public pingFailedCount: number = 0
-  public pingTotalLatency: number = 0
+  public isWaiting = false
+  public isMonitorRunning = false
+  public pingCount = 0
+  public pingFailedCount = 0
+  public pingTotalLatency = 0
   public lastPoll: number
   public lastPingStart: number
   public lastPingEnd: number
@@ -47,7 +47,7 @@ export class DatabaseMonitor extends EventEmitter {
   }
 
   private async pingDB() {
-    var success = false
+    let success = false
     // Check if a ping is hanging, don't let it pool them
     if (this.isWaiting) return
     this.isWaiting = true

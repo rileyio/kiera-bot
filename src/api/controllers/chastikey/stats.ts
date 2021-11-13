@@ -1,5 +1,7 @@
 import * as Validation from '@/api/validations'
-import { WebRouted, WebRoute } from '@/api/web-router'
+
+import { WebRoute, WebRouted } from '@/api/web-router'
+
 import { validate } from '@/api/utils/validate'
 
 export const Routes: Array<WebRoute> = [
@@ -13,43 +15,48 @@ export const Routes: Array<WebRoute> = [
 ]
 
 export async function locks(routed: WebRouted) {
-  const v = routed.req.body === {} ? { valid: true, o: null } : await validate(Validation.ChastiKey.globalStats(), routed.req.body)
+  const v =
+    routed.req.body === {}
+      ? {
+          o: null,
+          valid: true
+        }
+      : await validate(Validation.ChastiKey.globalStats(), routed.req.body)
   console.log(v, v.o !== null ? typeof v.o.date : null)
   const dateSpecified = v.valid
   // Get latest compiled Stats from DB
   const fromDB = dateSpecified
-    ? await routed.Bot.DB.aggregate<any>('ck-stats-daily', [
+    ? await routed.Bot.DB.aggregate('ck-stats-daily', [
         { $match: { date: v.o.date } },
         {
           $project: {
             _id: 0,
-            interval: 1,
             date: 1,
             dateTime: 1,
+            interval: 1,
             stats: {
-              distributionByInterval: 1,
-              totalLocks: 1,
-              keyholderTrust: 1,
-              botTrust: 1,
-              fixedLocks: 1,
-              frozenLocks: 1,
-              variableLocks: 1,
-              keyholderLocks: 1,
-              selfLocks: 1,
               botLocks: 1,
-              keyholdersCount: 1,
-              keyholderAvgRating: 1,
+              botTrust: 1,
+              distributionByCardsRemaining: 1,
+              distributionByInterval: 1,
               distributionByLockedTimeFixed: 1,
               distributionByLockedTimeFixedTrusted: 1,
               distributionByLockedTimeVariable: 1,
               distributionByLockedTimeVariableTrusted: 1,
-              distributionByCardsRemaining: 1
+              fixedLocks: 1,
+              frozenLocks: 1,
+              keyholderAvgRating: 1,
+              keyholderLocks: 1,
+              keyholderTrust: 1,
+              keyholdersCount: 1,
+              selfLocks: 1,
+              totalLocks: 1,
+              variableLocks: 1
             }
           }
         }
       ])
     : await routed.Bot.DB.getLatest('ck-stats-daily', {})
-  console.log('fromDB', fromDB)
 
   const latest = fromDB[0]
   const khFromDB = await routed.Bot.DB.aggregate('ck-stats-daily', [
@@ -59,10 +66,10 @@ export async function locks(routed: WebRouted) {
     { $replaceRoot: { newRoot: '$keyholders' } },
     {
       $lookup: {
-        from: 'ck-users',
-        localField: 'keyholder',
+        as: 'keyholder',
         foreignField: 'userID',
-        as: 'keyholder'
+        from: 'ck-users',
+        localField: 'keyholder'
       }
     },
     // {
@@ -77,25 +84,35 @@ export async function locks(routed: WebRouted) {
     {
       $project: {
         _id: 0,
+        averageKeyholderRating: 1,
+        fixed: 1,
+        frozen: 1,
+        infoHidden: 1,
         keyholder: '$keyholder.username',
         level: 1,
-        averageKeyholderRating: 1,
-        uniqueLockeeCount: { $cond: { if: { $isArray: '$lockees' }, then: { $size: '$lockees' }, else: 0 } },
         runningLocks: 1,
-        fixed: 1,
-        variable: 1,
-        infoHidden: 1,
-        trust: 1,
-        frozen: 1,
         // lockees: '$lockees.username',
-        secondsLocked: 1
+        secondsLocked: 1,
+        trust: 1,
+        uniqueLockeeCount: {
+          $cond: {
+            else: 0,
+            if: {
+              $isArray: '$lockees'
+            },
+            then: {
+              $size: '$lockees'
+            }
+          }
+        },
+        variable: 1
       }
     },
     { $sort: { uniqueLockeeCount: -1 } }
   ])
 
   // Get date & times available for historical
-  const historicalDates = await routed.Bot.DB.aggregate('ck-stats-daily', [
+  const historicalDates = await routed.Bot.DB.aggregate<{ date: string }>('ck-stats-daily', [
     {
       $addFields: {
         date: '$date'

@@ -1,8 +1,8 @@
-import { ObjectID } from 'bson'
 import { MessageReaction } from 'discord.js'
+import { ObjectId } from 'bson'
 
 export class TrackedMessage {
-  public _id: ObjectID = new ObjectID()
+  public _id: ObjectId = new ObjectId()
   // Msg data
   public id: string
   public authorID: string
@@ -14,11 +14,11 @@ export class TrackedMessage {
   public reactionRoute: string
   public reactionRoutes: Array<string> = [] // Not used at this time
   // Flags
-  public flagAutoDelete: boolean = false
-  public flagTrack: boolean = false
+  public flagAutoDelete = false
+  public flagTrack = false
   // Storage Settings
   public storageKeepInChatFor: number
-  public storageKeepInMemFor: number = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
+  public storageKeepInMemFor = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
 
   constructor(init: Partial<TrackedMessage>) {
     Object.assign(this, init)
@@ -36,7 +36,7 @@ export class TrackedMessage {
   }
 
   public parseReactions() {
-    this.reactions = this.reactions.map(r => {
+    this.reactions = this.reactions.map((r) => {
       return (r = new TrackedMessageReaction(r))
     })
   }
@@ -51,7 +51,7 @@ export class TrackedMessageReaction {
     // When incoming is just a raw Discord.MessageReaction
     if (Object(init).hasOwnProperty('message')) {
       const r = <MessageReaction>init
-      this.users = [...r.users.cache.values()].map(u => u.id)
+      this.users = [...r.users.cache.values()].map((u) => u.id)
       this.count = r.count
       this.emoji = { id: r.emoji.id, name: r.emoji.name }
     } else {

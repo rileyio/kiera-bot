@@ -1,26 +1,28 @@
-import * as errors from 'restify-errors'
 import * as Middleware from '@/api/middleware'
 import * as Validation from '@/api/validations'
-import { WebRouted, WebRoute } from '@/api/web-router'
+import * as errors from 'restify-errors'
+
+import { RunningLocksLock, UserData } from 'chastikey.js/app/objects'
+import { WebRoute, WebRouted } from '@/api/web-router'
+
 import { validate } from '@/api/utils/validate'
-import { UserData, RunningLocksLock } from 'chastikey.js/app/objects'
 
 export const Routes: Array<WebRoute> = [
   // * Kiera+CK Keyholder * //
   {
     controller: khData,
     method: 'post',
+    middleware: [Middleware.validateSession],
     name: 'ck-3rd-kh-view',
-    path: '/api/ck/keyholder',
-    middleware: [Middleware.validateSession]
+    path: '/api/ck/keyholder'
   },
   // * Kiera+CK Lockee * //
   {
     controller: lockeeData,
     method: 'post',
+    middleware: [Middleware.validateSession],
     name: 'ck-3rd-lockee-view',
-    path: '/api/ck/lockee',
-    middleware: [Middleware.validateSession]
+    path: '/api/ck/lockee'
   },
   // * Kiera+CK Search * //
   {
@@ -66,10 +68,10 @@ export async function khData(routed: WebRouted) {
   }
 
   return routed.res.send({
-    success: true,
     keyholder: keyholderData.data,
     locks: keyholderData.locks,
-    runningLocks: cachedRunningLocks
+    runningLocks: cachedRunningLocks,
+    success: true
   })
 }
 
@@ -85,10 +87,8 @@ export async function lockeeData(routed: WebRouted) {
   const hasUsernameInReq = false
 
   // Find the user in ck-users first to help determine query for Kiera's DB (Find based off Username if requested)
-  // var ckUser = new UserData(await routed.Bot.DB.get<UserData>('ck-users', { username: /Emma/i }))
-  var ckUser = new UserData(
-    await routed.Bot.DB.get<UserData>('ck-users', { discordID: routed.session.userID })
-  )
+  // var ckUser = new UserData(await routed.Bot.DB.get('ck-users', { username: /Emma/i }))
+  const ckUser = new UserData(await routed.Bot.DB.get('ck-users', { discordID: routed.session.userID }))
 
   // If the lookup is upon someone else with no data, return the standard response
   if (!ckUser.userID) {
@@ -113,10 +113,10 @@ export async function lockeeData(routed: WebRouted) {
   }
 
   return routed.res.send({
-    success: true,
+    allLocks: lockeeData.locks,
     lockee: lockeeData.data,
     runningLocks: lockeeData.getLocked,
-    allLocks: lockeeData.locks
+    success: true
   })
 }
 
@@ -130,10 +130,14 @@ export async function search(routed: WebRouted) {
   const v = await validate(Validation.ChastiKey.search(), routed.req.body)
 
   if (v.valid) {
-    const users = await routed.Bot.DB.getMultiple('ck-users', { username: new RegExp(`${v.o.query}`, 'i') })
+    const users = await routed.Bot.DB.getMultiple('ck-users', { username: String(new RegExp(`${v.o.query}`, 'i')) })
     return routed.res.send(
-      users.map((u: any) => {
-        return { type: 'User', name: u.username, isVerified: u.discordID ? true : false }
+      users.map((u) => {
+        return {
+          isVerified: u.discordID ? true : false,
+          name: u.username,
+          type: 'User'
+        }
       }) || []
     )
   }
@@ -153,7 +157,7 @@ export async function user(routed: WebRouted) {
 
   if (v.valid) {
     // Get the user from the ChastiKey user cache to keep from spamming Kevin's servers
-    const ckUser = await routed.Bot.DB.get<UserData>('ck-users', { username: new RegExp(`${v.o.username}`, 'i') })
+    const ckUser = await routed.Bot.DB.get('ck-users', { username: String(new RegExp(`${v.o.username}`, 'i')) })
 
     // User's discord avatar (again, only if verified)
     const discordUser = ckUser.discordID ? await routed.Bot.client.users.fetch(ckUser.discordID) : null
@@ -166,7 +170,11 @@ export async function user(routed: WebRouted) {
     // If the user has locks in the cache, get those to save on expensive calls to ChastiKey's API
     const lockeeData =
       ckUser.cumulativeSecondsLocked > 0
-        ? await routed.Bot.Service.ChastiKey.fetchAPILockeeData({ discordid: discordUser ? discordUser.id : undefined, username: ckUser.username, showDeleted: true })
+        ? await routed.Bot.Service.ChastiKey.fetchAPILockeeData({
+            discordid: discordUser ? discordUser.id : undefined,
+            showDeleted: true,
+            username: ckUser.username
+          })
         : null
     const lockeeDataLocks = lockeeData ? (lockeeData.response.status === 200 ? lockeeData.getLocked : []) : []
 
@@ -177,11 +185,19 @@ export async function user(routed: WebRouted) {
     const asKeyholderSharedLocks = keyholderData ? (keyholderData.response.status === 200 ? keyholderData.locks.filter((l) => l.sharedLockID !== '<hidden>') : []) : []
 
     return routed.res.send({
-      success: true,
-      user: ckUser,
-      sharedLocks: asKeyholderSharedLocks,
+      discord: discordUser
+        ? {
+            avatar: discordUser.avatar,
+            id: discordUser.id
+          }
+        : {
+            avatar: null,
+            id: null
+          },
       runningLocks: lockeeDataLocks,
-      discord: discordUser ? { id: discordUser.id, avatar: discordUser.avatar } : { id: null, avatar: null }
+      sharedLocks: asKeyholderSharedLocks,
+      success: true,
+      user: ckUser
     })
   }
 

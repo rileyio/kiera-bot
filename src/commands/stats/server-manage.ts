@@ -1,63 +1,71 @@
 import * as Utils from '@/utils'
-import { RouterRouted, ExportRoutes } from '@/router'
-import { StatisticsSetting, StatisticsSettingType, ServerStatisticType } from '@/objects/statistics'
-import { CollectorFilter, Message, TextChannel } from 'discord.js'
+
+import { ExportRoutes, RouterRouted } from '@/router'
+import { Message, TextChannel } from 'discord.js'
+import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 
 export const Routes = ExportRoutes(
   {
-    type: 'message',
     category: 'Stats',
     controller: disableServerStats,
     description: 'Help.Stats.DisableServerStats.Description',
     example: '{{prefix}}stats disable server',
     name: 'stats-disable-server',
-    validate: '/stats:string/disable:string/server:string',
     permissions: {
       defaultEnabled: true,
-      serverOnly: true,
+      restricted: false,
       serverAdminOnly: true,
-      restricted: false
-    }
+      serverOnly: true
+    },
+    type: 'message',
+    validate: '/stats:string/disable:string/server:string'
   },
   {
-    type: 'message',
     category: 'Stats',
     controller: enableServerStats,
     description: 'Help.Stats.EnableServerStats.Description',
     example: '{{prefix}}stats enable server',
     name: 'stats-enable-server',
-    validate: '/stats:string/enable:string/server:string',
     permissions: {
       defaultEnabled: true,
-      serverOnly: true,
+      restricted: false,
       serverAdminOnly: true,
-      restricted: false
-    }
+      serverOnly: true
+    },
+    type: 'message',
+    validate: '/stats:string/enable:string/server:string'
   },
   {
-    type: 'message',
     category: 'Stats',
     controller: deleteServerStats,
     description: 'Help.Stats.DeleteServerStats.Description',
     example: '{{prefix}}stats delete server',
     name: 'stats-delete-server',
-    validate: '/stats:string/delete:string/server:string',
     permissions: {
       defaultEnabled: true,
-      serverOnly: true,
+      restricted: false,
       serverAdminOnly: true,
-      restricted: false
-    }
+      serverOnly: true
+    },
+    type: 'message',
+    validate: '/stats:string/delete:string/server:string'
   }
 )
 
 export async function disableServerStats(routed: RouterRouted) {
   // Delete any existing record
-  await routed.bot.DB.remove<StatisticsSetting>(
+  await routed.bot.DB.remove(
     'stats-settings',
     {
-      serverID: routed.message.guild.id,
-      $or: [{ setting: StatisticsSettingType.ServerDisableStats }, { setting: StatisticsSettingType.ServerEnableStats }]
+      $or: [
+        {
+          setting: StatisticsSettingType.ServerDisableStats
+        },
+        {
+          setting: StatisticsSettingType.ServerEnableStats
+        }
+      ],
+      serverID: routed.message.guild.id
     } as any,
     { deleteOne: false }
   )
@@ -69,8 +77,8 @@ export async function disableServerStats(routed: RouterRouted) {
     'stats-settings',
     new StatisticsSetting({
       serverID: routed.message.guild.id,
-      userID: routed.author.id,
-      setting: StatisticsSettingType.ServerDisableStats
+      setting: StatisticsSettingType.ServerDisableStats,
+      userID: routed.author.id
     })
   )
 
@@ -80,11 +88,18 @@ export async function disableServerStats(routed: RouterRouted) {
 
 export async function enableServerStats(routed: RouterRouted) {
   // Delete any existing record
-  await routed.bot.DB.remove<StatisticsSetting>(
+  await routed.bot.DB.remove(
     'stats-settings',
     {
-      serverID: routed.message.guild.id,
-      $or: [{ setting: StatisticsSettingType.ServerDisableStats }, { setting: StatisticsSettingType.ServerEnableStats }]
+      $or: [
+        {
+          setting: StatisticsSettingType.ServerDisableStats
+        },
+        {
+          setting: StatisticsSettingType.ServerEnableStats
+        }
+      ],
+      serverID: routed.message.guild.id
     } as any,
     { deleteOne: false }
   )
@@ -93,10 +108,10 @@ export async function enableServerStats(routed: RouterRouted) {
   routed.bot.Statistics.whitelistServer(routed.message.guild.id)
 
   // Add new enabled record
-  await routed.bot.DB.add<StatisticsSetting>('stats-settings', {
+  await routed.bot.DB.add('stats-settings', {
     serverID: routed.message.guild.id,
-    userID: routed.message.author.id,
-    setting: StatisticsSettingType.ServerEnableStats
+    setting: StatisticsSettingType.ServerEnableStats,
+    userID: routed.message.author.id
   })
 
   await routed.message.reply(routed.$render('Stats.Server.Enabled'))
@@ -114,7 +129,7 @@ export async function deleteServerStats(routed: RouterRouted) {
       // Filter to watch for the correct user & text to be sent (+ remove any whitespace)
       const filter = (response: Message) => response.content.toLowerCase().replace(' ', '') === 'yes' && response.author.id === routed.author.id
       // Message collector w/Filter - Wait up to a max of 1 min for exactly 1 reply from the required user
-      const collected = await routed.message.channel.awaitMessages({ filter, max: 1, time: 60000, errors: ['time'] })
+      const collected = await routed.message.channel.awaitMessages({ errors: ['time'], filter, max: 1, time: 60000 })
       // Delete the previous message at this stage
       await Utils.Channel.deleteMessage(routed.message.channel as TextChannel, collected.first().id)
       // Upon valid message collection, begin deletion - notify user

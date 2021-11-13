@@ -8,7 +8,6 @@ import { CommandPermission } from '../objects/permission'
 import { ProcessedPermissions } from './route-permissions'
 import { ServerStatisticType } from '../objects/statistics'
 import { TrackedMessage } from '../objects/message'
-import { TrackedServer } from '@/objects/server'
 import { TrackedUser } from '@/objects/user/'
 import { fallbackHelp } from '@/embedded/fallback-help'
 
@@ -71,7 +70,7 @@ export class CommandRouter {
     }
 
     // Lookup tracked message in db
-    let storedMessage = await this.bot.DB.get<TrackedMessage>('messages', { id: message.id })
+    let storedMessage = await this.bot.DB.get('messages', { id: message.id })
 
     // Stop routing if no message is tracked
     if (!storedMessage) return
@@ -98,7 +97,7 @@ export class CommandRouter {
 
     // Lookup Kiera User in DB
     const kieraUser = new TrackedUser(
-      await this.bot.DB.get<TrackedUser>('users', { id: user.id })
+      await this.bot.DB.get('users', { id: user.id })
     )
 
     // Check if not stored - will be no Discord ID
@@ -180,7 +179,7 @@ export class CommandRouter {
 
     // Lookup Kiera User in DB
     const kieraUser = new TrackedUser(
-      await this.bot.DB.get<TrackedUser>('users', { id: user.id })
+      await this.bot.DB.get('users', { id: user.id })
     )
 
     // Check if not stored - will be no Discord ID
@@ -349,7 +348,7 @@ export class CommandRouter {
       }
     }
 
-    const server = message.channel.type === 'DM' ? { prefix: undefined } : await this.bot.DB.get<TrackedServer>('servers', { id: message.guild.id })
+    const server = message.channel.type === 'DM' ? { prefix: undefined } : await this.bot.DB.get('servers', { id: message.guild.id })
     // Halt here if the guild is unknown
     if (!server) return
 
@@ -390,7 +389,7 @@ export class CommandRouter {
 
       // Lookup Kiera User in DB
       const kieraUser = new TrackedUser(
-        await this.bot.DB.get<TrackedUser>('users', { id: message.author.id })
+        await this.bot.DB.get('users', { id: message.author.id })
       )
 
       // Check if not stored - will be no Discord ID
@@ -638,7 +637,7 @@ export class CommandRouter {
     // Skip if a DM, as no one would have set a permission for a channel for this
     // Get the command permission if its in the DB
     const commandPermission = new CommandPermission(
-      (await routed.bot.DB.get<CommandPermission>('command-permissions', {
+      (await routed.bot.DB.get('command-permissions', {
         channelID: !routed.isDM ? routed.channel.id : 'DM',
         command: routed.route.name,
         serverID: !routed.isDM ? routed.guild.id : 'DM'

@@ -1,40 +1,39 @@
-import * as errors from 'restify-errors'
 import * as Middleware from '@/api/middleware'
 import * as Validation from '@/api/validations'
+import * as errors from 'restify-errors'
+
+import { WebRoute, WebRouted } from '@/api/web-router'
+
+import { ObjectId } from 'bson'
 import { validate } from '@/api/utils/validate'
-import { WebRouted, WebRoute } from '@/api/web-router'
-import { ObjectID } from 'bson'
-import { TrackedServerSetting } from '@/objects/server-setting'
 
 export const Routes: Array<WebRoute> = [
   // * Server Settings * //
   {
     controller: settings,
     method: 'post',
+    middleware: [Middleware.isAuthenticatedOwner],
     name: 'server-get-settings',
-    path: '/api/server/settings',
-    middleware: [Middleware.isAuthenticatedOwner]
+    path: '/api/server/settings'
   },
   {
     controller: updateSettings,
     method: 'post',
+    middleware: [Middleware.isAuthenticatedOwner],
     name: 'server-update-setting',
-    path: '/api/server/setting/update',
-    middleware: [Middleware.isAuthenticatedOwner]
+    path: '/api/server/setting/update'
   }
 ]
 
 export async function settings(routed: WebRouted) {
   const v = await validate(Validation.Server.getSettings(), routed.req.body)
-
   // this.DEBUG_WEBAPI('req params', v.o)
-
   if (v.valid) {
-    var serverSettings = await routed.Bot.DB.getMultiple<TrackedServerSetting>('server-settings', {
-      serverID: v.o.serverID
-    })
-
-    return routed.res.send(serverSettings)
+    return routed.res.send(
+      await routed.Bot.DB.getMultiple('server-settings', {
+        serverID: v.o.serverID
+      })
+    )
   }
 
   // On error
@@ -47,14 +46,14 @@ export async function updateSettings(routed: WebRouted) {
   // console.log('req params', v)
 
   if (v.valid) {
-    var updateCount = await routed.Bot.DB.update<TrackedServerSetting>(
+    const updateCount = await routed.Bot.DB.update(
       'server-settings',
-      v.o._id ? { _id: new ObjectID(v.o._id) } : { serverID: v.o.serverID },
+      v.o._id ? { _id: new ObjectId(v.o._id) } : { serverID: v.o.serverID },
       {
         $set: {
           key: 'server.channel.notification.block',
-          type: 'string',
           state: v.o.state,
+          type: 'string',
           value: v.o.value
         }
       },

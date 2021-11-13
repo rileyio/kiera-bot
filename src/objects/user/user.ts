@@ -60,11 +60,11 @@ export class TrackedMutedUser {
   public mutedById: string
   public mutedByUsername: string
   public mutedByDiscriminator: string
-  public removeAt: number = 0
+  public removeAt = 0
   public removedAt: number
   public removedBy: string
   public roles: Array<{ id: string; name: string }> = []
-  public active: boolean = true
+  public active = true
 
   constructor(init: Partial<TrackedMutedUser>) {
     Object.assign(this, init)

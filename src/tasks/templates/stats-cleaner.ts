@@ -1,6 +1,6 @@
 // import { Task } from '@/objects/task'
 // import { Collections } from '@/db'
-// import { ObjectID } from 'bson'
+// import { ObjectId } from 'bson'
 // import { ServerStatistic, StatisticsSetting } from '@/objects/statistics'
 
 // export class StatsCleaner extends Task {
@@ -20,7 +20,7 @@
 //     try {
 //       // Look for stats where they are: _id > 30 days & statsSettting = null|0
 //       const distinctServers = await this.Bot.DB.distinct<string>('stats-servers', 'serverID')
-//       const serversWithEnabledStats = await this.Bot.DB.getMultiple<StatisticsSetting>('stats-settings', {})
+//       const serversWithEnabledStats = await this.Bot.DB.getMultiple('stats-settings', {})
 
 //       if (distinctServers) {
 //         toRemoveUniqueStats.servers = [
@@ -71,7 +71,7 @@
 //         //     }
 //         // },
 //         // {
-//         //     $match: { _id: { $lt: ObjectID.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) } }
+//         //     $match: { _id: { $lt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) } }
 //         // }
 //         // ])
 

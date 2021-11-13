@@ -177,7 +177,7 @@ Current Progress (Languages in focus where translations are being used):
 #### Fun
 - `!8ball` - Ask a question, receive an answer  
 - `!flip` - Flip a coin  
-- `!roll` - Dice roller  
+- **`/roll` - Dice roller**  
 
 #### General
 

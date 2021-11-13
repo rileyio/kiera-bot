@@ -1,7 +1,6 @@
-import { RouterRouted, ExportRoutes } from '@/router'
+import { ExportRoutes, RouterRouted } from '@/router'
 
 export const Routes = ExportRoutes({
-  type: 'message',
   category: 'ChastiKey',
   controller: forceStatsReload,
   description: 'Help.Admin.ChastiKeyRefresh.Description',
@@ -14,6 +13,7 @@ export const Routes = ExportRoutes({
       '146439529824256000' // Emma#1366
     ]
   },
+  type: 'message',
   validate: '/admin:string/ck:string/stats:string/refresh:string'
 })
 
@@ -36,7 +36,5 @@ export async function forceStatsReload(routed: RouterRouted) {
   }
 
   // Report its done
-  await routed.message.channel.send(routed.$render('ChastiKey.Admin.RefreshManualCompleted'))
-
-  return true
+  return routed.message.channel.send(routed.$render('ChastiKey.Admin.RefreshManualCompleted'))
 }

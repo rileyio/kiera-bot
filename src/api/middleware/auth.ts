@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken'
-import { WebRouted } from '@/api/web-router'
-import { TrackedUser } from '@/objects/user/'
+
 import { TrackedSession } from '@/objects/session'
+import { WebRouted } from '@/api/web-router'
 
 export async function isAuthenticatedOwner(routed: WebRouted) {
   // User & Token from header
@@ -9,7 +9,7 @@ export async function isAuthenticatedOwner(routed: WebRouted) {
   const token = routed.req.header('webToken')
   const serverID = routed.req.params.serverID
   // Get user from db to verify token
-  const user = await routed.Bot.DB.get<TrackedUser>('users', { id: id, webToken: token, guilds: { $elemMatch: { id: serverID, owner: true } } })
+  const user = await routed.Bot.DB.get('users', { guilds: { $elemMatch: { id: serverID, owner: true } }, id, webToken: token })
   // Invalid
   if (!user) {
     routed.res.send(401, 'Unauthorized')
@@ -19,8 +19,7 @@ export async function isAuthenticatedOwner(routed: WebRouted) {
   // Verify token
   try {
     // Verify token & payload
-    var verify = jwt.verify(token, process.env.BOT_SECRET)
-
+    const verify = jwt.verify(token, process.env.BOT_SECRET)
     console.log('verify:', verify)
     return routed // PASS
   } catch (error) {
@@ -36,7 +35,7 @@ export async function isAuthenticatedOwner(routed: WebRouted) {
 export async function validateSession(routed: WebRouted) {
   const userID = String(routed.req.header('userID'))
   const session = String(routed.req.header('session'))
-  var verifiedSession: { userID: string; session: string }
+  let verifiedSession: { userID: string; session: string }
 
   // If missing, fail
   if (!userID || !session) {
@@ -57,9 +56,9 @@ export async function validateSession(routed: WebRouted) {
   }
 
   // Lookup Session in sessions collection
-  const storedSession = await routed.Bot.DB.get<TrackedSession>('sessions', {
-    userID,
-    session
+  const storedSession = await routed.Bot.DB.get('sessions', {
+    session,
+    userID
   } as Partial<TrackedSession>)
 
   // If session is found but has been terminated

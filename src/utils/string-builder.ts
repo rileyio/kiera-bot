@@ -2,7 +2,7 @@ import * as Random from 'random'
 
 export function sb(baseString: string, data?: any) {
   // Defaults to use if not passed in data
-  var globals = {
+  const globals = {
     prefix: process.env.BOT_MESSAGE_PREFIX,
     'roll-[0-9]{1,3}-[0-9]{1,3}': (str: string) => roll(str)
   }
@@ -10,7 +10,7 @@ export function sb(baseString: string, data?: any) {
   // Merge data with global defaults
   Object.assign(globals, data || {})
 
-  var final = String(baseString || ``)
+  let final = String(baseString || ``)
 
   for (const key in globals) {
     const isFunc = typeof globals[key] === 'function'
@@ -23,9 +23,9 @@ export function sb(baseString: string, data?: any) {
 
 function roll(str: string) {
   const regex = /{{roll-([0-9]{1,3})-([0-9]{1,3})}}/gim
-  var m: RegExpExecArray
-  var v1 = 0
-  var v2 = 100
+  let m: RegExpExecArray
+  let v1 = 0
+  let v2 = 100
 
   while ((m = regex.exec(str)) !== null) {
     // This is necessary to avoid infinite loops with zero-width matches
@@ -42,7 +42,7 @@ function roll(str: string) {
   }
 
   // Perform randomize - with some added protections for out of bounds numbers
-  var value = Random.int(v1 <= v2 ? v1 : 0, v2 >= v1 ? v2 : v1)
+  const value = Random.int(v1 <= v2 ? v1 : 0, v2 >= v1 ? v2 : v1)
 
   return value
 }

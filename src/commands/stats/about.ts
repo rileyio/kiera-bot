@@ -1,23 +1,26 @@
-import { ExportRoutes, RoutedInteraction } from '@/router'
-import { StatisticsSetting, StatisticsSettingType, ServerStatistic } from '@/objects/statistics'
+import { RoutedInteraction } from '@/router'
+import { StatisticsSettingType } from '@/objects/statistics'
 
 export async function aboutStats(routed: RoutedInteraction) {
   // Get states
-  const serverStatsEnabled = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', {
+  const serverStatsEnabled = await routed.bot.DB.verify('stats-settings', {
     serverID: routed.guild.id,
     setting: StatisticsSettingType.ServerEnableStats
   })
 
-  const statsDisabledUser = await routed.bot.DB.verify<StatisticsSetting>('stats-settings', { userID: routed.author.id, setting: StatisticsSettingType.UserDisableStats })
+  const statsDisabledUser = await routed.bot.DB.verify('stats-settings', {
+    setting: StatisticsSettingType.UserDisableStats,
+    userID: routed.author.id
+  })
 
   // Get user total stats count
-  const statsCount = await routed.bot.DB.count<ServerStatistic>('stats-servers', { userID: routed.author.id })
+  const statsCount = await routed.bot.DB.count('stats-servers', { userID: routed.author.id })
 
   return await routed.reply(
     routed.$render('Stats.Info.About', {
+      count: statsCount,
       serverState: serverStatsEnabled ? 'Enabled' : 'Disabled',
-      userState: statsDisabledUser ? 'Disabled' : 'Enabled',
-      count: statsCount
+      userState: statsDisabledUser ? 'Disabled' : 'Enabled'
     }),
     true
   )

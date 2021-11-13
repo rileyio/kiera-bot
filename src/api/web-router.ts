@@ -1,6 +1,8 @@
 import * as restify from 'restify'
+
+import { Next, Request, Response } from 'restify'
+
 import { Bot } from '@/index'
-import { Request, Response, Next } from 'restify'
 import { TrackedSession } from '@/objects/session'
 
 export interface WebRoute {
@@ -14,7 +16,7 @@ export interface WebRoute {
 export class WebRouted {
   public Bot: Bot
   public route: WebRoute
-  public controller: (routed: WebRouted) => Promise<Boolean>
+  public controller: (routed: WebRouted) => Promise<boolean>
   // Restify args
   public req: Request
   public res: Response
@@ -43,10 +45,10 @@ export class WebRouter {
           middlewareHandler(
             new WebRouted({
               Bot: this.Bot,
-              route: route,
+              next: next,
               req: req,
               res: res,
-              next: next
+              route: route
             })
           )
         )
@@ -56,10 +58,10 @@ export class WebRouter {
           middlewareHandler(
             new WebRouted({
               Bot: this.Bot,
-              route: route,
+              next: next,
               req: req,
               res: res,
-              next: next
+              route: route
             })
           )
         )
@@ -69,10 +71,10 @@ export class WebRouter {
           middlewareHandler(
             new WebRouted({
               Bot: this.Bot,
-              route: route,
+              next: next,
               req: req,
               res: res,
-              next: next
+              route: route
             })
           )
         )
@@ -82,10 +84,10 @@ export class WebRouter {
           middlewareHandler(
             new WebRouted({
               Bot: this.Bot,
-              route: route,
+              next: next,
               req: req,
               res: res,
-              next: next
+              route: route
             })
           )
         )
@@ -95,10 +97,10 @@ export class WebRouter {
           middlewareHandler(
             new WebRouted({
               Bot: this.Bot,
-              route: route,
+              next: next,
               req: req,
               res: res,
-              next: next
+              route: route
             })
           )
         )
@@ -110,7 +112,7 @@ export class WebRouter {
 export async function middlewareHandler(routed: WebRouted) {
   // Process middleware
   const mwareCount = Array.isArray(routed.route.middleware) ? routed.route.middleware.length : 0
-  var mwareProcessed = 0
+  let mwareProcessed = 0
 
   for (const middleware of routed.route.middleware || []) {
     const fromMiddleware = await middleware(routed)
