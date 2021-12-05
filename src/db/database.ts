@@ -72,17 +72,25 @@ export class MongoDB {
   public async connect() {
     try {
       // Test if connection already exists, no need to open a new one if so
-      if (this.connection.client) {
-        // Check if connection is active
-        if (!this.connection.client.isConnected()) await this.newConnection()
-        // Else reuse current connection
-        // console.log('reuse db connection on', targetCollection)
-      } else {
+      if (!this.connection) {
         // console.log('new db connection on', targetCollection)
         this.Bot.Log.Database.log('new db connection required!')
         await this.newConnection()
+      } else {
+        // Check if connection client is set
+        if (this.connection.client) {
+          // Check if connection is active
+          if (!this.connection.client.isConnected()) await this.newConnection()
+          // Else reuse current connection
+          // console.log('reuse db connection on', targetCollection)
+        } else {
+          // console.log('new db connection on', targetCollection)
+          this.Bot.Log.Database.log('new db connection required!')
+          await this.newConnection()
+        }
       }
     } catch (error) {
+      console.log('❌ db connection rejection error', error)
       this.connection.error = error
     }
 
@@ -95,10 +103,11 @@ export class MongoDB {
         this.dbUrl,
         Object.assign(this.dbOpts, {
           readPreference: process.env.DB_READ_PREFERENCE ? process.env.DB_READ_PREFERENCE : undefined,
-          useNewUrlParser: process.env.DB_USE_NEWURLPARSER,
-          useUnifiedTopology: process.env.DB_USE_UNIFIEDTOPOLOGY
+          useNewUrlParser: String(process.env.DB_USE_NEWURLPARSER || '').toLowerCase() === 'true',
+          useUnifiedTopology: String(process.env.DB_USE_UNIFIEDTOPOLOGY || '').toLowerCase()
         })
       )
+
       client.connect((err) => {
         if (!err) {
           this.connection = {
