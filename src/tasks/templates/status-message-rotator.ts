@@ -16,9 +16,7 @@ export class StatusMessageRotator extends Task {
     // Perform the scheduled task/job
     try {
       // Get any stored status message(s)
-      const storedStatus = new TrackedBotSetting(
-        await this.Bot.DB.get('settings', { key: 'bot.status.message' })
-      )
+      const storedStatus = new TrackedBotSetting(await this.Bot.DB.get('settings', { key: 'bot.status.message' }))
       const hasStoredStatus = !!storedStatus._id && storedStatus.value
 
       // Available messages
@@ -29,9 +27,16 @@ export class StatusMessageRotator extends Task {
       const random = Random.int(0, options.length - 1)
       const outcome = options[random]
 
+      // console.log('sb', sb(outcome, { size: this.Bot.client.guilds.cache.size }) || hasStoredStatus ? storedStatus.value : '')
+      // console.log('outcome', outcome)
+      // console.log('this.Bot.client.guilds.cache.size', this.Bot.client.guilds.cache.size)
+      // console.log('hasStoredStatus', hasStoredStatus)
+      // console.log('storedStatus.value', storedStatus.value)
+      // console.log('>>>>', hasStoredStatus ? storedStatus.value : '' || sb(outcome, { size: this.Bot.client.guilds.cache.size }))
+
       // Set the status
       this.Bot.client.user.setPresence({
-        activities: [{ name: sb(outcome, { size: this.Bot.client.guilds.cache.size }) || hasStoredStatus ? storedStatus.value : '' }],
+        activities: [{ name: hasStoredStatus ? storedStatus.value : '' || sb(outcome, { size: this.Bot.client.guilds.cache.size }) }],
         status: 'online'
       })
 
