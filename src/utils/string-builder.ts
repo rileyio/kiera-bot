@@ -1,6 +1,6 @@
 import * as Random from 'random'
 
-export function sb(baseString: string, data?: any) {
+export function sb<T>(baseString: string, data?: Partial<T>) {
   // Defaults to use if not passed in data
   const globals = {
     prefix: process.env.BOT_MESSAGE_PREFIX,
@@ -14,7 +14,6 @@ export function sb(baseString: string, data?: any) {
 
   for (const key in globals) {
     const isFunc = typeof globals[key] === 'function'
-    // console.log('String Builder -> Key Matched:', key)
     final = final.replace(new RegExp(`{{${key}}}`, 'img'), isFunc ? (matched: string) => globals[key](matched) : globals[key])
   }
 
