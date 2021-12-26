@@ -1,11 +1,8 @@
-import * as Discord from 'discord.js'
 import * as Middleware from '@/middleware'
-import * as Utils from '@/utils'
 
 import { ExportRoutes, RouterRouted } from '@/router'
 
 import { TrackedSession } from '@/objects/session'
-import { TrackedUser } from '@/objects/user/'
 
 export const Routes = ExportRoutes(
   {
