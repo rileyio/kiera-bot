@@ -1,48 +1,23 @@
-import * as Middleware from '@/middleware'
 import * as Random from 'random'
 import * as XRegExp from 'xregexp'
 
-import { ExportRoutes, RouterRouted } from '@/router'
-import { decisionFromSaved, decisionRealtime } from '@/embedded/decision-embed'
-
 import { ObjectId } from 'bson'
+import { RoutedInteraction } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
+import { decisionFromSaved } from '@/embedded/decision-embed'
 
-export const Routes = ExportRoutes(
-  {
-    category: 'Fun',
-    controller: runSavedDecision,
-    description: 'Help.Decision.Roll.Description',
-    example: '{{prefix}}decision roll "id"',
-    middleware: [Middleware.isUserRegistered],
-    name: 'decision-run-saved',
-    type: 'message',
-    validate: '/decision:string/roll:string/id=string',
-    validateAlias: ['/decision:string/r:string/id=string']
-  },
-  {
-    category: 'Fun',
-    controller: runRealtimeDecision,
-    description: 'Help.Decision.RollRealtime.Description',
-    example: '{{prefix}}decision "Question here" "Option 1" "Option 2" "etc.."',
-    middleware: [Middleware.isUserRegistered],
-    name: 'decision-realtime',
-    type: 'message',
-    validate: '/decision:string/question=string/args...string'
-  }
-)
-
-export async function runSavedDecision(routed: RouterRouted) {
+export async function runSavedDecision(routed: RoutedInteraction) {
+  const idOrNickname = routed.interaction.options.get('id').value as string
   const shortRegex = XRegExp('^(?<username>[a-z0-9]*):(?<nickname>[a-z0-9-]*)$', 'i')
-  const isShort = shortRegex.test(routed.v.o.id)
-  const shortMatch = isShort ? XRegExp.exec(routed.v.o.id, shortRegex) : null
+  const isShort = shortRegex.test(idOrNickname)
+  const shortMatch = isShort ? XRegExp.exec(idOrNickname, shortRegex) : null
   const userNickname = isShort ? shortMatch['username'] : null
   const decisionNickname = isShort ? shortMatch['nickname'] : null
   const userByNickname = new TrackedUser(isShort ? await routed.bot.DB.get('users', { 'Decision.nickname': String(new RegExp(`^${userNickname}$`, 'i')) }) : {})
   const decisionFromDB = isShort
     ? await routed.bot.DB.get('decision', { authorID: userByNickname.id, nickname: String(new RegExp(`^${decisionNickname}$`, 'i')) })
-    : await routed.bot.DB.get('decision', { _id: new ObjectId(routed.v.o.id) })
+    : await routed.bot.DB.get('decision', { _id: new ObjectId(idOrNickname) })
 
   if (decisionFromDB) {
     const decision = new TrackedDecision(decisionFromDB)
@@ -54,15 +29,15 @@ export async function runSavedDecision(routed: RouterRouted) {
 
     // Halt if decision rolled on server is not whitelisted
     if (decision.serverWhitelist.length > 0) {
-      if (decision.serverWhitelist.findIndex((s) => s === routed.message.guild.id) === -1) {
-        await routed.message.reply(`This decision roll (\`${decision._id.toString()}\`) cannot be used on this server!`)
+      if (decision.serverWhitelist.findIndex((s) => s === routed.guild.id) === -1) {
+        await routed.reply(`This decision roll (\`${decision._id.toString()}\`) cannot be used on this server!`)
         return true // Stop here
       }
     }
 
     // Halt if decision is disabled
     if (decision.enabled === false) {
-      await routed.message.reply(`Decision not enabled!`)
+      await routed.reply(`Decision not enabled!`)
       return true // Stop here
     }
 
@@ -72,7 +47,7 @@ export async function runSavedDecision(routed: RouterRouted) {
     let authorID: string
 
     try {
-      const authorLookup = await routed.message.guild.members.fetch(decision.authorID)
+      const authorLookup = await routed.guild.members.fetch(decision.authorID)
 
       authorName = `${authorLookup.nickname || authorLookup.user.username}#${authorLookup.user.discriminator}`
       authorAvatar = authorLookup.user.avatar
@@ -118,8 +93,8 @@ export async function runSavedDecision(routed: RouterRouted) {
 
     // If the outcomes pool is empty: Inform and stop there
     if (optionsPool.length === 0) {
-      if (decision.consumeMode === 'Temporarily Consume') await routed.message.reply(`This decision roll has limiting enabled. There are no outcomes available at this time.`)
-      if (decision.consumeMode === 'Consume') await routed.message.reply(`This decision roll has limiting enabled. There are no outcomes available anymore.`)
+      if (decision.consumeMode === 'Temporarily Consume') await routed.reply(`This decision roll has limiting enabled. There are no outcomes available at this time.`)
+      if (decision.consumeMode === 'Consume') await routed.reply(`This decision roll has limiting enabled. There are no outcomes available anymore.`)
       return true
     }
 
@@ -137,25 +112,19 @@ export async function runSavedDecision(routed: RouterRouted) {
     }
 
     const outcomeEmbed = decisionFromSaved(decision, outcome, { avatar: authorAvatar, id: authorID, name: authorName, server: { prefix: routed.prefix } })
-    await routed.message.reply({ embeds: [outcomeEmbed] })
+    await routed.reply({ embeds: [outcomeEmbed] })
 
     // Track in log
     await routed.bot.DB.add('decision-log', {
       callerID: routed.author.id,
-      channelID: routed.message.channel.type === 'DM' ? 'DM' : routed.message.channel.id,
+      channelID: routed.channel.type === 'DM' ? 'DM' : routed.channel.id,
       decisionID: String(decision._id),
       outcomeContent: outcomeEmbed.description,
       outcomeID: String(outcome._id),
-      serverID: routed.message.channel.type === 'DM' ? 'DM' : routed.message.guild.id
+      serverID: routed.channel.type === 'DM' ? 'DM' : routed.guild.id
     })
 
     return true
   }
   return false
-}
-
-export async function runRealtimeDecision(routed: RouterRouted) {
-  const random = Random.int(0, routed.v.o.args.length - 1)
-  await routed.message.reply({ embeds: [decisionRealtime(routed.v.o.question, routed.v.o.args[random])] })
-  return true
 }

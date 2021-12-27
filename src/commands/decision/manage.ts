@@ -6,7 +6,6 @@ import { Message, TextChannel } from 'discord.js'
 import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 
 import { ObjectId } from 'bson'
-import { TrackedDecisionLogEntry } from '@/objects/decision'
 
 export const Routes = ExportRoutes(
   {
