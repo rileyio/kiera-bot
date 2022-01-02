@@ -1,13 +1,10 @@
 import * as Handlebars from 'handlebars'
-// import got from 'got'
-// import * as FormData from 'form-data'
 import * as YAML from 'yaml'
 import * as dotProp from 'dot-prop'
 import * as fs from 'fs'
 import * as glob from 'fast-glob'
 
-// TODO: Remove following later - using for Local & rendering setup
-import { sb } from '@/utils'
+import { Logger } from '@/utils'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
 
@@ -17,6 +14,7 @@ export default class Localization {
       strings: { [key: string]: string }
     }
   } = {}
+  private logger: Logger.Debug
 
   /**
    * Get short codes of locales loaded
@@ -38,7 +36,8 @@ export default class Localization {
     return this.countStrings(this.loaded[DEFAULT_LOCALE].strings)
   }
 
-  constructor() {
+  constructor(logger: Logger.Debug) {
+    this.logger = logger
     // Load Localization Files into Memory for better performance times on responses
     try {
       this.localeLoader()
@@ -66,7 +65,7 @@ export default class Localization {
     // Load each file using the name as the root key
     localizationFiles.forEach((locFile) => {
       // Wrapped in a try to make more safe when loading and errors are present
-      console.log('Loading localization file:', locFile)
+      this.logger.verbose('Loading localization file:', locFile)
       try {
         const loadedFile = this.yamlFileParse(locFile, fs.readFileSync(locFile.toString(), 'utf8'))
         // Test if file returns undefined
@@ -79,7 +78,7 @@ export default class Localization {
           }
         }
       } catch (e) {
-        console.log(`ResponseRenderer.localeLoader() [ERROR] => ${locFile.toString()}, ${e.message}`)
+        this.logger.warn(`ResponseRenderer.localeLoader() [ERROR] => ${locFile.toString()}, ${e.message}`)
       }
     })
   }

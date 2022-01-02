@@ -75,7 +75,7 @@ export class BotMonitor extends EventEmitter {
   private async tryUnhealthyRecovery() {
     // If recovery threshold is passed, just reboot the bot
     if (this.unhealthyRecoveryCount > 5) {
-      console.log('⚠️ Killing service in 3 seconds')
+      this.Bot.Log.Bot.warn('⚠️ Killing service in 3 seconds')
 
       setTimeout(() => {
         process.exit(99)
@@ -87,7 +87,7 @@ export class BotMonitor extends EventEmitter {
     if (this.unhealthyRecovering) return // block dups
     this.unhealthyRecovering = true
 
-    console.log('------ trying an unhealty recovery of services - since most rely on the db')
+    this.Bot.Log.Bot.warn('------ trying an unhealty recovery of services - since most rely on the db')
     // Close the WebAPI if it was listening
     if (this.status.api) this.WebAPI.close()
     // Some will need to be re-initalized
@@ -133,25 +133,25 @@ export class BotMonitor extends EventEmitter {
       Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
       Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
     ])
-    this.Bot.Log.Bot.log('intents set from preset:', intents.toArray())
+    this.Bot.Log.Bot.debug('intents set from preset:', intents.toArray())
 
     // Create new Discord Client
     this.Bot.client = new Discord.Client({ intents: intents.toArray() })
     // this.Bot.client = new Discord.Client()
 
     // Waiting for Discord.js Ready Event to fire...
-    this.Bot.Log.Bot.log('waiting for discord.js ready event...')
+    this.Bot.Log.Bot.debug('waiting for discord.js ready event...')
     return new Promise<boolean>(async (r) => {
       /// Client ready ///
 
       this.Bot.client.on('ready', () => {
-        console.log('discord.js ready!')
+        this.Bot.Log.Bot.debug('discord.js ready!')
         this.Bot.onReady()
         r(true)
       })
 
       this.Bot.client.on('error', () => {
-        console.log('discord.js NOT ready!')
+        this.Bot.Log.Bot.warn('discord.js NOT ready!')
       })
       /// Connect account ///
 

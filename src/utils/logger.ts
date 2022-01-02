@@ -27,7 +27,7 @@ export class Debug {
     this.name = name
     Object.assign(this.options, opts || {})
 
-    const loggerProps = {
+    const fileLoggerProps = {
       format: Winston.format.combine(Winston.format.timestamp(), this.fileFormat),
       level: process.env.BOT_LOGGING || 'debug',
       transports: [
@@ -35,14 +35,14 @@ export class Debug {
           filename: `./logs/${this.name}.log`
         }),
         new Winston.transports.Console({
-          format: Winston.format.combine(this.consoleFormat)
+          format: Winston.format.combine(this.consoleFormat, Winston.format.colorize({ all: true }))
         })
       ]
     }
 
-    // If console.opts is set to false, don't add it
-    if (!this.options.console || !this._toConsole) loggerProps.transports = [new Winston.transports.File({ filename: `./logs/${this.name}.log` })]
-    this.winston = Winston.createLogger(loggerProps)
+    // If console.opts is set to false, overwrite transports to eliminate setup for console logging
+    if (!this.options.console || !this._toConsole) fileLoggerProps.transports = [new Winston.transports.File({ filename: `./logs/${this.name}.log` })]
+    this.winston = Winston.createLogger(fileLoggerProps)
 
     // Keep Winston from an exit if it fails
     this.winston.exitOnError = false
@@ -51,19 +51,23 @@ export class Debug {
     // this._debug.log = console.log.bind(console);
   }
 
-  public log(...args: Array<string | boolean | number | object>) {
-    this.winston.info(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
-  }
-
-  public warn(...args: Array<string | boolean | number | object>) {
-    this.winston.warn(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
+  public debug(...args: Array<string | boolean | number | object>) {
+    this.winston.debug(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
   }
 
   public error(...args: Array<string | boolean | number | object>) {
     this.winston.error(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
   }
 
-  public debug(...args: Array<string | boolean | number | object>) {
-    this.winston.debug(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
+  public log(...args: Array<string | boolean | number | object>) {
+    this.winston.info(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
+  }
+
+  public verbose(...args: Array<string | boolean | number | object>) {
+    this.winston.verbose(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
+  }
+
+  public warn(...args: Array<string | boolean | number | object>) {
+    this.winston.warn('', args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
   }
 }

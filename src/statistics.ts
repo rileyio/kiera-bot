@@ -1,5 +1,6 @@
+import { ServerStatistic, ServerStatisticType, StatisticsSettingType } from '@/objects/statistics'
+
 import { Bot } from '@/index'
-import { ServerStatisticType, ServerStatistic, StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 
 export class Statistics {
   private Bot: Bot
@@ -10,7 +11,7 @@ export class Statistics {
 
     // Load Servers whitelist into memory to save processing time looking up each time
     ;(async () => {
-      console.log('loading stats settings from DB')
+      this.Bot.Log.Bot.verbose('loading stats settings from DB')
       const loaded = await this.Bot.DB.getMultiple('stats-settings', {
         setting: StatisticsSettingType.ServerEnableStats
       })
@@ -25,7 +26,7 @@ export class Statistics {
 
   public whitelistServer(value: string) {
     this.whitelistedServers.push(value)
-    console.log('after whitelist', this.whitelistedServers)
+    this.Bot.Log.Bot.debug('after whitelist', this.whitelistedServers)
   }
 
   public unWhitelistServer(value: string) {
@@ -34,7 +35,7 @@ export class Statistics {
       1
     )
 
-    console.log('after unwhitelist', this.whitelistedServers)
+    this.Bot.Log.Bot.debug('after unwhitelist', this.whitelistedServers)
   }
 
   public trackServerStatistic(serverID: string, channelID: string, userID: string, type: ServerStatisticType) {
@@ -50,14 +51,14 @@ export class Statistics {
         // Check Stats Settings if server is tracking & if the user has stats turned off
         const statsSettings = await this.Bot.DB.getMultiple('stats-settings', {
           $or: [
-            { setting: StatisticsSettingType.ServerDisableStats, serverID },
-            { setting: StatisticsSettingType.ChannelDisableStats, channelID },
+            { serverID, setting: StatisticsSettingType.ServerDisableStats },
+            { channelID, setting: StatisticsSettingType.ChannelDisableStats },
             { setting: StatisticsSettingType.UserDisableStats, userID }
           ]
         })
 
         if (statsSettings.length > 0) {
-          console.log('Blocking Stats Tracking Triggered')
+          this.Bot.Log.Bot.debug('Blocking Stats Tracking Triggered')
           return
         } // Stop Here, Don't record any stats
 
@@ -65,15 +66,15 @@ export class Statistics {
         await this.Bot.DB.add(
           'stats-servers',
           new ServerStatistic({
-            serverID,
             channelID,
-            userID,
-            type
+            serverID,
+            type,
+            userID
           })
         )
         // console.log('Stat Logged')
       } catch (error) {
-        console.error('Stat Logging Error!')
+        this.Bot.Log.Bot.error('Stat Logging Error!')
       }
     })()
   }

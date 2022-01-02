@@ -123,13 +123,13 @@ export class Bot {
       /// Reserved...
       /// ...
     } catch (error) {
-      console.log(`Error setting up a service!`, error)
+      this.Log.Bot.error(`Error setting up a service!`, error)
     }
 
     ////////////////////////////////////////
     // Response Renderer ///////////////////
     ////////////////////////////////////////
-    this.Localization = new Localization()
+    this.Localization = new Localization(this.Log.Bot)
 
     ////////////////////////////////////////
     // Print startup details ///////////////
@@ -159,8 +159,6 @@ export class Bot {
     this.client.on('raw' as any, async (event) => {
       if (event.t === null) return
       // Skip event types that are not mapped
-      // this.DEBUG_MSG_INCOMING.log('raw:', event.t)
-      // if (event.t === 'PRESENCE_UPDATE') console.log(event)
       if (!Utils.DISCORD_CLIENT_EVENTS.hasOwnProperty(event.t)) return
       await this.onMessageNonCachedReact(event)
     })
@@ -183,7 +181,7 @@ export class Bot {
     /// Update guilds info stored ///
     for (const guild of [...this.client.guilds.cache.values()]) {
       // Check if Guild info is cached
-      // console.log('Guild Connection/Update in Servers Collection', guild.id, guild.name)
+      this.Log.Bot.verbose('Guild Connection/Update in Servers Collection', guild.id)
       await this.DB.update(
         'servers',
         { id: guild.id },
@@ -214,13 +212,13 @@ export class Bot {
     const rest = new REST({ version: '9' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
 
     try {
-      console.log('Started refreshing application (/) commands.')
+      this.Log.Bot.verbose('Started refreshing application (/) commands.')
       // ! Disabling ESLINT for the following line of code till shit gets fixed in the source libs
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, process.env.DISCORD_BOT_OFFICAL_DISCORD) as any, { body: commands })
-      console.log('Successfully reloaded application (/) commands.')
+      this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
     } catch (error) {
-      console.error(error)
+      this.Log.Bot.error(error)
     }
   }
 
