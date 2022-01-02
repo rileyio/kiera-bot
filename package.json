@@ -11,6 +11,7 @@
     "build": "tsc",
     "clean": "trash app",
     "dev:live": "tsc -w",
+    "dev:local": "NODE_ENV='development' DEBUG='kiera-bot:*' nodemon src/start.ts",
     "dev": "DEBUG='kiera-bot:*' nodemon src/start.ts",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "start": "NODE_PATH=./app DEBUG='kiera-bot:*' nodemon ./app/start.js",
