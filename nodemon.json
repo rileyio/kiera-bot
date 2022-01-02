@@ -1,8 +1,0 @@
-{
-  "verbose": true,
-  "ignore": ["node_modules", "README", "logs"] ,
-  "watch": ["src/**/*.ts", "./**/*.json"],
-  "execMap": {
-    "ts": "node --nolazy -r ts-node/register"
-  }
-}
