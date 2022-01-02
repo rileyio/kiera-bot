@@ -51,19 +51,19 @@ export class Debug {
     // this._debug.log = console.log.bind(console);
   }
 
-  public log(...args: Array<any>) {
+  public log(...args: Array<string | boolean | number | object>) {
     this.winston.info(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
   }
 
-  public warn(...args: Array<any>) {
+  public warn(...args: Array<string | boolean | number | object>) {
     this.winston.warn(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
   }
 
-  public error(...args: Array<any>) {
+  public error(...args: Array<string | boolean | number | object>) {
     this.winston.error(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
   }
 
-  public debug(...args: Array<any>) {
+  public debug(...args: Array<string | boolean | number | object>) {
     this.winston.debug(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
   }
 }
