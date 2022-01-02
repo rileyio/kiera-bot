@@ -8,4 +8,4 @@ COPY . .
 # Production
 FROM base as production
 ENV NODE_PATH=./app
-RUN npm run build
+RUN npm i && npm run build
