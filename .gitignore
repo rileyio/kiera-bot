@@ -70,3 +70,6 @@ server.key
 server.crt
 ca.crt
 .DS_Store
+
+# ignore docker secrets
+secrets/

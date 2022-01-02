@@ -1,0 +1,10 @@
+version: '3.9'
+
+services:
+  bot:
+    build:
+      target: production
+    command: node app/start.js
+    container_name: kiera_bot
+    environment:
+      NODE_ENV: production

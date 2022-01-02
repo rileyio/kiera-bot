@@ -2,6 +2,7 @@ import * as jwt from 'jsonwebtoken'
 
 import { TrackedSession } from '@/objects/session'
 import { WebRouted } from '@/api/web-router'
+import { read as getSecret } from '@/secrets'
 
 export async function isAuthenticatedOwner(routed: WebRouted) {
   // User & Token from header
@@ -81,7 +82,7 @@ export async function validateWebSecret(routed: WebRouted) {
   const secret = String(routed.req.header('secret'))
 
   // When Valid
-  if (secret === process.env.BOT_WEB_APP_SERVER_SECRET) {
+  if (secret === getSecret('BOT_WEB_APP_SERVER_SECRET', routed.Bot.Log.Bot)) {
     return routed
   }
 

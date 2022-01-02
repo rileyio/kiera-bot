@@ -5,6 +5,7 @@ import { DatabaseMonitor } from './db/monitor'
 import { EventEmitter } from 'events'
 import { LiveStatistics } from './live-statistics'
 import { WebAPI } from './api/web-api'
+import { read as getSecret } from '@/secrets'
 
 export class BotMonitor extends EventEmitter {
   private Bot: Bot
@@ -154,7 +155,7 @@ export class BotMonitor extends EventEmitter {
       })
       /// Connect account ///
 
-      await this.Bot.client.login(process.env.DISCORD_APP_TOKEN)
+      await this.Bot.client.login(getSecret('DISCORD_APP_TOKEN', this.Bot.Log.Bot))
     })
   }
 

@@ -1,7 +1,7 @@
 import { Message, TextChannel } from 'discord.js'
 
 import { Bot } from '@/index'
-import { Logging } from '@/utils'
+import { Logger } from '@/utils'
 import { TrackedMessage } from '@/objects/message'
 
 export class MsgTracker {
@@ -14,7 +14,7 @@ export class MsgTracker {
   private msgProcesserMemInterval = Number(process.env.BOT_MESSAGE_CLEANUP_MEMORY_AGE)
   private msgDeletionCleanupAge = Number(process.env.BOT_MESSAGE_CLEANUldiP_AGE)
   private msgDeletionPreviousCount = 0
-  public DEBUG_MSG_TRACKER = new Logging.Debug('msgTracker')
+  public DEBUG_MSG_TRACKER = new Logger.Debug('msgTracker')
 
   constructor(bot: Bot) {
     this.Bot = bot

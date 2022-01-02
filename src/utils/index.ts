@@ -1,5 +1,6 @@
+import * as Channel from './channel'
+import * as Logger from './logger'
 import * as XRegex from 'xregexp'
-
 /**
  * Splits args at spaces
  *
@@ -14,13 +15,14 @@ export function getArgs(msg: string) {
 }
 
 export * as ChastiKey from './chastikey'
-export * from './channel'
 export * from './client-event-handler'
 export * from './date'
-export * from './logger'
 export * from './prompt'
 export * from '../localization'
 export * from './string-builder'
 export * from './types'
 export * from './user'
 export * from './url'
+
+export { Channel }
+export { Logger }

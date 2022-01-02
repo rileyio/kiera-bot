@@ -1,20 +1,24 @@
 import * as Agenda from 'agenda'
+
 import { Bot } from '@/index'
 import { Task } from '@/objects/task'
+import { read as getSecret } from '@/secrets'
 
 export class TaskManager {
   protected Bot: Bot
   public registered: { [name: string]: Task } = {}
   // Background tasks v5+
-  public Agenda = new Agenda({
-    db: {
-      address: process.env.DB_STRING,
-      collection: 'scheduled-jobs'
-    }
-  })
+  public Agenda: Agenda
 
   constructor(bot: Bot) {
+    bot.Log.Bot.log('db url', getSecret('DB_STRING', this.Bot.Log.Bot))
     this.Bot = bot
+    this.Agenda = new Agenda({
+      db: {
+        address: getSecret('DB_STRING', this.Bot.Log.Bot),
+        collection: 'scheduled-jobs'
+      }
+    })
   }
 
   public async start(tasks: Array<Task>) {

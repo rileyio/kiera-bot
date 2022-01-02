@@ -11,6 +11,7 @@ import { TrackedMessage } from '@/objects/message'
 import { TrackedPoll } from '@/objects/poll'
 import { TrackedServer } from '@/objects/server'
 import { TrackedSession } from '@/objects/session'
+import { read as getSecret } from '@/secrets'
 import { mongoDot_lvl2 } from 'mongo_dottype'
 import { performance } from 'perf_hooks'
 
@@ -58,7 +59,7 @@ export class MongoDB {
     error: MongoError
   }
   private dbName = `${process.env.DB_NAME}`
-  private dbUrl = process.env.DB_STRING
+  private dbUrl: string
   private dbOpts: MongoClientOptions = {
     readPreference: 'primary',
     useNewUrlParser: true,
@@ -67,6 +68,7 @@ export class MongoDB {
 
   constructor(bot: Bot) {
     this.Bot = bot
+    this.dbUrl = getSecret('DB_STRING', this.Bot.Log.Bot)
   }
 
   public async connect() {

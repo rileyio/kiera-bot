@@ -1,0 +1,34 @@
+version: '3.9'
+
+secrets:
+  BOT_WEB_APP_SERVER_SECRET:
+    file: ./secrets/BOT_WEB_APP_SERVER_SECRET
+  DB_STRING:
+    file: ./secrets/DB_STRING
+  DISCORD_APP_SECRET:
+    file: ./secrets/DISCORD_APP_SECRET
+  DISCORD_APP_TOKEN:
+    file: ./secrets/DISCORD_APP_TOKEN
+
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: dockerfile
+      target: base
+    volumes:
+      - ./src:/home/node/app/src
+      - ./nodemon.json:/home/node/app/nodemon.json
+    container_name: kiera_bot
+    expose:
+      - '8124'
+    ports:
+      - '8124:8124'
+    command: npm run dev
+    secrets:
+      - BOT_WEB_APP_SERVER_SECRET
+      - DB_STRING
+      - DISCORD_APP_SECRET
+      - DISCORD_APP_TOKEN
+    environment:
+      NODE_ENV: development

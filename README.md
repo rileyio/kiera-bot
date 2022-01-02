@@ -6,7 +6,7 @@
 app/                - Compiled to directory (~ will get overwritten ~)
 locales/            - Internationalization and localization string files
 logs/               - Logs directory
-node_modules/       - Dependencies
+secrets/            - Docker Secrets (>= 9.0.0)
 src/                - All project code
 ├── api/            - (Web)API code
 | ├── controllers/  - (Web)API controllers
@@ -29,20 +29,30 @@ src/                - All project code
 *──                 - Primary files to startup bot & core functionality only
 ```
 
-## Commands for development & compiling
+## Commands for development & compiling 
 
-To build (compile only):  
-`npm run clean && npm run build`  
+> `>= 9.0.0` pm2 support has been removed
 
-To automatically build on saved changes to repo code (inside `/src`)  
-`npm run dev`  
+> `>= 9.0.0` Certain secret/sensitive values have been removed from the `.env` file, see Prereqs
 
-To start the application (without pm2)  
-`npm run start:nodebug` -or- for debug: `npm run start` -or- if using PowerShell, check the `package.json` scrips.  
-Additional `terminal` and `powershell` debugging start scripts available!
+### Prereqs
 
-To start the application (with pm2)  
-`pm2 start .\ecosystem.config.js`
+1. Make a `secrets/` directory and populate with any relevant secret declared environment values. Notes as to which have moves are listed in the `.env-template`.
+2. Ensure you complete the non-secret declared values and rename/copy `.env-template` to `.env`.
+
+
+### Development Mode (w/Hot Reloading)
+
+To run in development mode with hot reloading simply run:
+
+`make up`
+
+
+### Production Mode
+
+To run in production mode run:
+
+`make up prod`
 
 ## Web Portal
 
@@ -50,6 +60,8 @@ All code for [kierabot.xyz](https://kierabot.xyz) will be at [rileyio/kiera-web]
 `kiera-web` makes use of the `kiera-bot` api for everything.
 
 ## Localization
+> `9.0.0` Rework needing planned.
+
 Starting in Kiera `v6` there is now Localization support.  
 All strings are managed on [POEditor](https://kierabot.xyz/translate)  
 

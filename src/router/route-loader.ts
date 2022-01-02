@@ -1,11 +1,11 @@
 import * as Path from 'path'
 import * as glob from 'fast-glob'
 
-import { Logging } from '@/utils'
+import { Logger } from '@/utils'
 import { RouteConfiguration } from '@/router'
 
-export async function routeLoader(DEBUG: Logging.Debug) {
-  DEBUG.log('loading command routes...')
+export async function routeLoader(logger: Logger.Debug) {
+  logger.log('loading command routes...')
 
   // Load routes from commands folder
   const _routeFiles = glob.sync(['app/commands/**/*.js', '!app/commands/index.js', '!app/commands/admin.js'], { deep: 5 })
@@ -30,7 +30,7 @@ export async function routeLoader(DEBUG: Logging.Debug) {
         }
       }
     } catch (e) {
-      console.error(`routeLoader() [ERROR] => ${routeFile.toString()}, ${e.message}`)
+      logger.error(`routeLoader() [ERROR] => ${routeFile.toString()}, ${e.message}`)
     }
   }
 

@@ -4,6 +4,7 @@ const { version } = require('../package.json')
 import * as Discord from 'discord.js'
 import * as Task from '@/tasks'
 import * as Utils from '@/utils'
+import * as debug from 'debug'
 
 import { CommandRouter, routeLoader } from '@/router'
 import { MongoDB, MsgTracker } from '@/db'
@@ -17,19 +18,22 @@ import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v9'
 import { ServerStatisticType } from './objects/statistics'
 import { Statistics } from '@/statistics'
+import { read as getSecret } from '@/secrets'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
+const Debugger = debug('kiera-bot')
+Debugger.log = console.debug.bind(console)
 
 export class Bot {
   public client: Discord.Client
   public Log = {
-    API: new Utils.Logging.Debug('api'),
-    Bot: new Utils.Logging.Debug('bot'),
-    Command: new Utils.Logging.Debug('command'),
-    Database: new Utils.Logging.Debug('database', { console: false }),
-    Integration: new Utils.Logging.Debug('integration'),
-    Router: new Utils.Logging.Debug('command-router'),
-    Scheduled: new Utils.Logging.Debug('scheduled')
+    API: new Utils.Logger.Debug('api'),
+    Bot: new Utils.Logger.Debug('bot'),
+    Command: new Utils.Logger.Debug('command'),
+    Database: new Utils.Logger.Debug('database', { console: false }),
+    Integration: new Utils.Logger.Debug('integration'),
+    Router: new Utils.Logger.Debug('command-router'),
+    Scheduled: new Utils.Logger.Debug('scheduled')
   }
   public MsgTracker: MsgTracker
   public version: string
@@ -73,7 +77,7 @@ export class Bot {
     this.BotMonitor = new BotMonitor(this)
     this.Router = new CommandRouter(await routeLoader(this.Log.Router), this)
     this.MsgTracker = new MsgTracker(this)
-    this.Task = new Task.TaskManager(this)
+    // this.Task = new Task.TaskManager(this)
 
     ////////////////////////////////////////
     // Bot Monitor - Sync //////////////////
@@ -89,19 +93,19 @@ export class Bot {
     // Background Tasks ////////////////////
     ////////////////////////////////////////
     // Register background tasks
-    this.Task.start([
-      new Task.StatusMessageRotatorScheduled(),
-      new Task.ChastiKeyAPIUsers(),
-      new Task.ChastiKeyAPIRunningLocks(),
-      new Task.ChastiKeyAPILocktober2019(),
-      new Task.ChastiKeyAPILocktober2020(),
-      new Task.ChastiKeyAPILocktober2021(),
-      // // new Task.ChastiKeyBackgroundLocktoberMonitor()
-      new Task.ChastiKeyBackgroundVerifiedMonitor(),
-      new Task.ChastiKeyGenerateStatsScheduled(),
-      new Task.DBAgeCleanupScheduled()
-      // new Task.StatsCleanerScheduled()
-    ])
+    // this.Task.start([
+    //   new Task.StatusMessageRotatorScheduled(),
+    //   new Task.ChastiKeyAPIUsers(),
+    //   new Task.ChastiKeyAPIRunningLocks(),
+    //   new Task.ChastiKeyAPILocktober2019(),
+    //   new Task.ChastiKeyAPILocktober2020(),
+    //   new Task.ChastiKeyAPILocktober2021(),
+    //   // // new Task.ChastiKeyBackgroundLocktoberMonitor()
+    //   new Task.ChastiKeyBackgroundVerifiedMonitor(),
+    //   new Task.ChastiKeyGenerateStatsScheduled(),
+    //   new Task.DBAgeCleanupScheduled()
+    //   // new Task.StatsCleanerScheduled()
+    // ])
 
     ////////////////////////////////////////
     // Register 3rd party services /////////
@@ -207,7 +211,7 @@ export class Bot {
     const commands = []
     for (const commandRoute of this.Router.routes) commandRoute.slash ? commands.push(commandRoute.slash.toJSON()) : null
 
-    const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_APP_TOKEN)
+    const rest = new REST({ version: '9' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
 
     try {
       console.log('Started refreshing application (/) commands.')
