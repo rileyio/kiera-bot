@@ -185,6 +185,7 @@ Current Progress (Languages in focus where translations are being used):
 - `!decision "oldID" new id` - Create a new Decision unique ID for your roll  
 - `!decision roll "id"` - Roll premade Decision  
 - `!decision "Question here" "Option 1" "Option 2" "etc.."` - Create & Roll a 1 time Decision roll  
+- `/decision list` - List of Owned and Managed Decision Rollers
 
 #### Fun
 - `!8ball` - Ask a question, receive an answer  
