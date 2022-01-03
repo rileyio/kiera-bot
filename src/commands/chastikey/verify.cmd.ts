@@ -23,7 +23,6 @@ export async function verify(routed: RoutedInteraction) {
   }
 
   const parsedVerifyDiscordID = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ discordID: routed.author.id })
-  console.log(routed.user.ChastiKey)
 
   // If user exists & this command is being re-run, try checking if they're verified on the ChastiKey side before
   // Triggering a new verify
@@ -36,14 +35,12 @@ export async function verify(routed: RoutedInteraction) {
 
       await routed.bot.DB.update('users', { id: routed.author.id }, routed.user)
       // We can safely stop here - let the user know nothing more is needed at this time
-      await routed.reply(routed.$render('ChastiKey.Verify.FastForward'))
-      return true // Stop here
+      return await routed.reply(routed.$render('ChastiKey.Verify.FastForward'))
     }
   }
 
   if (parsedVerifyDiscordID.status === 200) {
-    await routed.reply(routed.$render('ChastiKey.Verify.PreviouslyCompleted'))
-    return true
+    return await routed.reply(routed.$render('ChastiKey.Verify.PreviouslyCompleted'))
   }
 
   const verifyResponse = await routed.bot.Service.ChastiKey.verifyCKAccountGetCode(routed.author.id, routed.author.username, routed.author.discriminator)
@@ -63,7 +60,7 @@ export async function verify(routed: RoutedInteraction) {
     // Let user know in a reply to check their DMs
     // await routed.reply(routed.$render('ChastiKey.Verify.CkeckYourDMs'))
     // Send QR Code via DM
-    await routed.reply(
+    return await routed.reply(
       {
         embeds: [
           {
@@ -83,9 +80,6 @@ export async function verify(routed: RoutedInteraction) {
     )
   } else {
     // Generate & DM QR code to requestor
-    await routed.reply(routed.$render('ChastiKey.Verify.NotSuccessfulUsingReason', { reason: isNotSuccessfulReason }), true)
+    return await routed.reply(routed.$render('ChastiKey.Verify.NotSuccessfulUsingReason', { reason: isNotSuccessfulReason }), true)
   }
-
-  // Successful end
-  return true
 }

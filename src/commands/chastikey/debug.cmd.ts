@@ -1,25 +1,12 @@
-import { ExportRoutes, RouterRouted } from '@/router'
-
 import { ChastiKeyVerifyDiscordID } from '@/objects/chastikey'
+import { RoutedInteraction } from '@/router'
 
-export const Routes = ExportRoutes({
-  category: 'ChastiKey',
-  controller: debug,
-  example: '{{prefix}}ck debug UsernameHere',
-  name: 'ck-debug-username',
-  permissions: {
-    defaultEnabled: true,
-    serverOnly: false
-  },
-  type: 'message',
-  validate: '/ck:string/debug:string/user=string'
-})
+export async function user(routed: RoutedInteraction) {
+  const username = routed.interaction.options.get('username')?.value as string
+  const usernameRegex = new RegExp(`^${username}$`, 'i')
+  const asDiscordID = Number(username) ? username : 123
 
-export async function debug(routed: RouterRouted) {
-  const usernameRegex = new RegExp(`^${routed.v.o.user}$`, 'i')
-  const asDiscordID = Number(routed.v.o.user) ? routed.v.o.user : 123
-
-  const kieraUser = await routed.bot.DB.get('users', { $or: [{ 'ChastiKey.username': usernameRegex }, { id: routed.v.o.user }] })
+  const kieraUser = await routed.bot.DB.get('users', { $or: [{ 'ChastiKey.username': usernameRegex }, { id: username }] })
   const ckUser = await routed.bot.DB.get('ck-users', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckLocktober2019 = await routed.bot.DB.get('ck-locktober-2019', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
   const ckLocktober2020 = await routed.bot.DB.get('ck-locktober-2020', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
@@ -27,7 +14,7 @@ export async function debug(routed: RouterRouted) {
   const ckRunningLocks = await routed.bot.DB.getMultiple('ck-running-locks', { $or: [{ username: usernameRegex }, { discordID: asDiscordID }] })
 
   let verifyIDAPIResp: ChastiKeyVerifyDiscordID
-  if (asDiscordID === 123) verifyIDAPIResp = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ username: routed.v.o.user })
+  if (asDiscordID === 123) verifyIDAPIResp = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ username })
   if (asDiscordID !== 123) verifyIDAPIResp = await routed.bot.Service.ChastiKey.verifyCKAccountCheck({ discordID: asDiscordID })
 
   let response = `**ChastiKey User Debug**\n`
@@ -75,6 +62,5 @@ export async function debug(routed: RouterRouted) {
   }
   response += '```'
 
-  await routed.message.channel.send(response)
-  return true
+  return await routed.reply(response, true)
 }

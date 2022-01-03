@@ -4,7 +4,7 @@ import * as Utils from '@/utils'
 
 import { ChastiKeyManagedChanges } from '@/objects/chastikey'
 import { RoutedInteraction } from '@/router'
-import { managedUpdate } from '@/embedded/chastikey-update'
+import { managedUpdate } from '@/commands/chastikey/update.embed'
 import { performance } from 'perf_hooks'
 
 /**
@@ -794,6 +794,5 @@ export async function update(routed: RoutedInteraction) {
 
   // results += '```'
 
-  await routed.reply({ embeds: [managedUpdate(discordUser, changesImplemented)] })
-  return true
+  return await routed.reply({ embeds: [managedUpdate(discordUser, changesImplemented)] })
 }

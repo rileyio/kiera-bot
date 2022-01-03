@@ -1,7 +1,12 @@
-import * as CKStats from '@/commands/chastikey/stats'
-import * as CKUpdate from '@/commands/chastikey/update'
-import * as CKVerify from '@/commands/chastikey/verify'
+import * as CKUpdate from '@/commands/chastikey/update.cmd'
+import * as CKVerify from '@/commands/chastikey/verify.cmd'
+import * as Debug from '@/commands/chastikey/debug.cmd'
+import * as Keyholder from '@/commands/chastikey/keyholder-stats.cmd'
+import * as KeyholderLockees from '@/commands/chastikey/keyholder-lockees.cmd'
+import * as Lockee from '@/commands/chastikey/lockee-stats.cmd'
 import * as Middleware from '@/middleware'
+import * as Multilocked from '@/commands/chastikey/multilocked.cmd'
+import * as Ticker from '@/commands/chastikey/ticker.cmd'
 
 import { ExportRoutes, RoutedInteraction } from '@/router'
 
@@ -19,7 +24,7 @@ export const Routes = ExportRoutes({
   slash: new SlashCommandBuilder()
     .setName('ck')
     .setDescription('View ChastiKey Stats')
-    .setDefaultPermission(false)
+    .setDefaultPermission(true)
     .addSubcommand((subcommand) =>
       subcommand
         .setName('stats')
@@ -34,15 +39,40 @@ export const Routes = ExportRoutes({
             .addChoice('Keyholder', 'keyholder')
             .addChoice('Multilocked', 'multilocked')
         )
-        .addStringOption((option) => option.setName('username').setDescription('Specify a username to lookup a different user'))
-    ) // * /ck update
+        .addStringOption((option) => option.setName('username').setDescription('Specify a Username to Lookup a Different User'))
+    )
+    // * /ck ticker
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('ticker')
+        .setDescription('View ChastiKey Ticker')
+        .addStringOption((option) => option.setName('username').setDescription('Specify a Username to Lookup a Different User'))
+        .addStringOption((option) => option.setName('date').setDescription('Specify a Start Date for Ticker Data (YYYY-MM-DD)'))
+        .addStringOption((option) =>
+          option
+            .setName('type')
+            .setDescription('Type of ChastiKey Ticker(s) to Return')
+            .addChoice('Lockee', 'lockee')
+            .addChoice('Keyholder', 'keyholder')
+            .addChoice('Show Both', 'both')
+        )
+    )
+    // * /ck update
     .addSubcommand((subcommand) =>
       subcommand
         .setName('update')
         .setDescription('Sync your ChastiKey profile with Discord	')
         .addMentionableOption((option) => option.setName('user').setDescription('@ The user you wish to perform the update upon'))
-    ) // * /ck verify
-    .addSubcommand((subcommand) => subcommand.setName('verify').setDescription('Sync your ChastiKey profile with Discord')),
+    )
+    // * /ck verify
+    .addSubcommand((subcommand) => subcommand.setName('verify').setDescription('Sync your ChastiKey profile with Discord'))
+    // * /ck debug
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('debug')
+        .setDescription('Debugging for ChastiKey Stats')
+        .addStringOption((option) => option.setName('username').setDescription('Specify a Username to Debug').setRequired(true))
+    ),
   type: 'interaction'
 })
 
@@ -50,12 +80,22 @@ function ckStatsRouterSub(routed: RoutedInteraction) {
   const subCommand = routed.interaction.options.getSubcommand()
   const interactionType = routed.interaction.options.get('type')?.value
 
+  // Debug
+  if (subCommand === 'debug') {
+    return Debug.user(routed)
+  }
+
+  // Ticker
+  if (subCommand === 'ticker') {
+    return Ticker.getTicker(routed)
+  }
+
   // Stats
   if (subCommand === 'stats') {
-    if (interactionType === 'lockee') return CKStats.getLockeeStats(routed)
-    if (interactionType === 'lockees') return CKStats.getKeyholderLockees(routed)
-    if (interactionType === 'keyholder') return CKStats.getKeyholderStats(routed)
-    if (interactionType === 'multilocked') return CKStats.getCheckLockeeMultiLocked(routed)
+    if (interactionType === 'lockee') return Lockee.getStats(routed)
+    if (interactionType === 'lockees') return KeyholderLockees.getStats(routed)
+    if (interactionType === 'keyholder') return Keyholder.getStats(routed)
+    if (interactionType === 'multilocked') return Multilocked.getStats(routed)
   }
 
   // Update
