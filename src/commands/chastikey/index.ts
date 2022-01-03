@@ -7,6 +7,7 @@ import * as Lockee from '@/commands/chastikey/lockee-stats.cmd'
 import * as Locktober from '@/commands/chastikey/locktober.cmd'
 import * as Middleware from '@/middleware'
 import * as Multilocked from '@/commands/chastikey/multilocked.cmd'
+import * as Search from '@/commands/chastikey/search.cmd'
 import * as Ticker from '@/commands/chastikey/ticker.cmd'
 
 import { ExportRoutes, RoutedInteraction } from '@/router'
@@ -36,6 +37,13 @@ export const Routes = ExportRoutes({
     )
     // * /ck locktober
     .addSubcommand((subcommand) => subcommand.setName('locktober').setDescription('View Locktober Stats'))
+    // * /ck search
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('search')
+        .setDescription('Search Based off ChastiKey Username')
+        .addStringOption((option) => option.setName('username').setDescription('Search by Username').setRequired(true))
+    )
     // * /ck stats ...
     .addSubcommand((subcommand) =>
       subcommand
@@ -88,14 +96,14 @@ function ckStatsRouterSub(routed: RoutedInteraction) {
     return Debug.user(routed)
   }
 
-  // Debug
+  // Locktober
   if (subCommand === 'locktober') {
     return Locktober.stats(routed)
   }
 
-  // Ticker
-  if (subCommand === 'ticker') {
-    return Ticker.getTicker(routed)
+  // Search
+  if (subCommand === 'search') {
+    return Search.byUsername(routed)
   }
 
   // Stats
@@ -104,6 +112,11 @@ function ckStatsRouterSub(routed: RoutedInteraction) {
     if (interactionType === 'lockees') return KeyholderLockees.getStats(routed)
     if (interactionType === 'keyholder') return Keyholder.getStats(routed)
     if (interactionType === 'multilocked') return Multilocked.getStats(routed)
+  }
+
+  // Ticker
+  if (subCommand === 'ticker') {
+    return Ticker.getTicker(routed)
   }
 
   // Update
