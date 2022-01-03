@@ -1,31 +1,14 @@
 import * as Agenda from 'agenda'
-import * as Middleware from '@/middleware'
 
-import { ExportRoutes, RouterRouted } from '@/router'
-
-import { locktoberStats } from '@/embedded/chastikey-locktober'
-
-export const Routes = ExportRoutes({
-  category: 'ChastiKey',
-  controller: statsLocktober,
-  description: 'Help.ChastiKey.LocktoberStats.Description',
-  example: '{{prefix}}ck stats locktober',
-  middleware: [Middleware.isCKVerified],
-  name: 'ck-stats-locktober',
-  permissions: {
-    defaultEnabled: true,
-    serverOnly: false
-  },
-  type: 'message',
-  validate: '/ck:string/stats:string/locktober:string'
-})
+import { RoutedInteraction } from '@/router'
+import { embed } from '@/commands/chastikey/locktober.embed'
 
 /**
  * Get some totals stats on Locktober event
  * @export
  * @param {RouterRouted} routed
  */
-export async function statsLocktober(routed: RouterRouted) {
+export async function stats(routed: RoutedInteraction) {
   const verifiedCount = await routed.bot.DB.count('ck-users', { discordID: { $ne: null } })
   // Get Locktober stats from DB
   const stored = await routed.bot.DB.getMultiple('ck-locktober-2021', { discordID: { $ne: '' } })
@@ -77,9 +60,8 @@ export async function statsLocktober(routed: RouterRouted) {
   const cachedTimestampFromFetch = (await routed.bot.DB.get('scheduled-jobs', { name: 'ChastiKeyAPILocktober2021' })) as Agenda.JobAttributes
   const cachedTimestamp = cachedTimestampFromFetch.lastFinishedAt
 
-  await routed.message.channel.send({
-    embeds: [locktoberStats({ participants: stored.length, verified: verifiedCount }, breakdownByKH, apartOfLocktober, true, routed.routerStats, cachedTimestamp)]
+  return await routed.reply({
+    embeds: [embed({ participants: stored.length, verified: verifiedCount }, breakdownByKH, apartOfLocktober, true, routed.routerStats, cachedTimestamp)]
   })
   // Successful end
-  return true
 }

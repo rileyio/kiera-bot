@@ -1,6 +1,6 @@
 import { RouterStats } from '@/router'
 
-export function locktoberStats(
+export function embed(
   participation: { participants: number; verified: number },
   khBreakdown: Array<{ _id: string; count: number; uniqueCount: number }>,
   isUserApart: boolean,
@@ -9,8 +9,8 @@ export function locktoberStats(
   cachedTimestamp: Date
 ) {
   // Variables for later
-  var longestKHName = 9
-  var largestCount = 5
+  let longestKHName = 9
+  let largestCount = 5
   // Find the longest KH name for formatting later
   khBreakdown.forEach((kh) => {
     longestKHName = kh._id.length > longestKHName ? kh._id.length : longestKHName
@@ -18,7 +18,7 @@ export function locktoberStats(
   })
 
   // Title
-  var description = `What is Locktober? Be locked for the entire month of October :yum:\n\n`
+  let description = `What is Locktober? Be locked for the entire month of October :yum:\n\n`
   // Display steps to verify if user is missing verification
   if (!isUserVerified) description += `You'll need to verify using the following command to receive the role when eligible: \`!ck verify\`\n\n`
   // Statistics
@@ -41,13 +41,13 @@ export function locktoberStats(
   description += `\`\`\``
 
   return {
-    title: `Locktober 2021 Stats`,
-    description: description,
     color: 14553782,
-    timestamp: cachedTimestamp,
+    description: description,
     footer: {
       iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
       text: `Runtime ${routerStats.performance}ms :: Requested By ${routerStats.user} :: Cached by Kiera`
-    }
+    },
+    timestamp: cachedTimestamp,
+    title: `Locktober 2021 Stats`
   }
 }

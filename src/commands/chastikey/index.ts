@@ -4,6 +4,7 @@ import * as Debug from '@/commands/chastikey/debug.cmd'
 import * as Keyholder from '@/commands/chastikey/keyholder-stats.cmd'
 import * as KeyholderLockees from '@/commands/chastikey/keyholder-lockees.cmd'
 import * as Lockee from '@/commands/chastikey/lockee-stats.cmd'
+import * as Locktober from '@/commands/chastikey/locktober.cmd'
 import * as Middleware from '@/middleware'
 import * as Multilocked from '@/commands/chastikey/multilocked.cmd'
 import * as Ticker from '@/commands/chastikey/ticker.cmd'
@@ -23,8 +24,19 @@ export const Routes = ExportRoutes({
   },
   slash: new SlashCommandBuilder()
     .setName('ck')
-    .setDescription('View ChastiKey Stats')
+    .setDescription('ChastiKey Commands')
     .setDefaultPermission(true)
+
+    // * /ck debug
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('debug')
+        .setDescription('Debugging for ChastiKey Stats')
+        .addStringOption((option) => option.setName('username').setDescription('Specify a Username to Debug').setRequired(true))
+    )
+    // * /ck locktober
+    .addSubcommand((subcommand) => subcommand.setName('locktober').setDescription('View Locktober Stats'))
+    // * /ck stats ...
     .addSubcommand((subcommand) =>
       subcommand
         .setName('stats')
@@ -63,15 +75,6 @@ export const Routes = ExportRoutes({
         .setName('update')
         .setDescription('Sync your ChastiKey profile with Discord	')
         .addMentionableOption((option) => option.setName('user').setDescription('@ The user you wish to perform the update upon'))
-    )
-    // * /ck verify
-    .addSubcommand((subcommand) => subcommand.setName('verify').setDescription('Sync your ChastiKey profile with Discord'))
-    // * /ck debug
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName('debug')
-        .setDescription('Debugging for ChastiKey Stats')
-        .addStringOption((option) => option.setName('username').setDescription('Specify a Username to Debug').setRequired(true))
     ),
   type: 'interaction'
 })
@@ -83,6 +86,11 @@ function ckStatsRouterSub(routed: RoutedInteraction) {
   // Debug
   if (subCommand === 'debug') {
     return Debug.user(routed)
+  }
+
+  // Debug
+  if (subCommand === 'locktober') {
+    return Locktober.stats(routed)
   }
 
   // Ticker
