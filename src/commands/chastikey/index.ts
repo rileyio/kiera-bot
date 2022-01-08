@@ -9,6 +9,7 @@ import * as Locktober from '@/commands/chastikey/locktober.cmd'
 import * as Middleware from '@/middleware'
 import * as Multilocked from '@/commands/chastikey/multilocked.cmd'
 import * as Nickname from '@/commands/chastikey/lockee-nickname.cmd'
+import * as Recover from '@/commands/chastikey/recover-combo.cmd'
 import * as Search from '@/commands/chastikey/search.cmd'
 import * as Ticker from '@/commands/chastikey/ticker.cmd'
 
@@ -69,6 +70,13 @@ export const Routes = ExportRoutes({
         .setName('search')
         .setDescription('Search Based off ChastiKey Username')
         .addStringOption((option) => option.setName('username').setDescription('Search by Username').setRequired(true))
+    )
+    // * /ck recover
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('recover')
+        .setDescription('Recover Past Lock Combinations')
+        .addNumberOption((option) => option.setName('count').setDescription('How Many Past Combinations to Fetch?').setRequired(false))
     )
     // * /ck stats ...
     .addSubcommand((subcommand) =>
@@ -135,6 +143,11 @@ function ckStatsRouterSub(routed: RoutedInteraction) {
   // Nickname
   if (subCommand === 'nickname') {
     return Nickname.toggleLockInNickname(routed)
+  }
+
+  // Recover
+  if (subCommand === 'recover') {
+    return Recover.recoverCombos(routed)
   }
 
   // Search
