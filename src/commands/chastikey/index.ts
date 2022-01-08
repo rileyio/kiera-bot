@@ -12,6 +12,7 @@ import * as Nickname from '@/commands/chastikey/lockee-nickname.cmd'
 import * as Recover from '@/commands/chastikey/recover-combo.cmd'
 import * as Search from '@/commands/chastikey/search.cmd'
 import * as Ticker from '@/commands/chastikey/ticker.cmd'
+import * as Web from '@/commands/chastikey/web.cmd'
 
 import { ExportRoutes, RoutedInteraction } from '@/router'
 
@@ -30,7 +31,6 @@ export const Routes = ExportRoutes({
     .setName('ck')
     .setDescription('ChastiKey Commands')
     .setDefaultPermission(true)
-
     // * /ck debug
     .addSubcommand((subcommand) =>
       subcommand
@@ -117,7 +117,9 @@ export const Routes = ExportRoutes({
         .setName('update')
         .setDescription('Sync your ChastiKey profile with Discord	')
         .addMentionableOption((option) => option.setName('user').setDescription('@ The user you wish to perform the update upon'))
-    ),
+    )
+    // * /ck update
+    .addSubcommand((subcommand) => subcommand.setName('web').setDescription('Open Kiera + ChastiKey Portal')),
   type: 'interaction'
 })
 
@@ -173,4 +175,7 @@ function ckStatsRouterSub(routed: RoutedInteraction) {
 
   // Verify
   if (subCommand === 'verify') return CKVerify.verify(routed)
+
+  // Web
+  if (subCommand === 'web') return Web.extSession(routed)
 }
