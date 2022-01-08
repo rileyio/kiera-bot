@@ -223,11 +223,19 @@ export class Bot {
   }
 
   private async onMessage(message: Discord.Message) {
-    await this.Router.routeMessage(message)
+    try {
+      await this.Router.routeMessage(message)
+    } catch (error) {
+      this.Log.Bot.error('Fatal onMessage error caught', error)
+    }
   }
 
   private async onInteraction(interaction: Discord.Interaction) {
-    await this.Router.routeInteraction(interaction)
+    try {
+      await this.Router.routeInteraction(interaction)
+    } catch (error) {
+      this.Log.Bot.error('Fatal onInteration error caught', error)
+    }
   }
 
   private async onMessageCachedReactionAdd(message: Discord.Message, reaction: string, user: Discord.User) {
