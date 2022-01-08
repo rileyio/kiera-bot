@@ -1,8 +1,12 @@
 import * as APIUrls from '@/api-urls'
-import got from 'got'
+
+import { ChastiKeyVerifyDiscordID, ChastiKeyVerifyResponse } from '@/objects/chastikey'
+
 import { Bot } from '@/index'
 import { ChastiKey as ChastiKeyAPI } from 'chastikey.js'
-import { ChastiKeyVerifyDiscordID, ChastiKeyVerifyResponse } from '@/objects/chastikey'
+import { read as getSecret } from '@/secrets'
+import got from 'got'
+
 import FormData = require('form-data')
 
 /**
@@ -12,16 +16,19 @@ import FormData = require('form-data')
  */
 export class ChastiKey {
   private Bot: Bot
-  private ClientID: string = process.env.CLIENTID
-  private ClientSecret: string = process.env.CLIENTSECRET
-  private RapidAPIKey: string = process.env.RAPIDAPIKEY
+  private ClientID: string
+  private ClientSecret: string
+  private RapidAPIKey: string
   public Client: ChastiKeyAPI
   public monitor: NodeJS.Timer
-  public usageSinceLastStartup: number = 0
-  public usageLastMinute: number = 0
+  public usageSinceLastStartup = 0
+  public usageLastMinute = 0
 
   constructor(bot: Bot) {
     this.Bot = bot
+    this.ClientID = getSecret('CK_CLIENTID', this.Bot.Log.Integration)
+    this.ClientSecret = getSecret('CK_CLIENTSECRET', this.Bot.Log.Integration)
+    this.RapidAPIKey = getSecret('CK_RAPIDAPIKEY', this.Bot.Log.Integration)
   }
 
   private trackUsage() {
@@ -52,8 +59,16 @@ export class ChastiKey {
 
   public async fetchAPILockeeData(query: { discordid?: string; username?: string; showDeleted: boolean }) {
     try {
-      const resp = await this.Client.LockeeData.get({ username: query.username, discordid: query.discordid, showdeleted: query.showDeleted ? 1 : 0 })
-      this.Bot.Log.Integration.debug(`[ChastiKey].fetchAPILockeeData =>`, query, { response: resp.response, data: resp.data, locks: resp.locks.length })
+      const resp = await this.Client.LockeeData.get({
+        discordid: query.discordid,
+        showdeleted: query.showDeleted ? 1 : 0,
+        username: query.username
+      })
+      this.Bot.Log.Integration.debug(`[ChastiKey].fetchAPILockeeData =>`, query, {
+        data: resp.data,
+        locks: resp.locks.length,
+        response: resp.response
+      })
       this.trackUsage()
       return resp
     } catch (error) {
@@ -63,9 +78,16 @@ export class ChastiKey {
 
   public async fetchAPIKeyholderData(query: { discordid?: string; username?: string }) {
     try {
-      const resp = await this.Client.KeyholderData.get({ username: query.username, discordid: query.discordid })
+      const resp = await this.Client.KeyholderData.get({
+        discordid: query.discordid,
+        username: query.username
+      })
       this.trackUsage()
-      this.Bot.Log.Integration.debug(`[ChastiKey].fetchAPIKeyholderData =>`, query, { response: resp.response, data: resp.data, locks: resp.locks.length })
+      this.Bot.Log.Integration.debug(`[ChastiKey].fetchAPIKeyholderData =>`, query, {
+        data: resp.data,
+        locks: resp.locks.length,
+        response: resp.response
+      })
       return resp
     } catch (error) {
       this.Bot.Log.Integration.error(`[ChastiKey].fetchAPIKeyholderData =>`, query, error)
@@ -74,9 +96,15 @@ export class ChastiKey {
 
   public async fetchAPICombinations(query: { discordid?: string; username?: string }) {
     try {
-      const resp = await this.Client.Combinations.get({ username: query.username, discordid: query.discordid })
+      const resp = await this.Client.Combinations.get({
+        discordid: query.discordid,
+        username: query.username
+      })
       this.trackUsage()
-      this.Bot.Log.Integration.debug(`[ChastiKey].fetchAPICombinations =>`, query, { response: resp.response, locks: resp.locks.length })
+      this.Bot.Log.Integration.debug(`[ChastiKey].fetchAPICombinations =>`, query, {
+        locks: resp.locks.length,
+        response: resp.response
+      })
       return resp
     } catch (error) {
       this.Bot.Log.Integration.error(`[ChastiKey].fetchAPICombinations =>`, query, error)
