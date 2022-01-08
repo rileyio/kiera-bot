@@ -1,29 +1,13 @@
-import { ExportRoutes, RouterRouted } from '@/router'
+import { RoutedInteraction } from '@/router'
 
-import { SlashCommandBuilder } from '@discordjs/builders'
-import { eightBallResult } from '@/embedded/8ball-embed'
-
-export const Routes = ExportRoutes({
-  category: 'Fun',
-  controller: eightBall,
-  description: 'Help.Fun.EightBall.Description',
-  name: '8ball',
-  permissions: {
-    serverOnly: false
-  },
-  slash: new SlashCommandBuilder()
-    .setName('8ball')
-    .setDescription('Ask the 8ball a question')
-    .addStringOption((option) => option.setName('question').setDescription('Enter your question here')),
-  type: 'interaction'
-})
+import { eightBallResult } from '@/commands/fun/8ball.embed'
 
 /**
  * 8 Ball
  * @export
- * @param {RouterRouted} routed
+ * @param {RoutedInteraction} routed
  */
-export async function eightBall(routed: RouterRouted) {
+export async function shake(routed: RoutedInteraction) {
   const question = routed.interaction.options.get('question')?.value as string
   const outcomes = [
     'It is certain',
@@ -50,8 +34,7 @@ export async function eightBall(routed: RouterRouted) {
     'Very doubtful'
   ]
 
-  await routed.reply({
+  return await routed.reply({
     embeds: [eightBallResult(question || '', outcomes[Math.floor(Math.random() * Number(outcomes.length)) + 1])]
   })
-  return true
 }

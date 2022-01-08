@@ -1,7 +1,7 @@
 export function eightBallResult(question: string, result: string) {
   return {
-    title: `${question}`,
+    color: 14553782,
     description: `\`${result}\``,
-    color: 14553782
+    title: `${question}`
   }
 }
