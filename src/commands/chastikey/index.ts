@@ -8,6 +8,7 @@ import * as LockeeHistory from '@/commands/chastikey/lockee-history.cmd'
 import * as Locktober from '@/commands/chastikey/locktober.cmd'
 import * as Middleware from '@/middleware'
 import * as Multilocked from '@/commands/chastikey/multilocked.cmd'
+import * as Nickname from '@/commands/chastikey/lockee-nickname.cmd'
 import * as Search from '@/commands/chastikey/search.cmd'
 import * as Ticker from '@/commands/chastikey/ticker.cmd'
 
@@ -45,6 +46,23 @@ export const Routes = ExportRoutes({
     )
     // * /ck locktober
     .addSubcommand((subcommand) => subcommand.setName('locktober').setDescription('View Locktober Stats'))
+    // * /ck nickname
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('nickname')
+        .setDescription('Let Kiera Manage Relevant Nickname Emoji')
+        .addStringOption((option) =>
+          option
+            .setName('mode')
+            .setDescription('What Should Kiera Manage?')
+            .setRequired(true)
+            .addChoice('Never Manage', 'never')
+            .addChoice('Always Manage', 'always')
+            .addChoice('Only Set When Locked', 'locked')
+            .addChoice('Only Set When Unlocked', 'unlocked')
+            .addChoice('Clear (Use if you want to update now)', 'clear')
+        )
+    )
     // * /ck search
     .addSubcommand((subcommand) =>
       subcommand
@@ -104,7 +122,7 @@ function ckStatsRouterSub(routed: RoutedInteraction) {
     return Debug.user(routed)
   }
 
-  // Locktober
+  // History
   if (subCommand === 'history') {
     return LockeeHistory.history(routed)
   }
@@ -112,6 +130,11 @@ function ckStatsRouterSub(routed: RoutedInteraction) {
   // Locktober
   if (subCommand === 'locktober') {
     return Locktober.stats(routed)
+  }
+
+  // Nickname
+  if (subCommand === 'nickname') {
+    return Nickname.toggleLockInNickname(routed)
   }
 
   // Search
