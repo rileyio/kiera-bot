@@ -4,6 +4,7 @@ import * as Debug from '@/commands/chastikey/debug.cmd'
 import * as Keyholder from '@/commands/chastikey/keyholder-stats.cmd'
 import * as KeyholderLockees from '@/commands/chastikey/keyholder-lockees.cmd'
 import * as Lockee from '@/commands/chastikey/lockee-stats.cmd'
+import * as LockeeHistory from '@/commands/chastikey/lockee-history.cmd'
 import * as Locktober from '@/commands/chastikey/locktober.cmd'
 import * as Middleware from '@/middleware'
 import * as Multilocked from '@/commands/chastikey/multilocked.cmd'
@@ -34,6 +35,13 @@ export const Routes = ExportRoutes({
         .setName('debug')
         .setDescription('Debugging for ChastiKey Stats')
         .addStringOption((option) => option.setName('username').setDescription('Specify a Username to Debug').setRequired(true))
+    )
+    // * /ck history
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('history')
+        .setDescription('View Lockee History Breakdown')
+        .addStringOption((option) => option.setName('username').setDescription('View by Username'))
     )
     // * /ck locktober
     .addSubcommand((subcommand) => subcommand.setName('locktober').setDescription('View Locktober Stats'))
@@ -94,6 +102,11 @@ function ckStatsRouterSub(routed: RoutedInteraction) {
   // Debug
   if (subCommand === 'debug') {
     return Debug.user(routed)
+  }
+
+  // Locktober
+  if (subCommand === 'history') {
+    return LockeeHistory.history(routed)
   }
 
   // Locktober

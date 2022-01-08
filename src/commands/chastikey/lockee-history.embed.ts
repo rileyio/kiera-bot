@@ -1,37 +1,38 @@
-import * as Utils from '../utils'
-import { RouterStats } from '@/router'
-import { LockeeDataResponse } from 'chastikey.js/app/objects'
+import * as Utils from '../../utils'
 
-export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRating: boolean }, routerStats: RouterStats) {
+import { LockeeDataResponse } from 'chastikey.js/app/objects'
+import { RouterStats } from '@/router'
+
+export function embed(lockeeData: LockeeDataResponse, options: { showRating: boolean }, routerStats: RouterStats) {
   const twelveMonthAgoTimestamp = Date.now() / 1000 - 7890000 * 4
-  var stats = {
+  const stats = {
     last12Months: {
-      avgLockedTimePerKH: 0.0,
       abandonedCount: 0,
+      avgLockedTimePerKH: 0.0,
+      botLocks: 0,
+      khNames: [],
+      longestLock: 0,
+      selfLocks: 0,
+      shareLockNoLongerManaged: 0,
       totalLocksCount: 0,
       totalLocksCountCompleted: 0,
-      totalTimeLocked: 0,
-      selfLocks: 0,
-      botLocks: 0,
-      shareLockNoLongerManaged: 0,
-      khNames: [],
-      longestLock: 0
+      totalTimeLocked: 0
     },
     last3Months: {
-      avgLockedTimePerKH: 0.0,
       abandonedCount: 0,
+      avgLockedTimePerKH: 0.0,
+      botLocks: 0,
+      khNames: [],
+      longestLock: 0,
+      selfLocks: 0,
+      shareLockNoLongerManaged: 0,
       totalLocksCount: 0,
       totalLocksCountCompleted: 0,
-      totalTimeLocked: 0,
-      selfLocks: 0,
-      botLocks: 0,
-      shareLockNoLongerManaged: 0,
-      khNames: [],
-      longestLock: 0
+      totalTimeLocked: 0
     }
   }
 
-  var lockIDsSeen = {}
+  const lockIDsSeen = {}
 
   // Calculate past KHs first
   lockeeData.locks.forEach((lock) => {
@@ -87,7 +88,7 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
 
   // Compile body of message
   const dateJoinedDaysAgo = lockeeData.data.joined !== '-' ? `(${Math.round((Date.now() - new Date(lockeeData.data.joined).getTime()) / 1000 / 60 / 60 / 24)} days ago)` : ''
-  var description = ``
+  let description = ``
   description += `Joined \`${lockeeData.data.joined.substr(0, 10)}\` \`${dateJoinedDaysAgo}\`\n`
   // Only show the ratings if the user has > 5
   if (lockeeData.data.noOfRatings > 4 && options.showRating) description += `Avg Rating \`${lockeeData.data.averageRating}\` | # Ratings \`${lockeeData.data.noOfRatings}\`\n`
@@ -120,14 +121,14 @@ export function lockeeHistory(lockeeData: LockeeDataResponse, options: { showRat
 
   // Embed Message Block
   const messageBlock = {
-    title: `${lockeeData.data.discordID ? '<:verified:625628727820288000> ' : ''}\`${lockeeData.data.username}\` - ChastiKey Lockee Statistics - Historical View`,
-    description: description,
     color: 9125611,
-    timestamp: Date.now(),
+    description: description,
     footer: {
       iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
       text: `(${routerStats.performance}ms) Cached by Kiera`
-    }
+    },
+    timestamp: Date.now(),
+    title: `${lockeeData.data.discordID ? '<:verified:625628727820288000> ' : ''}\`${lockeeData.data.username}\` - ChastiKey Lockee Statistics - Historical View`
   }
 
   const messageBlockStrLength = JSON.stringify(messageBlock).length
