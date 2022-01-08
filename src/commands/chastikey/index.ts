@@ -6,6 +6,8 @@ import * as KeyholderLockees from '@/commands/chastikey/keyholder-lockees.cmd'
 import * as Lockee from '@/commands/chastikey/lockee-stats.cmd'
 import * as LockeeHistory from '@/commands/chastikey/lockee-history.cmd'
 import * as Locktober from '@/commands/chastikey/locktober.cmd'
+import * as MapRoleExp from '@/commands/chastikey/map-exp-role.cmd'
+import * as MapRoleSpecial from '@/commands/chastikey/map-special-role.cmd'
 import * as Middleware from '@/middleware'
 import * as Multilocked from '@/commands/chastikey/multilocked.cmd'
 import * as Nickname from '@/commands/chastikey/lockee-nickname.cmd'
@@ -47,6 +49,19 @@ export const Routes = ExportRoutes({
     )
     // * /ck locktober
     .addSubcommand((subcommand) => subcommand.setName('locktober').setDescription('View Locktober Stats'))
+    // * /ck map
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('map')
+        .setDescription('Map Kiera Roles to Manage')
+        .addStringOption((option) =>
+          option.setName('type').setDescription('What Should Kiera Manage?').setRequired(true).addChoice('Experience Role', 'experience').addChoice('Special Role', 'special')
+        )
+        .addRoleOption((option) => option.setName('role').setDescription('Which Role to Map?').setRequired(false))
+        .addStringOption((option) =>
+          option.setName('what').setDescription('Map it to ID (Run: This command and only specify the Type to see what has been mapped)?').setRequired(false)
+        )
+    )
     // * /ck nickname
     .addSubcommand((subcommand) =>
       subcommand
@@ -140,6 +155,12 @@ function ckStatsRouterSub(routed: RoutedInteraction) {
   // Locktober
   if (subCommand === 'locktober') {
     return Locktober.stats(routed)
+  }
+
+  // Map
+  if (subCommand === 'map') {
+    if (interactionType === 'experience') return MapRoleExp.map(routed)
+    if (interactionType === 'special') return MapRoleSpecial.map(routed)
   }
 
   // Nickname

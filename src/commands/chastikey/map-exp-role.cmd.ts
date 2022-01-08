@@ -1,49 +1,19 @@
 /* eslint-disable sort-keys */
-import * as Middleware from '@/middleware'
-
-import { ExportRoutes, RouterRouted } from '@/router'
-
-export const Routes = ExportRoutes(
-  {
-    category: 'ChastiKey',
-    controller: mapExpRole,
-    description: 'Help.ChastiKey.CustomizeExpRole.Description',
-    example: '{{prefix}}ck map exp role 1 627557066382245888',
-    middleware: [Middleware.isCKVerified],
-    name: 'ck-map-exp-roles',
-    permissions: {
-      serverAdminOnly: true,
-      serverOnly: true
-    },
-    type: 'message',
-    validate: '/ck:string/map:string/exp:string/role:string/index?=number/roleid?=string'
-  },
-  {
-    category: 'ChastiKey',
-    controller: mapSpecialRoles,
-    description: 'Help.ChastiKey.CustomizeSpecialRole.Description',
-    example: '{{prefix}}ck map special role 1 627557066382245888',
-    middleware: [Middleware.isCKVerified],
-    name: 'ck-map-special-roles',
-    permissions: {
-      serverAdminOnly: true,
-      serverOnly: true
-    },
-    type: 'message',
-    validate: '/ck:string/map:string/special:string/role:string/index?=number/roleid?=string'
-  }
-)
+import { RoutedInteraction } from '@/router'
 
 /**
  * Maps CK Exp roles to roles on server
  * @export
  * @param {RouterRouted} routed
  */
-export async function mapExpRole(routed: RouterRouted) {
+export async function map(routed: RoutedInteraction) {
+  const role = routed.interaction.options.getRole('role')
+  const what = routed.interaction.options.get('what')?.value as number
+
   // Fetch all that have been mapped already
   const alreadyMapped = await routed.bot.DB.getMultiple('server-settings', {
     key: /^server\.ck\.roles\.exp/,
-    serverID: routed.message.guild.id
+    serverID: routed.guild.id
   })
   // Already Mapped as Object
   const alreadyMappedIDs = {
@@ -71,27 +41,24 @@ export async function mapExpRole(routed: RouterRouted) {
     renownedKeyholder: alreadyMapped.find((saved) => saved.key === `server.ck.roles.exp.105`)
   }
 
-  if (routed.v.o.index >= 1 && routed.v.o.index <= 555 && routed.v.o.index && routed.v.o.roleid) {
-    const isTagged = /^\<|@\&([0-9]*)\>&/.test(routed.v.o.roleid)
-    const targetRole = isTagged ? routed.message.mentions.roles.first() : await routed.message.guild.roles.fetch(String(routed.v.o.roleid))
+  if (what >= 1 && what <= 555 && what && role.id) {
+    const targetRole = role
 
     if (targetRole) {
       const upsertResult = await routed.bot.DB.update(
         'server-settings',
-        { serverID: routed.message.guild.id, key: `server.ck.roles.exp.${routed.v.o.index}` },
+        { serverID: routed.guild.id, key: `server.ck.roles.exp.${what}` },
         { value: targetRole.id },
         { upsert: true }
       )
 
-      if (upsertResult) await routed.message.reply(`\`${routed.v.o.index}\` is now pointed to <@&${targetRole.id}>`)
-      return true
+      if (upsertResult) return await routed.reply(`\`${what}\` is now pointed to <@&${targetRole.id}>`, true)
     } else {
-      await routed.message.reply(`Could not find that role id \`${routed.v.o.roleid}\`, please check that you have the correct role id and try again!`)
-      return true
+      return await routed.reply(`Could not find that role id \`${role.id}\`, please check that you have the correct role id and try again!`, true)
     }
   }
 
-  await routed.message.reply(
+  return await routed.reply(
     routed.$render('ChastiKey.Customize.MapExpRole', {
       noviceLockeeX: alreadyMappedIDs.noviceLockeeX ? `<@&${alreadyMappedIDs.noviceLockeeX.value}>` : ``,
       noviceLockeeY: alreadyMappedIDs.noviceLockeeY ? `<@&${alreadyMappedIDs.noviceLockeeY.value}>` : ``,
@@ -113,58 +80,7 @@ export async function mapExpRole(routed: RouterRouted) {
       establishedKeyholder: alreadyMappedIDs.establishedKeyholder ? `<@&${alreadyMappedIDs.establishedKeyholder.value}>` : ``,
       distinguishedKeyholder: alreadyMappedIDs.distinguishedKeyholder ? `<@&${alreadyMappedIDs.distinguishedKeyholder.value}>` : ``,
       renownedKeyholder: alreadyMappedIDs.renownedKeyholder ? `<@&${alreadyMappedIDs.renownedKeyholder.value}>` : ``
-    })
+    }),
+    true
   )
-
-  return true
-}
-
-/**
- * Maps CK Special roles to role on server
- * @export
- * @param {RouterRouted} routed
- */
-export async function mapSpecialRoles(routed: RouterRouted) {
-  // Fetch all that have been mapped already
-  const alreadyMapped = await routed.bot.DB.getMultiple('server-settings', { serverID: routed.message.guild.id, key: /^server\.ck\.roles\.special/ })
-  // Already Mapped as Object
-  const alreadyMappedIDs = {
-    unlocked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.1`),
-    locked: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.2`),
-    locktober2019: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.3`),
-    locktober2020: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.4`),
-    locktober2021: alreadyMapped.find((saved) => saved.key === `server.ck.roles.special.5`)
-  }
-
-  if (((routed.v.o.index >= 1 && routed.v.o.index <= 55) || (routed.v.o.index >= 101 && routed.v.o.index <= 105)) && routed.v.o.index && routed.v.o.roleid) {
-    const isTagged = /^\<|@\&([0-9]*)\>&/.test(routed.v.o.roleid)
-    const targetRole = isTagged ? routed.message.mentions.roles.first() : await routed.message.guild.roles.fetch(String(routed.v.o.roleid))
-
-    if (targetRole) {
-      const upsertResult = await routed.bot.DB.update(
-        'server-settings',
-        { serverID: routed.message.guild.id, key: `server.ck.roles.special.${routed.v.o.index}` },
-        { value: targetRole.id },
-        { upsert: true }
-      )
-
-      if (upsertResult) await routed.message.reply(`\`${routed.v.o.index}\` is now pointed to <@&${targetRole.id}>`)
-      return true
-    } else {
-      await routed.message.reply(`Could not find that role id \`${routed.v.o.roleid}\`, please check that you have the correct role id and try again!`)
-      return true
-    }
-  }
-
-  await routed.message.reply(
-    routed.$render('ChastiKey.Customize.MapSpecialRole', {
-      locked: alreadyMappedIDs.locked ? `<@&${alreadyMappedIDs.locked.value}>` : ``,
-      locktober2019: alreadyMappedIDs.locktober2019 ? `<@&${alreadyMappedIDs.locktober2019.value}>` : ``,
-      locktober2020: alreadyMappedIDs.locktober2020 ? `<@&${alreadyMappedIDs.locktober2020.value}>` : ``,
-      locktober2021: alreadyMappedIDs.locktober2021 ? `<@&${alreadyMappedIDs.locktober2021.value}>` : ``,
-      unlocked: alreadyMappedIDs.unlocked ? `<@&${alreadyMappedIDs.unlocked.value}>` : ``
-    })
-  )
-
-  return true
 }
