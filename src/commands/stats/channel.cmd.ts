@@ -1,37 +1,18 @@
 import * as Utils from '@/utils'
 
-import { ExportRoutes, RouterRouted } from '@/router'
-import { ServerStatisticType, StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
+import { ServerStatisticType, StatisticsSettingType } from '@/objects/statistics'
 
 import { ObjectId } from 'mongodb'
+import { RoutedInteraction } from '@/router'
 import { TextChannel } from 'discord.js'
 import { statsChannel } from '@/embedded/stats-channel'
 
-export const Routes = ExportRoutes({
-  category: 'Stats',
-  controller: statsForChannel,
-  description: 'Help.Stats.ViewChannelStats.Description',
-  example: '{{prefix}}stats channel',
-  middleware: [],
-  name: 'stats-channels',
-  permissions: {
-    defaultEnabled: true,
-    restricted: false,
-    serverOnly: true
-  },
-  type: 'message',
-  validate: '/stats:string/channel:string/id?=string-number'
-})
-
-export async function statsForChannel(routed: RouterRouted) {
-  const channelID = routed.v.o.id !== undefined ? `${routed.v.o.id}` : routed.message.channel.id
+export async function get(routed: RoutedInteraction) {
+  const channelID = routed.interaction.options.getChannel('target')?.id || routed.interaction.channel.id
 
   // Check for stats disabled setting on channel
-  if (await routed.bot.DB.verify('stats-settings', { channelID, setting: StatisticsSettingType.ChannelDisableStats })) {
-    await routed.message.reply(routed.$render('Stats.Channel.DisabledInfo'))
-
-    return true // Stop here
-  }
+  if (await routed.bot.DB.verify('stats-settings', { channelID, setting: StatisticsSettingType.ChannelDisableStats }))
+    return await routed.reply(routed.$render('Stats.Channel.DisabledInfo'))
 
   const data = await routed.bot.DB.aggregate<{ name?: string; userID: string; messages: number; reactions: number }>('stats-servers', [
     {
@@ -40,7 +21,7 @@ export async function statsForChannel(routed: RouterRouted) {
           $gt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000)
         },
         channelID,
-        serverID: routed.message.guild.id,
+        serverID: routed.guild.id,
         type: ServerStatisticType.Message
       }
     },
@@ -72,7 +53,7 @@ export async function statsForChannel(routed: RouterRouted) {
   // Fetch channel details
   const channelDetails = routed.bot.client.channels.cache.find((c) => c.id === channelID) as TextChannel
 
-  await routed.message.channel.send({
+  return await routed.reply({
     embeds: [
       statsChannel({
         created: channelDetails.createdTimestamp,
@@ -80,10 +61,8 @@ export async function statsForChannel(routed: RouterRouted) {
         members: channelDetails.members.size,
         name: channelDetails.name,
         nsfw: channelDetails.nsfw,
-        serverIcon: routed.message.guild.iconURL()
+        serverIcon: routed.guild.iconURL()
       })
     ]
   })
-
-  return true
 }
