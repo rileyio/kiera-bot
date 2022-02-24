@@ -20,7 +20,7 @@ interface StatsUsersData {
 }
 
 export function statsUser(stats: StatsUsersData) {
-  var descriptionBuilt = `\nStats are collected using the UTC timezone. Stats shown are from the last 30 days.\n\n`
+  let descriptionBuilt = `\nStats are collected using the UTC timezone. Stats shown are from the last 30 days.\n\n`
   descriptionBuilt += `Messages on server: \`${stats.messages}\`\n`
   descriptionBuilt += `Reactions on server: \`${stats.reactions}\`\n`
   descriptionBuilt += `Total channels reached: \`${stats.channelsReached}\`\n`
@@ -45,16 +45,16 @@ export function statsUser(stats: StatsUsersData) {
   })
 
   return {
-    title: `User Stats for \`${stats.nickname || stats.username}#${stats.discriminator}\``,
-    description: descriptionBuilt,
     color: 7413873,
-    timestamp: new Date(),
+    description: descriptionBuilt,
     footer: {
       iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
       text: 'Observed by Kiera'
     },
     thumbnail: {
       url: `https://cdn.discordapp.com/avatars/${stats.userID}/${stats.avatar}`
-    }
+    },
+    timestamp: new Date(),
+    title: `User Stats for \`${stats.nickname || stats.username}#${stats.discriminator}\``
   }
 }

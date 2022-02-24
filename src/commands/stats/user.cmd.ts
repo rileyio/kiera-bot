@@ -1,29 +1,13 @@
 import * as Utils from '@/utils'
 
-import { ExportRoutes, RouterRouted } from '@/router'
 import { ServerStatisticType, StatisticsSettingType } from '@/objects/statistics'
 
 import { ObjectId } from 'mongodb'
-import { statsUser } from '@/embedded/stats-user'
+import { RoutedInteraction } from '@/router'
+import { statsUser } from '@/commands/stats/user.embed'
 
-export const Routes = ExportRoutes({
-  category: 'Stats',
-  controller: statsForUser,
-  description: 'Help.Stats.ViewUserStats.Description',
-  example: '{{prefix}}stats user',
-  middleware: [],
-  name: 'stats-user',
-  permissions: {
-    defaultEnabled: true,
-    restricted: false,
-    serverOnly: true
-  },
-  type: 'message',
-  validate: '/stats:string/user:string/id?=string-number'
-})
-
-export async function statsForUser(routed: RouterRouted) {
-  const userID = routed.v.o.id !== undefined ? `${routed.v.o.id}` : routed.author.id
+export async function get(routed: RoutedInteraction) {
+  const userID = routed.interaction.options.getUser('target')?.id || routed.author.id
 
   // Check for stats disabled setting from user
   if (
@@ -32,17 +16,19 @@ export async function statsForUser(routed: RouterRouted) {
       userID
     })
   ) {
-    routed.v.o.id !== undefined
-      ? await routed.message.reply(
-          `This user has requested their stats be disabled - (Note: They may appear in channel or server statistics unless they've deleted all stored statistics.)`
-        )
-      : await routed.message.reply(
-          `You've disabled your stats, while in this state no new stats will be collected and this command will be disabled (Note: you may appear in Server or Channel statistics unless you delete all your user statistics.)`
-        )
-    return true // Stop here
+    // If requested stats are not for the caller
+    if (userID !== routed.author.id)
+      return await routed.reply(
+        `This user has requested their stats be disabled - (Note: They may appear in channel or server statistics unless they've deleted all stored statistics.)`
+      )
+    // For your own stats
+    else
+      return await routed.reply(
+        `You've disabled your stats, while in this state no new stats will be collected and this command will be disabled (Note: you may appear in Server or Channel statistics unless you delete all your user statistics.)`
+      )
   }
 
-  const member = await routed.message.guild.members.fetch(userID)
+  const member = await routed.guild.members.fetch(userID)
   const data = await routed.bot.DB.aggregate<{ name?: string; channelID: string; messages: number; reactions: number }>('stats-servers', [
     {
       $match: {
@@ -58,7 +44,7 @@ export async function statsForUser(routed: RouterRouted) {
             type: ServerStatisticType.Reaction
           }
         ],
-        serverID: routed.message.guild.id,
+        serverID: routed.guild.id,
         userID
       }
     },
@@ -109,7 +95,7 @@ export async function statsForUser(routed: RouterRouted) {
     return stat
   })
 
-  await routed.message.channel.send({
+  return await routed.reply({
     embeds: [
       statsUser({
         avatar: member.user.avatar,
@@ -126,6 +112,4 @@ export async function statsForUser(routed: RouterRouted) {
       })
     ]
   })
-
-  return true
 }
