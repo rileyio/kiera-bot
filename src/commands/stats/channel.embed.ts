@@ -15,7 +15,7 @@ interface StatsChannelsData {
 }
 
 export function statsChannel(stats: StatsChannelsData) {
-  var descriptionBuilt = `\nStats are collected using the UTC timezone. Stats shown are from the last 30 days.\n\n`
+  let descriptionBuilt = `\nStats are collected using the UTC timezone. Stats shown are from the last 30 days.\n\n`
   descriptionBuilt += `Channel Created: \`${new Date(stats.created).toLocaleDateString()}\` (\`${Utils.Date.calculateHumanTimeDDHHMM(
     Date.now() / 1000 - stats.created / 1000
   )} ago\`)\n`
@@ -28,16 +28,16 @@ export function statsChannel(stats: StatsChannelsData) {
   })
 
   return {
-    title: `Channel Stats for \`${stats.name}\``,
-    description: descriptionBuilt,
     color: 7413873,
-    timestamp: new Date(),
+    description: descriptionBuilt,
     footer: {
       iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
       text: 'Observed by Kiera'
     },
     thumbnail: {
       url: stats.serverIcon
-    }
+    },
+    timestamp: new Date(),
+    title: `Channel Stats for \`${stats.name}\``
   }
 }

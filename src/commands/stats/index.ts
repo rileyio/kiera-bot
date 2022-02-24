@@ -1,6 +1,11 @@
-import * as About from '@/commands/stats/about'
+import * as About from '@/commands/stats/about.cmd'
 import * as Middleware from '@/middleware'
-import * as StatsServer from '@/commands/stats/server'
+import * as StatsChannel from '@/commands/stats/channel.cmd'
+import * as StatsChannelManage from '@/commands/stats/channel-manage.cmd'
+import * as StatsServer from '@/commands/stats/stats-server.cmd'
+import * as StatsServerManage from '@/commands/stats/server-manage.cmd'
+import * as StatsUser from '@/commands/stats/user.cmd'
+import * as StatsUserManage from '@/commands/stats/user-manage.cmd'
 
 import { ExportRoutes, RoutedInteraction } from '@/router'
 
@@ -18,19 +23,114 @@ export const Routes = ExportRoutes({
   slash: new SlashCommandBuilder()
     .setName('stats')
     .setDescription('Server/Channel/User Stats') // .addSubcommand((subcommand) => subcommand.setName('server').setDescription('Server Stats'))
-    .addStringOption((option) =>
-      option.setName('type').setDescription('Server Stats').setRequired(true).addChoice('About', 'about').addChoice('Channel', 'channel').addChoice('User', 'user')
+    // * /stats about ...
+    .addSubcommand((subcommand) => subcommand.setName('about').setDescription('About Statistics'))
+    // * /stats server ...
+    .addSubcommand((subcommand) => subcommand.setName('server').setDescription('Server Statistics'))
+    // * /stats channel ...
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('channel')
+        .setDescription('Channel Statistics')
+        .addChannelOption((option) => option.setName('target').setDescription('Target a Different Channel').setRequired(false))
+    )
+    // * /stats user ...
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('user')
+        .setDescription('User Statistics')
+        .addChannelOption((option) => option.setName('target').setDescription('Target a Different Channel').setRequired(false))
+    )
+    // * /stats delete ...
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('delete')
+        .setDescription('Delete Stats')
+        .addStringOption((option) =>
+          option
+            .setName('target')
+            .setDescription('For Server | Channel | User')
+            .setRequired(true)
+            .addChoice('Server', 'server')
+            .addChoice('Channel', 'channel')
+            .addChoice('User', 'user')
+        )
+    )
+    // * /stats enable ...
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('enable')
+        .setDescription('Enable Stats')
+        .addStringOption((option) =>
+          option
+            .setName('target')
+            .setDescription('For Server | Channel | User')
+            .setRequired(true)
+            .addChoice('Server', 'server')
+            .addChoice('Channel', 'channel')
+            .addChoice('User', 'user')
+        )
+    )
+    // * /stats disable ...
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('disable')
+        .setDescription('Disable Stats')
+        .addStringOption((option) =>
+          option
+            .setName('target')
+            .setDescription('For Server | Channel | User')
+            .setRequired(true)
+            .addChoice('Server', 'server')
+            .addChoice('Channel', 'channel')
+            .addChoice('User', 'user')
+        )
     ),
   type: 'interaction'
 })
 
 function stats(routed: RoutedInteraction) {
-  // const subCommand = routed.interaction.options.getSubcommand()
-  const interactionType = routed.interaction.options.get('type')?.value
+  const subCommand = routed.interaction.options.getSubcommand()
 
   // About
-  if (interactionType === 'about') return About.aboutStats(routed)
+  if (subCommand === 'about') return About.aboutStats(routed)
 
   // Server
-  if (interactionType === 'server') return StatsServer.serverStats(routed)
+  if (subCommand === 'server') {
+    return StatsServer.get(routed)
+  }
+
+  // Channel
+  if (subCommand === 'channel') {
+    return StatsChannel.get(routed)
+  }
+
+  // Server
+  if (subCommand === 'user') {
+    return StatsUser.get(routed)
+  }
+
+  // Delete
+  if (subCommand === 'delete') {
+    const interactionTarget = routed.interaction.options.get('target')?.value
+    if (interactionTarget === 'server') return StatsServerManage.deleteServerStats(routed)
+    if (interactionTarget === 'channel') return StatsChannelManage.deleteChannelStats(routed)
+    if (interactionTarget === 'user') return StatsUserManage.deleteUserStats(routed)
+  }
+
+  // Enable
+  if (subCommand === 'enable') {
+    const interactionTarget = routed.interaction.options.get('target')?.value
+    if (interactionTarget === 'server') return StatsServerManage.enableServerStats(routed)
+    if (interactionTarget === 'channel') return StatsChannelManage.enableChannelStats(routed)
+    if (interactionTarget === 'user') return StatsUserManage.enableUserStats(routed)
+  }
+
+  // Disable
+  if (subCommand === 'disable') {
+    const interactionTarget = routed.interaction.options.get('target')?.value
+    if (interactionTarget === 'server') return StatsServerManage.disableServerStats(routed)
+    if (interactionTarget === 'channel') return StatsChannelManage.disableChannelStats(routed)
+    if (interactionTarget === 'user') return StatsUserManage.diableUserStats(routed)
+  }
 }

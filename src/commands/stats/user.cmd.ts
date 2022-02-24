@@ -4,7 +4,7 @@ import { ServerStatisticType, StatisticsSettingType } from '@/objects/statistics
 
 import { ObjectId } from 'mongodb'
 import { RoutedInteraction } from '@/router'
-import { statsUser } from '@/commands/stats/user.embed'
+import { statsUser } from '@/commands/stats/stats-user'
 
 export async function get(routed: RoutedInteraction) {
   const userID = routed.interaction.options.getUser('target')?.id || routed.author.id

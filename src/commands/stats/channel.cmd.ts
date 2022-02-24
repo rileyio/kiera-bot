@@ -5,7 +5,7 @@ import { ServerStatisticType, StatisticsSettingType } from '@/objects/statistics
 import { ObjectId } from 'mongodb'
 import { RoutedInteraction } from '@/router'
 import { TextChannel } from 'discord.js'
-import { statsChannel } from '@/embedded/stats-channel'
+import { statsChannel } from '@/commands/stats/channel.embed'
 
 export async function get(routed: RoutedInteraction) {
   const channelID = routed.interaction.options.getChannel('target')?.id || routed.interaction.channel.id
