@@ -77,7 +77,7 @@ export class Bot {
     this.BotMonitor = new BotMonitor(this)
     this.Router = new CommandRouter(await routeLoader(this.Log.Router), this)
     this.MsgTracker = new MsgTracker(this)
-    // this.Task = new Task.TaskManager(this)
+    this.Task = new Task.TaskManager(this)
 
     ////////////////////////////////////////
     // Bot Monitor - Sync //////////////////
@@ -93,19 +93,19 @@ export class Bot {
     // Background Tasks ////////////////////
     ////////////////////////////////////////
     // Register background tasks
-    // this.Task.start([
-    //   new Task.StatusMessageRotatorScheduled(),
-    //   new Task.ChastiKeyAPIUsers(),
-    //   new Task.ChastiKeyAPIRunningLocks(),
-    //   new Task.ChastiKeyAPILocktober2019(),
-    //   new Task.ChastiKeyAPILocktober2020(),
-    //   new Task.ChastiKeyAPILocktober2021(),
-    //   // // new Task.ChastiKeyBackgroundLocktoberMonitor()
-    //   new Task.ChastiKeyBackgroundVerifiedMonitor(),
-    //   new Task.ChastiKeyGenerateStatsScheduled(),
-    //   new Task.DBAgeCleanupScheduled()
-    //   // new Task.StatsCleanerScheduled()
-    // ])
+    this.Task.start([
+      new Task.StatusMessageRotatorScheduled(),
+      new Task.ChastiKeyAPIUsers(),
+      new Task.ChastiKeyAPIRunningLocks(),
+      new Task.ChastiKeyAPILocktober2019(),
+      new Task.ChastiKeyAPILocktober2020(),
+      new Task.ChastiKeyAPILocktober2021(),
+      // // new Task.ChastiKeyBackgroundLocktoberMonitor()
+      new Task.ChastiKeyBackgroundVerifiedMonitor(),
+      new Task.ChastiKeyGenerateStatsScheduled(),
+      new Task.DBAgeCleanupScheduled()
+      // new Task.StatsCleanerScheduled()
+    ])
 
     ////////////////////////////////////////
     // Register 3rd party services /////////
