@@ -2,15 +2,19 @@ import * as Utils from '@/utils'
 import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import { MessageEmbed } from 'discord.js'
 
-export function decisionFromSaved(decision: TrackedDecision, option: TrackedDecisionOption, author: { name: string; avatar: string; id: string; server: { prefix: string } }): Partial<MessageEmbed> {
-  var _embed: Partial<MessageEmbed> = {
-    title: `${decision.name}`,
-    description: `${decision.description}`,
+export function decisionFromSaved(
+  decision: TrackedDecision,
+  option: TrackedDecisionOption,
+  author: { name: string; avatar: string; id: string; server: { prefix: string } }
+): Partial<MessageEmbed> {
+  const _embed: Partial<MessageEmbed> = {
     color: 14553782,
+    description: `${decision.description}`,
     footer: {
       iconURL: `https://cdn.discordapp.com/avatars/${author.id}/${author.avatar}`,
       text: `Created by: ${author.name}`
-    }
+    },
+    title: `${decision.name}`
   }
 
   if (option.type === 'image' || Utils.URL.isImage(option.text)) {
@@ -37,9 +41,9 @@ export function decisionFromSaved(decision: TrackedDecision, option: TrackedDeci
 }
 
 export function decisionRealtime(question: string, result: string): Partial<MessageEmbed> {
-  var _embed: Partial<MessageEmbed> = {
-    title: `${question}`,
-    color: 14553782
+  const _embed: Partial<MessageEmbed> = {
+    color: 14553782,
+    title: `${question}`
   }
 
   if (Utils.URL.isImage(result)) {

@@ -1,13 +1,16 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
+
+import { en, sb } from '@/utils'
+
 import test from 'ava'
-import { sb, en } from '@/utils'
 
 test('StringBuilder => Test a string', t => {
   t.is(typeof en.help.ck === 'string', true)
 })
 
 test('StringBuilder => Test loading a string w/overrides', t => {
-  const final = sb(`{{prefix}}test{{prefix}}`, { prefix: '!' })
+  const final = sb(`{{prefix}}test{{prefix}}`, { prefix: '/' })
   t.is(final, '!test!')
 })
 

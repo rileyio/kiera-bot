@@ -15,7 +15,7 @@ export function embed(authorID: string, decisions: Array<TrackedDecision>): Part
           ? 'None to List'
           : asOwner
               .map((d) => {
-                return `ID: \`${d._id}\`\nName: ${d.name}\n${d.nickname ? `Nickname: ${d.nickname}\n` : ''}Options: \`${d.options.length}\`\n`
+                return `ID: \`${d._id}\`\n**Name:** \`${d.name}\`\n${d.nickname ? `**Nickname:** ${d.nickname}\n` : ''}**Options:** \`${d.options.length}\`\n`
               })
               .join('\n')
       },
@@ -26,7 +26,7 @@ export function embed(authorID: string, decisions: Array<TrackedDecision>): Part
           ? 'None to List'
           : asManager
               .map((d) => {
-                return `ID: \`${d._id}\`\nName: ${d.name}\n${d.nickname ? `Nickname: ${d.nickname}\n` : ''}Options: \`${d.options.length}\`\n`
+                return `ID: \`${d._id}\`\n**Name:** \`${d.name}\`\n${d.nickname ? `**Nickname:** ${d.nickname}\n` : ''}**Options:** \`${d.options.length}\`\n`
               })
               .join('\n')
       }

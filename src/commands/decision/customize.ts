@@ -39,7 +39,7 @@ export async function nicknameDecision(routed: RoutedInteraction) {
   const shortRegex = XRegExp('^([a-z0-9\\-]*)$', 'i')
   const userNickname = new TrackedUser(await routed.bot.DB.get('users', { id: routed.author.id }))
   const nickname = routed.interaction.options.get('nickname')?.value ? String(routed.interaction.options.get('nickname').value).replace(' ', '-') : ''
-  const decisionID = routed.interaction.options.get('id')?.value
+  const decisionID = routed.interaction.options.get('id')?.value as string
 
   // Stop here if the user has not set a short username yet
   if (!userNickname.Decision.nickname) {

@@ -10,16 +10,6 @@ import { ObjectId } from 'bson'
 export const Routes = ExportRoutes(
   {
     category: 'Fun',
-    controller: newDecision,
-    description: 'Help.Decision.New.Description',
-    example: '{{prefix}}decision new "name"',
-    middleware: [Middleware.isUserRegistered],
-    name: 'decision-new',
-    type: 'message',
-    validate: '/decision:string/new:string/name=string'
-  },
-  {
-    category: 'Fun',
     controller: addDecisionManager,
     description: 'Help.Decision.AddManager.Description',
     example: '{{prefix}}decision "id" manager add @user#1234',
@@ -89,44 +79,6 @@ export const Routes = ExportRoutes(
     validate: '/decision:string/oldid=string/new:string/id:string'
   }
 )
-
-/**
- * Create a new decision in the DB
- * @export
- * @param {RouterRouted} routed
- */
-export async function newDecision(routed: RouterRouted) {
-  // Create a new question &
-  const decision = new TrackedDecision({
-    authorID: routed.message.author.id,
-    name: routed.v.o.name,
-    serverID: routed.message.guild.id
-  })
-  const updated = await routed.bot.DB.add('decision', decision)
-
-  if (updated) {
-    await routed.message.reply(routed.$render('Decision.Edit.NewQuestionAdded', { id: decision._id }))
-    return true
-  }
-  return false
-}
-
-export async function newDecisionEntry(routed: RouterRouted) {
-  // Get the saved decision from the db (Only the creator can edit)
-  const decisionFromDB = await routed.bot.DB.get('decision', {
-    $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }],
-    _id: new ObjectId(routed.v.o.id)
-  })
-
-  if (decisionFromDB) {
-    const decision = new TrackedDecision(decisionFromDB)
-    decision.options.push(new TrackedDecisionOption({ text: routed.v.o.text }))
-    await routed.bot.DB.update('decision', { _id: decision._id }, decision)
-    await routed.message.reply(routed.$render('Decision.Edit.NewEntry', { added: routed.v.o.text }))
-    return true
-  }
-  return false
-}
 
 export async function generateNewDecisionID(routed: RouterRouted) {
   const oldDecision = await routed.bot.DB.get('decision', {

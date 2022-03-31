@@ -1,4 +1,8 @@
-import * as DecisionRoll from '@/commands/decision/roll'
+import * as DecisionAdd from './add.cmd'
+import * as DecisionCreation from './create.cmd'
+import * as DecisionDelete from './delete.cmd'
+import * as DecisionRemove from '@/commands/decision/remove.cmd'
+import * as DecisionRoll from '@/commands/decision/roll.cmd'
 import * as DecisionRollCustomize from '@/commands/decision/customize'
 import * as DecisionRollList from '@/commands/decision/list.cmd'
 import * as Middleware from '@/middleware'
@@ -19,6 +23,24 @@ export const Routes = ExportRoutes({
   slash: new SlashCommandBuilder()
     .setName('decision')
     .setDescription('Decision Rolls Utilize User Generated Outcomes')
+    // * Add to decision roller
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('add')
+        .setDescription('Add Something to Decision Roll')
+        .addStringOption((option) => option.setName('id').setDescription('Specify the ID or Nickname of the Decision Roller').setRequired(true))
+        .addStringOption((option) => option.setName('target').setDescription('What do you wish to add?').setRequired(true).addChoice('Outcome', 'outcome'))
+        .addStringOption((option) => option.setName('value').setDescription('Please supply the value to add').setRequired(true))
+    )
+    // * Create a new decision roller
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('create')
+        .setDescription('Create new Decision Roll')
+        .addStringOption((option) => option.setName('title').setDescription('Please Supply the new Decision Roller with a Title').setRequired(true))
+    )
+    // * Delete from/decision roller
+    .addSubcommand((subcommand) => subcommand.setName('delete').setDescription('Delete a Decision Roller'))
     // * Directly interact with Decision Rolls
     .addSubcommand((subcommand) =>
       subcommand
@@ -34,14 +56,18 @@ export const Routes = ExportRoutes({
         .addStringOption((option) => option.setName('id').setDescription('Specify the ID or Nickname of the Decision Roller').setRequired(true))
         .addStringOption((option) => option.setName('nickname').setDescription('A Nicknamed Roller is Easier to Share With Other Users and is More Memorable').setRequired(true))
     )
-    .addSubcommand((subcommand) =>
-      subcommand.setName('list').setDescription('Fetch a List of Decision Rolls Where You are the Creator or are Listed as a Manager.')
-    ),
+    // * Remove Decision Roller Outcome
+    .addSubcommand((subcommand) => subcommand.setName('remove').setDescription('Remove Outcome from Decision Roll'))
+    // * List Owned or Managed Decision Rollers
+    .addSubcommand((subcommand) => subcommand.setName('list').setDescription('Fetch a List of Decision Rolls Where You are the Creator or are Listed as a Manager.')),
+  // .addSubcommand((subcommand) =>
+  //   subcommand.setName('web').setDescription('View Web Decision Editor')
+  // )
   type: 'interaction'
 })
 
 async function decisionRouterSub(routed: RoutedInteraction) {
-  const subCommand = routed.interaction.options.getSubcommand() as 'roll' | 'manage' | 'list'
+  const subCommand = routed.interaction.options.getSubcommand() as 'add' | 'create' | 'delete' | 'remove' | 'roll' | 'manage' | 'list'
   const idOrNickname = routed.interaction.options.get('id')?.value
   // const interactionType = routed.interaction.options.get('type')?.value
 
@@ -60,19 +86,26 @@ async function decisionRouterSub(routed: RoutedInteraction) {
     return await DecisionRollList.list(routed)
   }
 
-  // // Stats
-  // if (subCommand === 'stats') {
-  //   if (interactionType === 'lockee') return CKStats.getLockeeStats(routed)
-  //   if (interactionType === 'lockees') return CKStats.getKeyholderLockees(routed)
-  //   if (interactionType === 'keyholder') return CKStats.getKeyholderStats(routed)
-  //   if (interactionType === 'multilocked') return CKStats.getCheckLockeeMultiLocked(routed)
-  // }
+  // New Decision
+  if (subCommand === 'create') {
+    return await DecisionCreation.newDecision(routed)
+  }
 
-  // // Update
-  // if (subCommand === 'update') return CKUpdate.update(routed)
+  // New Decision Outcome
+  if (subCommand === 'add') {
+    const interactionTarget = routed.interaction.options.get('target')?.value
+    if (interactionTarget === 'outcome') return await DecisionAdd.addOutcome(routed)
+  }
 
-  // // Verify
-  // if (subCommand === 'verify') return CKVerify.verify(routed)
+  // Delete Decision Roller
+  if (subCommand === 'delete') {
+    return await DecisionDelete.deleteDecision(routed)
+  }
+
+  // Remove Outcome from Decision Roller
+  if (subCommand === 'remove') {
+    return await DecisionRemove.removeOutcome(routed)
+  }
 
   // Nothing has been specified
   await routed.reply('A Decision Menu Option Must be Selected.')

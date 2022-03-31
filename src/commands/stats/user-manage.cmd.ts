@@ -44,6 +44,9 @@ export async function deleteUserStats(routed: RoutedInteraction) {
       collector.on('collect', async (i: MessageComponentInteraction) => {
         console.log('🧠 Processing user input')
 
+        // When its not the author interacting, skip
+        if (i.user.id !== routed.author.id) return
+
         if (i.customId === 'yes') {
           // await i.update({ components: [], content: '🗑 Deleting...' })
 

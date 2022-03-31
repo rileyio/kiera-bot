@@ -5,7 +5,7 @@ import { ObjectId } from 'bson'
 import { RoutedInteraction } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
-import { decisionFromSaved } from '@/embedded/decision-embed'
+import { decisionFromSaved } from '@/commands/decision/roll.embed'
 
 export async function runSavedDecision(routed: RoutedInteraction) {
   const idOrNickname = routed.interaction.options.get('id').value as string
