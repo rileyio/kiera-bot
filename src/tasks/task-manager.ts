@@ -12,7 +12,7 @@ export class TaskManager {
 
   constructor(bot: Bot) {
     this.Bot = bot
-    bot.Log.Bot.log('db url', getSecret('DB_STRING', this.Bot.Log.Bot))
+    // bot.Log.Bot.log('db url', getSecret('DB_STRING', this.Bot.Log.Bot))
     this.Agenda = new Agenda({
       db: {
         address: getSecret('DB_STRING', this.Bot.Log.Bot),

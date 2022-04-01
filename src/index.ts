@@ -200,10 +200,14 @@ export class Bot {
   }
 
   public async onReady() {
-    const officialDiscord = await this.client.guilds.fetch(process.env.DISCORD_BOT_OFFICAL_DISCORD)
-    // Setup Bot utilized channels
-    this.channel.auditLog = officialDiscord.channels.cache.get(process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
-    this.channel.announcementsChannel = officialDiscord.channels.cache.get(process.env.DISCORD_ANNOUNCEMENTS_CHANNEL) as Discord.TextChannel
+    try {
+      const officialDiscord = await this.client.guilds.fetch(process.env.DISCORD_BOT_OFFICAL_DISCORD)
+      // Setup Bot utilized channels
+      this.channel.auditLog = officialDiscord.channels.cache.get(process.env.DISCORD_AUDITLOG_CHANNEL) as Discord.TextChannel
+      this.channel.announcementsChannel = officialDiscord.channels.cache.get(process.env.DISCORD_ANNOUNCEMENTS_CHANNEL) as Discord.TextChannel
+    } catch (error) {
+      this.Log.Bot.error('Error fetching Official Discord.')
+    }
 
     // Register Slash commands on Kiera's Development server
     const commands = []
