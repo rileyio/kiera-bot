@@ -9,7 +9,5 @@ export async function list(routed: RoutedInteraction) {
     return await routed.reply('There Are No Decision Rollers to List.')
   }
 
-  console.log('decisionsStored', decisionsStored)
-
   return routed.reply({ embeds: [embed(authorID, decisionsStored)] }, true)
 }
