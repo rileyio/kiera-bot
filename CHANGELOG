@@ -1,3 +1,6 @@
+9.0.0
+- Updated: Converted most core commands to slash commands.
+
 8.0.0-beta-3
 - Added: Support for Kiera to use Slash commands (Work in Progress to migrate certain commands to develop this further)
 - Added: Reply shorthand functionality for commands to reply to command author (Work in Progress with upgrading existing commands)
