@@ -51,6 +51,7 @@ export function lockeeStats(lockeeData: LockeeDataResponse, options: { showRatin
     lastActiveInApp: Utils.Date.calculateHumanTimeDDHHMM(Date.now() / 1000 - lockeeData.data.timestampLastActive, true),
     lockedFor: Math.round((lockeeData.data.cumulativeSecondsLocked / 2592000) * 100) / 100,
     locksCompleted: lockeeData.data.totalNoOfCompletedLocks,
+    longestLockCompleted: Utils.Date.calculateHumanTimeDDHHMM(lockeeData.data.longestCompletedLockInSeconds, true),
     ratings: lockeeData.data.noOfRatings,
     // Only show the ratings if the user has > 5 ratings
     showAvgRating: lockeeData.data.noOfRatings > 4,
