@@ -219,7 +219,7 @@ export class Bot {
       this.Log.Bot.verbose('Started refreshing application (/) commands.')
       // ! Disabling ESLINT for the following line of code till shit gets fixed in the source libs
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (process.env.BOT_BLOCK_GLOBALSLASH)
+      if (process.env.BOT_BLOCK_GLOBALSLASH === 'true')
         await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, process.env.DISCORD_BOT_OFFICAL_DISCORD) as any, { body: commands })
       else await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID) as any, { body: commands })
       this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
