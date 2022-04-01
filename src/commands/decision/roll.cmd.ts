@@ -1,7 +1,7 @@
 import * as Random from 'random'
 import * as XRegExp from 'xregexp'
 
-import { ObjectId } from 'bson'
+import { ObjectID } from 'bson'
 import { RoutedInteraction } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
@@ -14,10 +14,13 @@ export async function runSavedDecision(routed: RoutedInteraction) {
   const shortMatch = isShort ? XRegExp.exec(idOrNickname, shortRegex) : null
   const userNickname = isShort ? shortMatch['username'] : null
   const decisionNickname = isShort ? shortMatch['nickname'] : null
-  const userByNickname = new TrackedUser(isShort ? await routed.bot.DB.get('users', { 'Decision.nickname': String(new RegExp(`^${userNickname}$`, 'i')) }) : {})
+
+  const userByNickname = new TrackedUser(isShort ? await routed.bot.DB.get('users', { 'Decision.nickname': new RegExp(`^${userNickname}$`, 'i') }) : {})
   const decisionFromDB = isShort
-    ? await routed.bot.DB.get('decision', { authorID: userByNickname.id, nickname: String(new RegExp(`^${decisionNickname}$`, 'i')) })
-    : await routed.bot.DB.get('decision', { _id: new ObjectId(idOrNickname) })
+    ? await routed.bot.DB.get('decision', { authorID: userByNickname.id, nickname: new RegExp(`^${decisionNickname}$`, 'i') })
+    : await routed.bot.DB.get('decision', { _id: new ObjectID(idOrNickname) })
+
+  console.log('Raw Decision:', decisionFromDB)
 
   if (decisionFromDB) {
     const decision = new TrackedDecision(decisionFromDB)
@@ -37,8 +40,7 @@ export async function runSavedDecision(routed: RoutedInteraction) {
 
     // Halt if decision is disabled
     if (decision.enabled === false) {
-      await routed.reply(`Decision not enabled!`)
-      return true // Stop here
+      return await routed.reply(`Decision not enabled!`)
     }
 
     // Lookup author
@@ -89,7 +91,7 @@ export async function runSavedDecision(routed: RoutedInteraction) {
     }
 
     // When 'Basic' is used for Consume Mode
-    if (decision.consumeMode === 'Basic') optionsPool = decision.options
+    if (decision.consumeMode === 'Basic' || decision.consumeMode === undefined) optionsPool = decision.options
 
     // If the outcomes pool is empty: Inform and stop there
     if (optionsPool.length === 0) {

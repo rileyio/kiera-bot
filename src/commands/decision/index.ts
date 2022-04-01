@@ -1,6 +1,8 @@
 import * as DecisionAdd from './add.cmd'
 import * as DecisionCreation from './create.cmd'
 import * as DecisionDelete from './delete.cmd'
+import * as DecisionNickname from '@/commands/decision/nickname.cmd'
+import * as DecisionPrefix from '@/commands/decision/prefix.cmd'
 import * as DecisionRemove from '@/commands/decision/remove.cmd'
 import * as DecisionRoll from '@/commands/decision/roll.cmd'
 import * as DecisionRollCustomize from '@/commands/decision/customize'
@@ -48,13 +50,20 @@ export const Routes = ExportRoutes({
         .setDescription('Roll User Generated Decision')
         .addStringOption((option) => option.setName('id').setDescription('Specify the ID or Nickname of the Decision Roller').setRequired(true))
     )
-    // * Manage Decision Rolls
+    // * Set Nickname for Decision Roller
     .addSubcommand((subcommand) =>
       subcommand
         .setName('nickname')
         .setDescription('A Nicknamed Roller is Easier to Share With Other Users and is More Memorable')
         .addStringOption((option) => option.setName('id').setDescription('Specify the ID or Nickname of the Decision Roller').setRequired(true))
         .addStringOption((option) => option.setName('nickname').setDescription('A Nicknamed Roller is Easier to Share With Other Users and is More Memorable').setRequired(true))
+    )
+    // * Set Prefix for Decision Rolls that have a Nickname
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('prefix')
+        .setDescription('Set a Custom Prefix for your Decision Rollers, Example: emma:nickname')
+        .addStringOption((option) => option.setName('prefix').setDescription('Specify Prefix to use for your Authored Decision Rollers').setRequired(true))
     )
     // * Remove Decision Roller Outcome
     .addSubcommand((subcommand) => subcommand.setName('remove').setDescription('Remove Outcome from Decision Roll'))
@@ -67,7 +76,7 @@ export const Routes = ExportRoutes({
 })
 
 async function decisionRouterSub(routed: RoutedInteraction) {
-  const subCommand = routed.interaction.options.getSubcommand() as 'add' | 'create' | 'delete' | 'remove' | 'roll' | 'manage' | 'list'
+  const subCommand = routed.interaction.options.getSubcommand() as 'add' | 'create' | 'delete' | 'nickname' | 'prefix' | 'remove' | 'roll' | 'manage' | 'list'
   const idOrNickname = routed.interaction.options.get('id')?.value
   // const interactionType = routed.interaction.options.get('type')?.value
 
@@ -105,6 +114,16 @@ async function decisionRouterSub(routed: RoutedInteraction) {
   // Remove Outcome from Decision Roller
   if (subCommand === 'remove') {
     return await DecisionRemove.removeOutcome(routed)
+  }
+
+  // Set Decision Roll Nickname
+  if (subCommand === 'nickname') {
+    return await DecisionNickname.setNickname(routed)
+  }
+
+  // Set Decision Roller Nickname Prefix
+  if (subCommand === 'prefix') {
+    return await DecisionPrefix.setPrefix(routed)
   }
 
   // Nothing has been specified
