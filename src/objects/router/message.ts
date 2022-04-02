@@ -10,16 +10,16 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 export class MessageRoute {
   public readonly _defaultPermissions = {
     defaultEnabled: true,
+    manageChannelReq: false,
     restricted: false,
-    serverAdminOnly: false,
     restrictedTo: [],
-    serverOnly: true,
-    manageChannelReq: false
+    serverAdminOnly: false,
+    serverOnly: true
   }
 
   public category: string
   public command: string
-  public controller: (routed: RouterRouted) => Promise<Boolean>
+  public controller: (routed: RouterRouted) => Promise<boolean>
   public description: string
   public example: string
   public help: string
@@ -59,7 +59,10 @@ export class MessageRoute {
     // Prevent error
     if (this.type !== 'message') throw new Error('Type is not "message", unable to .test(message: string)')
     if (this.validation.test(message)) {
-      return { validateSignature: this.validate, matched: true }
+      return {
+        matched: true,
+        validateSignature: this.validate
+      }
     } else {
       if (this.validateAlias) {
         let aliasMatched = false
@@ -68,9 +71,8 @@ export class MessageRoute {
 
         for (let index = 0; index < this.validateAlias.length; index++) {
           if (aliasMatched) continue
-          let alias = this.validateAlias[index]
-
-          let tempValidate = new Validate(alias)
+          const alias = this.validateAlias[index]
+          const tempValidate = new Validate(alias)
           // console.log('testing alias', alias)
           // console.log('debug alias', tempValidate.test(message))
           if (tempValidate.test(message)) {
@@ -80,12 +82,19 @@ export class MessageRoute {
         }
 
         // console.log('alias matched', aliasMatched)
-        if (aliasMatched) return { validateSignature: aliasFromMatch, matched: aliasMatched }
+        if (aliasMatched)
+          return {
+            matched: aliasMatched,
+            validateSignature: aliasFromMatch
+          }
       }
     }
 
     // Fallback - failed
-    return { validateSignature: this.validate, matched: false }
+    return {
+      matched: false,
+      validateSignature: this.validate
+    }
   }
 
   private getCommand(str: string) {

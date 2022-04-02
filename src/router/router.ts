@@ -1,5 +1,3 @@
-import * as Utils from '../utils/'
-
 import { GuildMember, Interaction, Message, TextChannel, User } from 'discord.js'
 import { MessageRoute, RouteConfiguration, RouterRouted, RouterStats } from '../objects/router/'
 
@@ -9,9 +7,6 @@ import { ProcessedPermissions } from './route-permissions'
 import { ServerStatisticType } from '../objects/statistics'
 import { TrackedMessage } from '../objects/message'
 import { TrackedUser } from '@/objects/user/'
-import { fallbackHelp } from '@/embedded/fallback-help'
-
-const GLOBAL_PREFIX = process.env.BOT_MESSAGE_PREFIX
 
 /**
  * The almighty incoming commands router!
@@ -141,7 +136,11 @@ export class CommandRouter {
     if (mwareProcessed === mwareCount) {
       // this.bot.BotMonitor.LiveStatistics.increment('commands-routed')
       // Check status returns later for stats tracking
-      await route.controller(routed)
+      try {
+        await route.controller(routed)
+      } catch (error) {
+        this.bot.Log.Router.error('Router -> Failed to fully execute controller, error:', error)
+      }
       // this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
       return // End routing here
     }
@@ -265,7 +264,7 @@ export class CommandRouter {
       mwareProcessed += 1
     }
 
-    this.bot.Log.Router.log(`Router -> Route middleware processed: ${mwareProcessed} /${mwareCount}`)
+    this.bot.Log.Router.log(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
 
     // Stop execution of route if middleware is completed
     if (mwareProcessed === mwareCount) {
