@@ -1,5 +1,6 @@
 9.1.0
 - Updated: Docker mapping to once again allow API access.
+- Updated: Dependencies.
 - Removed: References to old prefix system in code.
 - Removed: Reaction handling.
 
