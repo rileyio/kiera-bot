@@ -149,6 +149,11 @@ export class CommandRouter {
     }
   }
 
+  /**
+   * Process Routed Slash Command
+   * @param interaction
+   * @returns
+   */
   public async routeInteraction(interaction: Interaction) {
     if (!interaction.isCommand()) return // Hard block
     const { channel, commandName, guild, guildId, member, user } = interaction
@@ -157,7 +162,7 @@ export class CommandRouter {
 
     // If no route matched, stop here
     if (!route) {
-      this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
+    this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       // Track in an audit event
       this.bot.Audit.NewEntry({
         error: 'Failed to process command',
@@ -176,6 +181,8 @@ export class CommandRouter {
 
       return // End here
     }
+
+    this.bot.Log.Router.log(`Router -> Routing Command: ${route.name}`)
 
     // Lookup Kiera User in DB
     const kieraUser = new TrackedUser(
