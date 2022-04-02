@@ -115,7 +115,7 @@ export class RouterRouted<T = undefined> {
       if (this.route.slash && this.interaction) {
         if (typeof response === 'object') await (this.interaction as BaseCommandInteraction).reply(Object.assign(response, { ephemeral }))
         else await (this.interaction as BaseCommandInteraction).reply({ content: response, ephemeral })
-      } else await this.message.reply(response)
+      } else await this.reply(response)
       return true
     } catch (error) {
       this.bot.Log.Router.error('Unable to .reply =>', error)

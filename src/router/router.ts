@@ -96,9 +96,7 @@ export class CommandRouter {
     if (!route) return
 
     // Lookup Kiera User in DB
-    const kieraUser = new TrackedUser(
-      await this.bot.DB.get('users', { id: user.id })
-    )
+    const kieraUser = new TrackedUser(await this.bot.DB.get('users', { id: user.id }))
 
     // Check if not stored - will be no Discord ID
     if (!kieraUser.id) kieraUser.__notStored = true
@@ -162,7 +160,7 @@ export class CommandRouter {
 
     // If no route matched, stop here
     if (!route) {
-    this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
+      this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       // Track in an audit event
       this.bot.Audit.NewEntry({
         error: 'Failed to process command',
@@ -185,9 +183,7 @@ export class CommandRouter {
     this.bot.Log.Router.log(`Router -> Routing Command: ${route.name}`)
 
     // Lookup Kiera User in DB
-    const kieraUser = new TrackedUser(
-      await this.bot.DB.get('users', { id: user.id })
-    )
+    const kieraUser = new TrackedUser(await this.bot.DB.get('users', { id: user.id }))
 
     // Check if not stored - will be no Discord ID
     if (!kieraUser.id) kieraUser.__notStored = true
@@ -217,7 +213,7 @@ export class CommandRouter {
 
       if (routed.permissions.outcome === 'FailedServerOnlyRestriction') {
         // Send message in response
-        await routed.message.reply(routed.$render('Generic.Error.CommandDisabledInChannel', { command: commandName }))
+        await routed.reply(routed.$render('Generic.Error.CommandDisabledInChannel', { command: commandName }), true)
 
         // Track in an audit event
         this.bot.Audit.NewEntry({

@@ -111,7 +111,7 @@ export async function listCommandCategories(routed: RouterRouted) {
     }`
   })
 
-  await routed.message.reply(routed.$render('Admin.CommandCategoriesList', { categories: responseString }))
+  await routed.reply(routed.$render('Admin.CommandCategoriesList', { categories: responseString }))
   return true // Successful
 }
 
@@ -162,22 +162,22 @@ export async function listCategoryCommands(routed: RouterRouted) {
     }`
   })
 
-  await routed.message.reply(routed.$render('Admin.CommandCategoryCommands', { category: routed.v.o.category, commands: responseString }))
+  await routed.reply(routed.$render('Admin.CommandCategoryCommands', { category: routed.v.o.category, commands: responseString }))
   return true // Successful
 }
 
 export async function commandRestrict(routed: RouterRouted) {
-  await routed.message.reply(routed.$render('Generic.Warn.CommandUnderMaintenance'))
+  await routed.reply(routed.$render('Generic.Warn.CommandUnderMaintenance'))
   return true // Successful
 }
 
 export async function setPrefix(routed: RouterRouted) {
   try {
     const updated = await routed.bot.DB.update('servers', { id: routed.guild.id }, { prefix: routed.v.o.newPrefix })
-    if (updated) await routed.message.reply(routed.$render('Admin.PrefixUpdated', { newPrefix: routed.v.o.newPrefix }))
-    else routed.message.reply(routed.$render('Admin.PrefixNotUpdated'))
+    if (updated) await routed.reply(routed.$render('Admin.PrefixUpdated', { newPrefix: routed.v.o.newPrefix }))
+    else routed.reply(routed.$render('Admin.PrefixNotUpdated'))
   } catch (error) {
-    routed.message.reply(routed.$render('Admin.PrefixUpdateError'))
+    routed.reply(routed.$render('Admin.PrefixUpdateError'))
   }
 
   return true

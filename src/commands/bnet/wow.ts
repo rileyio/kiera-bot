@@ -144,7 +144,7 @@
 //     })
 //   } catch (error) {
 //     routed.bot.Service.BattleNet.DEBUG_BNET.log('BattleNet -> Error:', error.message)
-//     if (error.response.data.status === 'nok') await routed.message.reply(routed.$render('BattleNet.Error.CharacterNotFound'))
+//     if (error.response.data.status === 'nok') await routed.reply(routed.$render('BattleNet.Error.CharacterNotFound'))
 //   }
 
 //   return true

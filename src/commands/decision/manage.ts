@@ -142,12 +142,12 @@ export async function setDecisionConsumeMode(routed: RouterRouted) {
         await routed.bot.DB.update('decision', { _id: decision._id }, { $set: { consumeMode: 'Consume' } }, { atomic: true })
         break
       default:
-        await routed.message.reply(routed.$render('Decision.Edit.SetModeOptions'))
+        await routed.reply(routed.$render('Decision.Edit.SetModeOptions'))
         return false
     }
 
     // If it gets this far confirm change
-    await routed.message.reply(routed.$render('Decision.Edit.ConsumeModeSet', { change: routed.v.o.setting }))
+    await routed.reply(routed.$render('Decision.Edit.ConsumeModeSet', { change: routed.v.o.setting }))
 
     return true
   }
@@ -169,7 +169,7 @@ export async function setConsumeReset(routed: RouterRouted) {
     if (routed.v.o.value > 0 || Number.isNaN(Number(routed.v.o.value)) === false) {
       await routed.bot.DB.update('decision', { _id: decision._id }, { $set: { consumeReset: Number(routed.v.o.value) } }, { atomic: true })
       // If it gets this far confirm change
-      await routed.message.reply(routed.$render('Decision.Edit.SetConsumeReset', { value: routed.v.o.value }))
+      await routed.reply(routed.$render('Decision.Edit.SetConsumeReset', { value: routed.v.o.value }))
       return true
     }
 
@@ -185,13 +185,13 @@ export async function setConsumeReset(routed: RouterRouted) {
         { atomic: true }
       )
 
-      await routed.message.reply(routed.$render('Decision.Edit.AllConsumedOutcomesResetTo', { value: routed.v.o.value }))
+      await routed.reply(routed.$render('Decision.Edit.AllConsumedOutcomesResetTo', { value: routed.v.o.value }))
       return true
     }
 
     // When nothing is passed as the value
     if (routed.v.o.value === undefined) {
-      await routed.message.reply(routed.$render('Decision.Edit.ConfirmResetAllConsumedOutcomes'))
+      await routed.reply(routed.$render('Decision.Edit.ConfirmResetAllConsumedOutcomes'))
 
       try {
         // Filter to watch for the correct user & text to be sent (+ remove any whitespace)
@@ -207,7 +207,7 @@ export async function setConsumeReset(routed: RouterRouted) {
         // Delete the previous message at this stage
         await Utils.Channel.deleteMessage(routed.message.channel as TextChannel, collected.first().id)
         // Upon valid message collection, begin deletion - notify user
-        const pleaseWaitMessage = (await routed.message.reply(routed.$render('Decision.Edit.ConfirmResetAllConsumedOutcomesReceived'))) as Message
+        const pleaseWaitMessage = (await routed.reply(routed.$render('Decision.Edit.ConfirmResetAllConsumedOutcomesReceived'))) as Message
         // Reset all options consumed properties
         await routed.bot.DB.update(
           'decision',
@@ -217,7 +217,7 @@ export async function setConsumeReset(routed: RouterRouted) {
         )
         // Delete the previous message at this stage
         await Utils.Channel.deleteMessage(routed.message.channel as TextChannel, pleaseWaitMessage.id)
-        await routed.message.reply(routed.$render('Decision.Edit.AllConsumedOutcomesReset'))
+        await routed.reply(routed.$render('Decision.Edit.AllConsumedOutcomesReset'))
         return true
       } catch (error) {
         await routed.message.channel.send(routed.$render('Decision.Edit.CancelledResetAllConsumedFlags'))
@@ -240,7 +240,7 @@ export async function addDecisionManager(routed: RouterRouted) {
     if (!isAlreadyManager) decision.managers.push(mentionedUser.id)
 
     await routed.bot.DB.update('decision', { _id: new ObjectId(routed.v.o.id) }, { $set: { managers: decision.managers } }, { atomic: true })
-    await routed.message.reply(routed.$render('Decision.Edit.AddedManager', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
+    await routed.reply(routed.$render('Decision.Edit.AddedManager', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
     return true
   }
 }
@@ -262,7 +262,7 @@ export async function removeDecisionManager(routed: RouterRouted) {
     }
 
     await routed.bot.DB.update('decision', { _id: new ObjectId(routed.v.o.id) }, { $set: { managers: decision.managers } }, { atomic: true })
-    await routed.message.reply(routed.$render('Decision.Edit.RemovedManager', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
+    await routed.reply(routed.$render('Decision.Edit.RemovedManager', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
     return true
   }
 }
@@ -276,7 +276,7 @@ export async function transferDecisionOwnership(routed: RouterRouted) {
 
     // Make new owner by updating the authorID field
     await routed.bot.DB.update('decision', { _id: decision._id, authorID: routed.author.id }, { $set: { authorID: mentionedUser.id } }, { atomic: true })
-    await routed.message.reply(routed.$render('Decision.Edit.OwnershipTransfered', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
+    await routed.reply(routed.$render('Decision.Edit.OwnershipTransfered', { id: routed.v.o.id, user: Utils.User.buildUserWrappedSnowflake(mentionedUser.id) }))
     return true
   }
 }

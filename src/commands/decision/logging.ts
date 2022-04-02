@@ -40,7 +40,7 @@ export async function fetchDecisionLog(routed: RouterRouted) {
 
   if (!log) {
     // If nothing comes up, inform the user
-    await routed.message.reply('Could not find a decision roll from the ID provided.')
+    await routed.reply('Could not find a decision roll from the ID provided.')
     return true // Stop Here
   }
 

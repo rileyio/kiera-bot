@@ -17,7 +17,7 @@ export async function checkPermissions(routed: RouterRouted) {
   const botUser = routed.message.guild.members.cache.get(routed.bot.client.user.id)
   const requestingUser = routed.message.member
 
-  await routed.message.reply(`\`\`\`json
+  await routed.reply(`\`\`\`json
 ${JSON.stringify(
   {
     bot: {

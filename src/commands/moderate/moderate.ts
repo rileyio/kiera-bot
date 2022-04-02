@@ -68,13 +68,13 @@ export async function mute(routed: RouterRouted) {
 
   // Could not find user
   if (!targetUser) {
-    await routed.message.reply(routed.$render('Moderate.Error.CouldNotFindUserSnowflake'))
+    await routed.reply(routed.$render('Moderate.Error.CouldNotFindUserSnowflake'))
     return true
   }
 
   // Block trying to call upon yourself
   if (targetUser.id === routed.author.id) {
-    await routed.message.reply(routed.$render('Moderate.Error.CannotCallCommandOnSelf'))
+    await routed.reply(routed.$render('Moderate.Error.CannotCallCommandOnSelf'))
     return true
   }
 
@@ -86,7 +86,7 @@ export async function mute(routed: RouterRouted) {
 
   // If they already have one active, let the caller of this command know
   if (hasActiveMuteAlready) {
-    await routed.message.reply(routed.$render('Moderate.Mute.AlreadyMuted'))
+    await routed.reply(routed.$render('Moderate.Mute.AlreadyMuted'))
     return true
   }
 
@@ -99,7 +99,7 @@ export async function mute(routed: RouterRouted) {
   if (hasUntouchableRoles) {
     // Let user calling this command know that there's roles that cannot be removed due to those roles
     // holding the same or higher position than Kiera or the Nitro Booster role which is Discord managed
-    await routed.message.reply(routed.$render('Moderate.Mute.RolesUnableToManage', { untouchableRoles: untouchableRoles.join(', ') }))
+    await routed.reply(routed.$render('Moderate.Mute.RolesUnableToManage', { untouchableRoles: untouchableRoles.join(', ') }))
   }
 
   // Now assign the user the mute role removing all previous as well
@@ -142,7 +142,7 @@ export async function mute(routed: RouterRouted) {
   })
 
   if (!confirmed) {
-    await routed.message.reply(routed.$render('Moderate.Mute.CancelledMute'))
+    await routed.reply(routed.$render('Moderate.Mute.CancelledMute'))
     return true // Stop here
   }
 
@@ -150,7 +150,7 @@ export async function mute(routed: RouterRouted) {
     await targetUser.roles.remove(rolesToRemove.map((r) => r.id))
     await targetUser.roles.add(muteRole)
   } catch (error) {
-    await routed.message.reply(routed.$render('Generic.Error.Internal'))
+    await routed.reply(routed.$render('Generic.Error.Internal'))
     console.log(`Mod:Mute => Failed to make mute changes`, error)
   }
 
@@ -200,13 +200,13 @@ export async function unMute(routed: RouterRouted) {
 
   // Could not find user
   if (!targetUser) {
-    await routed.message.reply(routed.$render('Moderate.Error.CouldNotFindUserSnowflake'))
+    await routed.reply(routed.$render('Moderate.Error.CouldNotFindUserSnowflake'))
     return true
   }
 
   // Block trying to call upon yourself
   if (targetUser.id === routed.author.id) {
-    await routed.message.reply(routed.$render('Moderate.Error.CannotCallCommandOnSelf'))
+    await routed.reply(routed.$render('Moderate.Error.CannotCallCommandOnSelf'))
     return true
   }
 
@@ -219,7 +219,7 @@ export async function unMute(routed: RouterRouted) {
   )
 
   if (!mutedUserRecord._id) {
-    await routed.message.reply(routed.$render('Moderate.Error.CouldNotFindActiveMuteForUser'))
+    await routed.reply(routed.$render('Moderate.Error.CouldNotFindActiveMuteForUser'))
     return true
   }
 
@@ -318,7 +318,7 @@ export async function activeMutes(routed: RouterRouted) {
 
   response += '```'
 
-  await routed.message.reply(response)
+  await routed.reply(response)
 }
 
 export async function lookupMutes(routed: RouterRouted) {
@@ -330,13 +330,13 @@ export async function lookupMutes(routed: RouterRouted) {
 
   // Could not find user
   if (!mutedRecordsRaw) {
-    await routed.message.reply(routed.$render('Moderate.Error.CouldNotFindUserSnowflake'))
+    await routed.reply(routed.$render('Moderate.Error.CouldNotFindUserSnowflake'))
     return true
   }
 
   // Block trying to call upon yourself
   if (targetUser.id === routed.author.id) {
-    await routed.message.reply(routed.$render('Moderate.Error.CannotCallCommandOnSelf'))
+    await routed.reply(routed.$render('Moderate.Error.CannotCallCommandOnSelf'))
     return true
   }
 
@@ -371,5 +371,5 @@ export async function lookupMutes(routed: RouterRouted) {
   })
   response += '```'
 
-  await routed.message.reply(response)
+  await routed.reply(response)
 }

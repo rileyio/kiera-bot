@@ -29,6 +29,6 @@
 //   });
 
 //   const getSearchResults = await r.searchSubreddits({ query: routed.v.o.query })
-//   await routed.message.reply(JSON.stringify(getSearchResults))
+//   await routed.reply(JSON.stringify(getSearchResults))
 //   return true
 // }

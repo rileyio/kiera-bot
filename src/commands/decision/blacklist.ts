@@ -79,7 +79,7 @@ export async function blacklistUser(routed: RouterRouted) {
 
     // When user does not exist stop here and notify user
     if (!userExists) {
-      await routed.message.reply(
+      await routed.reply(
         `Cannot find user with the given Snowflake \`${routed.v.o.user}\`! Check the User Snowflake sent is correct.\n\nIf you're unsure where to get this value:\n> 1. Go to your **User Settings** >  **Appearance** > Check **Developer Mode** is checked.\n> 2. Right click the user and click **Copy ID** from the menu.`
       )
       return false
@@ -99,10 +99,10 @@ export async function blacklistUser(routed: RouterRouted) {
       await routed.bot.DB.update('decision', { _id: new ObjectId(routed.v.o.id) }, { $set: { userBlacklist: decision.userBlacklist } }, { atomic: true })
 
       // Inform user
-      await routed.message.reply(`User \`${user.id}\` added to blacklist.`)
+      await routed.reply(`User \`${user.id}\` added to blacklist.`)
     } else {
       // Inform user
-      await routed.message.reply(`User \`${user.id}\` was already blacklisted.`)
+      await routed.reply(`User \`${user.id}\` was already blacklisted.`)
     }
 
     return true
@@ -131,7 +131,7 @@ export async function unblacklistUser(routed: RouterRouted) {
 
     // When user does not exist stop here and notify user
     if (!userExists) {
-      await routed.message.reply(
+      await routed.reply(
         `Cannot find user with the given Snowflake \`${routed.v.o.user}\`! Check the User Snowflake sent is correct.\n\nIf you're unsure where to get this value:\n> 1. Go to your **User Settings** >  **Appearance** > Check **Developer Mode** is checked.\n> 2. Right click the user and click **Copy ID** from the menu.`
       )
       return false
@@ -145,7 +145,7 @@ export async function unblacklistUser(routed: RouterRouted) {
 
     // When user is NOT blacklisted let the caller know
     if (!isAlreadyBlacklisted) {
-      await routed.message.reply(`User \`${user.id}\` is not blacklisted on this decision roller.`)
+      await routed.reply(`User \`${user.id}\` is not blacklisted on this decision roller.`)
     } else {
       // Remove user from blacklist
       decision.userBlacklist.splice(
@@ -155,7 +155,7 @@ export async function unblacklistUser(routed: RouterRouted) {
 
       // Update DB
       await routed.bot.DB.update('decision', { _id: new ObjectId(routed.v.o.id) }, { $set: { userBlacklist: decision.userBlacklist } }, { atomic: true })
-      await routed.message.reply(`User \`${user.id}\` is no longer blacklisted on this decision roller.`)
+      await routed.reply(`User \`${user.id}\` is no longer blacklisted on this decision roller.`)
     }
 
     return true
@@ -228,10 +228,10 @@ export async function whitelistServer(routed: RouterRouted) {
       await routed.bot.DB.update('decision', { _id: new ObjectId(routed.v.o.id) }, { $set: { serverWhitelist: decision.serverWhitelist } }, { atomic: true })
 
       // Inform user
-      await routed.message.reply(`Server \`${routed.v.o.serverid}\` added to server whitelist.`)
+      await routed.reply(`Server \`${routed.v.o.serverid}\` added to server whitelist.`)
     } else {
       // Inform user
-      await routed.message.reply(`Server \`${routed.v.o.serverid}\` was already whitelisted.`)
+      await routed.reply(`Server \`${routed.v.o.serverid}\` was already whitelisted.`)
     }
 
     return true
@@ -255,7 +255,7 @@ export async function unwhitelistServer(routed: RouterRouted) {
 
     // When server id is NOT whitelisted add it
     if (!isAlreadyWhitelisted) {
-      await routed.message.reply(`Server \`${routed.v.o.serverid}\` is not whitelisted on this decision roller.`)
+      await routed.reply(`Server \`${routed.v.o.serverid}\` is not whitelisted on this decision roller.`)
     } else {
       // Remove user from blacklist
       decision.serverWhitelist.splice(
@@ -265,7 +265,7 @@ export async function unwhitelistServer(routed: RouterRouted) {
 
       // Update DB
       await routed.bot.DB.update('decision', { _id: new ObjectId(routed.v.o.id) }, { $set: { serverWhitelist: decision.serverWhitelist } }, { atomic: true })
-      await routed.message.reply(`User \`${routed.v.o.serverid}\` is no longer whitelisted on this decision roller.`)
+      await routed.reply(`User \`${routed.v.o.serverid}\` is no longer whitelisted on this decision roller.`)
     }
 
     return true
