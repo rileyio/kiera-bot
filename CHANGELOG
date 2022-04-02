@@ -1,4 +1,5 @@
 9.1.0
+- Updated: Docker mapping to once again allow API access.
 - Removed: References to old prefix system in code.
 
 9.0.0

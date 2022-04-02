@@ -11,9 +11,9 @@ services:
     container_name: kiera_bot
     restart: on-failure
     ports:
-      - '8124:8124'
+      - '127.0.0.1:8234:8234'
     expose:
-      - '8124'
+      - '8234'
     command: npm run start
     environment:
       NODE_ENV: production
