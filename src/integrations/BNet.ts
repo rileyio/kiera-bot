@@ -1,7 +1,7 @@
 import { Blizzard, initialize } from 'blizzard.js'
 
 import { Bot } from '@/index'
-import { Logging } from '@/utils'
+import { Logger } from '@/utils'
 import { TrackedBotSetting } from '@/objects/setting'
 
 export class BattleNet {
@@ -12,11 +12,11 @@ export class BattleNet {
   private isTokenStored = false
   private isRunningTokenMonitorProcess = false
   private tokenMonitorProcess: NodeJS.Timer
-  public DEBUG_BNET: Logging.Debug
+  public DEBUG_BNET: Logger.Debug
   public Client: Blizzard
 
   public async setup(bot: Bot) {
-    this.DEBUG_BNET = new Logging.Debug(`BattleNet`)
+    this.DEBUG_BNET = new Logger.Debug(`BattleNet`)
     this.DEBUG_BNET.log('🎮 BattleNet -> Setting Up!')
     this.Bot = bot
     // Check DB for Blizzard Access token
