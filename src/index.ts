@@ -163,8 +163,6 @@ export class Bot {
       await this.onMessageNonCachedReact(event)
     })
 
-    /// Incoming message router ///
-    this.client.on('message', async (msg) => await this.onMessage(msg))
     /// Incoming message router (v8.0-beta-3 and newer commands) ///
     this.client.on('interactionCreate', async (int) => await this.onInteraction(int))
     ///Server connect/disconnect///
@@ -225,14 +223,6 @@ export class Bot {
       this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
     } catch (error) {
       this.Log.Bot.error(error)
-    }
-  }
-
-  private async onMessage(message: Discord.Message) {
-    try {
-      await this.Router.routeMessage(message)
-    } catch (error) {
-      this.Log.Bot.error('Fatal onMessage error caught', error)
     }
   }
 
