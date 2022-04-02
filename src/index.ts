@@ -264,9 +264,7 @@ export class Bot {
           joinedTimestamp: guild.joinedTimestamp,
           lastSeen: Date.now(),
           name: guild.name,
-          ownerID: guild.ownerId,
-          prefix: undefined,
-          slashCommandsEnabled: false
+          ownerID: guild.ownerId
         }
       },
       { atomic: true, upsert: true }

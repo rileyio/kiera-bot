@@ -1,3 +1,6 @@
+9.1.0
+- Removed: References to old prefix system in code.
+
 9.0.0
 - Updated: Converted most core commands to slash commands.
 
