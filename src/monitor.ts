@@ -160,16 +160,17 @@ export class BotMonitor extends EventEmitter {
   }
 
   private async helpMe() {
-    const maintainers = process.env.DISCORD_ANNOUNCEMENTS_MAINTAINERS_MENTION.split(',')
-    let maintainersMention = ``
+    try {
+      const maintainers = process.env.DISCORD_ANNOUNCEMENTS_MAINTAINERS_MENTION.split(',')
+      let maintainersMention = ``
 
-    // Build maintainers mentions
-    maintainers.forEach((m) => {
-      maintainersMention += `<@${m}> `
-    })
+      // Build maintainers mentions
+      maintainers.forEach((m) => {
+        maintainersMention += `<@${m}> `
+      })
 
-    if (this.Bot.channel.announcementsChannel)
-      await this.Bot.channel.announcementsChannel.send(`:warning: **Critical:** Bot Maintenance Required!
+      if (this.Bot.channel.announcementsChannel)
+        await this.Bot.channel.announcementsChannel.send(`:warning: **Critical:** Bot Maintenance Required!
 
 One of the bot maintainers: ${maintainersMention} will need to address this issue.
 
@@ -181,6 +182,9 @@ API ............... ${this.status.api ? '✓ Started' : '✕ Down'}
 Database: ......... ${this.status.db ? '✓ Connected' : '✕ Disconnected'}
 Discord ........... ✓ If it wasn't how would you be seeing this 😉
 Stats ............. ${this.status.stats ? '✓ Started' : '✕ Down'}\`\`\``)
+    } catch (error) {
+      this.Bot.Log.Bot.error('Unable to broadcast impacting status via discord')
+    }
   }
 
   private async checkPingThreshold() {
