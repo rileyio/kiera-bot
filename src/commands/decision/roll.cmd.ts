@@ -20,8 +20,6 @@ export async function runSavedDecision(routed: RoutedInteraction) {
     ? await routed.bot.DB.get('decision', { authorID: userByNickname.id, nickname: new RegExp(`^${decisionNickname}$`, 'i') })
     : await routed.bot.DB.get('decision', { _id: new ObjectID(idOrNickname) })
 
-  console.log('Raw Decision:', decisionFromDB)
-
   if (decisionFromDB) {
     const decision = new TrackedDecision(decisionFromDB)
 
