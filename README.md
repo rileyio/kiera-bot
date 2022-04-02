@@ -121,6 +121,8 @@ Current Progress (Languages in focus where translations are being used):
 
 > **[>= v8.0]** Bolded commands have been converted to slash commands.
 
+> This section is out of date as of 9.0 and will need updated to reflect the new slash commands.
+
 #### Admin
 
 - `!admin channel purge` - [**Restricted:** Server Admin] Purge all messages in channel  
