@@ -7,13 +7,13 @@ import * as Utils from '@/utils'
 import * as debug from 'debug'
 
 import { CommandRouter, routeLoader } from '@/router'
-import { MongoDB, MsgTracker } from '@/db'
 
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
 import { BotMonitor } from '@/monitor'
 import { ChastiKey } from './integrations/ChastiKey'
 import Localization from '@/localization'
+import { MongoDB } from '@/db'
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v9'
 import { ServerStatisticType } from './objects/statistics'
@@ -35,7 +35,6 @@ export class Bot {
     Router: new Utils.Logger.Debug('command-router'),
     Scheduled: new Utils.Logger.Debug('scheduled')
   }
-  public MsgTracker: MsgTracker
   public version: string
   public channel: { auditLog: Discord.TextChannel; announcementsChannel: Discord.TextChannel } = { announcementsChannel: null, auditLog: null }
 
@@ -76,7 +75,6 @@ export class Bot {
     this.Audit = new Audit(this)
     this.BotMonitor = new BotMonitor(this)
     this.Router = new CommandRouter(await routeLoader(this.Log.Router), this)
-    this.MsgTracker = new MsgTracker(this)
     this.Task = new Task.TaskManager(this)
 
     ////////////////////////////////////////
@@ -156,12 +154,12 @@ export class Bot {
     // Discord Event Monitor / Routing /////
     ////////////////////////////////////////
     /// Event handling for non-cached (messages from prior to restart) ///
-    this.client.on('raw' as any, async (event) => {
-      if (event.t === null) return
-      // Skip event types that are not mapped
-      if (!Utils.DISCORD_CLIENT_EVENTS.hasOwnProperty(event.t)) return
-      await this.onMessageNonCachedReact(event)
-    })
+    // this.client.on('raw' as any, async (event) => {
+    //   if (event.t === null) return
+    //   // Skip event types that are not mapped
+    //   if (!Utils.DISCORD_CLIENT_EVENTS.hasOwnProperty(event.t)) return
+    //   await this.onMessageNonCachedReact(event)
+    // })
 
     /// Incoming message router (v8.0-beta-3 and newer commands) ///
     this.client.on('interactionCreate', async (int) => await this.onInteraction(int))
@@ -266,20 +264,20 @@ export class Bot {
     this.Log.Bot.log('Left a guild: ' + guild.name)
   }
 
-  private async onMessageNonCachedReact(event: { t: Discord.WSEventType; d: any }) {
-    const user = await this.client.users.fetch(event.d.user_id)
-    const channel = this.client.channels.cache.get(event.d.channel_id) as Discord.TextChannel
-    // Skip firing events for cached messages as these will already be properly handled
-    // if ((<Discord.TextChannel>channel).messages.has(event.d.message_id)) return
-    // Query channel for message as its not chached
-    const message = await channel.messages.fetch(event.d.message_id)
-    // Handling for custome/server emoji
-    const emojiKey = event.d.emoji.id ? `${event.d.emoji.name}:${event.d.emoji.id}` : event.d.emoji.name
-    // Emit to handle in the regular handling used for cached messages
-    // this.client.emit(DISCORD_CLIENT_EVENTS[event.t], reaction, user)
-    if (event.t === 'MESSAGE_REACTION_ADD') return await this.onMessageCachedReactionAdd(message, emojiKey, user)
-    if (event.t === 'MESSAGE_REACTION_REMOVE') return await this.onMessageCachedReactionRemove(message, emojiKey, user)
-  }
+  // private async onMessageNonCachedReact(event: { t: Discord.WSEventType; d: any }) {
+  //   const user = await this.client.users.fetch(event.d.user_id)
+  //   const channel = this.client.channels.cache.get(event.d.channel_id) as Discord.TextChannel
+  //   // Skip firing events for cached messages as these will already be properly handled
+  //   // if ((<Discord.TextChannel>channel).messages.has(event.d.message_id)) return
+  //   // Query channel for message as its not chached
+  //   const message = await channel.messages.fetch(event.d.message_id)
+  //   // Handling for custome/server emoji
+  //   const emojiKey = event.d.emoji.id ? `${event.d.emoji.name}:${event.d.emoji.id}` : event.d.emoji.name
+  //   // Emit to handle in the regular handling used for cached messages
+  //   // this.client.emit(DISCORD_CLIENT_EVENTS[event.t], reaction, user)
+  //   if (event.t === 'MESSAGE_REACTION_ADD') return await this.onMessageCachedReactionAdd(message, emojiKey, user)
+  //   if (event.t === 'MESSAGE_REACTION_REMOVE') return await this.onMessageCachedReactionRemove(message, emojiKey, user)
+  // }
 
   private onUserJoined(member: Discord.GuildMember | Discord.PartialGuildMember) {
     this.Statistics.trackServerStatistic(member.guild.id, null, member.user.id, ServerStatisticType.UserJoined)

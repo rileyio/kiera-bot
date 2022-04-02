@@ -1,7 +1,6 @@
 import { ExportRoutes, RouterRouted } from '@/router'
 
 import { TrackedBotSetting } from '@/objects/setting'
-import { TrackedMessage } from '@/objects/message'
 import { pongResponse } from '@/embedded/ping-pong'
 
 export const Routes = ExportRoutes(
@@ -50,21 +49,6 @@ export const Routes = ExportRoutes(
 )
 
 export async function pingPong(routed: RouterRouted) {
-  // Track all incoming messages
-  await routed.bot.MsgTracker.trackMsg(
-    new TrackedMessage({
-      authorID: routed.message.author.id,
-      channelId: routed.message.channel.id,
-      // Flags
-      flagAutoDelete: true,
-      flagTrack: true,
-      id: routed.message.id,
-      messageCreatedAt: routed.message.createdAt.getTime(),
-      // Deletion settings
-      storageKeepInChatFor: 10000
-    })
-  )
-
   return await routed.reply({
     embeds: [pongResponse(routed.bot.BotMonitor.DBMonitor.pingTotalLatency / routed.bot.BotMonitor.DBMonitor.pingCount, routed.routerStats.performance)]
   })
