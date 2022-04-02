@@ -1,6 +1,7 @@
 9.1.0
 - Updated: Docker mapping to once again allow API access.
 - Removed: References to old prefix system in code.
+- Removed: Reaction handling.
 
 9.0.0
 - Updated: Converted most core commands to slash commands.
