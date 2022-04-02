@@ -51,8 +51,8 @@ export class WebAPI {
     this.server.use(cors.actual)
 
     // Setup SocketIO
-    this.socket = SocketIO.listen(this.server.server)
-    this.socket.sockets.on('connection', (socket) => {
+    this.socket = new SocketIO.Server(this.server.server)
+    this.socket.on('connection', () => {
       this.DEBUG_WEBAPI('socket connection')
       // socket.emit('news', { hello: 'world' });
       // socket.on('my other event', (data) => {

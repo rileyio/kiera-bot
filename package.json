@@ -51,7 +51,7 @@
     "random": "^2.2.0",
     "restify": "^8.6.1",
     "restify-cors-middleware": "^1.1.1",
-    "socket.io": "^2.4.1",
+    "socket.io": "^4.4.1",
     "winston": "^3.6.0",
     "yaml": "^1.10.2"
   },
@@ -70,7 +70,6 @@
     "@types/restify": "^8.5.4",
     "@types/restify-cors-middleware": "^1.0.2",
     "@types/restify-errors": "^4.3.4",
-    "@types/socket.io": "^2.1.4",
     "@types/xregexp": "^4.4.0",
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.17.0",
