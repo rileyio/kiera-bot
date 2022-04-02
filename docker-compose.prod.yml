@@ -3,8 +3,17 @@ version: '3.9'
 services:
   bot:
     build:
+      context: .
+      dockerfile: dockerfile
       target: production
-    command: node app/start.js
+    volumes:
+      - ./src:/home/node/app/src
     container_name: kiera_bot
+    restart: on-failure
+    ports:
+      - '8124:8124'
+    expose:
+      - '8124'
+    command: npm run start
     environment:
       NODE_ENV: production

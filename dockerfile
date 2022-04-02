@@ -4,8 +4,9 @@ WORKDIR /home/node/app
 COPY package*.json ./
 RUN npm i
 COPY . .
+EXPOSE 8124
 
 # Production
 FROM base as production
-ENV NODE_PATH=./app
-RUN npm i && npm run build
+# ENV NODE_PATH=./app
+RUN npm i -g nodemon ts-node && npm i

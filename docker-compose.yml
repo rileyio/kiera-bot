@@ -25,10 +25,10 @@ services:
     volumes:
       - ./src:/home/node/app/src
     container_name: kiera_bot
-    expose:
-      - '8124'
     ports:
       - '8124:8124'
+    expose:
+      - '8124'
     command: npm run dev
     restart: on-failure
     secrets:

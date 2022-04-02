@@ -9,12 +9,7 @@ export async function routeLoader(logger: Logger.Debug) {
   logger.log('loading command routes...', process.env.NODE_ENV ? `mode: ${process.env.NODE_ENV}` : '')
 
   // Load routes from commands folder
-  const _routeFiles = glob.sync(
-    process.env.NODE_ENV === 'development'
-      ? ['src/commands/**/*.ts', '!src/commands/**/*.{cmd,embed}.ts', '!src/commands/**/shared.ts']
-      : ['app/commands/**/*.js', '!app/commands/**/*.{cmd,embed}.js', '!app/commands/**/shared.js'],
-    { deep: 3 }
-  )
+  const _routeFiles = glob.sync(['src/commands/**/*.ts', '!src/commands/**/*.{cmd,embed}.ts', '!src/commands/**/shared.ts'])
 
   // Collection of routes
   const routes: Array<RouteConfiguration> = []
