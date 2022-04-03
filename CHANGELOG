@@ -1,4 +1,5 @@
 9.1.0
+- Added: Informational message to explain (while it still works) that commands now must be in Slash Command format.
 - Updated: Docker mapping to once again allow API access.
 - Updated: Dependencies.
 - Removed: References to old prefix system in code.
