@@ -2,19 +2,18 @@ import { ObjectId } from 'bson'
 import { TrackedChastiKey } from '@/objects/chastikey'
 
 export class TrackedUser {
-  public __notStored: boolean
-  public _id: ObjectId
-  public accessToken: string
-  public avatar: string
+  public __notStored?: boolean
+  public _id?: ObjectId
+  public accessToken?: string
   public id: string
-  public webToken: string
-  public locale: string = process.env.BOT_LOCALE
+  public webToken?: string
+  public locale?: string = process.env.BOT_LOCALE
 
   // ChastiKey Specific //
-  public ChastiKey: TrackedChastiKey
+  public ChastiKey?: TrackedChastiKey
 
   // Decision Preferences //
-  public Decision: TrackedUserDecisionPrefs
+  public Decision?: TrackedUserDecisionPrefs
 
   constructor(init: Partial<TrackedUser>) {
     Object.assign(this, init)
