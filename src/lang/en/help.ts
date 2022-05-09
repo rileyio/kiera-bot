@@ -12,7 +12,6 @@ export const mainRegister = `(Required for access to some commands)
 export const main8Ball = `\`{{prefix}}8ball\` - Ask a question, receive an answer`
 export const mainAdmin = `\`{{prefix}}admin\` - Manage Kiera on this server`
 export const mainBNet = `\`{{prefix}}bnet\`, \`{{prefix}}wow\` - BattleNet Commands`
-export const mainCK = `\`{{prefix}}ck\` - ChastiKey Commands - \`username\` \`ticker\` \`stats\``
 export const mainDecision = `\`{{prefix}}decision\` - Create, Edit or Roll - \`new\` \`roll\``
 export const mainFlip = `\`{{prefix}}flip\` - Flip a coin`
 export const mainPoll = `\`{{prefix}}poll\` - Create a poll to vote on`
@@ -25,32 +24,6 @@ Using this means you agree to having some basic information stored (IDs, etc) fo
 
 Usage Example:
 \`{{prefix}}register\`
-`
-
-export const ck = `
-Used to configure and return from ChastiKey API.
-Currently returns: (1) Keyholder, (2) Lockee, (3) Both
-
-\`{{prefix}}ck verify\` - Verify your Discord Account to ChastiKey
-\`{{prefix}}ck update\` - Update your Roles: Locked/Unlocked, Experience, Event Specific
-
-\`{{prefix}}ck ticker\` - Returns your ticker
-\`{{prefix}}ck ticker #\` - Returns a specific ticker type (replace \`#\`)
-\`{{prefix}}ck ticker set type 2\` - Set default ticker
-\`{{prefix}}ck ticker set date 2019-01-27\` - Start date for ticker data
-\`{{prefix}}ck ticker set rating show\` - To display rating or not \`show\` or \`hide\`
-
-\`{{prefix}}ck stats lockee\` - Get your lockee stats (by saved username)
-\`{{prefix}}ck stats keyholder\` - Get your keyholder stats (by saved username)
-\`{{prefix}}ck stats lockee UsernameHere\` - Get stats for defined username
-\`{{prefix}}ck stats locktober\` - Display Locktober stats
-
-\`{{prefix}}ck keyholder lockees\` - Get list of lockee names
-\`{{prefix}}ck keyholder set average show\` - Enable/Disable the average visibility in stats commands
-
-\`{{prefix}}ck check multilocked UsernameHere\` - Get list of KH's lockees who have 2 or more KHs
-
-\`{{prefix}}ck recover combos\` - Retrieve past unlock combinations
 `
 
 export const decision = `

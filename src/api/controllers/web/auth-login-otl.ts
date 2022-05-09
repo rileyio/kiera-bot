@@ -87,12 +87,12 @@ export async function otl(routed: WebRouted) {
   )
 
   return routed.res.send({
-    chastikey:
-      storedSession.generatedFor === 'kiera-ck'
-        ? {
-            username: kieraUser.ChastiKey.username
-          }
-        : undefined,
+    // chastikey:
+    //   storedSession.generatedFor === 'kiera-ck'
+    //     ? {
+    //         username: kieraUser.ChastiKey.username
+    //       }
+    //     : undefined,
     discriminator: user.discriminator,
     session: newSessionToken,
     success: true,

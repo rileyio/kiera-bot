@@ -14,7 +14,6 @@ export function getArgs(msg: string) {
   return msg.replace(XRegex(`/(?!["][^"]\B)\s+(?![^"]+["]\B)/`, 'g'), ' ').split(/(?!["][^"]\B)\s+(?![^"]+["]\B)/g)
 }
 
-export * as ChastiKey from './chastikey'
 export * from './client-event-handler'
 export * from './date'
 export * from './prompt'

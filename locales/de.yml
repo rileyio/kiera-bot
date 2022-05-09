@@ -114,87 +114,6 @@ Decision:
           (Stelle sicher, dass du die Reset-Zeit in Skunden setzst, Beispiel: {{prefix}}decision "id" consume reset 60`)
       > `2` = Verzehr (consume)
           (Sobald dieses Ergebnis verwendet wurde, wird es aus der Rotation entfernt, bis der Author es zurücksetzt. Zurücksetzen mit: {{prefix}}decision "id" consume reset`)
-ChastiKey:
-  # Stats
-  Stats:
-    Lockee:
-      AdditionalLocksField: "Es gibt {{count}} zusätzliche "
-      LockStats: |-
-        Keyholder **`{{#if isSelfLocked}}Self Locked{{else}}{{keyholderName}}{{/if}}`** Status `Locked`
-        Verschlossen `{{lockedTime}}`
-        Gesamt gefrorene Zeit `{{totalTimeFrozen}}`
-        {{#unless isFixed}}
-          {{#if hasPickedCard}}
-            Letzter Zug `{{lastPickedTime}}` ago
-          {{else}}
-            Letzter Zug `has yet to pick`
-          {{/if}}
-          {{#if showNextPick}}
-            Nächster Zug `{{#if nextPickNow}}now{{else}}{{nextPickTime}}{{/if}}`
-          {{/if}}
-          Details {{#if isCumulative}}Cumulative{{else}}Non-Cumulative{{/if}} Rythmus `{{regularity}}` mit `{{turnsMade}}` gemachten Zügen.
-          Die letzten (`{{discardPileLength}}`) gezogenen Karten:
-          {{{discardPile}}}
-          {{#unless isHidden}}
-            Verbleibende Karten
-            {{{cardsRemaining}}}
-          {{/unless}}
-        {{/unless}}
-        
-      MainStats: |-
-        {{#if showAvgRating}}Durchschnittliche Bewertung `{{avgRating}}` | # Ratings `{{ratings}}`{{/if}}
-        Verschlossen für `{{lockedFor}}` Monate bis heute | `{{locksCompleted}}` beendete Locks
-        Längstes abeschlossenes Lock `{{longestLockCompleted}}`
-        Durchschnittliche verschlossene Zeit (gesamt) `{{avgTimeLocked}}`
-        Zuletzt aktiv in ChastiKey App vor `{{lastActiveInApp}}`
-        Beigetreten am `{{joinedDate}}` (vor `{{joinedDaysAgo}}` Tagen)
-        {{#if isVerified}}Verbunden mit {{{verifiedTo}}}{{/if}}
-      NoActiveLocks: Keine aktiven Locks
-      NoActiveLocksTimeSinceLast: |-
-        Um weitere Statistiken sehen zu können, muss ein Lock aktiv sein.
-        Zeit seit dem letzten Lock `{{time}}`
-      Title: '{{#if isVerified}}{{{verifiedEmoji}}}{{/if}} `{{username}}` - Aktive ChastiKey Lockee Statistiken'
-    KeyholderNoLocks: 'Dieser Benutzer hat bisher noch keine aktiven Lock als Keyholder, oder noch keine vergangenen Lockees, deshalb gibt es keine darstellbaren Daten.'
-    UserRequestedNoStats: 'Dieser Benutzer möchte, dass seine Statistiken privat bleiben.'
-  # Verify
-  Verify:
-    CkeckYourDMs: Bitte überprüfe deine Direktnachrichten, um weitere Instruktionen zu erhalten
-    DMInstructions: |-
-      Scanne diesen Code mit der ChastiKey-App, wie wenn du ein Schloss laden würdest (in den nächsten 5 Minuten). Dies verifiziert deinen Discord-Account mit deiner ChastiKey-App.
-      Wenn dein ChastiKey-Account in den letzten 15-30 Minuten erstellt wurde, kann es ähnlich lange dauern, bis Kiera alle erforderlichen Daten empfangen hat.
-    FastForward: Dein Account wurde verifiziert! Es kann allerdings noch **bis zu 15 Minuten** dauern, bis alle Daten korrekt zwischengespeichert und verfügbar sind.
-    NotSuccessfulUsingReason: 'Die Verifizierung hat leider nicht funktioniert. Begründung: {{reason}}'
-    # 1366`
-    PreviouslyCompleted: Dein Account wurde bereits verifiziert! Wenn es damit irgendwelche Probleme gibt, melde dich bitte bei `Emma#1366`
-    VerifyRequired: |-
-      Um diesen Befehl nutzen zu können, muss der Benutzer verifiziert sein. 
-      Bitte benutze hierfür den Befehl:
-      `!ck verify`
-      
-      Wenn du dies in den letzten 15 Minuten gemacht hast, kannst du den Vorgang mit dem erneuten eingeben von `!ck verify` beschleunigen.
-  # Ticker
-  Ticker:
-    IncorrectTimer: '*Scheint etwas nicht korrekt? Bitte kontaktiere **Kevin**, der Entwickler von ChastiKey wenn irgendwelche Statistiken falsch erscheinen*'
-    InvalidOverrideType: 'Inkorrekter Überschreibungs-Typ, bitte nutze: (1) Keyholder, (2) Lockee, (3) Beide'
-  # Errors
-  Error:
-    KeyholderOrAboveRoleRequired: 'Hierfür wird die Keyholder-Rolle oder höher benötigt.'
-    SelfLookupErrorOrNotFound: >-
-      Die Suche konnte nicht abgeschlossen werden, einige mögliche Gründe dafür:
-      
-      In der ChastiKey App könnte die Option `Display username in public stats, lists and data?` auf No gestellt dein, oder vor kurzem auf nein umgestellt worden sein. 
-      
-      Dein ChastiKey account wurde nicht gefunden, oder ein Server Problem ist aufgetreten. 
-      Bitte schaue nach ob du hierzu in den Announcements auf dem ChastiKey Discord findest.
-    UserLookupErrorOrNotFound: >-
-      Die Abfrage konnte nicht ausgeführt werden! Mögliche Gründe hierfür sind:
-      - Es existiert kein Benutzer mit diesem Benutzernamen.
-      - Der Benutzer hat möglicherweise seinen Benutzernamen in der ChastiKey-App geändert.
-    UserNotFound: Der Benutzer wurde nicht gefunden! Der Besitzer des ChastiKey Kontos muss den `{{prefix}}ck verify` ausführen, um sich zu verifizieren.
-  # Administrative Tasks
-  Admin:
-    RefreshManualCompleted: Manuell ausgelöste Datenbankaktualisierung wurde beendet!
-    RefreshTriggered: Manuelle Aktualisierung der Statistiken wurde gestartet.
 Moderate:
   Mute:
     AlreadyMuted: Dieser Benutzer hat bereits eine aktive Stummschaltung, die verfolgt wird.
@@ -318,8 +237,6 @@ Help:
   Admin:
     ChannelPurge:
       Description: 'Bereinige alle Nachrichten in diesem Raum'
-    ChastiKeyRefresh:
-      Description: Aktualisierung des Chastikey Cache auslösen
     CommandCategories:
       Description: Liste der Befehlskategorien abrufen
     CategoryCommands:
@@ -345,41 +262,6 @@ Help:
       Description: Benutzerprofil von Diablo 3 abrufen
     WoWCharacterProfile:
       Description: World of Warcraft-Charakterprofil abrufen
-  ChastiKey:
-    RecoverCombinations:
-      Description: Abrufen deiner abgeschlossenen Schlosskombinationen
-    Verify:
-      Description: Verknüpfen des "Discord" Kontos mit der "ChastiKey App".
-    RoleCounts:
-      Description: Liste der ChastiKey Discord Rollen und Statistiken
-    CKWeb:
-      Description: Externe Sitzung für Kiera + ChastiKey web Portal erstellen
-    LockeeHistory:
-      Description: Lockee historie anzeigen
-    LocktoberStats:
-      Description: ChastiKey Locktober Event Statistik
-    UsernameSearch:
-      Description: Suche basierend auf ChastiKey Benutzername
-    LockeeStats:
-      Description: Zeige die Lockee Statistiken
-    KeyholderStats:
-      Description: Zeige die Keyholder Statistiken
-    CheckKeyholderMultilocked:
-      Description: Liste der Lockees welche 2 oder mehr Keyholder haben
-    KeyholderLockees:
-      Description: Liste aller lockees des Keyholders
-    ToggleKeyholderAverageDisplayed:
-      Description: Aktiviere/deaktiviere die Bewertungsanzeige in deinen Statistiken
-    SetTickerType:
-      Description: Stelle deinen standard ticker ein, welcher dargestellt wird wenn du den ticker Befehl benutzt
-    SetTickerDate:
-      Description: Setze ein Start Datum für die ticker Daten
-    ToggleTickerRating:
-      Description: "Aktiviere/deaktiviere die Anzeige der Bewertung in der Darstellung des tickers "
-    Ticker:
-      Description: Zeige den ChastiKey Ticker
-    Update:
-      Description: Verbinde Discord mit deinem ChastiKey account
   Moderate:
     MuteUser:
       Description: "`Temporary Mute` Rolle auf Benutzer anwenden und Rollen beibehalten"

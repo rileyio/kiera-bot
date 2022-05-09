@@ -7,7 +7,6 @@ export class TrackedServer {
   public ownerID: string
   public name: string
   public joinedTimestamp: number
-  public enabled: { ChastiKey: boolean } = { ChastiKey: false }
   public lastSeen?: number
   public prefix?: string
 

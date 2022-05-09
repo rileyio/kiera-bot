@@ -11,7 +11,6 @@ import { CommandRouter, routeLoader } from '@/router'
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
 import { BotMonitor } from '@/monitor'
-import { ChastiKey } from './integrations/ChastiKey'
 import Localization from '@/localization'
 import { MongoDB } from '@/db'
 import { REST } from '@discordjs/rest'
@@ -54,9 +53,8 @@ export class Bot {
   public Router: CommandRouter
 
   // API Services
-  public Service: { BattleNet: BattleNet; ChastiKey: ChastiKey } = {
-    BattleNet: null,
-    ChastiKey: null
+  public Service: { BattleNet: BattleNet } = {
+    BattleNet: null
   }
 
   // Statistics
@@ -93,14 +91,6 @@ export class Bot {
     // Register background tasks
     this.Task.start([
       new Task.StatusMessageRotatorScheduled(),
-      new Task.ChastiKeyAPIUsers(),
-      new Task.ChastiKeyAPIRunningLocks(),
-      new Task.ChastiKeyAPILocktober2019(),
-      new Task.ChastiKeyAPILocktober2020(),
-      new Task.ChastiKeyAPILocktober2021(),
-      // // new Task.ChastiKeyBackgroundLocktoberMonitor()
-      new Task.ChastiKeyBackgroundVerifiedMonitor(),
-      new Task.ChastiKeyGenerateStatsScheduled(),
       new Task.DBAgeCleanupScheduled()
       // new Task.StatsCleanerScheduled()
     ])
@@ -109,7 +99,6 @@ export class Bot {
     // Register 3rd party services /////////
     ////////////////////////////////////////
     // this.Service.BattleNet = new BattleNet()
-    this.Service.ChastiKey = new ChastiKey(this)
 
     ////////////////////////////////////////
     // Setup API Services //////////////////
@@ -117,7 +106,6 @@ export class Bot {
     try {
       /// Integrations / Services / 3rd party
       // await this.Service.BattleNet.setup(this)
-      await this.Service.ChastiKey.setup()
       /// Reserved...
       /// ...
     } catch (error) {
