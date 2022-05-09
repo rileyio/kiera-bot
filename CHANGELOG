@@ -1,3 +1,6 @@
+9.2.0
+- Removed: ChastiKey.
+
 9.1.1
 - Fixed: Register command. Will rework this in the future.
 

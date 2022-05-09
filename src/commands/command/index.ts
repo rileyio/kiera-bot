@@ -25,7 +25,6 @@ export const Routes = ExportRoutes({
               .setName('enable')
               .setDescription('Enable a Category/Group that multiple command fall within')
               .addChoice('Battle.Net Commands (3rd Party)', 'bnet')
-              .addChoice('ChastiKey (18+ NSFW Channel Req.)', 'chastikey')
               .addChoice('Dice, Coins, etc', 'fun')
           ) // Disable Group of Commands
           .addStringOption((option) =>
@@ -33,34 +32,8 @@ export const Routes = ExportRoutes({
               .setName('disable')
               .setDescription('Disable a Category/Group that multiple command fall within')
               .addChoice('Battle.Net Commands (3rd Party)', 'bnet')
-              .addChoice('ChastiKey (18+ NSFW Channel Req.)', 'chastikey')
               .addChoice('Dice, Coins, etc', 'fun')
           ) // )
-      // // Toggles for single commands
-      // .addSubcommand((subcommand) =>
-      //   subcommand
-      //     .setName('channel')
-      //     .setDescription('Battle.Net Commands (3rd Party)')
-      //     // Enable Group of Commands
-      //     .addStringOption((option) =>
-      //       option
-      //         .setName('enable')
-      //         .setDescription('Enable a Category/Group that multiple command fall within')
-      //         .setRequired(true)
-      //         .addChoice('Battle.Net Commands (3rd Party)', 'bnet')
-      //         .addChoice('ChastiKey (18+ NSFW Channel Req.)', 'ck')
-      //         .addChoice('Dice, Coins, etc', 'fun')
-      //     )
-      //     // Disable Group of Commands
-      //     .addStringOption((option) =>
-      //       option
-      //         .setName('disable')
-      //         .setDescription('Disable a Category/Group that multiple command fall within')
-      //         .setRequired(true)
-      //         .addChoice('Battle.Net Commands (3rd Party)', 'bnet')
-      //         .addChoice('ChastiKey (18+ NSFW Channel Req.)', 'ck')
-      //         .addChoice('Dice, Coins, etc', 'fun')
-      //     )
     ),
   type: 'interaction'
 })

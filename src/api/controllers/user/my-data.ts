@@ -30,11 +30,6 @@ export async function getMyDataTotals(routed: WebRouted) {
       { count: await routed.Bot.DB.count('stats-servers', { userID: routed.session.userID }), name: 'Stats', scope: 'kiera', thirdParty: false },
       { count: await routed.Bot.DB.count('stats-settings', { userID: routed.session.userID }), name: 'Stats Settings', scope: 'kiera', thirdParty: false },
       { count: await routed.Bot.DB.count('users', { id: routed.session.userID }), name: 'Users', scope: 'kiera', thirdParty: false },
-      { count: await routed.Bot.DB.count('ck-locktober-2019', { discordID: routed.session.userID }), name: 'Locktober 2019', scope: 'chastikey', thirdParty: true },
-      { count: await routed.Bot.DB.count('ck-locktober-2020', { discordID: routed.session.userID }), name: 'Locktober 2020', scope: 'chastikey', thirdParty: true },
-      { count: await routed.Bot.DB.count('ck-locktober-2021', { discordID: routed.session.userID }), name: 'Locktober 2021', scope: 'chastikey', thirdParty: true },
-      { count: await routed.Bot.DB.count('ck-running-locks', { discordID: routed.session.userID }), name: 'Running Locks', scope: 'chastikey', thirdParty: true },
-      { count: await routed.Bot.DB.count('ck-users', { discordID: routed.session.userID }), name: 'Users', scope: 'chastikey', thirdParty: true }
     ],
     success: true
   })

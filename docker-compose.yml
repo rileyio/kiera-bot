@@ -3,12 +3,6 @@ version: '3.9'
 secrets:
   BOT_WEB_APP_SERVER_SECRET:
     file: ./secrets/BOT_WEB_APP_SERVER_SECRET
-  CK_CLIENTID:
-    file: ./secrets/CK_CLIENTID
-  CK_CLIENTSECRET:
-    file: ./secrets/CK_CLIENTSECRET
-  CK_RAPIDAPIKEY:
-    file: ./secrets/CK_RAPIDAPIKEY
   DB_STRING:
     file: ./secrets/DB_STRING
   DISCORD_APP_SECRET:
@@ -33,9 +27,6 @@ services:
     restart: on-failure
     secrets:
       - BOT_WEB_APP_SERVER_SECRET
-      - CK_CLIENTID
-      - CK_CLIENTSECRET
-      - CK_RAPIDAPIKEY
       - DB_STRING
       - DISCORD_APP_SECRET
       - DISCORD_APP_TOKEN

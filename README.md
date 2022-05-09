@@ -96,11 +96,6 @@ Current Progress (Languages in focus where translations are being used):
 - `[post]` `/api/server/settings`  
 - `[post]` `/api/server/setting/update`  
 - `[get]` `/api/stats`  
-- `[post]` `/api/ck/keyholder`  
-- `[post]` `/api/ck/lockee`  
-- `[post]` `/api/ck/search`  
-- `[post]` `/api/ck/user`  
-- `[post]` `/api/ck/stats/locks`  
 - `[post]` `/api/decision`  
 - `[get]` `/api/decisions`  
 - `[patch]` `/api/decision/props`  
@@ -126,7 +121,6 @@ Current Progress (Languages in focus where translations are being used):
 #### Admin
 
 - `!admin channel purge` - [**Restricted:** Server Admin] Purge all messages in channel  
-- `!admin ck stats refresh` - [**Restricted:** Pre-defined users] Trigger refresh of ChastiKey data cache   
 - `!admin commands` - [**Restricted:** Server Admin] Retrieve list of command categories  
 - `!admin category Fun` - [**Restricted:** Server Admin] Retrieve list of categories commands  
 - `!admin restrict command 8ball` - [**Restricted:** Server Admin] Restrict Command usage **(Under Dev)**  
@@ -142,30 +136,6 @@ Current Progress (Languages in focus where translations are being used):
 - `!wow character us stormreaver thejaydox` - Retrieve World of Warcraft character profile  
 - `!d3 season current` - Retrieve current Diablo 3 Active Season  
 - `!d3 profile BattleTag#1234` - Retrieve Diablo 3 user profile  
-
-#### ChastiKey (3rd party service)
-
-- **`/ck stats multilocked KeyHolderName` - List of Keyholder's lockees who have 2 or more Keyholders**  
-- `!ck debug UsernameHere` [**Restricted:** Pre-defined users]
-- **`/ck stats lockees` - List of Keyholder's lockees**  
-- `!ck keyholder set average show` - Enable/Disable your rating visibility in stats commands
-- `!ck lockee history` - Show lockee's history breakdown
-- `!ck lockee nickname status always` - Set preference if Kiera should manage nickname with 🔒 and 🔓
-- `!ck map exp role # @role` - Set/Customize mapping of CK Experience roles for your server
-- `!ck map special role # @role` - Set/Customize mapping of CK Special roles for your server
-- `!ck search UsernameHere` - Search based off ChastiKey username
-- **`/ck stats keyholder UsernameHere` - View Keyholder stats**  
-- `!ck stats locktober` - ChastiKey Locktober event statistics
-- **`/ck stats lockee` - View Lockee stats**  
-- `!ck recover combos 5` - Retrieve your completed lock combinations
-- `!ck role counts` - List of ChastiKey Discord Roles & statistics
-- `!ck ticker` - View ChastiKey Ticker
-- `!ck ticker set type 2` - Set your default displayed ticker when you call the ticker command
-- `!ck ticker set date 2019-01-27` - Set a start date for your ticker data
-- `!ck ticker set rating show` - Enable/Disable your ticker & stats rating display
-- **`/ck update` - Sync your ChastiKey profile with Discord**  
-- **`/ck verify` - Link Discord account with ChastiKey App account**  
-- `!ck web` - Generate session for external Kiera + ChastiKey web portal
 
 #### Decision Rollers
 

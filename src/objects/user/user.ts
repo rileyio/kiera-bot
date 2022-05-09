@@ -1,6 +1,4 @@
 import { ObjectId } from 'bson'
-import { TrackedChastiKey } from '@/objects/chastikey'
-
 export class TrackedUser {
   public __notStored?: boolean
   public _id?: ObjectId
@@ -9,15 +7,11 @@ export class TrackedUser {
   public webToken?: string
   public locale?: string = process.env.BOT_LOCALE
 
-  // ChastiKey Specific //
-  public ChastiKey?: TrackedChastiKey
-
   // Decision Preferences //
   public Decision?: TrackedUserDecisionPrefs
 
   constructor(init: Partial<TrackedUser>) {
     Object.assign(this, init)
-    this.ChastiKey = new TrackedChastiKey(init !== null ? init.ChastiKey : {})
     this.Decision = new TrackedUserDecisionPrefs(init !== null ? init.Decision : {})
   }
 

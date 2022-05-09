@@ -1,12 +1,10 @@
 import { BotStatistics, ServerStatistic } from '@/objects/statistics'
 import { CollectionInsertManyOptions, Db, FilterQuery, MongoClient, MongoClientOptions, MongoError, ObjectId, QuerySelector, UpdateQuery } from 'mongodb'
-import { RunningLocksLock, UserData } from 'chastikey.js/app/objects'
 import { TrackedDecision, TrackedDecisionLogEntry } from '@/objects/decision'
 import { TrackedMutedUser, TrackedUser } from '@/objects/user'
 
 import { AuditEntry } from '@/objects/audit'
 import { Bot } from '../'
-import { ChastiKeyLocktoberData } from '@/objects/chastikey'
 import { TrackedMessage } from '@/objects/message'
 import { TrackedPoll } from '@/objects/poll'
 import { TrackedServer } from '@/objects/server'
@@ -20,12 +18,6 @@ export * from './promise'
 export type Collections = {
   'audit-log': AuditEntry
   'available-server-settings': any
-  'ck-running-locks': RunningLocksLock
-  'ck-locktober-2019': ChastiKeyLocktoberData
-  'ck-locktober-2020': ChastiKeyLocktoberData
-  'ck-locktober-2021': ChastiKeyLocktoberData
-  'ck-stats-daily': any
-  'ck-users': UserData
   'command-permissions': any
   decision: TrackedDecision
   'decision-log': TrackedDecisionLogEntry

@@ -34,34 +34,10 @@ export class DBAgeCleanup extends Task {
         if (auditLogIDsResults) this.Bot.Log.Scheduled.log(`[${this.name}][AuditLog] Cleanup completed!`)
       }
 
-      // * CK Stats * //
-      // ? Get CK Compiled Stats entries > 30 days
-      const ckHistorical = (
-        await this.Bot.DB.aggregate('ck-stats-daily', [
-          {
-            $match: { _id: { $lt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) } }
-          },
-          {
-            $sort: { _id: -1 }
-          },
-          {
-            $project: { _id: 1 }
-          }
-        ])
-      ).map((d: { _id: ObjectId }) => {
-        return d._id
-      })
-
-      if (ckHistorical.length) {
-        this.Bot.Log.Scheduled.log(`[${this.name}][CK Hourly Stats] Cleaning up ${ckHistorical.length} records that are >30 days old`)
-        const ckHistoricalResults = await this.Bot.DB.remove('ck-stats-daily', { _id: { $in: ckHistorical } }, { deleteOne: false })
-        if (ckHistoricalResults) this.Bot.Log.Scheduled.log(`[${this.name}][CK Hourly Stats] Cleanup completed!`)
-      }
-
       // * Decision Log * //
       // ? Get Audit log entries > 30 days
       const decisionLog = (
-        await this.Bot.DB.aggregate('ck-stats-daily', [
+        await this.Bot.DB.aggregate('decision-log', [
           {
             $match: { _id: { $lt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) } }
           },
