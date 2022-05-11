@@ -165,7 +165,7 @@ export class Bot {
     // Since regular commands seem to be possible working as of the time of writing this, adding back
     // an info response redirecting users to use slash commands.
     /// Incoming message router ///
-    this.client.on('message', async (msg) => await this.onMessage(msg))
+    // this.client.on('message', async (msg) => await this.onMessage(msg))
 
     /// Update guilds info stored ///
     for (const guild of [...this.client.guilds.cache.values()]) {
@@ -217,19 +217,19 @@ export class Bot {
     }
   }
 
-  private async onMessage(message: Discord.Message) {
-    try {
-      const containsPrefix = message.content.startsWith('!')
+  // private async onMessage(message: Discord.Message) {
+  //   try {
+  //     const containsPrefix = message.content.startsWith('!')
 
-      if (containsPrefix)
-        await message.reply({
-          content:
-            '🤖 Kiera now uses (`/`) Slash Commands. Try typing commands as before but instead of starting with `!` replace with `/`. Please also note that shortened commands will no longer work due to redesign limitation.'
-        })
-    } catch (error) {
-      this.Log.Bot.error('Fatal onMessage error caught', error)
-    }
-  }
+  //     if (containsPrefix)
+  //       await message.reply({
+  //         content:
+  //           '🤖 Kiera now uses (`/`) Slash Commands. Try typing commands as before but instead of starting with `!` replace with `/`. Please also note that shortened commands will no longer work due to redesign limitation.'
+  //       })
+  //   } catch (error) {
+  //     this.Log.Bot.error('Fatal onMessage error caught', error)
+  //   }
+  // }
 
   private async onInteraction(interaction: Discord.Interaction) {
     try {
