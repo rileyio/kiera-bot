@@ -11,6 +11,7 @@ import { RoutedInteraction } from '@/router'
 export async function addOutcome(routed: RoutedInteraction) {
   const id = routed.interaction.options.get('id')?.value as string
   const outcome = routed.interaction.options.get('value')?.value as string
+  const type = routed.interaction.options.get('value')?.value as 'string' | 'image' | 'url' | 'markdown'
 
   // Get the saved decision from the db (Only the creator can edit)
   const decisionFromDB = await routed.bot.DB.get('decision', {
@@ -20,7 +21,7 @@ export async function addOutcome(routed: RoutedInteraction) {
 
   if (decisionFromDB) {
     const decision = new TrackedDecision(decisionFromDB)
-    decision.options.push(new TrackedDecisionOption({ text: outcome }))
+    decision.options.push(new TrackedDecisionOption({ text: outcome, type: type }))
     await routed.bot.DB.update('decision', { _id: decision._id }, decision)
     return await routed.reply(routed.$render('Decision.Edit.NewEntry', { added: outcome }), true)
   }
