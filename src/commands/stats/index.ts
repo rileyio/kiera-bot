@@ -14,7 +14,6 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 export const Routes = ExportRoutes({
   category: 'Stats',
   controller: stats,
-  middleware: [Middleware.isCKVerified],
   name: 'stats',
   permissions: {
     defaultEnabled: true,

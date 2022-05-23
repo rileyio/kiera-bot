@@ -1,4 +1,5 @@
 9.3.0
+- Fixed: Stats commands not working.
 - Added: Decision roll outcome type option when adding an outcome.
 
 9.2.1
