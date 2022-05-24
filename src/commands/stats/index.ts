@@ -1,5 +1,4 @@
 import * as About from '@/commands/stats/about.cmd'
-import * as Middleware from '@/middleware'
 import * as StatsChannel from '@/commands/stats/channel.cmd'
 import * as StatsChannelManage from '@/commands/stats/channel-manage.cmd'
 import * as StatsServer from '@/commands/stats/stats-server.cmd'
