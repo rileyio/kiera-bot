@@ -33,6 +33,16 @@ export const Routes = ExportRoutes({
         .addStringOption((option) => option.setName('id').setDescription('Specify the ID or Nickname of the Decision Roller').setRequired(true))
         .addStringOption((option) => option.setName('target').setDescription('What do you wish to add?').setRequired(true).addChoice('Outcome', 'outcome'))
         .addStringOption((option) => option.setName('value').setDescription('Please supply the value to add').setRequired(true))
+        .addStringOption((option) =>
+          option
+            .setName('type')
+            .setDescription('Change the display type of the outcome value')
+            .setRequired(false)
+            .addChoice('Text (Default)', 'string')
+            .addChoice('Image URL', 'image')
+            .addChoice('Web Address', 'url')
+            .addChoice('Markdown (Beta)', 'markdown')
+        )
     )
     // * Create a new decision roller
     .addSubcommand((subcommand) =>

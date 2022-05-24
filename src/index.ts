@@ -11,6 +11,7 @@ import { CommandRouter, routeLoader } from '@/router'
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
 import { BotMonitor } from '@/monitor'
+import { ChastiSafe } from './integrations/ChastiSafe'
 import Localization from '@/localization'
 import { MongoDB } from '@/db'
 import { REST } from '@discordjs/rest'
@@ -53,8 +54,9 @@ export class Bot {
   public Router: CommandRouter
 
   // API Services
-  public Service: { BattleNet: BattleNet } = {
-    BattleNet: null
+  public Service: { BattleNet: BattleNet, ChastiSafe: ChastiSafe } = {
+    BattleNet: null,
+    ChastiSafe: new ChastiSafe(this)
   }
 
   // Statistics
@@ -106,6 +108,8 @@ export class Bot {
     try {
       /// Integrations / Services / 3rd party
       // await this.Service.BattleNet.setup(this)
+      await this.Service.ChastiSafe.setup()
+
       /// Reserved...
       /// ...
     } catch (error) {

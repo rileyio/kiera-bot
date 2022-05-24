@@ -51,6 +51,38 @@ BattleNet:
   Error:
     CharacterNotFound: Character Not Found!
 
+ChastiSafe:
+  Stats:
+    User:
+      Title: |-
+        **{{username}}**
+      MainStats: |-
+        **User Statistics**
+        Levels
+         ↳ Chastity `{{chastityLevel}}` | Bondage `{{bondageLevel}}` | Task `{{taskLevel}}`
+        Keyholder Levels
+         ↳ Chastity `{{keyholderLevelChastity}}` | Bondage `{{keyholderLevelBondage}}` | Task `{{keyholderLevelTask}}`
+        Ratings
+         ↳ Keyholder Avg `{{averageRatingAsKeyholder}}` | Count `{{ratingsAsKeyholderCount}}`
+         ↳ Lockee Avg `{{averageRatingAsLockee}}` | Count `{{ratingsAsLockeeCount}}`
+
+        {{#if hasActiveChastityLocks}}
+        **Active Locks**
+        {{#each chastityLocks}}
+          {{{this}}}
+          ───────────────
+        {{/each}}
+        {{/if}}
+
+        **ChastiKey (Legacy)**
+        Avg Keyholder Rating `{{#if hasKeyholderRatings}}{{averageKeyholderRating}}{{else}}n/a{{/if}}` | # Ratings `{{noOfKeyholderRatings}}`
+        Avg Lockee Rating `{{#if hasLockeeRatings}}{{averageLockeeRating}}{{else}}n/a{{/if}}` | # Ratings `{{numberOfLockeeRatings}}`
+        Locked for `{{cumulativeSecondsLocked}}` months to date | `{{numberOfCompletedLocks}}` locks completed
+        Longest (completed) `{{longestLockCompleted}}`
+        Average Time Locked (overall) `{{averageTimeLocked}}`
+        Date First Keyheld `{{keyheldStartTimestamp}}`
+        Joined `{{joinTimestamp}}` (`{{joinedDaysAgo}}` days ago)
+
 Help:
   Admin:
     ChannelPurge:

@@ -1,3 +1,8 @@
+9.3.0
+- Fixed: Stats commands not working.
+- Added: Decision roll outcome type option when adding an outcome.
+- Added: ChastiSafe User Lookup command.
+
 9.2.1
 - Removed: Message prefix info reply.
 

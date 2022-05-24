@@ -3,6 +3,8 @@ version: '3.9'
 secrets:
   BOT_WEB_APP_SERVER_SECRET:
     file: ./secrets/BOT_WEB_APP_SERVER_SECRET
+  CS_SECRET:
+    file: ./secrets/CS_SECRET
   DB_STRING:
     file: ./secrets/DB_STRING
   DISCORD_APP_SECRET:
@@ -17,6 +19,7 @@ services:
       dockerfile: dockerfile
       target: base
     volumes:
+      - ./locales:/home/node/app/locales
       - ./src:/home/node/app/src
     container_name: kiera_bot
     ports:
@@ -27,6 +30,7 @@ services:
     restart: on-failure
     secrets:
       - BOT_WEB_APP_SERVER_SECRET
+      - CS_SECRET
       - DB_STRING
       - DISCORD_APP_SECRET
       - DISCORD_APP_TOKEN
