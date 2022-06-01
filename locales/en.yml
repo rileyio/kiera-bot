@@ -74,6 +74,7 @@ ChastiSafe:
         {{/each}}
         {{/if}}
 
+        {{#if hasChastiKeyData}}
         **ChastiKey (Legacy)**
         Avg Keyholder Rating `{{#if hasKeyholderRatings}}{{averageKeyholderRating}}{{else}}n/a{{/if}}` | # Ratings `{{noOfKeyholderRatings}}`
         Avg Lockee Rating `{{#if hasLockeeRatings}}{{averageLockeeRating}}{{else}}n/a{{/if}}` | # Ratings `{{numberOfLockeeRatings}}`
@@ -82,6 +83,7 @@ ChastiSafe:
         Average Time Locked (overall) `{{averageTimeLocked}}`
         Date First Keyheld `{{keyheldStartTimestamp}}`
         Joined `{{joinTimestamp}}` (`{{joinedDaysAgo}}` days ago)
+        {{/if}}
 
 Help:
   Admin:
