@@ -21,7 +21,7 @@ export const Routes = ExportRoutes({
         .setName('lookup')
         .setDescription('Lookup on ChastiSafe')
         .addStringOption((option) => option.setName('username').setDescription('Specify Username like user#1234').setRequired(false))
-        .addUserOption((option) => option.setName('user').setDescription('Specify Username like user#1234').setRequired(false))
+        .addUserOption((option) => option.setName('user').setDescription('Specify Username like @User').setRequired(false))
     ),
   type: 'interaction'
 })
