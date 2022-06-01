@@ -15,7 +15,13 @@ export async function lookupUser(routed: RoutedInteraction) {
   console.log('user.id || username || routed.author.id', user ? user : undefined || username || routed.author.id)
   const resp = await routed.bot.Service.ChastiSafe.fetchProfile(user ? user.id : undefined || username || routed.author.id)
 
-  if (resp) {
-    await routed.reply({ embeds: [embed(resp, routed)] })
-  } else return await routed.reply('ChastiSafe user not found', true)
+  try {
+    if (resp) {
+      await routed.reply({ embeds: [embed(resp, routed)] })
+    } else return await routed.reply('ChastiSafe user not found', true)
+  } catch (error) {
+    console.log('Failed to build response', error)
+  }
+
+  return false
 }

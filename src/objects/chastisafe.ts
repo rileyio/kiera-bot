@@ -63,11 +63,19 @@ export class ChastiSafeUser {
 
   public status: false
 
+  public hasChastiKeyData = false
+
   constructor(init: Partial<ChastiSafeUser>) {
     Object.assign(this, init)
 
-    // For each lock (if present)
-    if (init.lockInfo.chastityLocks.length) this.lockInfo.chastityLocks = [...init.lockInfo.chastityLocks.map((l) => new ChastiSafeLock(l))]
+    try {
+      // For each lock (if present)
+      if (init.lockInfo.chastityLocks.length) this.lockInfo.chastityLocks = [...init.lockInfo.chastityLocks.map((l) => new ChastiSafeLock(l))]
+    } catch (error) {
+      console.log('Error parsing CS Locks data')
+    }
+
+    if (typeof this.chastikeystats === 'object') this.hasChastiKeyData = true
   }
 }
 

@@ -5,35 +5,46 @@ import { MessageEmbed } from 'discord.js'
 import { RoutedInteraction } from '@/router'
 
 export function embed(user: ChastiSafeUser, routed: RoutedInteraction): Partial<MessageEmbed> {
-  const description = routed.$render('ChastiSafe.Stats.User.MainStats', {
-    averageKeyholderRating: user.chastikeystats.averageKeyholderRating,
-    averageLockeeRating: user.chastikeystats.averageLockeeRating,
-    averageRatingAsKeyholder: user.ratings.averageRatingAsKeyholder || 'n/a',
-    averageRatingAsLockee: user.ratings.averageRatingAsLockee || 'n/a',
-    averageTimeLocked: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.averageTimeLockedInSeconds),
-    bondageLevel: user.levels.bondageLevel ? user.levels.bondageLevel : 'n/a',
-    chastityLevel: user.levels.chastityLevel ? user.levels.chastityLevel : 'n/a',
-    chastityLocks: user.lockInfo.chastityLocks.map((l) => `🔒 **${l.lockName}**\n**Keyholder:** \`${l.keyholder}\`\n**Loaded:** \`${l.loadtime}\``),
-    cumulativeSecondsLocked: Math.round((user.chastikeystats.cumulativeSecondsLocked / 2592000) * 100) / 100,
-    hasActiveChastityLocks: user.lockInfo.chastityLocks.length > 0,
-    hasKeyholderRatings: user.chastikeystats.averageKeyholderRating !== 0,
-    hasLockeeRatings: user.chastikeystats.averageLockeeRating > 0,
-    hasManagedLocks: user.chastikeystats.totalLocksManaged > 0,
-    joinTimestamp: user.chastikeystats.joinTimestamp.substring(0, 10),
-    joinedDaysAgo: `${Math.round((Date.now() - new Date(user.chastikeystats.joinTimestamp).getTime()) / 1000 / 60 / 60 / 24)}`,
-    keyheldStartTimestamp: user.chastikeystats.keyheldStartTimestamp ? user.chastikeystats.keyheldStartTimestamp.substring(0, 10) : 'n/a',
-    keyholderLevelBondage: user.keyholderLevels.bondageLevel ? user.keyholderLevels.bondageLevel : 'n/a',
-    keyholderLevelChastity: user.keyholderLevels.chastityLevel ? user.keyholderLevels.chastityLevel : 'n/a',
-    keyholderLevelTask: user.keyholderLevels.taskLevel ? user.keyholderLevels.taskLevel : 'n/a',
-    longestLockCompleted: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.longestCompletedLockInSeconds, true),
-    noOfKeyholderRatings: user.chastikeystats.noOfKeyholderRatings,
-    numberOfCompletedLocks: user.chastikeystats.numberOfCompletedLocks,
-    numberOfLockeeRatings: user.chastikeystats.numberOfLockeeRatings,
-    ratingsAsKeyholderCount: user.ratings.ratingsAsKeyholderCount,
-    ratingsAsLockeeCount: user.ratings.ratingsAsLockeeCount,
-    taskLevel: user.levels.taskLevel ? user.levels.taskLevel : 'n/a',
-    totalLocksManaged: user.chastikeystats.totalLocksManaged
-  })
+  const description = routed.$render(
+    'ChastiSafe.Stats.User.MainStats',
+    Object.assign(
+      {
+        averageRatingAsKeyholder: user.ratings.averageRatingAsKeyholder || 'n/a',
+        averageRatingAsLockee: user.ratings.averageRatingAsLockee || 'n/a',
+        bondageLevel: user.levels.bondageLevel ? user.levels.bondageLevel : 'n/a',
+        chastityLevel: user.levels.chastityLevel ? user.levels.chastityLevel : 'n/a',
+        chastityLocks: user.lockInfo.chastityLocks.map((l) => `🔒 **${l.lockName}**\n**Keyholder:** \`${l.keyholder}\`\n**Loaded:** \`${l.loadtime}\``),
+        hasActiveChastityLocks: user.lockInfo.chastityLocks.length > 0,
+        hasChastiKeyData: user.hasChastiKeyData,
+        keyholderLevelBondage: user.keyholderLevels.bondageLevel ? user.keyholderLevels.bondageLevel : 'n/a',
+        keyholderLevelChastity: user.keyholderLevels.chastityLevel ? user.keyholderLevels.chastityLevel : 'n/a',
+        keyholderLevelTask: user.keyholderLevels.taskLevel ? user.keyholderLevels.taskLevel : 'n/a',
+        ratingsAsKeyholderCount: user.ratings.ratingsAsKeyholderCount,
+        ratingsAsLockeeCount: user.ratings.ratingsAsLockeeCount,
+        taskLevel: user.levels.taskLevel ? user.levels.taskLevel : 'n/a'
+      },
+      // Only include this if ChastiKey data is available
+      user.hasChastiKeyData
+        ? {
+            averageKeyholderRating: user.chastikeystats.averageKeyholderRating,
+            averageLockeeRating: user.chastikeystats.averageLockeeRating,
+            averageTimeLocked: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.averageTimeLockedInSeconds),
+            cumulativeSecondsLocked: Math.round(user.chastikeystats.cumulativeSecondsLocked / 2592000 * 100) / 100,
+            hasKeyholderRatings: user.chastikeystats.averageKeyholderRating !== 0,
+            hasLockeeRatings: user.chastikeystats.averageLockeeRating > 0,
+            hasManagedLocks: user.chastikeystats.totalLocksManaged > 0,
+            joinTimestamp: user.chastikeystats.joinTimestamp.substring(0, 10),
+            joinedDaysAgo: `${Math.round((Date.now() - new Date(user.chastikeystats.joinTimestamp).getTime()) / 1000 / 60 / 60 / 24)}`,
+            keyheldStartTimestamp: user.chastikeystats.keyheldStartTimestamp ? user.chastikeystats.keyheldStartTimestamp.substring(0, 10) : 'n/a',
+            longestLockCompleted: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.longestCompletedLockInSeconds, true),
+            noOfKeyholderRatings: user.chastikeystats.noOfKeyholderRatings,
+            numberOfCompletedLocks: user.chastikeystats.numberOfCompletedLocks,
+            numberOfLockeeRatings: user.chastikeystats.numberOfLockeeRatings,
+            totalLocksManaged: user.chastikeystats.totalLocksManaged
+          }
+        : {}
+    )
+  )
 
   return {
     color: 9125611,
