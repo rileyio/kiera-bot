@@ -1,4 +1,4 @@
-import * as Agenda from 'agenda'
+import Agenda from 'agenda/es'
 
 import { Bot } from '@/index'
 import { Task } from '@/objects/task'

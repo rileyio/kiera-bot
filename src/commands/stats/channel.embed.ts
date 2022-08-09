@@ -1,4 +1,5 @@
 import * as Utils from '@/utils'
+import { EmbedBuilder } from 'discord.js'
 
 interface StatsChannelsData {
   serverIcon: string
@@ -27,17 +28,14 @@ export function statsChannel(stats: StatsChannelsData) {
     descriptionBuilt += `\`${user.messages}\` ${user.name}\n`
   })
 
-  return {
-    color: 7413873,
-    description: descriptionBuilt,
-    footer: {
+  return new EmbedBuilder()
+    .setColor(7413873)
+    .setDescription(descriptionBuilt)
+    .setFooter({
       iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
       text: 'Observed by Kiera'
-    },
-    thumbnail: {
-      url: stats.serverIcon
-    },
-    timestamp: new Date(),
-    title: `Channel Stats for \`${stats.name}\``
-  }
+    })
+    .setThumbnail(stats.serverIcon)
+    .setTimestamp(new Date())
+    .setTitle(`Channel Stats for \`${stats.name}\``)
 }

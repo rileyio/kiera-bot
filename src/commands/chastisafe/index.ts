@@ -27,7 +27,7 @@ export const Routes = ExportRoutes({
 })
 
 async function csRouterSub(routed: RoutedInteraction) {
-  const subCommand = routed.interaction.options.getSubcommand() as 'lookup'
+  const subCommand = routed.interaction.options.data[0].name as 'lookup'
   // const username = routed.interaction.options.get('username')?.value
   // const user = routed.interaction.options.getUser('user')
   // const interactionType = routed.interaction.options.get('type')?.value

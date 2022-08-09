@@ -1,8 +1,7 @@
 import { Bot } from '@/index'
 import { ChastiSafeUser } from '@/objects/chastisafe'
-import { User } from 'discord.js'
+import axios from 'axios'
 import { read as getSecret } from '@/secrets'
-import got from 'got'
 
 /**
  * ChastiSafe API Helper service
@@ -67,17 +66,15 @@ export class ChastiSafe {
       const containsSeparator = typeof idOrUsername === 'string' && idOrUsername !== undefined ? idOrUsername.includes('#') : false
       if (containsSeparator) console.log('Detected written username', `'${idOrUsername}'`)
       console.log('uri', `${this.url}/profile/${containsSeparator ? encodeURIComponent(containsSeparator) : idOrUsername}`)
-      const { body } = await got.get(`${this.url}/profile/${containsSeparator ? encodeURIComponent(idOrUsername) : idOrUsername}`, {
+      const { data } = await axios.get(`${this.url}/profile/${containsSeparator ? encodeURIComponent(idOrUsername) : idOrUsername}`, {
         headers: {
           chastisafebot: String(this.BotSecret)
         }
-        // responseType: 'json'
       })
-      console.log('body', body)
 
-      return body === 'User not found' ? null : new ChastiSafeUser(JSON.parse(body))
+      return data === 'User not found' ? null : new ChastiSafeUser(data)
     } catch (error) {
-      this.Bot.Log.Integration.error('Fatal error performing lookup')
+      this.Bot.Log.Integration.error('Fatal error performing lookup', error)
       return null
     }
   }

@@ -1,6 +1,6 @@
 import * as Utils from '@/utils'
 
-import { BaseCommandInteraction, Channel, CommandInteraction, Guild, GuildMember, Message, MessagePayload, ReplyMessageOptions, TextChannel, User } from 'discord.js'
+import { Channel, CommandInteraction, Guild, GuildMember, InteractionReplyOptions, Message, MessagePayload, ReplyMessageOptions, TextChannel, User } from 'discord.js'
 import { MessageRoute, ProcessedPermissions, RouterStats, Validate, ValidationType } from '@/router'
 
 import { Bot } from '@/index'
@@ -24,7 +24,6 @@ export class RouterRouted<T = undefined> {
   public channel: Channel | TextChannel
   public guild: Guild
   public interaction: CommandInteraction
-  public isDM: boolean
   public isInteraction: boolean
   public member: GuildMember
   public message: Message
@@ -56,7 +55,6 @@ export class RouterRouted<T = undefined> {
     this.channel = init.channel
     this.guild = init.guild
     this.interaction = init.interaction
-    this.isDM = init.isDM
     this.isInteraction = init.isInteraction
     this.member = init.member
     this.message = init.message
@@ -113,8 +111,8 @@ export class RouterRouted<T = undefined> {
   public async reply(response: string | MessagePayload | ReplyMessageOptions, ephemeral?: boolean) {
     try {
       if (this.route.slash && this.interaction) {
-        if (typeof response === 'object') await (this.interaction as BaseCommandInteraction).reply(Object.assign(response, { ephemeral }))
-        else await (this.interaction as BaseCommandInteraction).reply({ content: response, ephemeral })
+        if (typeof response === 'object') await (this.interaction as CommandInteraction).reply(Object.assign(response, { ephemeral }) as InteractionReplyOptions)
+        else await (this.interaction as CommandInteraction).reply({ content: response, ephemeral })
       } else await this.reply(response)
       return true
     } catch (error) {
@@ -131,7 +129,6 @@ export class RoutedInteraction {
   public channel: Channel | TextChannel
   public guild: Guild
   public interaction: CommandInteraction
-  public isDM: boolean
   public isInteraction: boolean
   public member: GuildMember
   public permissions: ProcessedPermissions
@@ -150,7 +147,6 @@ export class RoutedInteraction {
     this.channel = init.channel
     this.guild = init.guild
     this.interaction = init.interaction
-    this.isDM = init.isDM
     this.isInteraction = init.isInteraction
     this.member = init.member
     this.permissions = init.permissions
@@ -191,8 +187,8 @@ export class RoutedInteraction {
 
   public async reply(response: string | MessagePayload | ReplyMessageOptions, ephemeral?: boolean) {
     try {
-      if (typeof response === 'object') await (this.interaction as BaseCommandInteraction).reply(Object.assign(response, { ephemeral }))
-      else await (this.interaction as BaseCommandInteraction).reply({ content: response, ephemeral })
+      if (typeof response === 'object') await (this.interaction as CommandInteraction).reply(Object.assign(response, { ephemeral }) as InteractionReplyOptions)
+      else await (this.interaction as CommandInteraction).reply({ content: response, ephemeral })
     } catch (error) {
       this.bot.Log.Router.error('Unable to .reply =>', error, response)
       return false

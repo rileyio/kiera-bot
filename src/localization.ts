@@ -1,10 +1,10 @@
 import * as Handlebars from 'handlebars'
 import * as YAML from 'yaml'
-import * as dotProp from 'dot-prop'
 import * as fs from 'fs'
 import * as glob from 'fast-glob'
 
 import { Logger } from '@/utils'
+import { get } from 'dot-prop'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
 
@@ -137,7 +137,7 @@ export default class Localization {
   public $render<T>(locale: string, key: string, data?: boolean | object | T) {
     // Check if locale exists
     if (this.loaded[locale]) {
-      const targetString: string = dotProp.get(this.loaded[locale].strings, key)
+      const targetString: string = get(this.loaded[locale].strings, key)
       // Check if string is translated - if not: fallback
       if (targetString) {
         const templ = Handlebars.compile(targetString, data as T | object)
@@ -148,7 +148,7 @@ export default class Localization {
     // Check if its fallback being passed for the 3rd arg
     if (typeof data === 'boolean' && data === false) return
     // Fallback
-    const templ = Handlebars.compile(dotProp.get(this.loaded[DEFAULT_LOCALE].strings, key))
+    const templ = Handlebars.compile(get(this.loaded[DEFAULT_LOCALE].strings, key))
     return templ(data)
   }
 
@@ -170,7 +170,7 @@ export default class Localization {
    * @memberof Localization
    */
   public $localeStringExists(locale: string, key: string): boolean {
-    return !!dotProp.get(this.loaded[locale].strings, key)
+    return !!get(this.loaded[locale].strings, key)
   }
 
   /**
@@ -180,7 +180,7 @@ export default class Localization {
    * @memberof Localization
    */
   public $localeContributors(locale: string) {
-    return dotProp.get(this.loaded[locale].strings, 'Locale.Contributors')
+    return get(this.loaded[locale].strings, 'Locale.Contributors')
   }
 
   /**
@@ -194,7 +194,7 @@ export default class Localization {
 
     // Find longest name
     Object.keys(this.loaded).forEach((l) => {
-      const localeName = (dotProp.get(this.loaded[l].strings, 'Locale.Name') as string) || '<Missing Locale Description>'
+      const localeName = (get(this.loaded[l].strings, 'Locale.Name') as string) || '<Missing Locale Description>'
       if (localeName) longestLocaleName = longestLocaleName < localeName.length ? localeName.length : longestLocaleName
     })
 

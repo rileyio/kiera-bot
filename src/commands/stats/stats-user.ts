@@ -1,4 +1,5 @@
 import * as Utils from '@/utils'
+import { EmbedBuilder } from 'discord.js'
 
 interface StatsUsersData {
   userID: string
@@ -44,17 +45,14 @@ export function statsUser(stats: StatsUsersData) {
     descriptionBuilt += `\`${channel.reactions}\` ${channel.name}\n`
   })
 
-  return {
-    color: 7413873,
-    description: descriptionBuilt,
-    footer: {
+  return new EmbedBuilder()
+    .setColor(7413873)
+    .setTitle(`User Stats for \`${stats.nickname || stats.username}#${stats.discriminator}\``)
+    .setFooter({
       iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
       text: 'Observed by Kiera'
-    },
-    thumbnail: {
-      url: `https://cdn.discordapp.com/avatars/${stats.userID}/${stats.avatar}`
-    },
-    timestamp: new Date(),
-    title: `User Stats for \`${stats.nickname || stats.username}#${stats.discriminator}\``
-  }
+    })
+    .setThumbnail(`https://cdn.discordapp.com/avatars/${stats.userID}/${stats.avatar}`)
+    .setTimestamp(new Date())
+    .setDescription(descriptionBuilt)
 }

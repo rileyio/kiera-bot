@@ -1,10 +1,10 @@
 import * as Utils from '@/utils'
 
 import { ChastiSafeUser } from '@/objects/chastisafe'
-import { MessageEmbed } from 'discord.js'
+import { EmbedBuilder } from 'discord.js'
 import { RoutedInteraction } from '@/router'
 
-export function embed(user: ChastiSafeUser, routed: RoutedInteraction): Partial<MessageEmbed> {
+export function embed(user: ChastiSafeUser, routed: RoutedInteraction) {
   const description = routed.$render(
     'ChastiSafe.Stats.User.MainStats',
     Object.assign(
@@ -29,7 +29,7 @@ export function embed(user: ChastiSafeUser, routed: RoutedInteraction): Partial<
             averageKeyholderRating: user.chastikeystats.averageKeyholderRating,
             averageLockeeRating: user.chastikeystats.averageLockeeRating,
             averageTimeLocked: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.averageTimeLockedInSeconds),
-            cumulativeSecondsLocked: Math.round(user.chastikeystats.cumulativeSecondsLocked / 2592000 * 100) / 100,
+            cumulativeSecondsLocked: Math.round((user.chastikeystats.cumulativeSecondsLocked / 2592000) * 100) / 100,
             hasKeyholderRatings: user.chastikeystats.averageKeyholderRating !== 0,
             hasLockeeRatings: user.chastikeystats.averageLockeeRating > 0,
             hasManagedLocks: user.chastikeystats.totalLocksManaged > 0,
@@ -46,18 +46,18 @@ export function embed(user: ChastiSafeUser, routed: RoutedInteraction): Partial<
     )
   )
 
-  return {
-    color: 9125611,
-    description,
-    // fields: fields,
-    footer: {
+  return new EmbedBuilder()
+    .setColor(9125611)
+    .setDescription(description)
+    .setFooter({
       iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
       text: `Runtime ${routed.routerStats.performance}ms :: Requested By ${routed.routerStats.user} :: Retrieved by Kiera`
-    },
-    timestamp: Date.now(),
-    title: routed.$render('ChastiSafe.Stats.User.Title', {
-      username: user.user,
-      verifiedEmoji: '<:verified:625628727820288000> '
     })
-  }
+    .setTitle(
+      routed.$render('ChastiSafe.Stats.User.Title', {
+        username: user.user,
+        verifiedEmoji: '<:verified:625628727820288000> '
+      })
+    )
+    .setTimestamp(Date.now())
 }

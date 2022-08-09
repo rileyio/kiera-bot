@@ -15,6 +15,8 @@ export async function lookupUser(routed: RoutedInteraction) {
   console.log('user.id || username || routed.author.id', user ? user : undefined || username || routed.author.id)
   const resp = await routed.bot.Service.ChastiSafe.fetchProfile(user ? user.id : undefined || username || routed.author.id)
 
+  console.log('resp', resp)
+
   try {
     if (resp) {
       await routed.reply({ embeds: [embed(resp, routed)] })

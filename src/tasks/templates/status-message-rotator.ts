@@ -24,7 +24,7 @@ export class StatusMessageRotator extends Task {
       if (hasStoredStatus) options.push(hasStoredStatus.value)
 
       // Get a random message
-      const random = Random.int(0, options.length - 1)
+      const random = (Random as any).int(0, options.length - 1)
       const outcome = options[random]
 
       // console.log('sb', sb(outcome, { size: this.Bot.client.guilds.cache.size }) || hasStoredStatus ? storedStatus.value : '')

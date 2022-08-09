@@ -1,5 +1,6 @@
 import * as Utils from '@/utils'
-import { EmbedField, MessageEmbed } from 'discord.js'
+
+import { EmbedBuilder, EmbedField } from 'discord.js'
 
 interface StatsTopServerChannelsData {
   serverIcon: string
@@ -35,29 +36,26 @@ interface StatsServerData {
   }
 }
 
-export function statsTopServerChannels(stats: StatsTopServerChannelsData): Partial<MessageEmbed> {
+export function statsTopServerChannels(stats: StatsTopServerChannelsData) {
   let descriptionBuilt = `\n`
 
   stats.data.forEach((channel) => {
     descriptionBuilt += `\`${channel.count}\` ${channel.name}\n`
   })
 
-  return {
-    color: 7413873,
-    description: descriptionBuilt,
-    footer: {
+  return new EmbedBuilder()
+    .setColor(7413873)
+    .setDescription(descriptionBuilt)
+    .setFooter({
       iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
       text: 'Observed by Kiera'
-    },
-    thumbnail: {
-      url: stats.serverIcon
-    },
-    timestamp: Date.now(),
-    title: `Top ${stats.data.length} Channels by Messages`
-  }
+    })
+    .setThumbnail(stats.serverIcon)
+    .setTimestamp(Date.now())
+    .setTitle(`Top ${stats.data.length} Channels by Messages`)
 }
 
-export function statsServer(stats: StatsServerData): Partial<MessageEmbed> {
+export function statsServer(stats: StatsServerData): EmbedBuilder {
   const fields = [] as Array<EmbedField>
   let descriptionBuilt = `Stats are collected using the UTC timezone. Stats shown are from the last 30 days.\n\n`
   // Add Server Age
@@ -102,18 +100,15 @@ export function statsServer(stats: StatsServerData): Partial<MessageEmbed> {
     fields.push(reactionsField)
   }
 
-  return {
-    color: 7413873,
-    description: descriptionBuilt,
-    fields,
-    footer: {
+  return new EmbedBuilder()
+    .setColor(7413873)
+    .setDescription(descriptionBuilt)
+    .setFields(fields)
+    .setFooter({
       iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
       text: 'Observed by Kiera'
-    },
-    thumbnail: {
-      url: stats.serverIcon
-    },
-    timestamp: Date.now(),
-    title: `Server Statistics`
-  }
+    })
+    .setThumbnail(stats.serverIcon)
+    .setTimestamp(Date.now())
+    .setTitle(`Server Statistics`)
 }

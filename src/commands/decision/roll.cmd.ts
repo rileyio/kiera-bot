@@ -1,6 +1,7 @@
 import * as Random from 'random'
 import * as XRegExp from 'xregexp'
 
+import { ChannelType } from 'discord.js'
 import { ObjectID } from 'bson'
 import { RoutedInteraction } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
@@ -98,7 +99,7 @@ export async function runSavedDecision(routed: RoutedInteraction) {
       return true
     }
 
-    const random = Random.int(0, optionsPool.length - 1)
+    const random = (Random as any).int(0, optionsPool.length - 1)
     const outcome = optionsPool[random]
 
     // Update Decision's Outcome to track consumed state (If something other than 'Basic' is set for the mode)
@@ -117,11 +118,11 @@ export async function runSavedDecision(routed: RoutedInteraction) {
     // Track in log
     await routed.bot.DB.add('decision-log', {
       callerID: routed.author.id,
-      channelID: routed.channel.type === 'DM' ? 'DM' : routed.channel.id,
+      channelID: routed.channel.type === ChannelType.DM ? 'DM' : routed.channel.id,
       decisionID: String(decision._id),
-      outcomeContent: outcomeEmbed.description,
+      outcomeContent: outcomeEmbed.data.description,
       outcomeID: String(outcome._id),
-      serverID: routed.channel.type === 'DM' ? 'DM' : routed.guild.id
+      serverID: routed.channel.type === ChannelType.DM ? 'DM' : routed.guild.id
     })
 
     return true

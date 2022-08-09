@@ -1,20 +1,21 @@
+import { EmbedBuilder } from 'discord.js'
+
 export function pongResponse(database: number, commandStart: number) {
-  return {
-    title: 'Pong',
-    description: 'The following are some latency stats.',
-    color: 9442302,
-    timestamp: Date.now(),
-    fields: [
+  return new EmbedBuilder()
+    .setTitle('Pong')
+    .setDescription('The following are some latency stats.')
+    .setColor(9442302)
+    .setTimestamp(Date.now())
+    .addFields(
       {
+        inline: true,
         name: 'Database',
-        value: `\`${Math.round(database)}ms\``,
-        inline: true
+        value: `\`${Math.round(database)}ms\``
       },
       {
+        inline: true,
         name: 'Command Router',
-        value: `\`${Math.round(commandStart)}ms\``,
-        inline: true
+        value: `\`${Math.round(commandStart)}ms\``
       }
-    ]
-  }
+    )
 }

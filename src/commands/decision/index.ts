@@ -31,17 +31,19 @@ export const Routes = ExportRoutes({
         .setName('add')
         .setDescription('Add Something to Decision Roll')
         .addStringOption((option) => option.setName('id').setDescription('Specify the ID or Nickname of the Decision Roller').setRequired(true))
-        .addStringOption((option) => option.setName('target').setDescription('What do you wish to add?').setRequired(true).addChoice('Outcome', 'outcome'))
+        .addStringOption((option) => option.setName('target').setDescription('What do you wish to add?').setRequired(true).addChoices({ name: 'Outcome', value: 'outcome' }))
         .addStringOption((option) => option.setName('value').setDescription('Please supply the value to add').setRequired(true))
         .addStringOption((option) =>
           option
             .setName('type')
             .setDescription('Change the display type of the outcome value')
             .setRequired(false)
-            .addChoice('Text (Default)', 'string')
-            .addChoice('Image URL', 'image')
-            .addChoice('Web Address', 'url')
-            .addChoice('Markdown (Beta)', 'markdown')
+            .setChoices(
+              { name: 'Text (Default)', value: 'string' },
+              { name: 'Image URL', value: 'image' },
+              { name: 'Web Address', value: 'url' },
+              { name: 'Markdown (Beta)', value: 'markdown' }
+            )
         )
     )
     // * Create a new decision roller
@@ -86,7 +88,7 @@ export const Routes = ExportRoutes({
 })
 
 async function decisionRouterSub(routed: RoutedInteraction) {
-  const subCommand = routed.interaction.options.getSubcommand() as 'add' | 'create' | 'delete' | 'nickname' | 'prefix' | 'remove' | 'roll' | 'manage' | 'list'
+  const subCommand = routed.interaction.options.data[0].name as 'add' | 'create' | 'delete' | 'nickname' | 'prefix' | 'remove' | 'roll' | 'manage' | 'list'
   const idOrNickname = routed.interaction.options.get('id')?.value
   // const interactionType = routed.interaction.options.get('type')?.value
 

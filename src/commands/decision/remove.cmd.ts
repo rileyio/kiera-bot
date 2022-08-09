@@ -1,4 +1,4 @@
-import { ButtonInteraction, MessageActionRow, MessageButton, MessageComponentInteraction, MessageSelectMenu, SelectMenuInteraction } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ComponentType, MessageComponentInteraction, SelectMenuBuilder, SelectMenuInteraction } from 'discord.js'
 
 import { ObjectID } from 'mongodb'
 import { RoutedInteraction } from '@/router'
@@ -13,19 +13,19 @@ export async function removeOutcome(routed: RoutedInteraction) {
   const decisionsStored = await routed.bot.DB.getMultiple('decision', { authorID: routed.author.id })
   const selectedOutcomeIDs: Array<string> = []
   let selectedDecisionRoll: TrackedDecision
-  let decisionOutcomeDropdown: MessageActionRow
+  let decisionOutcomeDropdown: ActionRowBuilder<SelectMenuBuilder>
 
   // Filter to watch for user reponse
   const filter = (i: MessageComponentInteraction) => i.user.id === routed.author.id
 
   // Confirmation Buttons
-  const confirmation = new MessageActionRow()
-    .addComponents(new MessageButton().setCustomId('yes').setLabel('Yes, Remove').setStyle('DANGER'))
-    .addComponents(new MessageButton().setCustomId('no').setLabel('Cancel Removal').setStyle('SUCCESS'))
+  const confirmation = new ActionRowBuilder<ButtonBuilder>()
+    .addComponents(new ButtonBuilder().setCustomId('yes').setLabel('Yes, Remove').setStyle(ButtonStyle.Danger))
+    .addComponents(new ButtonBuilder().setCustomId('no').setLabel('Cancel Removal').setStyle(ButtonStyle.Success))
 
   // Dropdown of user's decisions
-  const decisionsDropdown = new MessageActionRow().addComponents(
-    new MessageSelectMenu()
+  const decisionsDropdown = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
+    new SelectMenuBuilder()
       .setCustomId('decisions')
       .setPlaceholder('Select Decision to Remove Outcome from')
       .addOptions([
@@ -47,14 +47,14 @@ export async function removeOutcome(routed: RoutedInteraction) {
     if (i.user.id !== routed.author.id) return
 
     // When the collected interaction is from the Decisions list
-    if (i.componentType === 'SELECT_MENU' && i.customId === 'decisions') {
+    if (i.componentType === ComponentType.SelectMenu && i.customId === 'decisions') {
       selectedDecisionRoll = decisionsStored.find((d) => d._id.toHexString() === (i.values[0] as string))
       // Disable Decision Selector
       decisionsDropdown.components[0].setDisabled(true)
 
       // Generate Outcomes dropdown
-      decisionOutcomeDropdown = new MessageActionRow().addComponents(
-        new MessageSelectMenu()
+      decisionOutcomeDropdown = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
+        new SelectMenuBuilder()
           .setCustomId('outcomes')
           .setPlaceholder('Select Outcomes to Remove')
           .addOptions([
@@ -78,7 +78,7 @@ export async function removeOutcome(routed: RoutedInteraction) {
     }
 
     // When the collected interaction is from the Decision Outcomes list
-    if (i.componentType === 'SELECT_MENU' && i.customId === 'outcomes') {
+    if (i.componentType === ComponentType.SelectMenu && i.customId === 'outcomes') {
       // Disable Outcome Selector
       decisionOutcomeDropdown.components[0].setDisabled(true)
 
@@ -86,7 +86,7 @@ export async function removeOutcome(routed: RoutedInteraction) {
       await i.update({ components: [decisionsDropdown, decisionOutcomeDropdown, confirmation], content: `Are you sure you wish to remove the selected outcomes?`, embeds: [] })
     }
 
-    if (i.componentType === 'BUTTON' && i.customId === 'yes') {
+    if (i.componentType === ComponentType.Button && i.customId === 'yes') {
       let deleteCount = 0
       for (let index = 0; index < selectedOutcomeIDs.length; index++) {
         // Remove from DB
@@ -104,7 +104,7 @@ export async function removeOutcome(routed: RoutedInteraction) {
       collector.stop()
     }
 
-    if (i.componentType === 'BUTTON' && i.customId === 'no') {
+    if (i.componentType === ComponentType.Button && i.customId === 'no') {
       await i.update({ components: [], content: 'Cancelled Decision Roll Option Removal.', embeds: [] })
       collector.stop()
     }

@@ -1,4 +1,4 @@
-import { GuildMember, Interaction, Message, TextChannel, User } from 'discord.js'
+import { ChannelType, GuildMember, Interaction, Message, TextChannel, User } from 'discord.js'
 import { MessageRoute, RouteConfiguration, RouterRouted, RouterStats } from '../objects/router/'
 
 import { Bot } from '@/index'
@@ -53,7 +53,7 @@ export class CommandRouter {
       // Track my own messages when they are seen
       // this.bot.BotMonitor.LiveStatistics.increment('messages-sent')
       // Track if its a dm as well
-      if (message.channel.type === 'DM') {
+      if (message.channel.type === ChannelType.DM) {
         // this.bot.BotMonitor.LiveStatistics.increment('dms-sent')
       }
       return // Hard block
@@ -101,7 +101,6 @@ export class CommandRouter {
       bot: this.bot,
       channel: message.channel as TextChannel,
       guild: message.guild,
-      isDM: message.channel.type === 'DM',
       member: message.member,
       message: message,
       reaction: {
@@ -194,7 +193,6 @@ export class CommandRouter {
       channel: channel as TextChannel,
       guild,
       interaction,
-      isDM: channel.type === 'DM',
       isInteraction: true,
       member: member as GuildMember,
       route,
@@ -275,7 +273,7 @@ export class CommandRouter {
         this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
         // Track in an audit event
         this.bot.Audit.NewEntry({
-          guild: routed.isDM
+          guild: routed.channel.isDMBased()
             ? {
                 channel: 'dm',
                 id: 'dm',
@@ -331,13 +329,13 @@ export class CommandRouter {
   private async processPermissions(routed: RouterRouted): Promise<ProcessedPermissions> {
     const checks: ProcessedPermissions = {
       // Permissions of user
-      hasAdministrator: !routed.isDM ? routed.member.permissions.has('ADMINISTRATOR') : false,
-      hasManageChannel: !routed.isDM ? routed.member.permissionsIn(routed.channel.id).has('MANAGE_CHANNELS') : false,
-      hasManageGuild: !routed.isDM ? routed.member.permissions.has('MANAGE_GUILD') : false
+      hasAdministrator: !routed.channel.isDMBased ? routed.member.permissions.has('Administrator') : false,
+      hasManageChannel: !routed.channel.isDMBased ? routed.member.permissionsIn(routed.channel.id).has('ManageChannels') : false,
+      hasManageGuild: !routed.channel.isDMBased ? routed.member.permissions.has('ManageGuild') : false
     }
 
     // [IF: serverOnly is set] Command is clearly meant for only servers
-    if (routed.route.permissions.serverOnly === true && routed.isDM) {
+    if (routed.route.permissions.serverOnly === true && routed.channel.isDMBased) {
       checks.outcome = 'FailedServerOnlyRestriction'
       checks.pass = false
       return checks // Hard stop here
@@ -380,15 +378,15 @@ export class CommandRouter {
     // Get the command permission if its in the DB
     const commandPermission = new CommandPermission(
       (await routed.bot.DB.get('command-permissions', {
-        channelID: !routed.isDM ? routed.channel.id : 'DM',
+        channelID: !routed.channel.isDMBased ? routed.channel.id : 'DM',
         command: routed.route.name,
-        serverID: !routed.isDM ? routed.guild.id : 'DM'
+        serverID: !routed.channel.isDMBased ? routed.guild.id : 'DM'
       })) || {
         channelID: routed.channel.id,
         command: routed.route.name,
         enabled: true,
         // Defaults to True
-        serverID: !routed.isDM ? routed.guild.id : 'DM'
+        serverID: !routed.channel.isDMBased ? routed.guild.id : 'DM'
       }
     )
 

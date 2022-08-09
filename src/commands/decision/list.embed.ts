@@ -1,13 +1,13 @@
-import { MessageEmbed } from 'discord.js'
+import { EmbedBuilder } from 'discord.js'
 import { TrackedDecision } from '@/objects/decision'
 
-export function embed(authorID: string, decisions: Array<TrackedDecision>): Partial<MessageEmbed> {
+export function embed(authorID: string, decisions: Array<TrackedDecision>) {
   const asOwner = decisions.filter((d) => d.authorID === authorID)
   const asManager = decisions.filter((d) => (d.hasOwnProperty('managers') ? d.managers.findIndex((a) => a === authorID) > -1 : false))
 
-  return {
-    color: 14553782,
-    fields: [
+  return new EmbedBuilder()
+    .setColor(14553782)
+    .setFields(
       {
         inline: false,
         name: 'As Owner',
@@ -30,7 +30,6 @@ export function embed(authorID: string, decisions: Array<TrackedDecision>): Part
               })
               .join('\n')
       }
-    ],
-    title: 'Decision Rollers you Own / Manage'
-  }
+    )
+    .setTitle('Decision Rollers you Own / Manage')
 }

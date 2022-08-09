@@ -1,4 +1,5 @@
 import { ExportRoutes, RouterRouted } from '@/router'
+import { EmbedBuilder } from 'discord.js'
 
 export const Routes = ExportRoutes({
   category: 'Info',
@@ -33,9 +34,9 @@ export async function getBotStats(routed: RouterRouted) {
 
   return await routed.reply({
     embeds: [
-      {
-        color: 5472175,
-        fields: [
+      new EmbedBuilder()
+        .setColor(5472175)
+        .setFields(
           {
             inline: false,
             name: 'Uptime',
@@ -71,13 +72,12 @@ export async function getBotStats(routed: RouterRouted) {
             name: '#',
             value: `\`${stats.commands.routed}\`\n\`${stats.commands.completed}\`\n\`${stats.commands.invalid}\``
           }
-        ],
-        footer: {
+        )
+        .setFooter({
           text: 'Generated'
-        },
-        timestamp: Date.now(),
-        title: 'Bot Statistics'
-      }
+        })
+        .setTimestamp(Date.now())
+        .setTitle('Bot Statistics')
     ]
   })
 }

@@ -1,7 +1,6 @@
 import * as Debug from 'debug'
 import * as SocketIO from 'socket.io'
 import * as SocketStats from '@/api/socket/stats'
-import * as corsMiddleware from 'restify-cors-middleware'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as restify from 'restify'
@@ -38,17 +37,6 @@ export class WebAPI {
     this.server = restify.createServer(this.isHTTPSSet ? this.https : {})
     // API config
     this.server.use(restify.plugins.bodyParser({ mapParams: true }))
-
-    // Cors
-    const cors = corsMiddleware({
-      allowHeaders: ['*'],
-      exposeHeaders: ['API-Token-Expiry'],
-      origins: ['*'],
-      preflightMaxAge: 5
-    })
-
-    this.server.pre(cors.preflight)
-    this.server.use(cors.actual)
 
     // Setup SocketIO
     this.socket = new SocketIO.Server(this.server.server)
