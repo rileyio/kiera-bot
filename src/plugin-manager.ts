@@ -135,7 +135,7 @@ export class PluginManager {
           this.log.verbose(`🧩 Plugin Update Available '${plugin.name}'@${onlneVersion}`)
           plugin.updateAvailable = true
           plugin.updateVersion = onlneVersion
-          //await this.downloadUpdate(plugin, data)
+          await this.downloadUpdate(plugin, data)
         }
       }
     } catch (error) {
@@ -154,7 +154,22 @@ export class PluginManager {
       const targetDir = `${this.folder}/${plugin.name}`
 
       // Delete old
-      fs.rmSync(targetDir, { force: true, recursive: true })
+      // if a .git folder is detected, remove everything else
+      const isGitDir = fs.existsSync(`${targetDir}/.git`)
+      if (isGitDir) {
+        fs.readdir(targetDir, (err, items) => {
+          if (err) this.log.error('🧩 Error Clearing .git project directory in prep for an update')
+
+          items.forEach((f) => {
+            if (f === '.git') return
+            const item = path.join(targetDir, '/', f)
+            const itemStat = fs.lstatSync(item)
+            console.log('deleting', item, fs.lstatSync(item).isDirectory() ? 'directory' : 'file')
+            if (itemStat.isDirectory()) fs.rmSync(item, { force: true, recursive: true })
+            if (itemStat.isFile()) fs.rmSync(item, { force: true })
+          })
+        })
+      } else fs.rmSync(targetDir, { force: true, recursive: true })
 
       // Download repo
       await gitly(plugin.repo, targetDir, { force: true })
@@ -170,7 +185,7 @@ export class PluginManager {
     await this.unloadPlugin(plugin)
 
     // Perform .loader() scan to pick up the changed plugin files
-    this.loader()
+    await this.loader()
   }
 
   public async unloadPlugin(plugin: string | Plugin) {
