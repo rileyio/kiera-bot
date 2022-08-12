@@ -37,6 +37,10 @@ export class PluginManager {
   private plugins: Array<PluginLoaded> = []
   private verified: Array<PluginVerified> = [{ name: 'sample-command', repo: 'rileyio/sample-command' }]
 
+  public get pluginsCount() {
+    return this.plugins.length
+  }
+
   constructor(bot: Bot) {
     this.bot = bot
     this.log = this.bot.Log.Plugin
@@ -164,7 +168,7 @@ export class PluginManager {
             if (f === '.git') return
             const item = path.join(targetDir, '/', f)
             const itemStat = fs.lstatSync(item)
-            console.log('deleting', item, fs.lstatSync(item).isDirectory() ? 'directory' : 'file')
+            this.log.verbose('🗑️ Deleting', item, fs.lstatSync(item).isDirectory() ? 'directory' : 'file')
             if (itemStat.isDirectory()) fs.rmSync(item, { force: true, recursive: true })
             if (itemStat.isFile()) fs.rmSync(item, { force: true })
           })
