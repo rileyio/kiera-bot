@@ -135,7 +135,7 @@ export class PluginManager {
           this.log.verbose(`🧩 Plugin Update Available '${plugin.name}'@${onlneVersion}`)
           plugin.updateAvailable = true
           plugin.updateVersion = onlneVersion
-          await this.downloadUpdate(plugin, data)
+          //await this.downloadUpdate(plugin, data)
         }
       }
     } catch (error) {

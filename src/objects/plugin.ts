@@ -53,7 +53,7 @@ export class Plugin {
     try {
       // Config files should be auto generated in the root of /plugins
       this.configFilePath = path.join(folder, `${this.name}.config.json`)
-      console.log('🧩 plugin config file expected:', this.configFilePath)
+      console.log('🧩 Plugin config file expected:', this.configFilePath)
       // Check if config file exists in plugin root directory
       const exists = fs.existsSync(this.configFilePath)
 
