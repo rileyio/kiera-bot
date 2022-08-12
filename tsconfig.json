@@ -17,6 +17,6 @@
     "target": "es6",
     "typeRoots": ["src/typings", "./node_modules/@types/"]
   },
-  "exclude": ["node_modules", "app"],
+  "exclude": ["node_modules", "app", "plugins"],
   "include": ["src/**/*.ts"]
 }

@@ -1,4 +1,4 @@
-import Joi = require('@hapi/joi')
+import Joi = require('joi')
 
 export function validate<T>(schema: Joi.ObjectSchema, inc: T) {
   return new Promise<{ error: any; o: any; valid: boolean }>((r) => {

@@ -11,9 +11,10 @@ import { CommandRouter, routeLoader } from '@/router'
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
 import { BotMonitor } from '@/monitor'
-import { ChastiSafe } from './integrations/ChastiSafe'
+import { ChastiSafe } from '@/integrations/ChastiSafe'
 import Localization from '@/localization'
 import { MongoDB } from '@/db'
+import { PluginManager } from '@/plugin-manager'
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v9'
 import { ServerStatisticType } from './objects/statistics'
@@ -32,6 +33,7 @@ export class Bot {
     Command: new Utils.Logger.Debug('command'),
     Database: new Utils.Logger.Debug('database', { console: false }),
     Integration: new Utils.Logger.Debug('integration'),
+    Plugin: new Utils.Logger.Debug('plugin'),
     Router: new Utils.Logger.Debug('command-router'),
     Scheduled: new Utils.Logger.Debug('scheduled')
   }
@@ -47,6 +49,9 @@ export class Bot {
   // Databases
   public DB: MongoDB
 
+  // Plugins
+  public Plugin: PluginManager
+
   // Background tasks v0-4
   public Task: Task.TaskManager
 
@@ -54,7 +59,7 @@ export class Bot {
   public Router: CommandRouter
 
   // API Services
-  public Service: { BattleNet: BattleNet, ChastiSafe: ChastiSafe } = {
+  public Service: { BattleNet: BattleNet; ChastiSafe: ChastiSafe } = {
     BattleNet: null,
     ChastiSafe: new ChastiSafe(this)
   }
@@ -86,6 +91,11 @@ export class Bot {
     // Start Stats /////////////////////////
     ////////////////////////////////////////
     this.Statistics = new Statistics(this)
+
+    ////////////////////////////////////////
+    // Plugin Manager //////////////////////
+    ////////////////////////////////////////
+    this.Plugin = new PluginManager(this)
 
     ////////////////////////////////////////
     // Background Tasks ////////////////////
@@ -298,3 +308,5 @@ export class Bot {
     this.Statistics.trackServerStatistic(member.guild.id, null, member.user.id, ServerStatisticType.UserLeft)
   }
 }
+
+export { Plugin } from './objects/plugin'
