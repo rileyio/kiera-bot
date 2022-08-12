@@ -41,6 +41,14 @@ export class PluginManager {
     return this.plugins.length
   }
 
+  public get pluginsActive() {
+    return [
+      ...this.plugins.map((p) => {
+        return { name: p.name, path: p.path }
+      })
+    ]
+  }
+
   constructor(bot: Bot) {
     this.bot = bot
     this.log = this.bot.Log.Plugin
@@ -205,5 +213,9 @@ export class PluginManager {
       } catch (error) {
         this.log.error(`🧩 Unable to process .unloadPlugin for '${pluginFound.name}'`, error)
       }
+  }
+
+  public getPlugin(plugin: string | Plugin) {
+    return this.plugins.find((p) => p.name === (typeof plugin === 'string' ? (plugin as string) : (plugin as Plugin).name))
   }
 }
