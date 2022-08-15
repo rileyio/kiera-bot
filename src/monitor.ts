@@ -38,6 +38,10 @@ export class BotMonitor extends EventEmitter {
   public async start() {
     this.Bot.Log.Bot.log('starting BotMonitor...')
 
+    // Load Plugins
+    await this.Bot.Plugin.setup()
+
+    // Start main components
     this.status.db = await this.DBMonitor.start()
     this.status.discord = await this.discordAPIReady()
     this.status.stats = await this.LiveStatistics.start()
@@ -144,7 +148,7 @@ export class BotMonitor extends EventEmitter {
     return new Promise<boolean>(async (r) => {
       /// Client ready ///
 
-      this.Bot.client.on('ready', () => {
+      this.Bot.client.on('ready',  () => {
         this.Bot.Log.Bot.debug('discord.js ready!')
         this.Bot.onReady()
         r(true)

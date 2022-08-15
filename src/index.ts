@@ -6,7 +6,7 @@ import * as Task from '@/tasks'
 import * as Utils from '@/utils'
 import * as debug from 'debug'
 
-import { CommandRouter, routeLoader } from '@/router'
+import { CommandRouter, RoutedInteraction, routeLoader } from '@/router'
 
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
@@ -16,6 +16,7 @@ import Localization from '@/localization'
 import { MongoDB } from '@/db'
 import { PluginManager } from '@/plugin-manager'
 import { REST } from '@discordjs/rest'
+import { RESTPostAPIApplicationCommandsJSONBody } from 'discord.js'
 import { Routes } from 'discord-api-types/v9'
 import { ServerStatisticType } from './objects/statistics'
 import { Statistics } from '@/statistics'
@@ -83,6 +84,11 @@ export class Bot {
     this.Task = new Task.TaskManager(this)
 
     ////////////////////////////////////////
+    // Plugin Manager //////////////////////
+    ////////////////////////////////////////
+    this.Plugin = new PluginManager(this)
+
+    ////////////////////////////////////////
     // Bot Monitor - Sync //////////////////
     ////////////////////////////////////////
     await this.BotMonitor.start()
@@ -91,11 +97,6 @@ export class Bot {
     // Start Stats /////////////////////////
     ////////////////////////////////////////
     this.Statistics = new Statistics(this)
-
-    ////////////////////////////////////////
-    // Plugin Manager //////////////////////
-    ////////////////////////////////////////
-    this.Plugin = new PluginManager(this)
 
     ////////////////////////////////////////
     // Background Tasks ////////////////////
@@ -212,9 +213,24 @@ export class Bot {
       this.Log.Bot.error('Error fetching Official Discord.')
     }
 
+    await this.reloadSlashCommands()
+  }
+
+  public async reloadSlashCommands() {
+    // Stop a reload if command routes havent been generated, yet
+    if (!this.Router) {
+      this.Log.Bot.log('Router not ready, yet')
+      return // Stop here
+    }
+
     // Register Slash commands on Kiera's Development server
-    const commands = []
+    const commands = [] as Array<RESTPostAPIApplicationCommandsJSONBody>
     for (const commandRoute of this.Router.routes) commandRoute.slash ? commands.push(commandRoute.slash.toJSON()) : null
+
+    console.log(
+      'commands',
+      commands.map((c) => c.name)
+    )
 
     const rest = new REST({ version: '9' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
 
@@ -249,7 +265,7 @@ export class Bot {
     try {
       await this.Router.routeInteraction(interaction)
     } catch (error) {
-      this.Log.Bot.error('Fatal onInteration error caught', error)
+      this.Log.Bot.error('Fatal onInteration error caught', error, interaction)
     }
   }
 
@@ -310,3 +326,4 @@ export class Bot {
 }
 
 export { Plugin } from './objects/plugin'
+export { RoutedInteraction }
