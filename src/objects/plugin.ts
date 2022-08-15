@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -35,8 +36,8 @@ export class Plugin {
   public version: string
 
   // Lifecycle points end plugin can set
-  public onDisabled: () => Promise<void>
-  public onEnabled: () => Promise<void>
+  //public onDisabled?: void
+  //public onEnabled?: void
 
   public get isEnabled() {
     return this.isEnabled
@@ -108,12 +109,12 @@ export class Plugin {
     this.enabled = enabled
     this.loadConfig(pluginsDir)
 
-    if (this.onEnabled) await this.onEnabled()
+    if ((this as any).onEnabled) await (this as any).onEnabled()
   }
 
   public async unRegister() {
     try {
-      if (this.onDisabled) await this.onDisabled()
+      if ((this as any).onDisabled) await (this as any).onDisabled()
     } catch (error) {
       console.error(`🧩 Unable to process .onDisabled for '${this.name}'`, error)
     }
