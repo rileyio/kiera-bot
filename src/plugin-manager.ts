@@ -55,17 +55,6 @@ export class PluginManager {
 
     // Configure the PluginManager
     this.folder = path.resolve(path.join(`${__dirname}/../plugins`))
-    this.log.debug('🧩 Configired Path for Plugin Storage:', this.folder)
-    this.log.debug(
-      '🧩 Items in Plugins Folder:',
-      fs
-        .readdirSync(this.folder, { withFileTypes: true })
-        .filter((dir) => dir.isDirectory())
-        .map((dir) => dir.name)
-    )
-
-    // Load whatever is in /Plugins
-    ;(async () => await this.loader())()
   }
 
   private async loader() {
@@ -213,6 +202,20 @@ export class PluginManager {
       } catch (error) {
         this.log.error(`🧩 Unable to process .unloadPlugin for '${pluginFound.name}'`, error)
       }
+  }
+
+  public async setup() {
+    this.log.debug('🧩 Configired Path for Plugin Storage:', this.folder)
+    this.log.debug(
+      '🧩 Items in Plugins Folder:',
+      fs
+        .readdirSync(this.folder, { withFileTypes: true })
+        .filter((dir) => dir.isDirectory())
+        .map((dir) => dir.name)
+    )
+
+    // Load whatever is in /Plugins
+    await this.loader()
   }
 
   public getPlugin(plugin: string | Plugin) {
