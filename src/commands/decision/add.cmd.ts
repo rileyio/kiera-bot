@@ -6,7 +6,7 @@ import { RoutedInteraction } from '@/router'
 /**
  * Add decision option
  * @export
- * @param {RouterRouted} routed
+ * @param {RoutedInteraction} routed
  */
 export async function addOutcome(routed: RoutedInteraction) {
   const id = routed.interaction.options.get('id')?.value as string

@@ -1,4 +1,4 @@
-import { ExportRoutes, RouterRouted } from '@/router'
+import { ExportRoutes, RoutedInteraction } from '@/router'
 
 export const Routes = ExportRoutes({
   category: 'Info',
@@ -13,7 +13,7 @@ export const Routes = ExportRoutes({
   validate: '/stats:string/commands:string'
 })
 
-export async function commandUsageStats(routed: RouterRouted) {
+export async function commandUsageStats(routed: RoutedInteraction) {
   // Get Audit trail for commands from DB to run stats on
   let collection = (await routed.bot.DB.aggregate<{ _id: string; count: number }>('audit-log', [
     {
@@ -64,6 +64,6 @@ export async function commandUsageStats(routed: RouterRouted) {
   }
 
   // console.log(text)
-  await routed.message.channel.send(text + '```')
+  await routed.reply(text + '```')
   return true
 }

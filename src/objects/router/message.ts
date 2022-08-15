@@ -1,6 +1,6 @@
 import * as XRegExp from 'xregexp'
 
-import { RouteConfiguration, RoutedInteraction, RouterRouted, Validate } from '@/router'
+import { RouteConfiguration, RoutedInteraction, Validate } from '@/router'
 
 import { Plugin } from '@/objects/plugin'
 import { SlashCommandBuilder } from '@discordjs/builders'

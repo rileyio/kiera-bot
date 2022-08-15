@@ -88,7 +88,7 @@ export const Routes = ExportRoutes({
 })
 
 async function decisionRouterSub(routed: RoutedInteraction) {
-  const subCommand = routed.interaction.options.data[0].name as 'add' | 'create' | 'delete' | 'nickname' | 'prefix' | 'remove' | 'roll' | 'manage' | 'list'
+  const subCommand = routed.options.getSubcommand() as 'add' | 'create' | 'delete' | 'nickname' | 'prefix' | 'remove' | 'roll' | 'manage' | 'list'
   const idOrNickname = routed.interaction.options.get('id')?.value
   // const interactionType = routed.interaction.options.get('type')?.value
 

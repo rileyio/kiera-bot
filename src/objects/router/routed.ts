@@ -1,6 +1,19 @@
 import * as Utils from '@/utils'
 
-import { Channel, CommandInteraction, Guild, GuildMember, InteractionReplyOptions, Message, MessagePayload, ReplyMessageOptions, TextChannel, User } from 'discord.js'
+import {
+  CacheType,
+  Channel,
+  CommandInteraction,
+  CommandInteractionOptionResolver,
+  Guild,
+  GuildMember,
+  InteractionReplyOptions,
+  Message,
+  MessagePayload,
+  ReplyMessageOptions,
+  TextChannel,
+  User
+} from 'discord.js'
 import { MessageRoute, ProcessedPermissions, RouterStats, Validate, ValidationType } from '@/router'
 
 import { Bot } from '@/index'
@@ -124,14 +137,15 @@ export class RouterRouted<T = undefined> {
 }
 
 export class RoutedInteraction {
-  public args: Array<string>
   public author: User
   public bot: Bot
   public channel: Channel | TextChannel
   public guild: Guild
   public interaction: CommandInteraction
+  public isChatInputCommand?: boolean
   public isInteraction: boolean
   public member: GuildMember
+  public options?: Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getFocused'>
   public permissions: ProcessedPermissions
   public prefix: string
   public route: MessageRoute
@@ -141,15 +155,15 @@ export class RoutedInteraction {
   public user: TrackedUser
 
   constructor(init: Partial<RoutedInteraction>) {
-    // Object.assign(this, init)
-    this.args = init.args
     this.author = init.author
     this.bot = init.bot
     this.channel = init.channel
     this.guild = init.guild
     this.interaction = init.interaction
+    this.isChatInputCommand = init.isChatInputCommand
     this.isInteraction = init.isInteraction
     this.member = init.member
+    this.options = init.options
     this.permissions = init.permissions
     this.prefix = init.prefix
     this.route = init.route

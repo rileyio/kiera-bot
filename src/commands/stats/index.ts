@@ -82,7 +82,7 @@ export const Routes = ExportRoutes({
 })
 
 function stats(routed: RoutedInteraction) {
-  const subCommand = (<any>routed.interaction.options).getSubcommand()
+  const subCommand = routed.options.getSubcommand()
 
   // About
   if (subCommand === 'about') return About.aboutStats(routed)

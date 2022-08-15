@@ -37,7 +37,7 @@ export const Routes = ExportRoutes({
 })
 
 async function ckStatsRouterSub(routed: RoutedInteraction) {
-  const subCommand = routed.interaction.options.data[0].name
+  const subCommand = routed.options.getSubcommand()
   const enable = routed.interaction.options.get('enable')?.value
   const disable = routed.interaction.options.get('disable')?.value
   const commands = await routed.guild.commands.fetch()

@@ -7,7 +7,7 @@ import { TrackedDecision } from '@/objects/decision'
 /**
  * Delete outcome from Decision Roller
  * @export
- * @param {RouterRouted} routed
+ * @param {RoutedInteraction} routed
  */
 export async function removeOutcome(routed: RoutedInteraction) {
   const decisionsStored = await routed.bot.DB.getMultiple('decision', { authorID: routed.author.id })

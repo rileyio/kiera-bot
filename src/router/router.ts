@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { GuildMember, Interaction, TextChannel } from 'discord.js'
+import { CacheType, ChatInputCommandInteraction, GuildMember, Interaction, TextChannel } from 'discord.js'
 import { MessageRoute, RouteConfiguration, RoutedInteraction, RouterStats } from '../objects/router/'
 
 import { Bot } from '@/index'
@@ -159,13 +159,15 @@ export class CommandRouter {
    * @param interaction
    * @returns
    */
-  public async routeInteraction(interaction: Interaction) {
-    if (!interaction.isCommand()) return // Hard block
+  public async routeInteraction(_interaction: Interaction) {
+    if (!_interaction.isCommand()) return // Hard block
+    if (!_interaction.isChatInputCommand()) return
+
     // if (!interaction.guild) {
     //   return interaction.reply('Kiera is only currently enabled inside of a Discord Server due to certain command limitations') // Hard block
     // }
 
-    const { channel, commandName, guild, guildId, member, user } = interaction
+    const { channel, commandName, guild, guildId, member, options, user } = _interaction
     const routerStats = new RouterStats(user)
     const route = this.routes.find((r) => r.name === commandName)
 
@@ -205,9 +207,10 @@ export class CommandRouter {
       bot: this.bot,
       channel: channel as TextChannel,
       guild,
-      interaction,
+      interaction: _interaction,
       isInteraction: true,
       member: member as GuildMember,
+      options,
       route,
       routerStats: routerStats,
       user: kieraUser

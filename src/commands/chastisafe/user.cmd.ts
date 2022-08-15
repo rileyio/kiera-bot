@@ -4,7 +4,7 @@ import { embed } from './user.embed'
 /**
  * Lookup ChastiSafe User
  * @export
- * @param {RouterRouted} routed
+ * @param {RoutedInteraction} routed
  */
 export async function lookupUser(routed: RoutedInteraction) {
   console.log('CS User Lookup..')

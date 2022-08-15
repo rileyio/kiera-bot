@@ -1,6 +1,6 @@
 import * as Utils from '@/utils'
 
-import { ExportRoutes, RouterRouted } from '@/router'
+import { ExportRoutes, RoutedInteraction } from '@/router'
 import { TextChannel } from 'discord.js'
 
 export const Routes = ExportRoutes({
@@ -20,8 +20,8 @@ export const Routes = ExportRoutes({
 /**
  * Purge Current Channel's Messages
  * @export
- * @param {RouterRouted} routed
+ * @param {RoutedInteraction} routed
  */
-export async function purgeChannelMessages(routed: RouterRouted) {
-  return Utils.Channel.cleanTextChat(<TextChannel>routed.message.channel, routed.bot.Log.Scheduled)
+export async function purgeChannelMessages(routed: RoutedInteraction) {
+  return Utils.Channel.cleanTextChat(<TextChannel>routed.channel, routed.bot.Log.Scheduled)
 }

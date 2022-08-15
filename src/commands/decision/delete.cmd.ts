@@ -6,7 +6,7 @@ import { RoutedInteraction } from '@/router'
 /**
  * Delete decision in the DB
  * @export
- * @param {RouterRouted} routed
+ * @param {RoutedInteraction} routed
  */
 export async function deleteDecision(routed: RoutedInteraction) {
   const decisionsStored = await routed.bot.DB.getMultiple('decision', { authorID: routed.author.id })

@@ -26,7 +26,7 @@ export const Routes = ExportRoutes({
 })
 
 async function stats(routed: RoutedInteraction) {
-  const subCommand = (<any>routed.interaction.options).getSubcommand() as 'check-for-updates'
+  const subCommand = routed.options.getSubcommand() as 'check-for-updates'
 
   // Check for updates
   if (subCommand === 'check-for-updates') return await checkForUpdates(routed)
