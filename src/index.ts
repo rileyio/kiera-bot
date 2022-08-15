@@ -269,13 +269,13 @@ export class Bot {
     }
   }
 
-  private async onMessageCachedReactionAdd(message: Discord.Message, reaction: string, user: Discord.User) {
-    this.Router.routeReaction(message, reaction, user, 'added')
-  }
+  // private async onMessageCachedReactionAdd(message: Discord.Message, reaction: string, user: Discord.User) {
+  //   this.Router.routeReaction(message, reaction, user, 'added')
+  // }
 
-  private async onMessageCachedReactionRemove(message: Discord.Message, reaction: string, user: Discord.User) {
-    this.Router.routeReaction(message, reaction, user, 'removed')
-  }
+  // private async onMessageCachedReactionRemove(message: Discord.Message, reaction: string, user: Discord.User) {
+  //   this.Router.routeReaction(message, reaction, user, 'removed')
+  // }
 
   private async onGuildCreate(guild: Discord.Guild) {
     this.Log.Bot.log('Joined a new server: ' + guild.name)

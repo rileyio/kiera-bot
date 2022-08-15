@@ -1,6 +1,6 @@
 import * as XRegExp from 'xregexp'
 
-import { RouteConfiguration, RouterRouted, Validate } from '@/router'
+import { RouteConfiguration, RoutedInteraction, RouterRouted, Validate } from '@/router'
 
 import { Plugin } from '@/objects/plugin'
 import { SlashCommandBuilder } from '@discordjs/builders'
@@ -22,11 +22,11 @@ export class MessageRoute {
 
   public category: string
   public command: string
-  public controller: (routed: RouterRouted | Plugin, routedWhenPlugin?: RouterRouted) => Promise<boolean>
+  public controller: (routed: RoutedInteraction | Plugin, routedWhenPlugin?: RoutedInteraction) => Promise<boolean>
   public description: string
   public example: string
   public help: string
-  public middleware: Array<(routed: RouterRouted) => Promise<RouterRouted | void>> = []
+  public middleware: Array<(routed: RoutedInteraction) => Promise<RoutedInteraction | void>> = []
   public name: string
   public permissions: {
     defaultEnabled: boolean
