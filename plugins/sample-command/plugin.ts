@@ -1,6 +1,6 @@
 /**
  * @name sample-command
- * @pluginURL https://raw.githubusercontent.com/rileyio/sample-command/master/plugin.ts
+ * @pluginURL https://raw.githubusercontent.com/rileyio/sample-command/main/plugin.ts
  * @repo rileyio/sample-command
  * @version 1.0.1
  */
