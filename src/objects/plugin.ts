@@ -40,7 +40,7 @@ export class Plugin {
   //public onEnabled?: void
 
   public get isEnabled() {
-    return this.isEnabled
+    return this.enabled
   }
 
   constructor(init?: Partial<Plugin>) {
