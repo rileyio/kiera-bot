@@ -44,7 +44,13 @@ export class PluginManager {
   public get pluginsActive() {
     return [
       ...this.plugins.map((p) => {
-        return { name: p.name, path: p.path }
+        return {
+          name: p.name,
+          path: p.path,
+          updateAvailable: p.plugin.updateAvailable,
+          updateVersion: p.plugin.updateVersion,
+          version: p.plugin.version
+        }
       })
     ]
   }
@@ -124,6 +130,16 @@ export class PluginManager {
     return { type: UpdateType.None }
   }
 
+  public async checkForUpdates() {
+    console.log('checking for updates')
+    for (let index = 0; index < this.plugins.length; index++) {
+      const { plugin } = this.plugins[index]
+
+      // Check for plugin update
+      if (plugin.isEnabled) await this.checkForUpdate(plugin)
+    }
+  }
+
   public async checkForUpdate(plugin: Plugin) {
     this.log.verbose(`🧩 Checking for update for '${plugin.name}@${plugin.version}' at ${plugin.pluginURL}`)
 
@@ -136,8 +152,8 @@ export class PluginManager {
           this.log.verbose(`🧩 Plugin Update Available '${plugin.name}'@${onlneVersion}`)
           plugin.updateAvailable = true
           plugin.updateVersion = onlneVersion
-          await this.downloadUpdate(plugin, data)
-        }
+          //await this.downloadUpdate(plugin, data)
+        } else this.log.verbose(`🧩 '${plugin.name}'@${onlneVersion} no update available.`)
       }
     } catch (error) {
       this.log.error(`🧩 Unable to check for update '${plugin.name}'`, error)
