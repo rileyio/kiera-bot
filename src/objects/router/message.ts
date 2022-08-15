@@ -1,5 +1,8 @@
 import * as XRegExp from 'xregexp'
+
 import { RouteConfiguration, RouterRouted, Validate } from '@/router'
+
+import { Plugin } from '@/objects/plugin'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 /**
@@ -19,7 +22,7 @@ export class MessageRoute {
 
   public category: string
   public command: string
-  public controller: (routed: RouterRouted) => Promise<boolean>
+  public controller: (routed: RouterRouted | Plugin, routedWhenPlugin?: RouterRouted) => Promise<boolean>
   public description: string
   public example: string
   public help: string
@@ -33,6 +36,7 @@ export class MessageRoute {
     serverOnly: boolean
     manageChannelReq: boolean
   }
+  public plugin?: Plugin
   public slash?: SlashCommandBuilder
   public type: 'message' | 'reaction' | 'interaction'
   public validate: string
@@ -53,6 +57,8 @@ export class MessageRoute {
     this.permissions.defaultEnabled = this.permissions.restricted === true ? false : this.permissions.defaultEnabled
     // Ensure if the type is an interaction that the name is updated to match
     if (this.slash) this.name = this.slash.name
+    // If this is a plugin, make sure to track the plugin the route is from
+    if (route.plugin) this.plugin = route.plugin
   }
 
   public test(message: string) {

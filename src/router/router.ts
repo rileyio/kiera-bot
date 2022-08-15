@@ -3,6 +3,7 @@ import { MessageRoute, RouteConfiguration, RouterRouted, RouterStats } from '../
 
 import { Bot } from '@/index'
 import { CommandPermission } from '../objects/permission'
+import { Logger } from '@/utils'
 import { ProcessedPermissions } from './route-permissions'
 import { ServerStatisticType } from '../objects/statistics'
 import { TrackedMessage } from '../objects/message'
@@ -15,20 +16,28 @@ import { TrackedUser } from '@/objects/user/'
  */
 export class CommandRouter {
   public bot: Bot
-  public routes: Array<MessageRoute>
+  public routes: Array<MessageRoute> = []
+  private log: Logger.Debug
 
   constructor(routes: Array<RouteConfiguration>, bot?: Bot) {
     this.bot = bot
-    // Alert if duplicate route name is detected
-    const _dupRouteCheck = {}
-    routes.forEach((r) => {
-      if (_dupRouteCheck[r.name] !== undefined) this.bot.Log.Router.log(`!! Duplicate route name detected ${r.name}`)
-      else _dupRouteCheck[r.name] = 1
-    })
+    this.log = this.bot.Log.Router
 
-    this.routes = routes.map((r) => new MessageRoute(r))
-    // this.bot.Log.Router.log(`routes configured = ${this.routes.filter((r) => r.type === 'message').length}`)
-    // this.bot.Log.Router.log(`reacts configured = ${this.routes.filter((r) => r.type === 'reaction').length}`)
+    // Add routes that were loaded
+    routes.forEach((r) => this.addRoute(r))
+  }
+
+  public addRoute(route: RouteConfiguration) {
+    if (this.routes.findIndex((r) => r.name === route.name) > -1) return this.bot.Log.Router.log(`!! Duplicate route name detected '${route.name}'`)
+    this.routes.push(new MessageRoute(route))
+    this.log.verbose(`🚏✔️ Route Added '${route.name}'`)
+  }
+
+  public removeRoute(route: string | MessageRoute) {
+    const routeIndex = this.routes.findIndex((r) => r.name === (typeof route === 'string' ? (route as string) : (route as MessageRoute).name))
+    const routeFound = routeIndex > -1 ? this.routes[routeIndex] : undefined
+    if (routeFound) this.routes.splice(routeIndex, 1)
+    this.log.log(`🚏❌ Unloaded Route '${routeFound.name}'`)
   }
 
   /**
@@ -136,7 +145,8 @@ export class CommandRouter {
       // this.bot.BotMonitor.LiveStatistics.increment('commands-routed')
       // Check status returns later for stats tracking
       try {
-        await route.controller(routed)
+        if (route.plugin) await route.controller(route.plugin, routed)
+        else await route.controller(routed)
       } catch (error) {
         this.bot.Log.Router.error('Router -> Failed to fully execute controller, error:', error)
       }
@@ -233,8 +243,8 @@ export class CommandRouter {
           error: 'Command disabled by permissions',
           guild: {
             channel: channel.id,
-            id: routed.message.guild.id,
-            name: routed.message.guild.name
+            id: routed.interaction.guild.id,
+            name: routed.interaction.guild.name
           },
           name: routed.route.name,
           owner: routed.author.id,
@@ -267,7 +277,8 @@ export class CommandRouter {
     // Stop execution of route if middleware is completed
     if (mwareProcessed === mwareCount) {
       this.bot.BotMonitor.LiveStatistics.increment('commands-routed')
-      const status = await route.controller(routed)
+      const status = route.plugin ? await route.controller(route.plugin, routed) : await route.controller(routed)
+
       // Successful completion of command
       if (status) {
         this.bot.BotMonitor.LiveStatistics.increment('commands-completed')

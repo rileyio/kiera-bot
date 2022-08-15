@@ -43,6 +43,7 @@ export class RouterRouted<T = undefined> {
     valid: boolean
     validated: ValidationType[]
     // o: T
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     o: T | { [key: string]: any }
   }
   public validateMatch?: string

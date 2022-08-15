@@ -1,4 +1,6 @@
 import { RouteConfigurationCategory, RouterRouted } from '@/router'
+
+import { Plugin } from '@/objects/plugin'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 /**
@@ -23,6 +25,7 @@ export interface RouteConfiguration {
     serverOnly?: boolean
     manageChannelReq?: boolean
   }
+  plugin?: Plugin
   slash?: SlashCommandBuilder | Omit<any, any>
   type: 'message' | 'reaction' | 'interaction'
   validate?: string
