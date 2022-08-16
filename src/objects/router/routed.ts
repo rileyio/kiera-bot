@@ -3,6 +3,7 @@ import * as Utils from '@/utils'
 import {
   CacheType,
   Channel,
+  ChatInputCommandInteraction,
   CommandInteraction,
   CommandInteractionOptionResolver,
   Guild,
@@ -21,6 +22,8 @@ import { TrackedMessage } from '@/objects/message'
 import { TrackedUser } from '@/objects/user/'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
+
+// type ReplyOptions = { ephemeral?: boolean; returnMessage?: boolean }
 
 /**
  * Payload sent to each Controller
@@ -141,7 +144,7 @@ export class RoutedInteraction {
   public bot: Bot
   public channel: Channel | TextChannel
   public guild: Guild
-  public interaction: CommandInteraction
+  public interaction: ChatInputCommandInteraction
   public isChatInputCommand?: boolean
   public isInteraction: boolean
   public member: GuildMember
@@ -200,13 +203,14 @@ export class RoutedInteraction {
     return Utils.sb(baseString, Object.assign({}, data, { prefix: this.prefix }))
   }
 
-  public async reply(response: string | MessagePayload | ReplyMessageOptions, ephemeral?: boolean) {
+  public async reply(response: string | MessagePayload | InteractionReplyOptions, ephemeral?: boolean) {
+    // const isObj = optionsOrPrivate ? typeof optionsOrPrivate === 'object' : false
+    // const ephemeral = isObj ? (optionsOrPrivate as ReplyOptions).ephemeral : (optionsOrPrivate as boolean)
     try {
-      if (typeof response === 'object') await (this.interaction as CommandInteraction).reply(Object.assign(response, { ephemeral }) as InteractionReplyOptions)
-      else await (this.interaction as CommandInteraction).reply({ content: response, ephemeral })
+      if (typeof response === 'object') return await (this.interaction as ChatInputCommandInteraction<CacheType>).reply(Object.assign(response, { ephemeral }))
+      else return await (this.interaction as ChatInputCommandInteraction<CacheType>).reply({ content: response, ephemeral } as string | MessagePayload | InteractionReplyOptions)
     } catch (error) {
       this.bot.Log.Router.error('Unable to .reply =>', error, response)
-      return false
     }
   }
 }
