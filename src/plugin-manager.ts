@@ -35,7 +35,10 @@ export class PluginManager {
   private folder: string
   private log: Logger.Debug
   private plugins: Array<PluginLoaded> = []
-  private verified: Array<PluginVerified> = [{ name: 'sample-command', repo: 'rileyio/sample-command' }]
+  private verified: Array<PluginVerified> = [
+    { name: 'sample-command', repo: 'rileyio/sample-command' },
+    { name: 'raider-io', repo: 'rileyio/raider-io' }
+  ]
 
   public get pluginsCount() {
     return this.plugins.length
@@ -96,7 +99,7 @@ export class PluginManager {
 
           // Try to register the Bot instance with the plugin
           await loaded.register(this.bot, this.folder, pluginBodyString, true, pluginVerified)
-          this.log.verbose(`🧩 Plugin Loaded: ${loaded.name}@${loaded.version}`)
+          this.log.verbose(`🧩 Plugin Loaded ${pluginVerified ? '(✔)' : ''}: ${loaded.name}@${loaded.version}`)
 
           // If Auto Updating is enabled
           if (loaded.autoCheckForUpdate) this.checkForUpdate(loaded)
@@ -140,7 +143,7 @@ export class PluginManager {
     }
   }
 
-  public async checkForUpdate(plugin: Plugin) {
+  public async checkForUpdate(plugin: Plugin, download?: boolean) {
     this.log.verbose(`🧩 Checking for update for '${plugin.name}@${plugin.version}' at ${plugin.pluginURL}`)
 
     try {
@@ -152,7 +155,7 @@ export class PluginManager {
           this.log.verbose(`🧩 Plugin Update Available '${plugin.name}'@${onlneVersion}`)
           plugin.updateAvailable = true
           plugin.updateVersion = onlneVersion
-          //await this.downloadUpdate(plugin, data)
+          if (download) await this.downloadUpdate(plugin, data)
         } else this.log.verbose(`🧩 '${plugin.name}'@${onlneVersion} no update available.`)
       }
     } catch (error) {
@@ -162,47 +165,59 @@ export class PluginManager {
 
   public async downloadUpdate(plugin: Plugin, newPluginData?: string) {
     this.log.log(`🧩 Fetching Update '${plugin.name}@${plugin.updateVersion}'...`)
+    try {
+      // Verified plugins can download the entire repo
+      if (plugin.verified && plugin.repo) {
+        this.log.verbose('🧩 Downloading Repo:', plugin.repo)
 
-    // Verified plugins can download the entire repo
-    if (plugin.verified && plugin.repo) {
-      this.log.verbose('🧩 Downloading Repo:', plugin.repo)
+        // Target path of plugin
+        const targetDir = `${this.folder}/${plugin.name}`
 
-      // Target path of plugin
-      const targetDir = `${this.folder}/${plugin.name}`
+        // Delete old
+        // if a .git folder is detected, remove everything else
+        const isGitDir = fs.existsSync(`${targetDir}/.git`)
+        if (isGitDir) {
+          fs.readdir(targetDir, (err, items) => {
+            if (err) this.log.error('🧩 Error Clearing .git project directory in prep for an update')
 
-      // Delete old
-      // if a .git folder is detected, remove everything else
-      const isGitDir = fs.existsSync(`${targetDir}/.git`)
-      if (isGitDir) {
-        fs.readdir(targetDir, (err, items) => {
-          if (err) this.log.error('🧩 Error Clearing .git project directory in prep for an update')
-
-          items.forEach((f) => {
-            if (f === '.git') return
-            const item = path.join(targetDir, '/', f)
-            const itemStat = fs.lstatSync(item)
-            this.log.verbose('🗑️ Deleting', item, fs.lstatSync(item).isDirectory() ? 'directory' : 'file')
-            if (itemStat.isDirectory()) fs.rmSync(item, { force: true, recursive: true })
-            if (itemStat.isFile()) fs.rmSync(item, { force: true })
+            items.forEach((f) => {
+              if (f === '.git') return
+              const item = path.join(targetDir, '/', f)
+              const itemStat = fs.lstatSync(item)
+              this.log.verbose('🗑️ Deleting', item, fs.lstatSync(item).isDirectory() ? 'directory' : 'file')
+              if (itemStat.isDirectory()) fs.rmSync(item, { force: true, recursive: true })
+              if (itemStat.isFile()) fs.rmSync(item, { force: true })
+            })
           })
-        })
-      } else fs.rmSync(targetDir, { force: true, recursive: true })
+        } else fs.rmSync(targetDir, { force: true, recursive: true })
 
-      // Download repo
-      await gitly(plugin.repo, targetDir, { force: true })
-      this.log.verbose(`🧩 Extracted '${plugin.name}@${plugin.updateVersion}' to:`, targetDir)
+        // Download repo
+        await gitly(plugin.repo, targetDir, { force: true })
+        this.log.verbose(`🧩 Extracted '${plugin.name}@${plugin.updateVersion}' to:`, targetDir)
+      }
+      // UnVerified plugins only download the single plugin.ts file
+      else {
+        if (!fs.existsSync(`${this.folder}/${plugin.name}`)) fs.mkdirSync(`${this.folder}/${plugin.name}`)
+        fs.writeFileSync(`${this.folder}/${plugin.name}/plugin.ts`, newPluginData)
+      }
+
+      // Unload existing plugin
+      await this.unloadPlugin(plugin)
+
+      // Perform .loader() scan to pick up the changed plugin files
+      await this.loader()
+
+      // Check to see if new plugin version was loaded in .loader() scan
+      const newVersionPlugin = this.getPlugin(plugin.name)
+
+      if (newVersionPlugin) await this.bot.reloadSlashCommands()
+
+      console.log('newVersionPlugin', newVersionPlugin.plugin.version === plugin.updateVersion)
+
+      return newVersionPlugin.plugin.version === plugin.updateVersion
+    } catch (error) {
+      return false
     }
-    // UnVerified plugins only download the single plugin.ts file
-    else {
-      if (!fs.existsSync(`${this.folder}/${plugin.name}`)) fs.mkdirSync(`${this.folder}/${plugin.name}`)
-      fs.writeFileSync(`${this.folder}/${plugin.name}/plugin.ts`, newPluginData)
-    }
-
-    // Unload existing plugin
-    await this.unloadPlugin(plugin)
-
-    // Perform .loader() scan to pick up the changed plugin files
-    await this.loader()
   }
 
   public async unloadPlugin(plugin: string | Plugin) {
