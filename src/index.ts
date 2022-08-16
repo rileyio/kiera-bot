@@ -243,7 +243,7 @@ export class Bot {
       else await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID) as any, { body: commands })
       this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
     } catch (error) {
-      this.Log.Bot.error(error)
+      this.Log.Bot.error('Not Successful in updating Slash Commands',error)
     }
   }
 
