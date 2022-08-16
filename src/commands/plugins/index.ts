@@ -1,8 +1,8 @@
 import { ExportRoutes, RoutedInteraction } from '@/router'
+import { checkForUpdates, update } from '@/commands/plugins/update'
 
 import { PermissionFlagsBits } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { checkForUpdates } from '@/commands/plugins/update'
 
 export const Routes = ExportRoutes({
   category: 'Plugin',
@@ -21,13 +21,20 @@ export const Routes = ExportRoutes({
     .setDMPermission(false)
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     // * /plugin check-for-updates
-    .addSubcommand((subcommand) => subcommand.setName('check-for-updates').setDescription('Check for Plugin Updates')),
+    .addSubcommand((subcommand) => subcommand.setName('check-for-updates').setDescription('Check for Plugin Updates'))
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('update')
+        .setDescription('Update Plugin')
+        .addStringOption((option) => option.setName('name').setDescription('Name of Plugin').setRequired(true))
+    ),
   type: 'interaction'
 })
 
 async function stats(routed: RoutedInteraction) {
-  const subCommand = routed.options.getSubcommand() as 'check-for-updates'
+  const subCommand = routed.options.getSubcommand() as 'check-for-updates' | 'update'
 
   // Check for updates
   if (subCommand === 'check-for-updates') return await checkForUpdates(routed)
+  if (subCommand === 'update') return await update(routed)
 }
