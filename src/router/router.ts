@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CacheType, ChatInputCommandInteraction, GuildMember, Interaction, TextChannel } from 'discord.js'
+import { GuildMember, Interaction, TextChannel } from 'discord.js'
 import { MessageRoute, RouteConfiguration, RoutedInteraction, RouterStats } from '../objects/router/'
 
 import { Bot } from '@/index'
@@ -26,16 +26,19 @@ export class CommandRouter {
     routes.forEach((r) => this.addRoute(r))
   }
 
-  public addRoute(route: RouteConfiguration) {
+  public async addRoute(route: RouteConfiguration) {
     if (this.routes.findIndex((r) => r.name === route.name) > -1) return this.bot.Log.Router.log(`!! Duplicate route name detected '${route.name}'`)
     this.routes.push(new MessageRoute(route))
     this.log.verbose(`🚏✔️ Route Added '${route.name}'`)
   }
 
-  public removeRoute(route: string | MessageRoute) {
+  public async removeRoute(route: string | MessageRoute) {
     const routeIndex = this.routes.findIndex((r) => r.name === (typeof route === 'string' ? (route as string) : (route as MessageRoute).name))
     const routeFound = routeIndex > -1 ? this.routes[routeIndex] : undefined
-    if (routeFound) this.routes.splice(routeIndex, 1)
+    if (routeFound) {
+      this.routes.splice(routeIndex, 1)
+      await this.bot.reloadSlashCommands()
+    }
     this.log.log(`🚏❌ Unloaded Route '${routeFound.name}'`)
   }
 
