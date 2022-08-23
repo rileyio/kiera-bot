@@ -1,15 +1,6 @@
 import { ObjectId } from 'bson'
 
-export type BotStatistic =
-  | 'discord-api-calls'
-  | 'messages-seen'
-  | 'messages-sent'
-  | 'messages-tracked'
-  | 'commands-routed'
-  | 'commands-completed'
-  | 'commands-invalid'
-  | 'dms-received'
-  | 'dms-sent'
+export type BotStatistic = 'commands-routed' | 'commands-completed' | 'commands-invalid' | 'commands-seen' | 'dms-received' | 'dms-sent'
 
 export class BotStatistics {
   public _id: ObjectId

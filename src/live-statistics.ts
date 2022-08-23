@@ -37,18 +37,6 @@ export class LiveStatistics extends EventEmitter {
 
   public increment(stat: BotStatistic) {
     switch (stat) {
-      case 'discord-api-calls':
-        this.BotStatistics.discordAPICalls += 1
-        break
-      case 'messages-seen':
-        this.BotStatistics.messages.seen += 1
-        break
-      case 'messages-sent':
-        this.BotStatistics.messages.sent += 1
-        break
-      case 'messages-tracked':
-        this.BotStatistics.messages.tracked += 1
-        break
       case 'commands-routed':
         this.BotStatistics.commands.routed += 1
         break
@@ -56,6 +44,9 @@ export class LiveStatistics extends EventEmitter {
         this.BotStatistics.commands.completed += 1
         break
       case 'commands-invalid':
+        this.BotStatistics.commands.invalid += 1
+        break
+      case 'commands-seen':
         this.BotStatistics.commands.invalid += 1
         break
       case 'dms-received':

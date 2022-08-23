@@ -166,6 +166,7 @@ export class CommandRouter {
     if (!_interaction.isCommand()) return // Hard block
     if (!_interaction.isChatInputCommand()) return
 
+    this.bot.BotMonitor.LiveStatistics.increment('commands-seen')
     // if (!interaction.guild) {
     //   return interaction.reply('Kiera is only currently enabled inside of a Discord Server due to certain command limitations') // Hard block
     // }
@@ -176,7 +177,6 @@ export class CommandRouter {
 
     // If no route matched, stop here
     if (!route) {
-      this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       // Track in an audit event
       this.bot.Audit.NewEntry({
         error: 'Failed to process command',
@@ -193,6 +193,7 @@ export class CommandRouter {
         where: 'Discord'
       })
 
+      this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       return // End here
     }
 
@@ -224,8 +225,6 @@ export class CommandRouter {
     this.bot.Log.Router.log('Router -> Permissions Check Results:', routed.permissions)
 
     if (!routed.permissions.pass) {
-      this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
-
       if (routed.permissions.outcome === 'FailedServerOnlyRestriction') {
         // Send message in response
         await routed.reply(routed.$render('Generic.Error.CommandDisabledInChannel', { command: commandName }), true)
@@ -245,6 +244,7 @@ export class CommandRouter {
           type: 'bot.command',
           where: 'Discord'
         })
+        this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       } else {
         await routed.reply('This command is restricted.', true)
 
@@ -291,7 +291,6 @@ export class CommandRouter {
 
       // Successful completion of command
       if (status) {
-        this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
         // Track in an audit event
         this.bot.Audit.NewEntry({
           guild: routed.channel.isDMBased()
@@ -312,10 +311,11 @@ export class CommandRouter {
           type: 'bot.command',
           where: 'Discord'
         })
+
+        this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
       }
       // Command failed or returned false inside controller
       else {
-        this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
         // Track in an audit event
         this.bot.Audit.NewEntry({
           error: 'Command failed or returned false inside controller',
@@ -331,11 +331,11 @@ export class CommandRouter {
           type: 'bot.command',
           where: 'Discord'
         })
+
+        this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       }
       return // End routing here
     }
-
-    this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
     return
   }
 
