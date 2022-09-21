@@ -32,7 +32,7 @@ export async function routeLoader(logger: Logger.Debug) {
           routes.push(route)
         }
 
-        logger.verbose(`routeLoader() => route [${routeFile.toString()}] loaded (${Math.round(performance.now() - start)}ms)`)
+        // logger.verbose(`routeLoader() => route [${routeFile.toString()}] loaded (${Math.round(performance.now() - start)}ms)`)
       }
     } catch (e) {
       logger.error(`routeLoader() [ERROR] => ${routeFile.toString()}, ${e.message}`)
