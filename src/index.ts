@@ -7,6 +7,11 @@ import * as Utils from '@/utils'
 import * as debug from 'debug'
 
 import { CommandRouter, RoutedInteraction, routeLoader } from '@/router'
+import {
+  RESTPostAPIApplicationCommandsJSONBody,
+  SlashCommandBuilder,
+  SlashCommandSubcommandBuilder
+} from 'discord.js'
 
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
@@ -16,8 +21,7 @@ import Localization from '@/localization'
 import { MongoDB } from '@/db'
 import { PluginManager } from '@/plugin-manager'
 import { REST } from '@discordjs/rest'
-import { RESTPostAPIApplicationCommandsJSONBody } from 'discord.js'
-import { Routes } from 'discord-api-types/v9'
+import { Routes } from 'discord-api-types/v10'
 import { ServerStatisticType } from './objects/statistics'
 import { Statistics } from '@/statistics'
 import { read as getSecret } from '@/secrets'
@@ -224,15 +228,26 @@ export class Bot {
     }
 
     // Register Slash commands on Kiera's Development server
-    const commands = [] as Array<RESTPostAPIApplicationCommandsJSONBody>
+    const commands: RESTPostAPIApplicationCommandsJSONBody[] = []
     for (const commandRoute of this.Router.routes) commandRoute.slash ? commands.push(commandRoute.slash.toJSON()) : null
 
     console.log(
       'commands',
-      commands.map((c) => c.name)
+      commands.map((command) => {
+        const cmd = command as unknown as SlashCommandBuilder
+        if (cmd.options) {
+          const subcommand = cmd.options
+          console.log(cmd.name, subcommand)
+        }
+        return {
+          description: cmd.description,
+          name: cmd.name,
+          options: cmd.options.map((option: SlashCommandSubcommandBuilder) => option.name)
+        }
+      })
     )
 
-    const rest = new REST({ version: '9' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
+    const rest = new REST({ version: '10' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
 
     try {
       this.Log.Bot.verbose('Started refreshing application (/) commands.')
@@ -243,7 +258,7 @@ export class Bot {
       else await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID) as any, { body: commands })
       this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
     } catch (error) {
-      this.Log.Bot.error('Not Successful in updating Slash Commands',error)
+      this.Log.Bot.error('Not Successful in updating Slash Commands', error)
     }
   }
 
