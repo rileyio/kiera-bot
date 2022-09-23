@@ -1,6 +1,6 @@
 import { ObjectId } from 'bson'
 
-export type BotStatistic = 'commands-routed' | 'commands-completed' | 'commands-invalid' | 'commands-seen' | 'dms-received' | 'dms-sent'
+export type BotStatistic = 'commands-routed' | 'commands-completed' | 'commands-invalid' | 'commands-seen'
 
 export class BotStatistics {
   public _id: ObjectId
@@ -20,10 +20,6 @@ export class BotStatistics {
     completed: 0,
     invalid: 0,
     routed: 0
-  }
-  public dms = {
-    received: 0,
-    sent: 0
   }
   public users = {
     registered: 0,

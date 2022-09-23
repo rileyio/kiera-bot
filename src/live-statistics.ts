@@ -49,12 +49,6 @@ export class LiveStatistics extends EventEmitter {
       case 'commands-seen':
         this.BotStatistics.commands.invalid += 1
         break
-      case 'dms-received':
-        this.BotStatistics.dms.received += 1
-        break
-      case 'dms-sent':
-        this.BotStatistics.dms.sent += 1
-        break
 
       default:
         break
@@ -68,7 +62,7 @@ export class LiveStatistics extends EventEmitter {
     }
 
     // Get existing stats from DB
-    const botStats = await this.Bot.DB.get('stats-bot', {})
+    const botStats = Object.assign({}, await this.Bot.DB.get('stats-bot', {}), { version: this.Bot.version })
     // Init stats
     this.BotStatistics.startup(botStats)
 
@@ -98,8 +92,7 @@ export class LiveStatistics extends EventEmitter {
         await this.Bot.DB.update(
           'stats-bot',
           {
-            name: this.BotStatistics.name,
-            version: this.Bot.version
+            name: this.BotStatistics.name
           },
           this.BotStatistics
         )
