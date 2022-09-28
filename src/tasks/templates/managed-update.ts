@@ -7,7 +7,7 @@ import { VoiceChannel } from 'discord.js'
 export class ManagedUpdate extends Task {
   // Config for this task
   run = this.process
-  schedule = '1 minute'
+  schedule = '60 seconds'
   settingPrefix = 'bot.task.managed.channel.updater'
 
   protected async process() {
@@ -21,16 +21,17 @@ export class ManagedUpdate extends Task {
           const managed = managedChannels[index]
 
           try {
+            // Too soon to update
+            if (moment.unix(managed.updated / 1000).isAfter(moment.utc().subtract(5, 'minutes'))) {
+              // this.Bot.Log.Scheduled.verbose(
+              //   `[${this.name}] Skipping ${managed.channelID} as its too soon to update. (last updated: ${moment.unix(managed.updated / 1000).fromNow()})`
+              // )
+              continue
+            }
+
             const channel = (await this.Bot.client.channels.fetch(managed.channelID)) as VoiceChannel
             const newValue = `${managed.name}`.replace('{#}', moment.unix(managed.value).fromNow().toString())
             if (channel && managed.type === 'countdown') {
-              // Too soon to update
-              if (moment.unix(managed.updated).isAfter(moment.utc().subtract(5, 'minutes'))) {
-                this.Bot.Log.Scheduled.verbose(
-                  `[${this.name}] Skipping ${managed.channelID} as its too soon to update. (last updated: ${moment.unix(managed.updated).fromNow()})`
-                )
-                continue
-              }
               if (channel.name !== newValue) {
                 // Test to see if value has changed
                 await channel.edit({ name: newValue })
@@ -39,7 +40,12 @@ export class ManagedUpdate extends Task {
                 continue
               }
               // When Value has not changed
-              if (channel.name === newValue) this.Bot.Log.Scheduled.verbose(`[${this.name}] Channel ${managed.channelID} is already up to date. (last updated: ${moment.unix(managed.updated).fromNow()})`)
+              if (channel.name === newValue) {
+                continue
+                // this.Bot.Log.Scheduled.verbose(
+                //   `[${this.name}] Channel ${managed.channelID} is already up to date. (last updated: ${moment.unix(managed.updated / 1000).fromNow()})`
+                // )
+              }
             }
           } catch (error) {
             this.Bot.Log.Scheduled.error(`[${this.name}] Error updating managed channel ${managed.channelID}: ${error}`)
