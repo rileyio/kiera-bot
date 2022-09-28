@@ -5,6 +5,7 @@ import { TrackedMutedUser, TrackedUser } from '@/objects/user'
 
 import { AuditEntry } from '@/objects/audit'
 import { Bot } from '../'
+import { ManagedChannel } from '@/objects/managed'
 import { TrackedMessage } from '@/objects/message'
 import { TrackedPoll } from '@/objects/poll'
 import { TrackedServer } from '@/objects/server'
@@ -21,6 +22,7 @@ export type Collections = {
   'command-permissions': any
   decision: TrackedDecision
   'decision-log': TrackedDecisionLogEntry
+  managed: ManagedChannel
   messages: TrackedMessage
   'muted-users': TrackedMutedUser
   notifications: any

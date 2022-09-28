@@ -107,8 +107,9 @@ export class Bot {
     ////////////////////////////////////////
     // Register background tasks
     this.Task.start([
+      new Task.DBAgeCleanupScheduled(),
+      new Task.ManagedUpdateScheduled(),
       new Task.StatusMessageRotatorScheduled(),
-      new Task.DBAgeCleanupScheduled()
       // new Task.StatsCleanerScheduled()
     ])
 
@@ -231,21 +232,21 @@ export class Bot {
     const commands: RESTPostAPIApplicationCommandsJSONBody[] = []
     for (const commandRoute of this.Router.routes) commandRoute.slash ? commands.push(commandRoute.slash.toJSON()) : null
 
-    console.log(
-      'commands',
-      commands.map((command) => {
-        const cmd = command as unknown as SlashCommandBuilder
-        if (cmd.options) {
-          const subcommand = cmd.options
-          console.log(cmd.name, subcommand)
-        }
-        return {
-          description: cmd.description,
-          name: cmd.name,
-          options: cmd.options.map((option: SlashCommandSubcommandBuilder) => option.name)
-        }
-      })
-    )
+    // console.log(
+    //   'commands',
+    //   commands.map((command) => {
+    //     const cmd = command as unknown as SlashCommandBuilder
+    //     if (cmd.options) {
+    //       const subcommand = cmd.options
+    //       console.log(cmd.name, subcommand)
+    //     }
+    //     return {
+    //       description: cmd.description,
+    //       name: cmd.name,
+    //       options: cmd.options.map((option: SlashCommandSubcommandBuilder) => option.name)
+    //     }
+    //   })
+    // )
 
     const rest = new REST({ version: '10' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
 
