@@ -168,21 +168,16 @@ Current Progress (Languages in focus where translations are being used):
 
 - **`/register` Registers the user with the bot**  
 
+#### Managed Channels
+
+- **`/managed create` - Creates a Managed Channel to display a countdown**  
+
 #### Moderation
 
 - `!mod list muted` - Display a list of muted users
 - `!mod lookup mute emma#1366` - Lookup a muted user
 - `!mod mute emma#1366 "Reason is optional"` - Mute the given user
 - `!mod unmute emma#1366` - Unmute the given user
-
-#### Poll
-- `!poll new "Is Kiera the cat cute?"` - Create a new poll  
-- `!poll edit 5cfcf44614e8a64034ca89f3 public false` - Edit poll settings (open, public, question, title, footer)  
-- `!poll start 5cfcf44614e8a64034ca89f3` - Start accepting poll responses  
-- `!poll stop 5cfcf44614e8a64034ca89f3` - Stop accepting poll responses  
-- `!poll pick random 5cfcf44614e8a64034ca89f3 :thumbsup:` - Picks a random poll vote user  
-- `!poll add option 5cfcf44614e8a64034ca89f3 :thumbsup: "Optional description here"` - Add a poll response option  
-- `!poll add option 5cfcf44614e8a64034ca89f3 :thumbsup:` - Remove a poll response option  
 
 #### Stats
 - `!stats commands` - Statistics about most run commands  
