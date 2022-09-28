@@ -5,6 +5,28 @@ import moment = require('moment')
 
 export async function create(routed: RoutedInteraction) {
   try {
+    // Verify that user has permissions to create a managed channel
+    const user = routed.interaction.guild.members.cache.get(routed.interaction.user.id)
+
+    if (!user.permissions.has('ManageChannels')) {
+      return await routed.reply(
+        {
+          embeds: [
+            new EmbedBuilder()
+              .setColor(15548997)
+              .setTitle('User Missing Permissions')
+              .setDescription('You do not have Manage Channels permission.')
+              .setFooter({
+                iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+                text: 'Error from Kiera'
+              })
+              .setTimestamp(Date.now())
+          ]
+        },
+        true
+      )
+    }
+
     // Verify that bot has required permissions to create and manage channels
     const botUser = routed.interaction.guild.members.cache.get(routed.bot.client.user.id)
     if (!botUser.permissions.has('ManageChannels')) {
