@@ -13,6 +13,7 @@ export type ProcessedPermissionOutcome =
   | 'Pass'
   | 'FailedAdmin'
   | 'FailedIDCheck'
+  | 'FailedNSFWRestriction'
   | 'FailedManageGuild'
   | 'FailedPermissionsCheck'
   | 'FailedServerOnlyRestriction'

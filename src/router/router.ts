@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { GuildMember, Interaction, TextChannel } from 'discord.js'
+import { EmbedBuilder, GuildMember, Interaction, TextChannel } from 'discord.js'
 import { MessageRoute, RouteConfiguration, RoutedInteraction, RouterStats } from '../objects/router/'
 
 import { Bot } from '@/index'
@@ -44,7 +44,7 @@ export class CommandRouter {
 
   /**
    * Process Routed Slash Command
-   * @param interaction
+   * @param _interaction
    * @returns
    */
   public async routeInteraction(_interaction: Interaction) {
@@ -245,6 +245,34 @@ export class CommandRouter {
       checks.outcome = 'FailedServerOnlyRestriction'
       checks.pass = false
       return checks // Hard stop here
+    }
+
+    if (routed.route.permissions.nsfwRequired === true && routed.channel.isTextBased()) {
+      // [IF: nsfwRequired is set] Command can only respond in NSFW channels
+      const channel = routed.channel as TextChannel
+      if (!channel.nsfw) {
+        console.log('Failed NSFW check')
+        checks.outcome = 'FailedNSFWRestriction'
+        checks.pass = false
+        // Notify user that channel is not NSFW
+        await routed.reply(
+          {
+            embeds: [
+              new EmbedBuilder()
+                .setColor(15548997)
+                .setTitle('Channel is not NSFW')
+                .setDescription('This command may only be used in a NSFW channel.')
+                .setFooter({
+                  iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+                  text: 'Notice from Kiera'
+                })
+                .setTimestamp(Date.now())
+            ]
+          },
+          true
+        )
+        return checks // Hard stop here
+      }
     }
 
     // [IF: Required user ID] Verify that the user calling is allowd to access (mostly legacy commands)

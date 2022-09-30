@@ -25,7 +25,8 @@ export interface RouteConfiguration {
     serverAdminOnly?: boolean
     restrictedTo?: Array<string>
     serverOnly?: boolean
-    manageChannelReq?: boolean
+    manageChannelReq?: boolean,
+    nsfwRequired?: boolean
   }
   plugin?: Plugin
   slash?: SlashCommandBuilder | Omit<any, any>

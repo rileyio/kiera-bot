@@ -14,6 +14,7 @@ export class MessageRoute {
   public readonly _defaultPermissions = {
     defaultEnabled: true,
     manageChannelReq: false,
+    nsfwRequired: false,
     restricted: false,
     restrictedTo: [],
     serverAdminOnly: false,
@@ -35,6 +36,7 @@ export class MessageRoute {
     restrictedTo: Array<string>
     serverOnly: boolean
     manageChannelReq: boolean
+    nsfwRequired: boolean
   }
   public plugin?: Plugin
   public slash?: SlashCommandBuilder

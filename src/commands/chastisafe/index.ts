@@ -10,6 +10,7 @@ export const Routes = ExportRoutes({
   name: 'cs',
   permissions: {
     defaultEnabled: false,
+    nsfwRequired: true,
     serverOnly: false
   },
   slash: new SlashCommandBuilder()
