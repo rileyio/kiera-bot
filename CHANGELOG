@@ -2,6 +2,12 @@
 - Updated: `discord.js` upgraded from v13 to v14.
 - Updated: Most other Core Dependencies to latest major releases and applied patches.
 
+- Added: NSFW command router check for command grps designated so.
+- Added: Managed Channel Countdown command to generate and auto update a channel countdown.
+- Added: Plugin System.
+- Added: Raider.io plugin.
+- Added: Slash Command Reload where applicable.
+
 9.3.1
 - Fixed: /cs user help text.
 - Fixed: /cs user lookup issue where users with no CK data would not work properly.
