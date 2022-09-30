@@ -7,16 +7,17 @@ import { VoiceChannel } from 'discord.js'
 export class ManagedUpdate extends Task {
   // Config for this task
   run = this.process
-  schedule = '60 seconds'
+  schedule = '* * * * *'
   settingPrefix = 'bot.task.managed.channel.updater'
 
   protected async process() {
+    console.log('schedule:', this.schedule)
     // Perform the scheduled task
     try {
       const managedChannels = (await this.Bot.DB.getMultiple('managed', { enabled: true })) as Array<ManagedChannel>
 
       if (managedChannels.length) {
-        this.Bot.Log.Scheduled.verbose(`[${this.name}] Updating ${managedChannels.length} managed channels...`)
+        this.Bot.Log.Scheduled.verbose(`${moment().toISOString()} [${this.name}] Updating ${managedChannels.length} managed channels...`)
         for (let index = 0; index < managedChannels.length; index++) {
           const managed = managedChannels[index]
 
