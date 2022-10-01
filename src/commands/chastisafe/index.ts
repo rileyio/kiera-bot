@@ -1,3 +1,4 @@
+import * as Update from '@/commands/chastisafe/update.cmd'
 import * as User from '@/commands/chastisafe/user.cmd'
 
 import { ExportRoutes, RoutedInteraction } from '@/router'
@@ -23,7 +24,9 @@ export const Routes = ExportRoutes({
         .setDescription('Lookup on ChastiSafe (Omit user or username for self lookup)')
         .addStringOption((option) => option.setName('username').setDescription('Specify Username like user#1234').setRequired(false))
         .addUserOption((option) => option.setName('user').setDescription('Specify Username like @User').setRequired(false))
-    ),
+    )
+    // * Update
+    .addSubcommand((subcommand) => subcommand.setName('update').setDescription('Update ChastiSafe Linked Roles on Discord')),
   type: 'interaction'
 })
 
@@ -36,6 +39,11 @@ async function csRouterSub(routed: RoutedInteraction) {
   // Lookup
   if (subCommand === 'lookup') {
     return await User.lookupUser(routed)
+  }
+
+  // Update
+  if (subCommand === 'update') {
+    return await Update.update(routed)
   }
 
   // Full criteria or another reason has resulted in this outcome
