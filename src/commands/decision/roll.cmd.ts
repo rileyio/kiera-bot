@@ -13,8 +13,8 @@ export async function runSavedDecision(routed: RoutedInteraction) {
   const shortRegex = XRegExp('^(?<username>[a-z0-9]*):(?<nickname>[a-z0-9-]*)$', 'i')
   const isShort = shortRegex.test(idOrNickname)
   const shortMatch = isShort ? XRegExp.exec(idOrNickname, shortRegex) : null
-  const userNickname = isShort ? shortMatch['username'] : null
-  const decisionNickname = isShort ? shortMatch['nickname'] : null
+  const userNickname = isShort ? shortMatch.groups['username'] : null
+  const decisionNickname = isShort ? shortMatch.groups['nickname'] : null
 
   const userByNickname = new TrackedUser(isShort ? await routed.bot.DB.get('users', { 'Decision.nickname': new RegExp(`^${userNickname}$`, 'i') }) : {})
   const decisionFromDB = isShort

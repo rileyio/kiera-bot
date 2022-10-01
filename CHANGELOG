@@ -1,3 +1,7 @@
+10.1.0
+- Fixed: Decision Rollers broken in previous update.
+- Added: Paging buttons to the bottom of the Decision List command output for users with many decision rollers.
+
 10.0.0
 - Fixed: API Loading.
 - Updated: `discord.js` upgraded from v13 to v14.
