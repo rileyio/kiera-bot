@@ -1,6 +1,7 @@
 10.1.0
 - Fixed: Decision Rollers broken in previous update.
 - Fixed: CS Locktober Event eligibility badge check.
+- Updated: Is Registered check now will reply privately to the user.
 - Added: Paging buttons to the bottom of the Decision List command output for users with many decision rollers.
 
 10.0.0
