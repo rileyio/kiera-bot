@@ -79,11 +79,11 @@ export class ChastiSafeUser {
   public user: string
 
   public get isLocktoberOngoingEligible() {
-    return this.badges.includes('LOCKTOBER_ONGOING_SELF')
+    return this.badges.includes('LOCKTOBER_ONGOING_SELF') || this.badges.includes('LOCKTOBER_ONGOING')
   }
 
   public get isLocktober2022Eligible() {
-    return this.badges.includes('LOCKTOBER_2022_SELF')
+    return this.badges.includes('LOCKTOBER_2022_SELF') || this.badges.includes('LOCKTOBER_2022')
   }
 
   public get isChastityLocked() {
