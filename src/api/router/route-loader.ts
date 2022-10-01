@@ -5,7 +5,7 @@ import { WebRoute } from '@/api/web-router'
 
 export async function webRouteLoader() {
   // Load routes from commands folder
-  const _routeFiles = glob.sync(['app/api/controllers/**/*.js', '!app/api/controllers/**/index.js'], { deep: 5 })
+  const _routeFiles = glob.sync(['src/api/controllers/**/*.ts', '!src/api/controllers/**/index.ts'], { deep: 5 })
 
   // Collection of routes
   const routes: Array<WebRoute> = []

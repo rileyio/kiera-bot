@@ -1,7 +1,7 @@
 10.0.0
+- Fixed: API Loading.
 - Updated: `discord.js` upgraded from v13 to v14.
 - Updated: Most other Core Dependencies to latest major releases and applied patches.
-
 - Added: NSFW command router check for command grps designated so.
 - Added: Managed Channel Countdown command to generate and auto update a channel countdown.
 - Added: Plugin System.
