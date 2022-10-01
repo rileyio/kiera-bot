@@ -11,7 +11,7 @@ import { RoutedInteraction } from '@/router'
 export async function addOutcome(routed: RoutedInteraction) {
   const id = routed.interaction.options.get('id')?.value as string
   const outcome = routed.interaction.options.get('value')?.value as string
-  const type = routed.interaction.options.get('value')?.value as 'string' | 'image' | 'url' | 'markdown'
+  const type = routed.interaction.options.get('type')?.value as 'string' | 'image' | 'url' | 'markdown'
 
   // Get the saved decision from the db (Only the creator can edit)
   const decisionFromDB = await routed.bot.DB.get('decision', {
