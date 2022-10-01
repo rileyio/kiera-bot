@@ -29,14 +29,14 @@ export async function create(routed: RoutedInteraction) {
 
     // Verify that bot has required permissions to create and manage channels
     const botUser = routed.interaction.guild.members.cache.get(routed.bot.client.user.id)
-    if (!botUser.permissions.has('ManageChannels')) {
+    if (!botUser.permissions.has('ManageChannels') || !botUser.permissions.has('Connect')) {
       return await routed.reply(
         {
           embeds: [
             new EmbedBuilder()
               .setColor(15548997)
               .setTitle('Missing Permissions')
-              .setDescription('I need the `Manage Channels` permission to create & manage channels.')
+              .setDescription('I need the `Manage Channels` & Voice `Connect` permission at the server level to create & manage channels.')
               .setFooter({
                 iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
                 text: 'Error from Kiera'
