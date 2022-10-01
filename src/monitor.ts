@@ -38,6 +38,10 @@ export class BotMonitor extends EventEmitter {
   public async start() {
     this.Bot.Log.Bot.log('starting BotMonitor...')
 
+    // Load Plugins
+    await this.Bot.Plugin.setup()
+
+    // Start main components
     this.status.db = await this.DBMonitor.start()
     this.status.discord = await this.discordAPIReady()
     this.status.stats = await this.LiveStatistics.start()
@@ -120,23 +124,23 @@ export class BotMonitor extends EventEmitter {
     this.Bot.Log.Bot.log('creating discord client...')
 
     // Set intents
-    const intents = new Discord.Intents()
-    intents.add([
-      Discord.Intents.FLAGS.GUILDS,
-      Discord.Intents.FLAGS.GUILD_MEMBERS,
-      Discord.Intents.FLAGS.GUILD_BANS,
-      Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-      Discord.Intents.FLAGS.GUILD_MESSAGES,
-      Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-      Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
-      Discord.Intents.FLAGS.DIRECT_MESSAGES,
-      Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-      Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING
-    ])
-    this.Bot.Log.Bot.debug('intents set from preset:', intents.toArray())
+    const intents = [
+      Discord.GatewayIntentBits.Guilds,
+      Discord.GatewayIntentBits.GuildMembers,
+      Discord.GatewayIntentBits.GuildBans,
+      Discord.GatewayIntentBits.GuildEmojisAndStickers,
+      Discord.GatewayIntentBits.GuildMessages,
+      Discord.GatewayIntentBits.GuildMessageReactions,
+      Discord.GatewayIntentBits.GuildMessageTyping,
+      Discord.GatewayIntentBits.DirectMessages,
+      Discord.GatewayIntentBits.DirectMessageReactions,
+      Discord.GatewayIntentBits.DirectMessageTyping
+    ]
+
+    this.Bot.Log.Bot.debug('intents set from preset:', intents)
 
     // Create new Discord Client
-    this.Bot.client = new Discord.Client({ intents: intents.toArray() })
+    this.Bot.client = new Discord.Client({ intents })
     // this.Bot.client = new Discord.Client()
 
     // Waiting for Discord.js Ready Event to fire...
@@ -144,7 +148,7 @@ export class BotMonitor extends EventEmitter {
     return new Promise<boolean>(async (r) => {
       /// Client ready ///
 
-      this.Bot.client.on('ready', () => {
+      this.Bot.client.on('ready',  () => {
         this.Bot.Log.Bot.debug('discord.js ready!')
         this.Bot.onReady()
         r(true)

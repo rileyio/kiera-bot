@@ -20,6 +20,7 @@ services:
       target: base
     volumes:
       - ./locales:/home/node/app/locales
+      - ./plugins:/home/node/app/plugins
       - ./src:/home/node/app/src
     container_name: kiera_bot
     ports:

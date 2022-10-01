@@ -1,4 +1,4 @@
-import { MessageActionRow, MessageButton, MessageComponentInteraction, MessageEmbed } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, EmbedBuilder, MessageComponentInteraction } from 'discord.js'
 import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 
 import { RoutedInteraction } from '@/router'
@@ -35,9 +35,9 @@ export async function deleteUserStats(routed: RoutedInteraction) {
       const filter = (i: MessageComponentInteraction) => i.user.id === routed.author.id
 
       // Confirmation Buttons
-      const confirmation = new MessageActionRow()
-        .addComponents(new MessageButton().setCustomId('yes').setLabel('Yes, Delete').setStyle('DANGER'))
-        .addComponents(new MessageButton().setCustomId('no').setLabel('Cancel Deletion').setStyle('SUCCESS'))
+      const confirmation = new ActionRowBuilder<ButtonBuilder>()
+        .addComponents(new ButtonBuilder().setCustomId('yes').setLabel('Yes, Delete').setStyle(ButtonStyle.Danger))
+        .addComponents(new ButtonBuilder().setCustomId('no').setLabel('Cancel Deletion').setStyle(ButtonStyle.Success))
 
       // Collector to recieve interaction (With 15s timeout)
       const collector = routed.interaction.channel.createMessageComponentCollector({ filter, time: 15000 })
@@ -74,7 +74,7 @@ export async function deleteUserStats(routed: RoutedInteraction) {
         {
           components: [confirmation],
           embeds: [
-            new MessageEmbed()
+            new EmbedBuilder()
               .setColor('#cb0101')
               .setDescription('This will delete all your existing user statistics and is irreversible!')
               .setTitle('Confirm Deletion of User Statistics')

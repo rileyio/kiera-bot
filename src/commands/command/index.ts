@@ -24,28 +24,26 @@ export const Routes = ExportRoutes({
             option
               .setName('enable')
               .setDescription('Enable a Category/Group that multiple command fall within')
-              .addChoice('Battle.Net Commands (3rd Party)', 'bnet')
-              .addChoice('Dice, Coins, etc', 'fun')
+              .addChoices({ name: 'Battle.Net Commands (3rd Party)', value: 'bnet' }, { name: 'Dice, Coins, etc', value: 'fun' })
           ) // Disable Group of Commands
           .addStringOption((option) =>
             option
               .setName('disable')
               .setDescription('Disable a Category/Group that multiple command fall within')
-              .addChoice('Battle.Net Commands (3rd Party)', 'bnet')
-              .addChoice('Dice, Coins, etc', 'fun')
+              .addChoices({ name: 'Battle.Net Commands (3rd Party)', value: 'bnet' }, { name: 'Dice, Coins, etc', value: 'fun' })
           ) // )
     ),
   type: 'interaction'
 })
 
 async function ckStatsRouterSub(routed: RoutedInteraction) {
-  const subCommand = routed.interaction.options.getSubcommand()
+  const subCommand = routed.options.getSubcommand()
   const enable = routed.interaction.options.get('enable')?.value
   const disable = routed.interaction.options.get('disable')?.value
   const commands = await routed.guild.commands.fetch()
   const commandMapped = commands.map((c) => {
     return {
-      defaultPermission: c.defaultPermission,
+      defaultPermission: c.permissions,
       description: c.description,
       guildId: c.guildId,
       id: c.id,

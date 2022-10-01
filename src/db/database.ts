@@ -5,6 +5,7 @@ import { TrackedMutedUser, TrackedUser } from '@/objects/user'
 
 import { AuditEntry } from '@/objects/audit'
 import { Bot } from '../'
+import { ManagedChannel } from '@/objects/managed'
 import { TrackedMessage } from '@/objects/message'
 import { TrackedPoll } from '@/objects/poll'
 import { TrackedServer } from '@/objects/server'
@@ -21,6 +22,7 @@ export type Collections = {
   'command-permissions': any
   decision: TrackedDecision
   'decision-log': TrackedDecisionLogEntry
+  managed: ManagedChannel
   messages: TrackedMessage
   'muted-users': TrackedMutedUser
   notifications: any
@@ -50,7 +52,6 @@ export class MongoDB {
     error: MongoError
   }
   private dbName = `${process.env.DB_NAME}`
-  private dbUrl: string
   private dbOpts: MongoClientOptions = {
     readPreference: 'primary',
     useNewUrlParser: true,
@@ -59,7 +60,6 @@ export class MongoDB {
 
   constructor(bot: Bot) {
     this.Bot = bot
-    this.dbUrl = getSecret('DB_STRING', this.Bot.Log.Bot)
   }
 
   public async connect() {
@@ -93,7 +93,7 @@ export class MongoDB {
   private async newConnection() {
     return new Promise((resolve, reject) => {
       const client = new MongoClient(
-        this.dbUrl,
+        getSecret('DB_STRING', this.Bot.Log.Bot),
         Object.assign(this.dbOpts, {
           readPreference: process.env.DB_READ_PREFERENCE ? process.env.DB_READ_PREFERENCE : undefined,
           useNewUrlParser: String(process.env.DB_USE_NEWURLPARSER || '').toLowerCase() === 'true',

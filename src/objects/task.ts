@@ -1,4 +1,4 @@
-import * as Agenda from 'agenda'
+import * as Agenda from 'agenda/es'
 
 import { Bot } from '@/index'
 import { TrackedBotSetting } from './setting'

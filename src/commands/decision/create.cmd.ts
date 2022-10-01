@@ -4,7 +4,7 @@ import { TrackedDecision } from '@/objects/decision'
 /**
  * Create a new decision in the DB
  * @export
- * @param {RouterRouted} routed
+ * @param {RoutedInteraction} routed
  */
  export async function newDecision(routed: RoutedInteraction) {
   const title = routed.interaction.options.get('title')?.value as string

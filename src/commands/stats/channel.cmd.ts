@@ -8,7 +8,7 @@ import { TextChannel } from 'discord.js'
 import { statsChannel } from '@/commands/stats/channel.embed'
 
 export async function get(routed: RoutedInteraction) {
-  const channelID = routed.interaction.options.getChannel('target')?.id || routed.interaction.channel.id
+  const channelID = routed.interaction.options.get('target').channel.id || routed.interaction.channel.id
 
   // Check for stats disabled setting on channel
   if (await routed.bot.DB.verify('stats-settings', { channelID, setting: StatisticsSettingType.ChannelDisableStats }))

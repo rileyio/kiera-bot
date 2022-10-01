@@ -73,3 +73,9 @@ ca.crt
 
 # ignore docker secrets
 secrets/
+
+# Plugins downloaded
+plugins/*
+!plugins/sample-command
+!plugins/sample-command/*
+!plugins/.gitkeep

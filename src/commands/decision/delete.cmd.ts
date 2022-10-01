@@ -1,4 +1,4 @@
-import { ButtonInteraction, MessageActionRow, MessageButton, MessageComponentInteraction, MessageEmbed, MessageSelectMenu, SelectMenuInteraction } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ComponentType, MessageComponentInteraction, SelectMenuBuilder, SelectMenuInteraction } from 'discord.js'
 
 import { ObjectID } from 'mongodb'
 import { RoutedInteraction } from '@/router'
@@ -6,7 +6,7 @@ import { RoutedInteraction } from '@/router'
 /**
  * Delete decision in the DB
  * @export
- * @param {RouterRouted} routed
+ * @param {RoutedInteraction} routed
  */
 export async function deleteDecision(routed: RoutedInteraction) {
   const decisionsStored = await routed.bot.DB.getMultiple('decision', { authorID: routed.author.id })
@@ -16,13 +16,13 @@ export async function deleteDecision(routed: RoutedInteraction) {
   const filter = (i: MessageComponentInteraction) => i.user.id === routed.author.id
 
   // Confirmation Buttons
-  const confirmation = new MessageActionRow()
-    .addComponents(new MessageButton().setCustomId('yes').setLabel('Yes, Delete').setStyle('DANGER'))
-    .addComponents(new MessageButton().setCustomId('no').setLabel('Cancel Deletion').setStyle('SUCCESS'))
+  const confirmation = new ActionRowBuilder<ButtonBuilder>()
+    .addComponents(new ButtonBuilder().setCustomId('yes').setLabel('Yes, Delete').setStyle(ButtonStyle.Danger))
+    .addComponents(new ButtonBuilder().setCustomId('no').setLabel('Cancel Deletion').setStyle(ButtonStyle.Success))
 
   // Dropdown of user's decisions
-  const dropdown = new MessageActionRow().addComponents(
-    new MessageSelectMenu()
+  const dropdown = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
+    new SelectMenuBuilder()
       .setCustomId('select')
       .setPlaceholder('Select Decision Roll to Delete')
       .addOptions([
@@ -43,12 +43,12 @@ export async function deleteDecision(routed: RoutedInteraction) {
     if (i.user.id !== routed.author.id) return
 
     // When the collected interaction is from the
-    if (i.componentType === 'SELECT_MENU') {
+    if (i.componentType === ComponentType.SelectMenu) {
       selectedID = i.values[0] as string
       await i.update({ components: [confirmation], content: `Are you sure you wish to delete this Decision Roll (\`${selectedID}\`)?`, embeds: [] })
     }
 
-    if (i.componentType === 'BUTTON' && i.customId === 'yes') {
+    if (i.componentType === ComponentType.Button && i.customId === 'yes') {
       const deleted = await routed.bot.DB.remove('decision', { _id: new ObjectID(selectedID) })
       if (deleted) {
         await i.update({ components: [], content: 'Decision Roll Deleted!', embeds: [] })
@@ -56,7 +56,7 @@ export async function deleteDecision(routed: RoutedInteraction) {
       }
     }
 
-    if (i.componentType === 'BUTTON' && i.customId === 'no') {
+    if (i.componentType === ComponentType.Button && i.customId === 'no') {
       await i.update({ components: [], content: 'Cancelled Decision Roll Deletion.', embeds: [] })
       collector.stop()
     }

@@ -1,4 +1,8 @@
-import { RouteConfigurationCategory, RouterRouted } from '@/router'
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { RouteConfigurationCategory, RoutedInteraction } from '@/router'
+
+import { Plugin } from '@/objects/plugin'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 /**
@@ -13,7 +17,7 @@ export interface RouteConfiguration {
   controller: Function | void
   description?: string
   example?: string
-  middleware?: Array<(routed: RouterRouted) => Promise<RouterRouted | void>>
+  middleware?: Array<(routed: RoutedInteraction) => Promise<RoutedInteraction | void>>
   name: string
   permissions?: {
     defaultEnabled?: boolean
@@ -21,8 +25,10 @@ export interface RouteConfiguration {
     serverAdminOnly?: boolean
     restrictedTo?: Array<string>
     serverOnly?: boolean
-    manageChannelReq?: boolean
+    manageChannelReq?: boolean,
+    nsfwRequired?: boolean
   }
+  plugin?: Plugin
   slash?: SlashCommandBuilder | Omit<any, any>
   type: 'message' | 'reaction' | 'interaction'
   validate?: string

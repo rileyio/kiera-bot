@@ -12,9 +12,18 @@ export function stats(Bot: Bot, socket: SocketIO.Server) {
 export function heartBeat(Bot: Bot, socket: SocketIO.Server) {
   socket.emit('heartbeat', {
     stats: {
-      commands: Bot.BotMonitor.LiveStatistics.BotStatistics.commands,
-      servers: Bot.BotMonitor.LiveStatistics.BotStatistics.servers,
+      commands: {
+        processed: Bot.BotMonitor.LiveStatistics.BotStatistics.commands,
+        since: 'n/a'
+      },
+      servers: {
+        change: 'n/a',
+        count: Bot.BotMonitor.LiveStatistics.BotStatistics.servers
+      },
       uptime: Bot.BotMonitor.LiveStatistics.BotStatistics.uptime,
+      users: {
+        count: 'n/a'
+      },
       version: Bot.version
     }
   })

@@ -49,9 +49,7 @@ export const Routes = ExportRoutes({
             .setName('target')
             .setDescription('For Server | Channel | User')
             .setRequired(true)
-            .addChoice('Server', 'server')
-            .addChoice('Channel', 'channel')
-            .addChoice('User', 'user')
+            .addChoices({ name: 'Server', value: 'server' }, { name: 'Channel', value: 'channel' }, { name: 'User', value: 'user' })
         )
     )
     // * /stats enable ...
@@ -64,9 +62,7 @@ export const Routes = ExportRoutes({
             .setName('target')
             .setDescription('For Server | Channel | User')
             .setRequired(true)
-            .addChoice('Server', 'server')
-            .addChoice('Channel', 'channel')
-            .addChoice('User', 'user')
+            .addChoices({ name: 'Server', value: 'server' }, { name: 'Channel', value: 'channel' }, { name: 'User', value: 'user' })
         )
     )
     // * /stats disable ...
@@ -79,16 +75,14 @@ export const Routes = ExportRoutes({
             .setName('target')
             .setDescription('For Server | Channel | User')
             .setRequired(true)
-            .addChoice('Server', 'server')
-            .addChoice('Channel', 'channel')
-            .addChoice('User', 'user')
+            .addChoices({ name: 'Server', value: 'server' }, { name: 'Channel', value: 'channel' }, { name: 'User', value: 'user' })
         )
     ),
   type: 'interaction'
 })
 
 function stats(routed: RoutedInteraction) {
-  const subCommand = routed.interaction.options.getSubcommand()
+  const subCommand = routed.options.getSubcommand()
 
   // About
   if (subCommand === 'about') return About.aboutStats(routed)

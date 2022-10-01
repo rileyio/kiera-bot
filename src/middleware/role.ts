@@ -1,9 +1,10 @@
+import { ChannelType } from 'discord.js'
 import { RouterRouted } from '@/router'
 
 export function hasRole(role: string | Array<string>) {
   return async (routed: RouterRouted) => {
     // If its a DM, stop processing
-    if (routed.message.channel.type === 'DM') return
+    if (routed.message.channel.type === ChannelType.DM) return
 
     routed.bot.Log.Router.log(
       `user's roles`,
@@ -12,7 +13,7 @@ export function hasRole(role: string | Array<string>) {
 
     // Test if its an array
     if (Array.isArray(role)) {
-      var contains = false
+      let contains = false
 
       role.forEach((r) => {
         // Skip further processing if a positive match is found

@@ -1,7 +1,7 @@
 import * as Debug from 'debug'
 import * as SocketIO from 'socket.io'
 import * as SocketStats from '@/api/socket/stats'
-import * as corsMiddleware from 'restify-cors-middleware'
+import * as cors from 'restify-cors-middleware2'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as restify from 'restify'
@@ -34,24 +34,28 @@ export class WebAPI {
   constructor(bot: Bot) {
     this.Bot = bot
 
-    // Start Node Web server
-    this.server = restify.createServer(this.isHTTPSSet ? this.https : {})
-    // API config
-    this.server.use(restify.plugins.bodyParser({ mapParams: true }))
-
-    // Cors
-    const cors = corsMiddleware({
+    const _cors = cors({
       allowHeaders: ['*'],
       exposeHeaders: ['API-Token-Expiry'],
       origins: ['*'],
       preflightMaxAge: 5
     })
 
-    this.server.pre(cors.preflight)
-    this.server.use(cors.actual)
+    // Start Node Web server
+    this.server = restify.createServer(this.isHTTPSSet ? this.https : {})
+
+    // API config
+    this.server.pre(_cors.preflight)
+    this.server.use(_cors.actual)
+    this.server.use(restify.plugins.queryParser())
+    this.server.use(restify.plugins.bodyParser({ mapParams: true }))
 
     // Setup SocketIO
-    this.socket = new SocketIO.Server(this.server.server)
+    this.socket = new SocketIO.Server(this.server.server, {
+      cors: {
+        origin: '*'
+      }
+    })
     this.socket.on('connection', () => {
       this.DEBUG_WEBAPI('socket connection')
       // socket.emit('news', { hello: 'world' });
@@ -59,6 +63,9 @@ export class WebAPI {
       //   this.DEBUG_WEBAPI(data);
       // });
       SocketStats.heartBeat(this.Bot, this.socket)
+    })
+    this.socket.on('disconnect', () => {
+      this.DEBUG_WEBAPI('socket disconnect')
     })
 
     // Emit Stats (Loop)

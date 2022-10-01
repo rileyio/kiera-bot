@@ -41,7 +41,7 @@ function roll(str: string) {
   }
 
   // Perform randomize - with some added protections for out of bounds numbers
-  const value = Random.int(v1 <= v2 ? v1 : 0, v2 >= v1 ? v2 : v1)
+  const value = (Random as any).int(v1 <= v2 ? v1 : 0, v2 >= v1 ? v2 : v1)
 
   return value
 }

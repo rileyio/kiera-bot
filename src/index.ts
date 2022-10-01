@@ -6,16 +6,22 @@ import * as Task from '@/tasks'
 import * as Utils from '@/utils'
 import * as debug from 'debug'
 
-import { CommandRouter, routeLoader } from '@/router'
+import { CommandRouter, RoutedInteraction, routeLoader } from '@/router'
+import {
+  RESTPostAPIApplicationCommandsJSONBody,
+  SlashCommandBuilder,
+  SlashCommandSubcommandBuilder
+} from 'discord.js'
 
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
 import { BotMonitor } from '@/monitor'
-import { ChastiSafe } from './integrations/ChastiSafe'
+import { ChastiSafe } from '@/integrations/ChastiSafe'
 import Localization from '@/localization'
 import { MongoDB } from '@/db'
+import { PluginManager } from '@/plugin-manager'
 import { REST } from '@discordjs/rest'
-import { Routes } from 'discord-api-types/v9'
+import { Routes } from 'discord-api-types/v10'
 import { ServerStatisticType } from './objects/statistics'
 import { Statistics } from '@/statistics'
 import { read as getSecret } from '@/secrets'
@@ -32,6 +38,7 @@ export class Bot {
     Command: new Utils.Logger.Debug('command'),
     Database: new Utils.Logger.Debug('database', { console: false }),
     Integration: new Utils.Logger.Debug('integration'),
+    Plugin: new Utils.Logger.Debug('plugin'),
     Router: new Utils.Logger.Debug('command-router'),
     Scheduled: new Utils.Logger.Debug('scheduled')
   }
@@ -47,6 +54,9 @@ export class Bot {
   // Databases
   public DB: MongoDB
 
+  // Plugins
+  public Plugin: PluginManager
+
   // Background tasks v0-4
   public Task: Task.TaskManager
 
@@ -54,7 +64,7 @@ export class Bot {
   public Router: CommandRouter
 
   // API Services
-  public Service: { BattleNet: BattleNet, ChastiSafe: ChastiSafe } = {
+  public Service: { BattleNet: BattleNet; ChastiSafe: ChastiSafe } = {
     BattleNet: null,
     ChastiSafe: new ChastiSafe(this)
   }
@@ -78,6 +88,11 @@ export class Bot {
     this.Task = new Task.TaskManager(this)
 
     ////////////////////////////////////////
+    // Plugin Manager //////////////////////
+    ////////////////////////////////////////
+    this.Plugin = new PluginManager(this)
+
+    ////////////////////////////////////////
     // Bot Monitor - Sync //////////////////
     ////////////////////////////////////////
     await this.BotMonitor.start()
@@ -92,8 +107,9 @@ export class Bot {
     ////////////////////////////////////////
     // Register background tasks
     this.Task.start([
+      new Task.DBAgeCleanupScheduled(),
+      new Task.ManagedUpdateScheduled(),
       new Task.StatusMessageRotatorScheduled(),
-      new Task.DBAgeCleanupScheduled()
       // new Task.StatsCleanerScheduled()
     ])
 
@@ -202,11 +218,37 @@ export class Bot {
       this.Log.Bot.error('Error fetching Official Discord.')
     }
 
+    await this.reloadSlashCommands()
+  }
+
+  public async reloadSlashCommands() {
+    // Stop a reload if command routes havent been generated, yet
+    if (!this.Router) {
+      this.Log.Bot.log('Router not ready, yet')
+      return // Stop here
+    }
+
     // Register Slash commands on Kiera's Development server
-    const commands = []
+    const commands: RESTPostAPIApplicationCommandsJSONBody[] = []
     for (const commandRoute of this.Router.routes) commandRoute.slash ? commands.push(commandRoute.slash.toJSON()) : null
 
-    const rest = new REST({ version: '9' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
+    // console.log(
+    //   'commands',
+    //   commands.map((command) => {
+    //     const cmd = command as unknown as SlashCommandBuilder
+    //     if (cmd.options) {
+    //       const subcommand = cmd.options
+    //       console.log(cmd.name, subcommand)
+    //     }
+    //     return {
+    //       description: cmd.description,
+    //       name: cmd.name,
+    //       options: cmd.options.map((option: SlashCommandSubcommandBuilder) => option.name)
+    //     }
+    //   })
+    // )
+
+    const rest = new REST({ version: '10' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
 
     try {
       this.Log.Bot.verbose('Started refreshing application (/) commands.')
@@ -217,7 +259,7 @@ export class Bot {
       else await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID) as any, { body: commands })
       this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
     } catch (error) {
-      this.Log.Bot.error(error)
+      this.Log.Bot.error('Not Successful in updating Slash Commands', error)
     }
   }
 
@@ -239,17 +281,17 @@ export class Bot {
     try {
       await this.Router.routeInteraction(interaction)
     } catch (error) {
-      this.Log.Bot.error('Fatal onInteration error caught', error)
+      this.Log.Bot.error('Fatal onInteration error caught', error, interaction)
     }
   }
 
-  private async onMessageCachedReactionAdd(message: Discord.Message, reaction: string, user: Discord.User) {
-    this.Router.routeReaction(message, reaction, user, 'added')
-  }
+  // private async onMessageCachedReactionAdd(message: Discord.Message, reaction: string, user: Discord.User) {
+  //   this.Router.routeReaction(message, reaction, user, 'added')
+  // }
 
-  private async onMessageCachedReactionRemove(message: Discord.Message, reaction: string, user: Discord.User) {
-    this.Router.routeReaction(message, reaction, user, 'removed')
-  }
+  // private async onMessageCachedReactionRemove(message: Discord.Message, reaction: string, user: Discord.User) {
+  //   this.Router.routeReaction(message, reaction, user, 'removed')
+  // }
 
   private async onGuildCreate(guild: Discord.Guild) {
     this.Log.Bot.log('Joined a new server: ' + guild.name)
@@ -298,3 +340,6 @@ export class Bot {
     this.Statistics.trackServerStatistic(member.guild.id, null, member.user.id, ServerStatisticType.UserLeft)
   }
 }
+
+export { Plugin } from './objects/plugin'
+export { RoutedInteraction }

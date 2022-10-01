@@ -1,11 +1,11 @@
-import { GuildMember, Interaction, Message, TextChannel, User } from 'discord.js'
-import { MessageRoute, RouteConfiguration, RouterRouted, RouterStats } from '../objects/router/'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { EmbedBuilder, GuildMember, Interaction, TextChannel } from 'discord.js'
+import { MessageRoute, RouteConfiguration, RoutedInteraction, RouterStats } from '../objects/router/'
 
 import { Bot } from '@/index'
 import { CommandPermission } from '../objects/permission'
+import { Logger } from '@/utils'
 import { ProcessedPermissions } from './route-permissions'
-import { ServerStatisticType } from '../objects/statistics'
-import { TrackedMessage } from '../objects/message'
 import { TrackedUser } from '@/objects/user/'
 
 /**
@@ -15,151 +15,53 @@ import { TrackedUser } from '@/objects/user/'
  */
 export class CommandRouter {
   public bot: Bot
-  public routes: Array<MessageRoute>
+  public routes: Array<MessageRoute> = []
+  private log: Logger.Debug
 
   constructor(routes: Array<RouteConfiguration>, bot?: Bot) {
     this.bot = bot
-    // Alert if duplicate route name is detected
-    const _dupRouteCheck = {}
-    routes.forEach((r) => {
-      if (_dupRouteCheck[r.name] !== undefined) this.bot.Log.Router.log(`!! Duplicate route name detected ${r.name}`)
-      else _dupRouteCheck[r.name] = 1
-    })
+    this.log = this.bot.Log.Router
 
-    this.routes = routes.map((r) => new MessageRoute(r))
-    // this.bot.Log.Router.log(`routes configured = ${this.routes.filter((r) => r.type === 'message').length}`)
-    // this.bot.Log.Router.log(`reacts configured = ${this.routes.filter((r) => r.type === 'reaction').length}`)
+    // Add routes that were loaded
+    routes.forEach((r) => this.addRoute(r))
   }
 
-  /**
-   * Route incoming Reaction Event
-   *
-   * @param {Message} message
-   * @param {string} reaction
-   * @param {User} user
-   * @param {('added' | 'removed')} direction
-   * @returns
-   * @memberof Router
-   */
-  public async routeReaction(message: Message, reaction: string, user: User, direction: 'added' | 'removed') {
-    const routerStats = new RouterStats(message.author)
-    // Debug value set in .env
-    if (process.env.BOT_BLOCK_REACTS === 'true') return // Should be set if 2 instances of bot are running
-    // console.log('user', user)
-    this.bot.Log.Router.log(`Router -> incoming reaction <@${user.id}> reaction:${reaction} ${direction}`)
-    // console.log('reaction', reaction)
-    // Block my own messages
-    if (user.id === this.bot.client.user.id) {
-      // Track my own messages when they are seen
-      // this.bot.BotMonitor.LiveStatistics.increment('messages-sent')
-      // Track if its a dm as well
-      if (message.channel.type === 'DM') {
-        // this.bot.BotMonitor.LiveStatistics.increment('dms-sent')
-      }
-      return // Hard block
-    } else {
-      if (direction === 'added' && user.bot === false) {
-        // Track stats
-        this.bot.Statistics.trackServerStatistic(message.guild.id, message.channel.id, user.id, ServerStatisticType.Reaction)
-      }
+  public async addRoute(route: RouteConfiguration) {
+    if (this.routes.findIndex((r) => r.name === route.name) > -1) return this.bot.Log.Router.log(`!! Duplicate route name detected '${route.name}'`)
+    this.routes.push(new MessageRoute(route))
+    this.log.verbose(`🚏✔️ Route Added '${route.name}'`)
+  }
+
+  public async removeRoute(route: string | MessageRoute) {
+    const routeIndex = this.routes.findIndex((r) => r.name === (typeof route === 'string' ? (route as string) : (route as MessageRoute).name))
+    const routeFound = routeIndex > -1 ? this.routes[routeIndex] : undefined
+    if (routeFound) {
+      this.routes.splice(routeIndex, 1)
+      await this.bot.reloadSlashCommands()
     }
-
-    // Lookup tracked message in db
-    let storedMessage = await this.bot.DB.get('messages', { id: message.id })
-
-    // Stop routing if no message is tracked
-    if (!storedMessage) return
-
-    // Init stored message
-    storedMessage = new TrackedMessage(storedMessage)
-
-    // Update stored record if it gets this far with any react changes
-    // console.log('router sees:', message.reactions.cache.array())
-    storedMessage.update('reactions', [...message.reactions.cache.values()])
-    await this.bot.DB.update('messages', { _id: storedMessage._id }, storedMessage)
-
-    // Ensure stored message has a route name to properly route it
-    if (!storedMessage.reactionRoute) return
-
-    // Find route to send this message reaction upon
-    const route = this.routes.find((r) => {
-      return r.name === storedMessage.reactionRoute && r.type === 'reaction'
-    })
-    this.bot.Log.Router.log('Router -> Route:', route)
-
-    // Stop routing if no route match
-    if (!route) return
-
-    // Lookup Kiera User in DB
-    const kieraUser = new TrackedUser(await this.bot.DB.get('users', { id: user.id }))
-
-    // Check if not stored - will be no Discord ID
-    if (!kieraUser.id) kieraUser.__notStored = true
-
-    const routed = new RouterRouted({
-      author: user,
-      bot: this.bot,
-      channel: message.channel as TextChannel,
-      guild: message.guild,
-      isDM: message.channel.type === 'DM',
-      member: message.member,
-      message: message,
-      reaction: {
-        reaction: reaction,
-        snowflake: user.id
-      },
-      route: route,
-      routerStats: routerStats,
-      state: direction,
-      trackedMessage: storedMessage,
-      type: 'reaction',
-      user: kieraUser
-    })
-
-    // Process middleware
-    const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
-    let mwareProcessed = 0
-
-    for (const middleware of route.middleware) {
-      const fromMiddleware = await middleware(routed)
-      // If the returned item is empty stop here
-      if (!fromMiddleware) {
-        break
-      }
-      // When everything is ok, continue
-      mwareProcessed += 1
-    }
-
-    this.bot.Log.Router.log(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
-
-    // Stop execution of route if middleware is halted
-    if (mwareProcessed === mwareCount) {
-      // this.bot.BotMonitor.LiveStatistics.increment('commands-routed')
-      // Check status returns later for stats tracking
-      try {
-        await route.controller(routed)
-      } catch (error) {
-        this.bot.Log.Router.error('Router -> Failed to fully execute controller, error:', error)
-      }
-      // this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
-      return // End routing here
-    }
+    this.log.log(`🚏❌ Unloaded Route '${routeFound.name}'`)
   }
 
   /**
    * Process Routed Slash Command
-   * @param interaction
+   * @param _interaction
    * @returns
    */
-  public async routeInteraction(interaction: Interaction) {
-    if (!interaction.isCommand()) return // Hard block
-    const { channel, commandName, guild, guildId, member, user } = interaction
+  public async routeInteraction(_interaction: Interaction) {
+    if (!_interaction.isCommand()) return // Hard block
+    if (!_interaction.isChatInputCommand()) return
+
+    this.bot.BotMonitor.LiveStatistics.increment('commands-seen')
+    // if (!interaction.guild) {
+    //   return interaction.reply('Kiera is only currently enabled inside of a Discord Server due to certain command limitations') // Hard block
+    // }
+
+    const { channel, commandName, guild, guildId, member, options, user } = _interaction
     const routerStats = new RouterStats(user)
     const route = this.routes.find((r) => r.name === commandName)
 
     // If no route matched, stop here
     if (!route) {
-      this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       // Track in an audit event
       this.bot.Audit.NewEntry({
         error: 'Failed to process command',
@@ -176,6 +78,7 @@ export class CommandRouter {
         where: 'Discord'
       })
 
+      this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       return // End here
     }
 
@@ -188,18 +91,17 @@ export class CommandRouter {
     if (!kieraUser.id) kieraUser.__notStored = true
 
     // Normal routed behaviour
-    const routed: RouterRouted = new RouterRouted({
+    const routed = new RoutedInteraction({
       author: user,
       bot: this.bot,
       channel: channel as TextChannel,
       guild,
-      interaction,
-      isDM: channel.type === 'DM',
+      interaction: _interaction,
       isInteraction: true,
       member: member as GuildMember,
+      options,
       route,
       routerStats: routerStats,
-      type: route.type,
       user: kieraUser
     })
 
@@ -208,8 +110,6 @@ export class CommandRouter {
     this.bot.Log.Router.log('Router -> Permissions Check Results:', routed.permissions)
 
     if (!routed.permissions.pass) {
-      this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
-
       if (routed.permissions.outcome === 'FailedServerOnlyRestriction') {
         // Send message in response
         await routed.reply(routed.$render('Generic.Error.CommandDisabledInChannel', { command: commandName }), true)
@@ -218,9 +118,9 @@ export class CommandRouter {
         this.bot.Audit.NewEntry({
           error: 'Command disabled by permission in this channel',
           guild: {
-            channel: 'DM',
-            id: 'DM',
-            name: 'DM'
+            channel: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.channel.id,
+            id: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.guild.id,
+            name: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.guild.name
           },
           name: routed.route.name,
           owner: routed.author.id,
@@ -229,14 +129,17 @@ export class CommandRouter {
           type: 'bot.command',
           where: 'Discord'
         })
+        this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       } else {
+        await routed.reply('This command is restricted.', true)
+
         // Track in an audit event
         this.bot.Audit.NewEntry({
           error: 'Command disabled by permissions',
           guild: {
-            channel: channel.id,
-            id: routed.message.guild.id,
-            name: routed.message.guild.name
+            channel: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.channel.id,
+            id: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.guild.id,
+            name: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.guild.name
           },
           name: routed.route.name,
           owner: routed.author.id,
@@ -269,13 +172,13 @@ export class CommandRouter {
     // Stop execution of route if middleware is completed
     if (mwareProcessed === mwareCount) {
       this.bot.BotMonitor.LiveStatistics.increment('commands-routed')
-      const status = await route.controller(routed)
+      const status = route.plugin ? await route.controller(route.plugin, routed) : await route.controller(routed)
+
       // Successful completion of command
       if (status) {
-        this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
         // Track in an audit event
         this.bot.Audit.NewEntry({
-          guild: routed.isDM
+          guild: routed.channel.isDMBased()
             ? {
                 channel: 'dm',
                 id: 'dm',
@@ -293,10 +196,11 @@ export class CommandRouter {
           type: 'bot.command',
           where: 'Discord'
         })
+
+        this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
       }
       // Command failed or returned false inside controller
       else {
-        this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
         // Track in an audit event
         this.bot.Audit.NewEntry({
           error: 'Command failed or returned false inside controller',
@@ -312,11 +216,11 @@ export class CommandRouter {
           type: 'bot.command',
           where: 'Discord'
         })
+
+        this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
       }
       return // End routing here
     }
-
-    this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
     return
   }
 
@@ -324,23 +228,51 @@ export class CommandRouter {
    * Perform permissions check
    *
    * @private
-   * @param {RouterRouted} routed
+   * @param {RoutedInteraction} routed
    * @returns
    * @memberof Router
    */
-  private async processPermissions(routed: RouterRouted): Promise<ProcessedPermissions> {
+  private async processPermissions(routed: RoutedInteraction): Promise<ProcessedPermissions> {
     const checks: ProcessedPermissions = {
       // Permissions of user
-      hasAdministrator: !routed.isDM ? routed.member.permissions.has('ADMINISTRATOR') : false,
-      hasManageChannel: !routed.isDM ? routed.member.permissionsIn(routed.channel.id).has('MANAGE_CHANNELS') : false,
-      hasManageGuild: !routed.isDM ? routed.member.permissions.has('MANAGE_GUILD') : false
+      hasAdministrator: !routed.channel.isDMBased() ? routed.member.permissions.has('Administrator') : false,
+      hasManageChannel: !routed.channel.isDMBased() ? routed.member.permissionsIn(routed.channel.id).has('ManageChannels') : false,
+      hasManageGuild: !routed.channel.isDMBased() ? routed.member.permissions.has('ManageGuild') : false
     }
 
     // [IF: serverOnly is set] Command is clearly meant for only servers
-    if (routed.route.permissions.serverOnly === true && routed.isDM) {
+    if (routed.route.permissions.serverOnly === true && routed.channel.isDMBased()) {
       checks.outcome = 'FailedServerOnlyRestriction'
       checks.pass = false
       return checks // Hard stop here
+    }
+
+    if (routed.route.permissions.nsfwRequired === true && routed.channel.isTextBased()) {
+      // [IF: nsfwRequired is set] Command can only respond in NSFW channels
+      const channel = routed.channel as TextChannel
+      if (!channel.nsfw) {
+        console.log('Failed NSFW check')
+        checks.outcome = 'FailedNSFWRestriction'
+        checks.pass = false
+        // Notify user that channel is not NSFW
+        await routed.reply(
+          {
+            embeds: [
+              new EmbedBuilder()
+                .setColor(15548997)
+                .setTitle('Channel is not NSFW')
+                .setDescription('This command may only be used in a NSFW channel.')
+                .setFooter({
+                  iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
+                  text: 'Notice from Kiera'
+                })
+                .setTimestamp(Date.now())
+            ]
+          },
+          true
+        )
+        return checks // Hard stop here
+      }
     }
 
     // [IF: Required user ID] Verify that the user calling is allowd to access (mostly legacy commands)
@@ -380,15 +312,15 @@ export class CommandRouter {
     // Get the command permission if its in the DB
     const commandPermission = new CommandPermission(
       (await routed.bot.DB.get('command-permissions', {
-        channelID: !routed.isDM ? routed.channel.id : 'DM',
+        channelID: !routed.channel.isDMBased() ? routed.channel.id : 'DM',
         command: routed.route.name,
-        serverID: !routed.isDM ? routed.guild.id : 'DM'
+        serverID: !routed.channel.isDMBased() ? routed.guild.id : 'DM'
       })) || {
         channelID: routed.channel.id,
         command: routed.route.name,
         enabled: true,
         // Defaults to True
-        serverID: !routed.isDM ? routed.guild.id : 'DM'
+        serverID: !routed.channel.isDMBased() ? routed.guild.id : 'DM'
       }
     )
 
