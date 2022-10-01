@@ -32,7 +32,7 @@ export function decisionFromSaved(decision: TrackedDecision, option: TrackedDeci
     description = Utils.sb(description)
   }
 
-  embed.setDescription(description)
+  if (description) embed.setDescription(description)
 
   return embed
 }

@@ -113,6 +113,7 @@ export async function runSavedDecision(routed: RoutedInteraction) {
     }
 
     const outcomeEmbed = decisionFromSaved(decision, outcome, { avatar: authorAvatar, id: authorID, name: authorName, server: { prefix: routed.prefix } })
+
     await routed.reply({ embeds: [outcomeEmbed] })
 
     // Track in log
