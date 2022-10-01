@@ -1,35 +1,5 @@
 export class ChastiSafeUser {
-  public user: string
-  public stats: {
-    LOYALTY: number
-    TASK: number
-    BONDAGE: number
-    CHASTITY: number
-    EMERGENCY: number
-  }
-
-  public keyholderStats: {
-    LOYALTY: number
-    TASK: number
-    BONDAGE: number
-    CHASTITY: number
-    EMERGENCY: number
-  }
-
-  public keyholderLockCounts: {
-    LOYALTY: number
-    TASK: number
-    BONDAGE: number
-    CHASTITY: number
-    EMERGENCY: number
-  }
-
-  public ratings: {
-    ratingsAsLockeeCount: number
-    ratingsAsKeyholderCount: number
-    averageRatingAsLockee: number
-    averageRatingAsKeyholder: number
-  }
+  public badges: Array<'LOCKTOBER_ONGOING' | 'LOCKTOBER_2022' | 'LOCKTOBER_2022_SELF' | 'LOCKTOBER_ONGOING_SELF'> = []
 
   public chastikeystats: {
     averageKeyholderRating: number
@@ -45,13 +15,31 @@ export class ChastiSafeUser {
     totalLocksManaged: number
   }
 
-  public levels: {
+  public hasChastiKeyData = false
+
+  public keyholderLevels: {
     bondageLevel: string
     chastityLevel: string
     taskLevel: string
   }
 
-  public keyholderLevels: {
+  public keyholderLockCounts: {
+    LOYALTY: number
+    TASK: number
+    BONDAGE: number
+    CHASTITY: number
+    EMERGENCY: number
+  }
+
+  public keyholderStats: {
+    LOYALTY: number
+    TASK: number
+    BONDAGE: number
+    CHASTITY: number
+    EMERGENCY: number
+  }
+
+  public levels: {
     bondageLevel: string
     chastityLevel: string
     taskLevel: string
@@ -61,9 +49,46 @@ export class ChastiSafeUser {
     chastityLocks: Array<ChastiSafeLock>
   }
 
+  public ratings: {
+    ratingsAsLockeeCount: number
+    ratingsAsKeyholderCount: number
+    averageRatingAsLockee: number
+    averageRatingAsKeyholder: number
+  }
+
+  public selfStats: {
+    LOYALTY: 0
+    EMERGENCY: 0
+    TASK: 0
+    BONDAGE: 0
+    CHASTITY: 0
+  }
+
+  public selfLockCounts: { EMERGENCY: 0; TASK: 0; BONDAGE: 0; CHASTITY: 0 }
+
+  public stats: {
+    LOYALTY: number
+    TASK: number
+    BONDAGE: number
+    CHASTITY: number
+    EMERGENCY: number
+  }
+
   public status: false
 
-  public hasChastiKeyData = false
+  public user: string
+
+  public get isLocktoberOngoingEligible() {
+    return this.badges.includes('LOCKTOBER_ONGOING_SELF')
+  }
+
+  public get isLocktober2022Eligible() {
+    return this.badges.includes('LOCKTOBER_2022_SELF')
+  }
+
+  public get isChastityLocked() {
+    return this.lockInfo.chastityLocks.length > 0
+  }
 
   constructor(init: Partial<ChastiSafeUser>) {
     Object.assign(this, init)
