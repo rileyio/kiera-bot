@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import { Logger } from '@/utils'
 
 export function read(secretName: string, logger?: Logger.Debug) {
-  logger.verbose('fetching secret:', secretName)
+  if (logger) logger.verbose('fetching secret:', secretName)
   try {
     return fs.readFileSync(`/run/secrets/${secretName}`, 'utf8')
   } catch (err) {
