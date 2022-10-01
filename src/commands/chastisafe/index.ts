@@ -20,7 +20,7 @@ export const Routes = ExportRoutes({
     .addSubcommand((subcommand) =>
       subcommand
         .setName('lookup')
-        .setDescription('Lookup on ChastiSafe')
+        .setDescription('Lookup on ChastiSafe (Omit user or username for self lookup)')
         .addStringOption((option) => option.setName('username').setDescription('Specify Username like user#1234').setRequired(false))
         .addUserOption((option) => option.setName('user').setDescription('Specify Username like @User').setRequired(false))
     ),
