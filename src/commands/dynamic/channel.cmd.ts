@@ -1,6 +1,8 @@
 import { ChannelType, EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 
 import { RoutedInteraction } from '@/router'
+import { calculateHumanTimeDDHHMM } from '@/utils/date'
+
 import moment = require('moment')
 
 export async function create(routed: RoutedInteraction) {
@@ -57,7 +59,7 @@ export async function create(routed: RoutedInteraction) {
       name,
       permissionOverwrites: [
         {
-          allow: [PermissionFlagsBits.ViewChannel],
+          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.Connect],
           id: routed.bot.client.user.id
         }
       ],
@@ -76,7 +78,7 @@ export async function create(routed: RoutedInteraction) {
       })
 
     // If its a countdown, update the value now as the next run wont be for 10 minutes
-    if (type === 'countdown') await newChannel.edit({ name: name.replace('{#}', moment.unix(value).fromNow()) })
+    if (type === 'countdown') await newChannel.edit({ name: name.replace('{#}', calculateHumanTimeDDHHMM(value / 1000, { dropMinutes: true, dropZeros: true })) })
 
     // Track managed channel in DB
     await routed.bot.DB.add('managed', {

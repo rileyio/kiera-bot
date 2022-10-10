@@ -1,4 +1,8 @@
 10.2.0
+- Fixed: Permissions assigned when creating managed channel.
+- Updated: Managed Channel output to use DDHHMM format. 
+
+10.2.0
 - Updated: Error text and permissions check for Managed Countdown channel creation needing `Connect` and `Manage Channels` permissions at a minimum.
 
 10.1.1
