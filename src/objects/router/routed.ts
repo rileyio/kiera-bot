@@ -1,6 +1,7 @@
 import * as Utils from '@/utils'
 
 import {
+  BaseMessageOptions,
   CacheType,
   Channel,
   ChatInputCommandInteraction,
@@ -11,7 +12,6 @@ import {
   InteractionReplyOptions,
   Message,
   MessagePayload,
-  ReplyMessageOptions,
   TextChannel,
   User
 } from 'discord.js'
@@ -125,7 +125,7 @@ export class RouterRouted<T = undefined> {
     return Utils.sb(baseString, Object.assign({}, data, { prefix: this.prefix }))
   }
 
-  public async reply(response: string | MessagePayload | ReplyMessageOptions, ephemeral?: boolean) {
+  public async reply(response: string | MessagePayload | BaseMessageOptions, ephemeral?: boolean) {
     try {
       if (this.route.slash && this.interaction) {
         if (typeof response === 'object') await (this.interaction as CommandInteraction).reply(Object.assign(response, { ephemeral }) as InteractionReplyOptions)
