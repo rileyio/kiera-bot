@@ -1,6 +1,7 @@
 import * as Random from 'random'
 import * as XRegExp from 'xregexp'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { ChannelType } from 'discord.js'
 import { ObjectID } from 'bson'
 import { RoutedInteraction } from '@/router'
@@ -8,7 +9,7 @@ import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
 import { decisionFromSaved } from '@/commands/decision/roll.embed'
 
-export async function runSavedDecision(routed: RoutedInteraction) {
+export async function runSavedDecision(routed: RoutedInteraction): AcceptedResponse {
   const idOrNickname = routed.interaction.options.get('id').value as string
   const shortRegex = XRegExp('^(?<username>[a-z0-9]*):(?<nickname>[a-z0-9-]*)$', 'i')
   const isShort = shortRegex.test(idOrNickname)
@@ -26,14 +27,15 @@ export async function runSavedDecision(routed: RoutedInteraction) {
 
     // Halt if user blacklist is triggered
     if (decision.userBlacklist.findIndex((u) => u === routed.author.id) > -1) {
-      return true // Stop here
+      return await routed.reply(`This decision roll (\`${decision._id.toString()}\`) is not available!`)
+      // Stop here
     }
 
     // Halt if decision rolled on server is not whitelisted
     if (decision.serverWhitelist.length > 0) {
       if (decision.serverWhitelist.findIndex((s) => s === routed.guild.id) === -1) {
-        await routed.reply(`This decision roll (\`${decision._id.toString()}\`) cannot be used on this server!`)
-        return true // Stop here
+        return await routed.reply(`This decision roll (\`${decision._id.toString()}\`) cannot be used on this server!`)
+        // Stop here
       }
     }
 
@@ -95,8 +97,7 @@ export async function runSavedDecision(routed: RoutedInteraction) {
     // If the outcomes pool is empty: Inform and stop there
     if (optionsPool.length === 0) {
       if (decision.consumeMode === 'Temporarily Consume') await routed.reply(`This decision roll has limiting enabled. There are no outcomes available at this time.`)
-      if (decision.consumeMode === 'Consume') await routed.reply(`This decision roll has limiting enabled. There are no outcomes available anymore.`)
-      return true
+      if (decision.consumeMode === 'Consume') return await routed.reply(`This decision roll has limiting enabled. There are no outcomes available anymore.`)
     }
 
     const random = (Random as any).int(0, optionsPool.length - 1)
@@ -114,8 +115,6 @@ export async function runSavedDecision(routed: RoutedInteraction) {
 
     const outcomeEmbed = decisionFromSaved(decision, outcome, { avatar: authorAvatar, id: authorID, name: authorName, server: { prefix: routed.prefix } })
 
-    await routed.reply({ embeds: [outcomeEmbed] })
-
     // Track in log
     await routed.bot.DB.add('decision-log', {
       callerID: routed.author.id,
@@ -125,8 +124,6 @@ export async function runSavedDecision(routed: RoutedInteraction) {
       outcomeID: String(outcome._id),
       serverID: routed.channel.type === ChannelType.DM ? 'DM' : routed.guild.id
     })
-
-    return true
+    return await routed.reply({ embeds: [outcomeEmbed] })
   }
-  return false
 }

@@ -1,7 +1,8 @@
 import * as Middleware from '@/middleware'
 
-import { ExportRoutes, RouterRouted } from '@/router'
+import { ExportRoutes, RoutedInteraction } from '@/router'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { ObjectId } from 'bson'
 import { TrackedDecision } from '@/objects/decision'
 import { decisionLogLast5 } from '@/embedded/decision-log'
@@ -17,9 +18,9 @@ export const Routes = ExportRoutes({
   validate: '/decision:string/log:string/id=string'
 })
 
-export async function fetchDecisionLog(routed: RouterRouted) {
+export async function fetchDecisionLog(routed: RoutedInteraction): AcceptedResponse {
   const log: Array<TrackedDecision> = await routed.bot.DB.aggregate('decision', [
-    { $match: { $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }], _id: new ObjectId(routed.v.o.id) } },
+    { $match: { $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }], _id: / * new ObjectId(routed.v.o.id) * / } },
     { $project: { _id: { $toString: '$_id' }, name: 1, options: 1 } },
     {
       $lookup: {
@@ -40,12 +41,9 @@ export async function fetchDecisionLog(routed: RouterRouted) {
 
   if (!log) {
     // If nothing comes up, inform the user
-    await routed.reply('Could not find a decision roll from the ID provided.')
-    return true // Stop Here
+    return await routed.reply('Could not find a decision roll from the ID provided.')
   }
 
   const decision = log[0]
-  await routed.message.channel.send({ embeds: [decisionLogLast5(decision, routed.author)] })
-
-  return true
+  return await routed.reply({ embeds: [decisionLogLast5(decision, routed.author)] })
 }

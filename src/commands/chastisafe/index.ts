@@ -3,6 +3,7 @@ import * as User from '@/commands/chastisafe/user.cmd'
 
 import { ExportRoutes, RoutedInteraction } from '@/router'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes({
@@ -30,7 +31,7 @@ export const Routes = ExportRoutes({
   type: 'interaction'
 })
 
-async function csRouterSub(routed: RoutedInteraction) {
+async function csRouterSub(routed: RoutedInteraction): AcceptedResponse {
   const subCommand = routed.options.getSubcommand() as 'lookup'
   // const username = routed.interaction.options.get('username')?.value
   // const user = routed.interaction.options.getUser('user')

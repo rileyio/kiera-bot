@@ -1,5 +1,6 @@
-import { ExportRoutes, RouterRouted } from '@/router'
+import { ExportRoutes, RoutedInteraction } from '@/router'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes(
@@ -15,7 +16,7 @@ export const Routes = ExportRoutes(
     slash: new SlashCommandBuilder().setName('admin').setDescription('Server Administrator Commands to adjust functionality of Kiera'),
     type: 'message',
     validate: '/admin:string/commands:string'
-  },
+  }
   // {
   //   category: 'Admin',
   //   controller: listCommandCategories,
@@ -74,7 +75,7 @@ export const Routes = ExportRoutes(
  * @param {RouterRouted} routed
  * @returns
  */
-export async function listCommandCategories(routed: RouterRouted) {
+export async function listCommandCategories(routed: RoutedInteraction): AcceptedResponse {
   const categories = {}
   let responseString: string
   let longestName = 0
@@ -111,74 +112,71 @@ export async function listCommandCategories(routed: RouterRouted) {
     }`
   })
 
-  await routed.reply(routed.$render('Admin.CommandCategoriesList', { categories: responseString }))
-  return true // Successful
+  return await routed.reply(routed.$render('Admin.CommandCategoriesList', { categories: responseString }))
 }
 
-/**
- * Genrate print out of commands under the given category
- * @export
- * @param {RouterRouted} routed
- * @returns
- */
-export async function listCategoryCommands(routed: RouterRouted) {
-  const commands = []
-  let responseString: string
-  let longestName = 0
-  let largestNumber = 0
+// /**
+//  * Genrate print out of commands under the given category
+//  * @export
+//  * @param {RouterRouted} routed
+//  * @returns
+//  */
+// export async function listCategoryCommands(routed: RoutedInteraction) {
+//   const commands = []
+//   let responseString: string
+//   let longestName = 0
+//   let largestNumber = 0
 
-  // Get commands under this category
-  routed.bot.Router.routes.forEach((route) => {
-    if (route.category.toLowerCase() === routed.v.o.category.toLowerCase()) {
-      // Track command name, example, and if it's restricted
-      commands.push({
-        example: route.example,
-        name: route.name,
-        restricted: route.permissions.restrictedTo.length > 0 || route.permissions.serverAdminOnly || !route.permissions.defaultEnabled
-      })
-      // Track which command name is the longest
-      if (longestName < route.name.length) longestName = route.name.length
-      if (largestNumber < String(route.name || 0).length) largestNumber = String(route.name || 0).length
-    }
-  })
+//   // Get commands under this category
+//   routed.bot.Router.routes.forEach((route) => {
+//     if (route.category.toLowerCase() === routed.v.o.category.toLowerCase()) {
+//       // Track command name, example, and if it's restricted
+//       commands.push({
+//         example: route.example,
+//         name: route.name,
+//         restricted: route.permissions.restrictedTo.length > 0 || route.permissions.serverAdminOnly || !route.permissions.defaultEnabled
+//       })
+//       // Track which command name is the longest
+//       if (longestName < route.name.length) longestName = route.name.length
+//       if (largestNumber < String(route.name || 0).length) largestNumber = String(route.name || 0).length
+//     }
+//   })
 
-  // Sort A > Z
-  commands.sort((a, b) => {
-    const x = a.name.toLowerCase()
-    const y = b.name.toLowerCase()
-    if (x < y) {
-      return -1
-    }
-    if (x > y) {
-      return 1
-    }
-    return 0
-  })
+//   // Sort A > Z
+//   commands.sort((a, b) => {
+//     const x = a.name.toLowerCase()
+//     const y = b.name.toLowerCase()
+//     if (x < y) {
+//       return -1
+//     }
+//     if (x > y) {
+//       return 1
+//     }
+//     return 0
+//   })
 
-  // Add each command category's name & total
-  commands.forEach((command, index) => {
-    responseString += `${command.name} ${Array.from(Array(longestName + 3 - command.name.length)).join('.')} Example: ${routed.$sb(command.example)}${
-      index < commands.length - 1 ? '\n' : ''
-    }`
-  })
+//   // Add each command category's name & total
+//   commands.forEach((command, index) => {
+//     responseString += `${command.name} ${Array.from(Array(longestName + 3 - command.name.length)).join('.')} Example: ${routed.$sb(command.example)}${
+//       index < commands.length - 1 ? '\n' : ''
+//     }`
+//   })
 
-  await routed.reply(routed.$render('Admin.CommandCategoryCommands', { category: routed.v.o.category, commands: responseString }))
-  return true // Successful
-}
+//   await routed.reply(routed.$render('Admin.CommandCategoryCommands', { category: routed.v.o.category, commands: responseString }))
+//   return true // Successful
+// }
 
-export async function commandRestrict(routed: RouterRouted) {
-  await routed.reply(routed.$render('Generic.Warn.CommandUnderMaintenance'))
-  return true // Successful
-}
+// export async function commandRestrict(routed: RoutedInteraction) {
+//   await routed.reply(routed.$render('Generic.Warn.CommandUnderMaintenance'))
+//   return true // Successful
+// }
 
-export async function setPrefix(routed: RouterRouted) {
-  try {
-    const updated = await routed.bot.DB.update('servers', { id: routed.guild.id }, { prefix: routed.v.o.newPrefix })
-    if (updated) await routed.reply(routed.$render('Admin.PrefixUpdated', { newPrefix: routed.v.o.newPrefix }))
-    else routed.reply(routed.$render('Admin.PrefixNotUpdated'))
-  } catch (error) {
-    routed.reply(routed.$render('Admin.PrefixUpdateError'))
-  }
-
-  return true
-}
+// export async function setPrefix(routed: RoutedInteraction) {
+//   try {
+//     const updated = await routed.bot.DB.update('servers', { id: routed.guild.id }, { prefix: routed.v.o.newPrefix })
+//     if (updated) await routed.reply(routed.$render('Admin.PrefixUpdated', { newPrefix: routed.v.o.newPrefix }))
+//     else routed.reply(routed.$render('Admin.PrefixNotUpdated'))
+//   } catch (error) {
+//     return routed.reply(routed.$render('Admin.PrefixUpdateError'))
+//   }
+// }

@@ -11,6 +11,7 @@ import * as Middleware from '@/middleware'
 
 import { ExportRoutes, RoutedInteraction } from '@/router'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes({
@@ -87,7 +88,7 @@ export const Routes = ExportRoutes({
   type: 'interaction'
 })
 
-async function decisionRouterSub(routed: RoutedInteraction) {
+async function decisionRouterSub(routed: RoutedInteraction): AcceptedResponse {
   const subCommand = routed.options.getSubcommand() as 'add' | 'create' | 'delete' | 'nickname' | 'prefix' | 'remove' | 'roll' | 'manage' | 'list'
   const idOrNickname = routed.interaction.options.get('id')?.value
   // const interactionType = routed.interaction.options.get('type')?.value
@@ -139,6 +140,5 @@ async function decisionRouterSub(routed: RoutedInteraction) {
   }
 
   // Nothing has been specified
-  await routed.reply('A Decision Menu Option Must be Selected.')
-  return true
+  return await routed.reply('A Decision Menu Option Must be Selected.')
 }

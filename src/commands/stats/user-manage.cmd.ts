@@ -1,9 +1,11 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, EmbedBuilder, MessageComponentInteraction } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageComponentInteraction } from 'discord.js'
 import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { RoutedInteraction } from '@/router'
+import { TextChannel } from 'discord.js'
 
-export async function diableUserStats(routed: RoutedInteraction) {
+export async function diableUserStats(routed: RoutedInteraction): AcceptedResponse {
   await routed.bot.DB.add(
     'stats-settings',
     new StatisticsSetting({
@@ -15,7 +17,7 @@ export async function diableUserStats(routed: RoutedInteraction) {
   return await routed.reply(routed.$render('Stats.User.Disabled'))
 }
 
-export async function enableUserStats(routed: RoutedInteraction) {
+export async function enableUserStats(routed: RoutedInteraction): AcceptedResponse {
   const removed = await routed.bot.DB.remove('stats-settings', {
     setting: StatisticsSettingType.UserDisableStats,
     userID: routed.author.id
@@ -24,7 +26,7 @@ export async function enableUserStats(routed: RoutedInteraction) {
   if (removed > 0) return await routed.reply(routed.$render('Stats.User.Enabled'))
 }
 
-export async function deleteUserStats(routed: RoutedInteraction) {
+export async function deleteUserStats(routed: RoutedInteraction): AcceptedResponse {
   // First check if there's even anything to delete
   const count = await routed.bot.DB.count('stats-servers', { userID: routed.author.id })
 
@@ -40,7 +42,7 @@ export async function deleteUserStats(routed: RoutedInteraction) {
         .addComponents(new ButtonBuilder().setCustomId('no').setLabel('Cancel Deletion').setStyle(ButtonStyle.Success))
 
       // Collector to recieve interaction (With 15s timeout)
-      const collector = routed.interaction.channel.createMessageComponentCollector({ filter, time: 15000 })
+      const collector = (routed.interaction.channel as TextChannel).createMessageComponentCollector({ filter, time: 15000 })
       collector.on('collect', async (i: MessageComponentInteraction) => {
         console.log('🧠 Processing user input')
 

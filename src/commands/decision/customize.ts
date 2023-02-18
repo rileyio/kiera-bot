@@ -3,6 +3,7 @@ import * as XRegExp from 'xregexp'
 
 import { ExportRoutes, RoutedInteraction } from '@/router'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { ObjectId } from 'mongodb'
 import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
@@ -35,7 +36,7 @@ export const Routes = ExportRoutes(
  * @export
  * @param {RoutedInteraction} routed
  */
-export async function nicknameDecision(routed: RoutedInteraction) {
+export async function nicknameDecision(routed: RoutedInteraction): AcceptedResponse {
   const shortRegex = XRegExp('^([a-z0-9\\-]*)$', 'i')
   const userNickname = new TrackedUser(await routed.bot.DB.get('users', { id: routed.author.id }))
   const nickname = routed.interaction.options.get('nickname')?.value ? String(routed.interaction.options.get('nickname').value).replace(' ', '-') : ''
@@ -43,8 +44,7 @@ export async function nicknameDecision(routed: RoutedInteraction) {
 
   // Stop here if the user has not set a short username yet
   if (!userNickname.Decision.nickname) {
-    await routed.reply(routed.$render('Decision.Customize.UserNicknameNotSet'))
-    return true
+    return await routed.reply(routed.$render('Decision.Customize.UserNicknameNotSet'))
   }
 
   const decisionFromDB = new TrackedDecision(
@@ -59,14 +59,12 @@ export async function nicknameDecision(routed: RoutedInteraction) {
     if (nickname.length === 0 && decisionFromDB) {
       const removed = await routed.bot.DB.update('decision', { _id: decisionFromDB._id }, { $unset: { nickname: '' } }, { atomic: true })
       if (removed) await routed.reply(routed.$render('Decision.Customize.NicknameRemoved'))
-      else await routed.reply(routed.$render('Decision.Customize.NicknameNotRemoved'))
-      return true
+      else return await routed.reply(routed.$render('Decision.Customize.NicknameNotRemoved'))
     }
 
     // Ensure only valid characters are present
     if (!shortRegex.test(nickname)) {
-      await routed.reply(routed.$render('Decision.Customize.NicknameValidCharacters'))
-      return false
+      return await routed.reply(routed.$render('Decision.Customize.NicknameValidCharacters'))
     }
 
     const updated = await routed.bot.DB.update(
@@ -80,21 +78,16 @@ export async function nicknameDecision(routed: RoutedInteraction) {
       { atomic: true }
     )
 
-    if (updated)
-      await routed.reply(
-        routed.$render('Decision.Customize.NicknameSet', {
-          id: decisionFromDB._id.toHexString(),
-          name: decisionFromDB.name,
-          nickname,
-          username: userNickname.Decision.nickname
-        })
-      )
-    else await routed.reply(routed.$render('Decision.Customize.NicknameError'))
-
-    return true
+    if (!updated) return await routed.reply(routed.$render('Decision.Customize.NicknameError'))
+    return await routed.reply(
+      routed.$render('Decision.Customize.NicknameSet', {
+        id: decisionFromDB._id.toHexString(),
+        name: decisionFromDB.name,
+        nickname,
+        username: userNickname.Decision.nickname
+      })
+    )
   }
-
-  return false
 }
 
 /**
@@ -102,22 +95,20 @@ export async function nicknameDecision(routed: RoutedInteraction) {
  * @export
  * @param {RoutedInteraction} routed
  */
-export async function customUsername(routed: RoutedInteraction) {
+export async function customUsername(routed: RoutedInteraction): AcceptedResponse {
   const nickname = routed.interaction.options.get('nickname')?.value as string
   const shortRegex = XRegExp('^([a-z0-9]*)$', 'i')
   const nicknameFixed = nickname.replace(' ', '-')
 
   // Ensure only valid characters are present
   if (!shortRegex.test(nicknameFixed)) {
-    await routed.reply(routed.$render('Decision.Customize.NicknameValidCharacters'))
-    return false
+    return await routed.reply(routed.$render('Decision.Customize.NicknameValidCharacters'))
   }
 
   // Ensure there's no collision with another user's nickname
   const isNicknameInUse = await routed.bot.DB.verify('users', { 'Decision.nickname': String(new RegExp(`^${nicknameFixed}$`, 'i')) })
   if (isNicknameInUse) {
-    routed.reply(routed.$render('Decision.Customize.UserNicknameAlreadyInUse'))
-    return true
+    return routed.reply(routed.$render('Decision.Customize.UserNicknameAlreadyInUse'))
   }
 
   const updated = await routed.bot.DB.update(
@@ -133,8 +124,6 @@ export async function customUsername(routed: RoutedInteraction) {
     { atomic: true }
   )
 
-  if (updated) await routed.reply(routed.$render('Decision.Customize.UserNicknameSet', { nickname: nicknameFixed }))
-  else await routed.reply(routed.$render('Decision.Customize.UserNicknameError'))
-
-  return true
+  if (updated) return await routed.reply(routed.$render('Decision.Customize.UserNicknameSet', { nickname: nicknameFixed }))
+  else return await routed.reply(routed.$render('Decision.Customize.UserNicknameError'))
 }

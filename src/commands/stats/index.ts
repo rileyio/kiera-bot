@@ -8,6 +8,7 @@ import * as StatsUserManage from '@/commands/stats/user-manage.cmd'
 
 import { ExportRoutes, RoutedInteraction } from '@/router'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes({
@@ -81,7 +82,7 @@ export const Routes = ExportRoutes({
   type: 'interaction'
 })
 
-function stats(routed: RoutedInteraction) {
+function stats(routed: RoutedInteraction): AcceptedResponse {
   const subCommand = routed.options.getSubcommand()
 
   // About

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EmbedBuilder, GuildMember, Interaction, TextChannel } from 'discord.js'
-import { MessageRoute, RouteConfiguration, RoutedInteraction, RouterStats } from '../objects/router/'
+import { RouteConfiguration, RoutedInteraction, RouterStats } from '../objects/router/'
 
 import { Bot } from '@/index'
 import { CommandPermission } from '../objects/permission'
@@ -15,7 +15,7 @@ import { TrackedUser } from '@/objects/user/'
  */
 export class CommandRouter {
   public bot: Bot
-  public routes: Array<MessageRoute> = []
+  public routes: Array<RouteConfiguration> = []
   private log: Logger.Debug
 
   constructor(routes: Array<RouteConfiguration>, bot?: Bot) {
@@ -28,12 +28,12 @@ export class CommandRouter {
 
   public async addRoute(route: RouteConfiguration) {
     if (this.routes.findIndex((r) => r.name === route.name) > -1) return this.bot.Log.Router.log(`!! Duplicate route name detected '${route.name}'`)
-    this.routes.push(new MessageRoute(route))
+    this.routes.push(new RouteConfiguration(route))
     this.log.verbose(`🚏✔️ Route Added '${route.name}'`)
   }
 
-  public async removeRoute(route: string | MessageRoute) {
-    const routeIndex = this.routes.findIndex((r) => r.name === (typeof route === 'string' ? (route as string) : (route as MessageRoute).name))
+  public async removeRoute(route: string | RouteConfiguration) {
+    const routeIndex = this.routes.findIndex((r) => r.name === (typeof route === 'string' ? (route as string) : (route as RouteConfiguration).name))
     const routeFound = routeIndex > -1 ? this.routes[routeIndex] : undefined
     if (routeFound) {
       this.routes.splice(routeIndex, 1)
@@ -276,8 +276,8 @@ export class CommandRouter {
     }
 
     // [IF: Required user ID] Verify that the user calling is allowd to access (mostly legacy commands)
-    if (routed.route.permissions.restrictedTo.length > 0) {
-      if (routed.route.permissions.restrictedTo.findIndex((snowflake) => snowflake === routed.author.id) > -1) {
+    if (routed.route.permissions.restrictedToUser.length > 0) {
+      if (routed.route.permissions.restrictedToUser.findIndex((snowflake) => snowflake === routed.author.id) > -1) {
         checks.outcome = 'Pass'
         checks.pass = true
         return checks // stop here

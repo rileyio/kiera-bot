@@ -1,6 +1,7 @@
 import { ExportRoutes, RoutedInteraction } from '@/router'
 import { checkForUpdates, update } from '@/commands/plugins/update'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { PermissionFlagsBits } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
@@ -10,7 +11,7 @@ export const Routes = ExportRoutes({
   name: 'plugins',
   permissions: {
     defaultEnabled: true,
-    restrictedTo: [
+    restrictedToUser: [
       '146439529824256000' // Emma#1366
     ],
     serverOnly: true
@@ -31,7 +32,7 @@ export const Routes = ExportRoutes({
   type: 'interaction'
 })
 
-async function stats(routed: RoutedInteraction) {
+async function stats(routed: RoutedInteraction): AcceptedResponse {
   const subCommand = routed.options.getSubcommand() as 'check-for-updates' | 'update'
 
   // Check for updates

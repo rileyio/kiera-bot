@@ -8,17 +8,21 @@ import {
   Guild,
   GuildMember,
   InteractionReplyOptions,
+  InteractionResponse,
+  Message,
   MessagePayload,
   TextChannel,
   User
 } from 'discord.js'
-import { MessageRoute, ProcessedPermissions, RouterStats } from '@/router'
+import { ProcessedPermissions, RouteConfiguration, RouterStats } from '@/router'
 
 import { Bot } from '@/index'
 import { TrackedMessage } from '@/objects/message'
 import { TrackedUser } from '@/objects/user/'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
+
+export type AcceptedResponse = Promise<InteractionResponse<boolean> | Message<boolean>>
 
 export class RoutedInteraction {
   public author: User
@@ -32,7 +36,7 @@ export class RoutedInteraction {
   public options?: Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getFocused'>
   public permissions: ProcessedPermissions
   public prefix: string
-  public route: MessageRoute
+  public route: RouteConfiguration
   public routerStats: RouterStats
   public trackedMessage: TrackedMessage
   public type: 'interaction'
@@ -93,5 +97,9 @@ export class RoutedInteraction {
     } catch (error) {
       this.bot.Log.Router.error('Unable to .reply =>', error, response)
     }
+  }
+
+  public async followUp(response: string | MessagePayload | InteractionReplyOptions, ephemeral?: boolean) {
+    return await (this.interaction as ChatInputCommandInteraction<CacheType>).followUp({ content: response, ephemeral } as string | MessagePayload | InteractionReplyOptions)
   }
 }

@@ -2,6 +2,7 @@ import * as Channel from '@/commands/dynamic/channel.cmd'
 
 import { ExportRoutes, RoutedInteraction } from '@/router'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes({
@@ -33,13 +34,12 @@ export const Routes = ExportRoutes({
   type: 'interaction'
 })
 
-async function managedRouterSub(routed: RoutedInteraction) {
+async function managedRouterSub(routed: RoutedInteraction): AcceptedResponse {
   const subcommand = routed.interaction.options.getSubcommand()
 
   // Manage a managed channel
-  if (subcommand === 'create') await Channel.create(routed)
+  if (subcommand === 'create') return await Channel.create(routed)
 
   // Nothing has been specified
-  await routed.reply('Please check your input and try again.')
-  return true
+  return await routed.reply('Please check your input and try again.')
 }

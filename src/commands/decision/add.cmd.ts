@@ -1,5 +1,6 @@
 import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { ObjectID } from 'mongodb'
 import { RoutedInteraction } from '@/router'
 
@@ -8,7 +9,7 @@ import { RoutedInteraction } from '@/router'
  * @export
  * @param {RoutedInteraction} routed
  */
-export async function addOutcome(routed: RoutedInteraction) {
+export async function addOutcome(routed: RoutedInteraction): AcceptedResponse {
   const id = routed.interaction.options.get('id')?.value as string
   const outcome = routed.interaction.options.get('value')?.value as string
   const type = routed.interaction.options.get('type')?.value as 'string' | 'image' | 'url' | 'markdown'

@@ -1,5 +1,7 @@
 import { ExportRoutes, RoutedInteraction } from '@/router'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction';
+
 export const Routes = ExportRoutes({
   category: 'Info',
   controller: commandUsageStats,
@@ -13,7 +15,7 @@ export const Routes = ExportRoutes({
   validate: '/stats:string/commands:string'
 })
 
-export async function commandUsageStats(routed: RoutedInteraction) {
+export async function commandUsageStats(routed: RoutedInteraction): AcceptedResponse {
   // Get Audit trail for commands from DB to run stats on
   let collection = (await routed.bot.DB.aggregate<{ _id: string; count: number }>('audit-log', [
     {
@@ -64,6 +66,5 @@ export async function commandUsageStats(routed: RoutedInteraction) {
   }
 
   // console.log(text)
-  await routed.reply(text + '```')
-  return true
+  return await routed.reply(text + '```')
 }

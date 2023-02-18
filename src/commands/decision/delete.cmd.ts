@@ -1,5 +1,6 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ComponentType, MessageComponentInteraction, SelectMenuBuilder, SelectMenuInteraction } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ComponentType, MessageComponentInteraction, SelectMenuBuilder, SelectMenuInteraction, TextChannel } from 'discord.js'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { ObjectID } from 'mongodb'
 import { RoutedInteraction } from '@/router'
 
@@ -8,7 +9,7 @@ import { RoutedInteraction } from '@/router'
  * @export
  * @param {RoutedInteraction} routed
  */
-export async function deleteDecision(routed: RoutedInteraction) {
+export async function deleteDecision(routed: RoutedInteraction): AcceptedResponse {
   const decisionsStored = await routed.bot.DB.getMultiple('decision', { authorID: routed.author.id })
   let selectedID = ''
 
@@ -37,7 +38,7 @@ export async function deleteDecision(routed: RoutedInteraction) {
   )
 
   // Collector to recieve interaction (With 15s timeout)
-  const collector = routed.interaction.channel.createMessageComponentCollector({ filter, time: 15000 })
+  const collector = (routed.interaction.channel as TextChannel).createMessageComponentCollector({ filter, time: 15000 })
   collector.on('collect', async (i: SelectMenuInteraction | ButtonInteraction) => {
     // When its not the author interacting, skip
     if (i.user.id !== routed.author.id) return

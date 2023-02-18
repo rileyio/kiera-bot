@@ -1,10 +1,11 @@
 /* eslint-disable sort-keys */
 import { EmbedBuilder, GuildMember, Role } from 'discord.js'
 
+import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { RoutedInteraction } from '@/router'
 import { performance } from 'perf_hooks'
 
-export async function update(routed: RoutedInteraction) {
+export async function update(routed: RoutedInteraction) : AcceptedResponse {
   const updatePerformance = {
     full: { start: performance.now(), end: 0 },
     verify: { start: 0, end: 0 },
@@ -81,7 +82,7 @@ export async function update(routed: RoutedInteraction) {
       routed.member
 
   // Ensure user can actually be found (Has not left, or not some other error)
-  if (!discordUser) return false // Stop here
+  if (!discordUser) return // Stop here
 
   // Server Roles
   const role: { [name: string]: Role } = {
