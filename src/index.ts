@@ -174,11 +174,6 @@ export class Bot {
     this.client.on('guildMemberAdd', (member) => this.onUserJoined(member))
     this.client.on('guildMemberRemove', (member) => this.onUserLeft(member))
 
-    // Since regular commands seem to be possible working as of the time of writing this, adding back
-    // an info response redirecting users to use slash commands.
-    /// Incoming message router ///
-    // this.client.on('message', async (msg) => await this.onMessage(msg))
-
     /// Update guilds info stored ///
     for (const guild of [...this.client.guilds.cache.values()]) {
       // Check if Guild info is cached

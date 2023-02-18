@@ -16,7 +16,7 @@ export function getArgs(msg: string) {
 
 export * from './client-event-handler'
 export * as Date from './date'
-export * from './prompt'
+// export * from './prompt'
 export * from '../localization'
 export * from './string-builder'
 export * from './types'
