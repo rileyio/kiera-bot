@@ -173,10 +173,6 @@ export class Bot {
     this.client.on('guildUpdate', async (guild) => this.onGuildCreate(guild))
     this.client.on('guildMemberAdd', (member) => this.onUserJoined(member))
     this.client.on('guildMemberRemove', (member) => this.onUserLeft(member))
-    ///   Reaction in (Cached)  ///
-    // this.client.on('messageReactionAdd', (react, user) => this.onMessageCachedReactionAdd(react, user))
-    ///  Reaction out (Cached)  ///
-    // this.client.on('messageReactionRemove', (react, user) => this.onMessageCachedReactionRemove(react, user))
 
     // Since regular commands seem to be possible working as of the time of writing this, adding back
     // an info response redirecting users to use slash commands.
@@ -260,20 +256,6 @@ export class Bot {
     }
   }
 
-  // private async onMessage(message: Discord.Message) {
-  //   try {
-  //     const containsPrefix = message.content.startsWith('!')
-
-  //     if (containsPrefix)
-  //       await message.reply({
-  //         content:
-  //           '🤖 Kiera now uses (`/`) Slash Commands. Try typing commands as before but instead of starting with `!` replace with `/`. Please also note that shortened commands will no longer work due to redesign limitation.'
-  //       })
-  //   } catch (error) {
-  //     this.Log.Bot.error('Fatal onMessage error caught', error)
-  //   }
-  // }
-
   private async onInteraction(interaction: Discord.Interaction) {
     try {
       await this.Router.routeInteraction(interaction)
@@ -281,14 +263,6 @@ export class Bot {
       this.Log.Bot.error('Fatal onInteration error caught', error, interaction)
     }
   }
-
-  // private async onMessageCachedReactionAdd(message: Discord.Message, reaction: string, user: Discord.User) {
-  //   this.Router.routeReaction(message, reaction, user, 'added')
-  // }
-
-  // private async onMessageCachedReactionRemove(message: Discord.Message, reaction: string, user: Discord.User) {
-  //   this.Router.routeReaction(message, reaction, user, 'removed')
-  // }
 
   private async onGuildCreate(guild: Discord.Guild) {
     this.Log.Bot.log('Joined a new server: ' + guild.name)
@@ -313,21 +287,6 @@ export class Bot {
     await this.DB.remove('servers', { id: guild.id })
     this.Log.Bot.log('Left a guild: ' + guild.name)
   }
-
-  // private async onMessageNonCachedReact(event: { t: Discord.WSEventType; d: any }) {
-  //   const user = await this.client.users.fetch(event.d.user_id)
-  //   const channel = this.client.channels.cache.get(event.d.channel_id) as Discord.TextChannel
-  //   // Skip firing events for cached messages as these will already be properly handled
-  //   // if ((<Discord.TextChannel>channel).messages.has(event.d.message_id)) return
-  //   // Query channel for message as its not chached
-  //   const message = await channel.messages.fetch(event.d.message_id)
-  //   // Handling for custome/server emoji
-  //   const emojiKey = event.d.emoji.id ? `${event.d.emoji.name}:${event.d.emoji.id}` : event.d.emoji.name
-  //   // Emit to handle in the regular handling used for cached messages
-  //   // this.client.emit(DISCORD_CLIENT_EVENTS[event.t], reaction, user)
-  //   if (event.t === 'MESSAGE_REACTION_ADD') return await this.onMessageCachedReactionAdd(message, emojiKey, user)
-  //   if (event.t === 'MESSAGE_REACTION_REMOVE') return await this.onMessageCachedReactionRemove(message, emojiKey, user)
-  // }
 
   private onUserJoined(member: Discord.GuildMember | Discord.PartialGuildMember) {
     this.Statistics.trackServerStatistic(member.guild.id, null, member.user.id, ServerStatisticType.UserJoined)
