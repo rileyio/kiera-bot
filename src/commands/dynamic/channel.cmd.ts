@@ -1,6 +1,8 @@
 import { ChannelType, EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 
 import { RoutedInteraction } from '@/router'
+import { calculateHumanTimeDDHHMM } from '@/utils/date'
+
 import moment = require('moment')
 
 export async function create(routed: RoutedInteraction) {
@@ -29,14 +31,14 @@ export async function create(routed: RoutedInteraction) {
 
     // Verify that bot has required permissions to create and manage channels
     const botUser = routed.interaction.guild.members.cache.get(routed.bot.client.user.id)
-    if (!botUser.permissions.has('ManageChannels')) {
+    if (!botUser.permissions.has('ManageChannels') || !botUser.permissions.has('Connect')) {
       return await routed.reply(
         {
           embeds: [
             new EmbedBuilder()
               .setColor(15548997)
               .setTitle('Missing Permissions')
-              .setDescription('I need the `Manage Channels` permission to create & manage channels.')
+              .setDescription('I need the `Manage Channels` & Voice `Connect` permission at the server level to create & manage channels.')
               .setFooter({
                 iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
                 text: 'Error from Kiera'
@@ -57,7 +59,7 @@ export async function create(routed: RoutedInteraction) {
       name,
       permissionOverwrites: [
         {
-          allow: [PermissionFlagsBits.ViewChannel],
+          allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.Connect],
           id: routed.bot.client.user.id
         }
       ],
@@ -76,7 +78,7 @@ export async function create(routed: RoutedInteraction) {
       })
 
     // If its a countdown, update the value now as the next run wont be for 10 minutes
-    if (type === 'countdown') await newChannel.edit({ name: name.replace('{#}', moment.unix(value).fromNow()) })
+    if (type === 'countdown') await newChannel.edit({ name: name.replace('{#}', calculateHumanTimeDDHHMM(value / 1000, { dropMinutes: true, dropZeros: true })) })
 
     // Track managed channel in DB
     await routed.bot.DB.add('managed', {

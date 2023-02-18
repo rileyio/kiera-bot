@@ -1,6 +1,5 @@
 import * as jwt from 'jsonwebtoken'
 
-import { TrackedSession } from '@/objects/session'
 import { WebRouted } from '@/api/web-router'
 import { read as getSecret } from '@/secrets'
 
@@ -34,13 +33,14 @@ export async function isAuthenticatedOwner(routed: WebRouted) {
 ////////////////////////////////////////////
 
 export async function validateSession(routed: WebRouted) {
-  const userID = String(routed.req.header('userID'))
-  const session = String(routed.req.header('session'))
-  let verifiedSession: { userID: string; session: string }
+  const userID = routed.req.cookies['userID'] as string
+  const webToken = routed.req.cookies['webToken'] as string
+
+  let verifiedSession: { id: string }
 
   // If missing, fail
-  if (!userID || !session) {
-    console.log('ValidateSession => session key missing')
+  if (!userID || !webToken) {
+    console.log('ValidateSession => session information missing')
     routed.res.send(401, 'Unauthorized')
     return // FAIL
   }
@@ -48,7 +48,7 @@ export async function validateSession(routed: WebRouted) {
   // Verify session
   try {
     // Verify session & payload
-    verifiedSession = jwt.verify(session, process.env.BOT_SECRET) as typeof verifiedSession
+    verifiedSession = jwt.verify(webToken, process.env.BOT_SECRET) as typeof verifiedSession
     console.log('ValidateSession => verifiedSession:', verifiedSession)
   } catch (error) {
     console.log('ValidateSession => Session not valid!')
@@ -56,20 +56,19 @@ export async function validateSession(routed: WebRouted) {
     return // FAIL
   }
 
-  // Lookup Session in sessions collection
-  const storedSession = await routed.Bot.DB.get('sessions', {
-    session,
-    userID
-  } as Partial<TrackedSession>)
+  // Lookup Session in users collection
+  const storedSession = await routed.Bot.DB.get('users', {
+    id: userID,
+    webToken
+  })
 
-  // If session is found but has been terminated
-  if (storedSession.terminated) routed.res.send(401, 'Unauthorized')
+  // If session user is found but has been terminated
+  // if (storedSession) return routed.res.send(401, 'Unauthorized')
 
   // If valid record is found, return successful
   if (storedSession) {
     // Pass along some session data to help easing future lookups
     routed.session = verifiedSession
-
     return routed
   }
 
@@ -78,15 +77,15 @@ export async function validateSession(routed: WebRouted) {
   return // FAIL
 }
 
-export async function validateWebSecret(routed: WebRouted) {
-  const secret = String(routed.req.header('secret'))
+// export async function validateWebSecret(routed: WebRouted) {
+//   const secret = String(routed.req.header('secret'))
 
-  // When Valid
-  if (secret === getSecret('BOT_WEB_APP_SERVER_SECRET', routed.Bot.Log.Bot)) {
-    return routed
-  }
+//   // When Valid
+//   if (secret === getSecret('BOT_WEB_APP_SERVER_SECRET', routed.Bot.Log.Bot)) {
+//     return routed
+//   }
 
-  // Fallback - fail auth
-  routed.res.send(401, 'Unauthorized')
-  return
-}
+//   // Fallback - fail auth
+//   routed.res.send(401, 'Unauthorized')
+//   return
+// }

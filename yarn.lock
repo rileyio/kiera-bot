@@ -376,6 +376,13 @@
   "resolved" "https://registry.npmjs.org/@types/random/-/random-2.1.1.tgz"
   "version" "2.1.1"
 
+"@types/restify-cookies@^0.2.8":
+  "integrity" "sha512-LBTdB1Tg46COLD4Zr+l5Zcu7UAR57Qjn0qW8MurwefJL8PVSlwNiOgcWExWe3VN0SaZnzqBKH5ZTLsTuxnNKDw=="
+  "resolved" "https://registry.npmjs.org/@types/restify-cookies/-/restify-cookies-0.2.8.tgz"
+  "version" "0.2.8"
+  dependencies:
+    "@types/restify" "*"
+
 "@types/restify-errors@^4.3.4":
   "integrity" "sha512-GGPw1jXCh19rNmFwCJITh3p9OLrDK4UyRIcxg6Q2w83/8m8D1nAxCpgwYjtFLEpn0u5dQazsR4KKHmiaLNM4AQ=="
   "resolved" "https://registry.npmjs.org/@types/restify-errors/-/restify-errors-4.3.4.tgz"
@@ -383,7 +390,7 @@
   dependencies:
     "@types/verror" "*"
 
-"@types/restify@^8.5.4":
+"@types/restify@*", "@types/restify@^8.5.4":
   "integrity" "sha512-oWVM0976ZbOXhfxyAeJy8CkBUCIgh9hotNYFs905PTCE/nUUxlUpc67bhVLTSRKRjyEwoCld83nhfZyWlRVyyw=="
   "resolved" "https://registry.npmjs.org/@types/restify/-/restify-8.5.4.tgz"
   "version" "8.5.4"
@@ -1150,7 +1157,7 @@
   "resolved" "https://registry.npmjs.org/convert-to-spaces/-/convert-to-spaces-2.0.1.tgz"
   "version" "2.0.1"
 
-"cookie@~0.4.1":
+"cookie@^0.4.0", "cookie@~0.4.1":
   "integrity" "sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA=="
   "resolved" "https://registry.npmjs.org/cookie/-/cookie-0.4.2.tgz"
   "version" "0.4.2"
@@ -3580,6 +3587,13 @@
   dependencies:
     "is-core-module" "^2.2.0"
     "path-parse" "^1.0.6"
+
+"restify-cookies@^0.2.6":
+  "integrity" "sha512-Vbm9quG1FE8ETD4Bn8Hzk+OkgyNgS67m8cpL/QR6fRhmLB97QTS/4K7bF9oq8kAF0cZ6+jp3Oe1JaoFCcGkY7Q=="
+  "resolved" "https://registry.npmjs.org/restify-cookies/-/restify-cookies-0.2.6.tgz"
+  "version" "0.2.6"
+  dependencies:
+    "cookie" "^0.4.0"
 
 "restify-cors-middleware2@^2.1.2":
   "integrity" "sha512-ijViXRefqiYSajrdCQ5Z7Q5ty9+4Q0GgfDK461tRa9fkASPGvbsgzYEs7AUd+akWfwYL0u+NXZgIccuTXRlZSg=="

@@ -60,7 +60,8 @@ All code for [kierabot.xyz](https://kierabot.xyz) will be at [rileyio/kiera-web]
 `kiera-web` makes use of the `kiera-bot` api for everything.
 
 ## Localization
-> `9.0.0` Rework needing planned.
+> As of `9.0.0` the plan has been to move forward with new strings inside of commands once again vs in a localization file.
+> If there is enough demand and support for re-enabling this feature and community translations then it could be revived.
 
 Starting in Kiera `v6` there is now Localization support.  
 All strings are managed on [POEditor](https://kierabot.xyz/translate)  
@@ -114,84 +115,6 @@ Current Progress (Languages in focus where translations are being used):
 
 ## Commands
 
-> **[>= v8.0]** Bolded commands have been converted to slash commands.
-
-> This section is out of date as of 9.0 and will need updated to reflect the new slash commands.
-
-#### Admin
-
-- `!admin channel purge` - [**Restricted:** Server Admin] Purge all messages in channel  
-- `!admin commands` - [**Restricted:** Server Admin] Retrieve list of command categories  
-- `!admin category Fun` - [**Restricted:** Server Admin] Retrieve list of categories commands  
-- `!admin restrict command 8ball` - [**Restricted:** Server Admin] Restrict Command usage **(Under Dev)**  
-- `!admin stats` - [**Restricted:** Server Admin] Bot running stats
-- `!admin prefix use /` - Used to set a custom prefix for Kiera on server. (Replace `/` with desired prefix)
-- `!check permissions` - Check Yours and Kiera's permissions
-- `!ping` - Check Kiera's Ping/Latency
-- `!restart bot` - [**Restricted:** Pre-defined users] Restart Kiera Bot application
-- **`/version` - Display current Kiera version**
-
-#### BNet
-
-- `!wow character us stormreaver thejaydox` - Retrieve World of Warcraft character profile  
-- `!d3 season current` - Retrieve current Diablo 3 Active Season  
-- `!d3 profile BattleTag#1234` - Retrieve Diablo 3 user profile  
-
-#### Decision Rollers
-
-- `!decision "id" unblacklist user "userSnowflake"` - Remove user from Decision's Blacklist  
-- `!decision "id" blacklist user "userSnowflake"` - Add user to Decision's Blacklist  
-- `!decision "id" blacklisted users` - List users on Decision's Blacklist  
-- `!decision "id" unwhitelist server "serverID"` - Remove server from Decision's Server Whitelist  
-- `!decision "id" whitelist server "serverID"` - Add server to Decision's Whitelist  
-- `!decision nickname 5c68835bc5b65b2113c7ac7b "nickname-here"` - Set a custom nickname for a Decision roll  
-- `!decision user nickname NicknameHere` - Set a custom User nickname to prefix Decision rolls
-- `!decision log id` - Fetch the last 5 decision log entries  
-- `!decision new "name"` - Create new Decision roll  
-- `!decision "id" manager add @user#1234` - Add user as a Manager of the Decision roll's properties  
-- `!decision "id" manager remove @user#1234` - Remove user as a Manager from the Decision roll  
-- `!decision "id" ownership transfer @user#1234` - Transfer ownership of Decision roll  
-- `!decision "id" outcome add "Your decision entry here"` - Add new outcome to Decision roll  
-- `!decision "id" consume mode 0` - Set consume mode for Decision roll  
-- `!decision "id" consume reset 0` - Set reset frequency (in seconds) of consumed Decision outcomes  
-- `!decision "oldID" new id` - Create a new Decision unique ID for your roll  
-- `!decision roll "id"` - Roll premade Decision  
-- `!decision "Question here" "Option 1" "Option 2" "etc.."` - Create & Roll a 1 time Decision roll  
-- `/decision list` - List of Owned and Managed Decision Rollers
-
-#### Fun
-- `!8ball` - Ask a question, receive an answer  
-- `!flip` - Flip a coin  
-- **`/roll` - Dice roller**  
-
-#### General
-
-- **`/register` Registers the user with the bot**  
-
-#### Managed Channels
-
-- **`/managed create` - Creates a Managed Channel to display a countdown**  
-
-#### Moderation
-
-- `!mod list muted` - Display a list of muted users
-- `!mod lookup mute emma#1366` - Lookup a muted user
-- `!mod mute emma#1366 "Reason is optional"` - Mute the given user
-- `!mod unmute emma#1366` - Unmute the given user
-
-#### Stats
-- `!stats commands` - Statistics about most run commands  
-- `!stats disable channel` - View Statistics for Server  
-- `!stats enable channel` - Enable Channel Statistics collection  
-- `!stats delete channel` - Delete your User Statistics collected  
-- `!stats channel` - View Statistics for Channel  
-- `!stats disable server` - Disable Server Statistics collection  
-- `!stats enable server` - Enable Server Statistics collection  
-- `!stats delete server` - Delete Server Statistics collected  
-- `!stats top channels` - View top channels on server by Statistics  
-- **`/stats server` - View Statistics for Server**  
-- **`/stats about` - About Statistics**  
-- `!stats disable user` - Disable your User Statistics collection  
-- `!stats enable user` - Enable your User Statistics collection  
-- `!stats delete user` - Delete your User Statistics collected  
-- `!stats user` - View Statistics for User  
+Once the new web portal is live all commands and subcommands will be automatically generated and displayed.
+Since the list that used to be here was so out of date i've chosen to just completely remove it from the Readme.
+All available commands, subcommands and options have descriptions thanks to slash commands from within discord.

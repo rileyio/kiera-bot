@@ -7,11 +7,7 @@ import * as Utils from '@/utils'
 import * as debug from 'debug'
 
 import { CommandRouter, RoutedInteraction, routeLoader } from '@/router'
-import {
-  RESTPostAPIApplicationCommandsJSONBody,
-  SlashCommandBuilder,
-  SlashCommandSubcommandBuilder
-} from 'discord.js'
+import { RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder, SlashCommandSubcommandBuilder } from 'discord.js'
 
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
@@ -109,7 +105,7 @@ export class Bot {
     this.Task.start([
       new Task.DBAgeCleanupScheduled(),
       new Task.ManagedUpdateScheduled(),
-      new Task.StatusMessageRotatorScheduled(),
+      new Task.StatusMessageRotatorScheduled()
       // new Task.StatsCleanerScheduled()
     ])
 
@@ -254,9 +250,10 @@ export class Bot {
       this.Log.Bot.verbose('Started refreshing application (/) commands.')
       // ! Disabling ESLINT for the following line of code till shit gets fixed in the source libs
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (process.env.BOT_BLOCK_GLOBALSLASH === 'true')
+      if (process.env.BOT_BLOCK_GLOBALSLASH === 'true') {
         await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, process.env.DISCORD_BOT_OFFICAL_DISCORD) as any, { body: commands })
-      else await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID) as any, { body: commands })
+        await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, '473856867768991744') as any, { body: commands })
+      } else await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID) as any, { body: commands })
       this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
     } catch (error) {
       this.Log.Bot.error('Not Successful in updating Slash Commands', error)

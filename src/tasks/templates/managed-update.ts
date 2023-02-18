@@ -3,6 +3,7 @@ import * as moment from 'moment'
 import { ManagedChannel } from '@/objects/managed'
 import { Task } from '@/objects/task'
 import { VoiceChannel } from 'discord.js'
+import { calculateHumanTimeDDHHMM } from '@/utils/date'
 
 export class ManagedUpdate extends Task {
   // Config for this task
@@ -30,7 +31,7 @@ export class ManagedUpdate extends Task {
             }
 
             const channel = (await this.Bot.client.channels.fetch(managed.channelID)) as VoiceChannel
-            const newValue = `${managed.name}`.replace('{#}', moment.unix(managed.value).fromNow().toString())
+            const newValue = `${managed.name}`.replace('{#}', calculateHumanTimeDDHHMM(managed.value / 1000, { dropMinutes: true, dropZeros: true }))
             if (channel && managed.type === 'countdown') {
               if (channel.name !== newValue) {
                 // Test to see if value has changed
