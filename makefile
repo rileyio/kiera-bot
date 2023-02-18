@@ -8,4 +8,4 @@ down:
 	docker-compose -f docker-compose.yml -p kiera down
 
 rm:
-	docker image rm kiera_bot
+	docker image rm kiera-bot
