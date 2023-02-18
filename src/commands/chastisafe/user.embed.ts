@@ -36,7 +36,7 @@ export function embed(user: ChastiSafeUser, routed: RoutedInteraction) {
             joinTimestamp: user.chastikeystats.joinTimestamp.substring(0, 10),
             joinedDaysAgo: `${Math.round((Date.now() - new Date(user.chastikeystats.joinTimestamp).getTime()) / 1000 / 60 / 60 / 24)}`,
             keyheldStartTimestamp: user.chastikeystats.keyheldStartTimestamp ? user.chastikeystats.keyheldStartTimestamp.substring(0, 10) : 'n/a',
-            longestLockCompleted: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.longestCompletedLockInSeconds, true),
+            longestLockCompleted: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.longestCompletedLockInSeconds),
             noOfKeyholderRatings: user.chastikeystats.noOfKeyholderRatings,
             numberOfCompletedLocks: user.chastikeystats.numberOfCompletedLocks,
             numberOfLockeeRatings: user.chastikeystats.numberOfLockeeRatings,
