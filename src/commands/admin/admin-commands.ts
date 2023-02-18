@@ -16,56 +16,56 @@ export const Routes = ExportRoutes(
     type: 'message',
     validate: '/admin:string/commands:string'
   },
-  {
-    category: 'Admin',
-    controller: listCommandCategories,
-    description: 'Help.Admin.CommandCategories.Description',
-    example: '{{prefix}}admin commands',
-    name: 'admin-command-categories',
-    permissions: {
-      serverAdminOnly: true
-    },
-    type: 'message',
-    validate: '/admin:string/commands:string'
-  },
-  {
-    category: 'Admin',
-    controller: listCategoryCommands,
-    description: 'Help.Admin.CategoryCommands.Description',
-    example: '{{prefix}}admin category Fun',
-    name: 'admin-category-commands',
-    permissions: {
-      serverAdminOnly: true
-    },
-    type: 'message',
-    validate: '/admin:string/commands:string/category:string/category=string'
-  },
-  {
-    category: 'Admin',
-    controller: commandRestrict,
-    description: 'Help.Admin.CommandRestrict',
-    example: '{{prefix}}admin restrict command 8ball',
-    name: 'admin-command-restrict',
-    permissions: {
-      serverAdminOnly: true
-    },
-    type: 'message',
-    validate: '/admin:string/commands:string/category:string/category=string'
-  },
-  {
-    category: 'Admin',
-    controller: setPrefix,
-    description: 'Help.Admin.SetPrefix.Description',
-    example: '{{prefix}}admin prefix use #',
-    name: 'admin-prefix-use',
-    permissions: {
-      serverAdminOnly: true,
-      serverOnly: true
-    },
-    type: 'message',
-    validate: '/admin:string/prefix:string/use:string/newPrefix=string',
-    validateAlias: ['/admin:string/prefix:string/newPrefix=string']
-  }
+  // {
+  //   category: 'Admin',
+  //   controller: listCommandCategories,
+  //   description: 'Help.Admin.CommandCategories.Description',
+  //   example: '{{prefix}}admin commands',
+  //   name: 'admin-command-categories',
+  //   permissions: {
+  //     serverAdminOnly: true
+  //   },
+  //   type: 'message',
+  //   validate: '/admin:string/commands:string'
+  // },
+  // {
+  //   category: 'Admin',
+  //   controller: listCategoryCommands,
+  //   description: 'Help.Admin.CategoryCommands.Description',
+  //   example: '{{prefix}}admin category Fun',
+  //   name: 'admin-category-commands',
+  //   permissions: {
+  //     serverAdminOnly: true
+  //   },
+  //   type: 'message',
+  //   validate: '/admin:string/commands:string/category:string/category=string'
+  // },
+  // {
+  //   category: 'Admin',
+  //   controller: commandRestrict,
+  //   description: 'Help.Admin.CommandRestrict',
+  //   example: '{{prefix}}admin restrict command 8ball',
+  //   name: 'admin-command-restrict',
+  //   permissions: {
+  //     serverAdminOnly: true
+  //   },
+  //   type: 'message',
+  //   validate: '/admin:string/commands:string/category:string/category=string'
+  // },
+  // {
+  //   category: 'Admin',
+  //   controller: setPrefix,
+  //   description: 'Help.Admin.SetPrefix.Description',
+  //   example: '{{prefix}}admin prefix use #',
+  //   name: 'admin-prefix-use',
+  //   permissions: {
+  //     serverAdminOnly: true,
+  //     serverOnly: true
+  //   },
+  //   type: 'message',
+  //   validate: '/admin:string/prefix:string/use:string/newPrefix=string',
+  //   validateAlias: ['/admin:string/prefix:string/newPrefix=string']
+  // }
 )
 
 /**
