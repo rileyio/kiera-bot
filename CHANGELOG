@@ -1,17 +1,28 @@
 10.2.0
+## 🛠️ Fixes / Patches
 - Fixed: Permissions assigned when creating managed channel.
+
+## 🪄 Updates / Modifications
 - Updated: Managed Channel output to use DDHHMM format. 
 - Updated: Error text and permissions check for Managed Countdown channel creation needing `Connect` and `Manage Channels` permissions at a minimum.
+
+## 🎁 New Features / Additions
 - Added: Kiera management commands for easier process managemet at server level.
+
+---
 
 10.1.1
 - Fixed: Certain Decision Roll outcomes were causing issues with composing a response.
+
+---
 
 10.1.0
 - Fixed: Decision Rollers broken in previous update.
 - Fixed: CS Locktober Event eligibility badge check.
 - Updated: Is Registered check now will reply privately to the user.
 - Added: Paging buttons to the bottom of the Decision List command output for users with many decision rollers.
+
+---
 
 10.0.0
 - Fixed: API Loading.
@@ -24,6 +35,8 @@
 - Added: Raider.io plugin.
 - Added: Slash Command Reload where applicable.
 - Added: ChastiSafe Update command.
+
+---
 
 9.3.1
 - Fixed: /cs user help text.
