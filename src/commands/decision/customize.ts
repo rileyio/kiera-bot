@@ -1,9 +1,8 @@
 import * as Middleware from '@/middleware'
 import * as XRegExp from 'xregexp'
 
-import { ExportRoutes, RoutedInteraction } from '@/router'
+import { AcceptedResponse, ExportRoutes, RoutedInteraction } from '@/router'
 
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { ObjectId } from 'mongodb'
 import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'

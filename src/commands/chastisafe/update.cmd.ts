@@ -1,11 +1,10 @@
 /* eslint-disable sort-keys */
+import { AcceptedResponse, RoutedInteraction } from '@/router'
 import { EmbedBuilder, GuildMember, Role } from 'discord.js'
 
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
-import { RoutedInteraction } from '@/router'
 import { performance } from 'perf_hooks'
 
-export async function update(routed: RoutedInteraction) : AcceptedResponse {
+export async function update(routed: RoutedInteraction): AcceptedResponse {
   const updatePerformance = {
     full: { start: performance.now(), end: 0 },
     verify: { start: 0, end: 0 },

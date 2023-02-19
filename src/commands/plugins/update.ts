@@ -1,6 +1,6 @@
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
+import { AcceptedResponse, RoutedInteraction } from '@/router'
+
 import { EmbedBuilder } from 'discord.js'
-import { RoutedInteraction } from '@/router'
 
 export async function checkForUpdates(routed: RoutedInteraction): AcceptedResponse {
   const plugins = routed.bot.Plugin.pluginsActive

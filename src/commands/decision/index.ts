@@ -9,9 +9,8 @@ import * as DecisionRollCustomize from '@/commands/decision/customize'
 import * as DecisionRollList from '@/commands/decision/list.cmd'
 import * as Middleware from '@/middleware'
 
-import { ExportRoutes, RoutedInteraction } from '@/router'
+import { AcceptedResponse, ExportRoutes, RoutedInteraction } from '@/router'
 
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes({

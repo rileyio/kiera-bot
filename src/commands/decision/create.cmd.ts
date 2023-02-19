@@ -1,5 +1,4 @@
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
-import { RoutedInteraction } from '@/router'
+import { AcceptedResponse, RoutedInteraction } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 
 /**

@@ -1,8 +1,8 @@
 import * as XRegExp from 'xregexp'
 
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
+import { AcceptedResponse, RoutedInteraction } from '@/router'
+
 import { ObjectId } from 'mongodb'
-import { RoutedInteraction } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
 

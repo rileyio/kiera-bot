@@ -1,3 +1,4 @@
+import { AcceptedResponse, RoutedInteraction } from '@/router'
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -10,9 +11,7 @@ import {
   TextChannel
 } from 'discord.js'
 
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { ObjectID } from 'mongodb'
-import { RoutedInteraction } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 
 /**

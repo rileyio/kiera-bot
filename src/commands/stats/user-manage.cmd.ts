@@ -1,8 +1,7 @@
+import { AcceptedResponse, RoutedInteraction } from '@/router'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageComponentInteraction } from 'discord.js'
 import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
-import { RoutedInteraction } from '@/router'
 import { TextChannel } from 'discord.js'
 
 export async function diableUserStats(routed: RoutedInteraction): AcceptedResponse {

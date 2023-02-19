@@ -1,8 +1,7 @@
 import * as Middleware from '@/middleware'
 
-import { ExportRoutes, RoutedInteraction } from '@/router'
+import { AcceptedResponse, ExportRoutes, RoutedInteraction } from '@/router'
 
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { ObjectId } from 'bson'
 import { TrackedDecision } from '@/objects/decision'
 import { decisionLogLast5 } from '@/embedded/decision-log'

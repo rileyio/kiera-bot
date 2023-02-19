@@ -1,6 +1,4 @@
-import { ExportRoutes, RoutedInteraction } from '@/router'
-
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
+import { AcceptedResponse, ExportRoutes, RoutedInteraction } from '@/router'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes(

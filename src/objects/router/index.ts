@@ -1,3 +1,2 @@
-export { RouteConfiguration } from './route'
 export { RouterStats } from './stats'
-export { RoutedInteraction } from './routed-interaction'
+export { RoutedInteraction } from '../../router/routed-interaction'

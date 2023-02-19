@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EmbedBuilder, GuildMember, Interaction, TextChannel } from 'discord.js'
-import { RouteConfiguration, RoutedInteraction, RouterStats } from '../objects/router/'
+import { RouteConfiguration, RoutedInteraction, RouterStats } from '.'
 
 import { Bot } from '@/index'
-import { CommandPermission } from '../objects/permission'
+import { CommandPermission } from '@/objects/permission'
 import { Logger } from '@/utils'
-import { ProcessedPermissions } from './route-permissions'
+import { ProcessedPermissions } from '.'
 import { TrackedUser } from '@/objects/user/'
 
 /**
@@ -44,24 +44,25 @@ export class CommandRouter {
 
   /**
    * Process Routed Slash Command
-   * @param _interaction
+   * @param interaction
    * @returns
    */
-  public async routeInteraction(_interaction: Interaction) {
-    if (!_interaction.isCommand()) return // Hard block
-    if (!_interaction.isChatInputCommand()) return
+  public async routeInteraction(interaction: Interaction) {
+    if (!interaction.isCommand()) return // Hard block
+    if (!interaction.isChatInputCommand()) return
 
     this.bot.BotMonitor.LiveStatistics.increment('commands-seen')
     // if (!interaction.guild) {
     //   return interaction.reply('Kiera is only currently enabled inside of a Discord Server due to certain command limitations') // Hard block
     // }
 
-    const { channel, commandName, guild, guildId, member, options, user } = _interaction
+    const { channel, commandName, guild, guildId, member, options, type, user } = interaction
     const routerStats = new RouterStats(user)
     const route = this.routes.find((r) => r.name === commandName)
 
     // If no route matched, stop here
     if (!route) {
+      this.log.debug(`Router -> No route found for command '${commandName}', type: '${type}'`)
       // Track in an audit event
       this.bot.Audit.NewEntry({
         error: 'Failed to process command',
@@ -82,7 +83,7 @@ export class CommandRouter {
       return // End here
     }
 
-    this.bot.Log.Router.log(`Router -> Routing Command: ${route.name}`)
+    this.bot.Log.Router.log(`Router -> Routing Command name: '${route.name}', type: '${route.type}'`)
 
     // Lookup Kiera User in DB
     const kieraUser = new TrackedUser(await this.bot.DB.get('users', { id: user.id }))
@@ -94,14 +95,15 @@ export class CommandRouter {
     const routed = new RoutedInteraction({
       author: user,
       bot: this.bot,
-      channel: channel as TextChannel,
+      channel,
       guild,
-      interaction: _interaction,
+      interaction,
       isInteraction: true,
       member: member as GuildMember,
       options,
       route,
-      routerStats: routerStats,
+      routerStats,
+      type: 'interaction',
       user: kieraUser
     })
 
@@ -109,8 +111,11 @@ export class CommandRouter {
     routed.permissions = await this.processPermissions(routed)
     this.bot.Log.Router.log('Router -> Permissions Check Results:', routed.permissions)
 
+    // Check if permissions check failed
     if (!routed.permissions.pass) {
+      // Process depending on failure type
       if (routed.permissions.outcome === 'FailedServerOnlyRestriction') {
+        this.log.verbose(`Router -> Command '${commandName}' is server only, but was used in a DM`)
         // Send message in response
         await routed.reply(routed.$render('Generic.Error.CommandDisabledInChannel', { command: commandName }), true)
 
@@ -130,42 +135,49 @@ export class CommandRouter {
           where: 'Discord'
         })
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
-      } else {
-        await routed.reply('This command is restricted.', true)
 
-        // Track in an audit event
-        this.bot.Audit.NewEntry({
-          error: 'Command disabled by permissions',
-          guild: {
-            channel: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.channel.id,
-            id: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.guild.id,
-            name: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.guild.name
-          },
-          name: routed.route.name,
-          owner: routed.author.id,
-          runtime: routerStats.performance,
-          successful: false,
-          type: 'bot.command',
-          where: 'Discord'
-        })
+        return // Hard Stop
       }
+
+      // Fallback to generic failure tracking where permision check
+      // failed for any other reason (from the previous type checks)
+      this.log.verbose(`Router -> Command '${commandName}' is disabled by permissions`)
+      await routed.reply('This command is restricted.', true)
+
+      // Track in an audit event
+      this.bot.Audit.NewEntry({
+        error: 'Command disabled by permissions',
+        guild: {
+          channel: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.channel.id,
+          id: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.guild.id,
+          name: routed.interaction.channel.isDMBased() ? 'DM' : routed.interaction.guild.name
+        },
+        name: routed.route.name,
+        owner: routed.author.id,
+        runtime: routerStats.performance,
+        successful: false,
+        type: 'bot.command',
+        where: 'Discord'
+      })
 
       return // Hard Stop
     }
 
+    // Process Middleware
     const mwareCount = Array.isArray(route.middleware) ? route.middleware.length : 0
     let mwareProcessed = 0
 
-    // Process middleware
-    for (const middleware of route.middleware) {
-      const fromMiddleware = await middleware(routed)
-      // If the returned item is empty stop here
-      if (!fromMiddleware) {
-        break
+    // Process middleware (if any)
+    if (route.middleware)
+      for (const middleware of route.middleware) {
+        const fromMiddleware = await middleware(routed)
+        // If the returned item is empty stop here
+        if (!fromMiddleware) {
+          break
+        }
+        // When everything is ok, continue
+        mwareProcessed += 1
       }
-      // When everything is ok, continue
-      mwareProcessed += 1
-    }
 
     this.bot.Log.Router.log(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
 
@@ -198,6 +210,7 @@ export class CommandRouter {
         })
 
         this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
+        return // End routing here
       }
       // Command failed or returned false inside controller
       else {
@@ -218,10 +231,9 @@ export class CommandRouter {
         })
 
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
+        return // End routing here
       }
-      return // End routing here
     }
-    return
   }
 
   /**
@@ -276,7 +288,7 @@ export class CommandRouter {
     }
 
     // [IF: Required user ID] Verify that the user calling is allowd to access (mostly legacy commands)
-    if (routed.route.permissions.restrictedToUser.length > 0) {
+    if (routed.route.permissions.hasLegacyServerRestriction) {
       if (routed.route.permissions.restrictedToUser.findIndex((snowflake) => snowflake === routed.author.id) > -1) {
         checks.outcome = 'Pass'
         checks.pass = true

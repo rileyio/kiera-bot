@@ -1,8 +1,7 @@
+import { AcceptedResponse, RoutedInteraction } from '@/router'
 import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { ObjectID } from 'mongodb'
-import { RoutedInteraction } from '@/router'
 
 /**
  * Add decision option

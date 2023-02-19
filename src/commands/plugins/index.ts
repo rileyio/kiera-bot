@@ -1,7 +1,6 @@
-import { ExportRoutes, RoutedInteraction } from '@/router'
+import { AcceptedResponse, ExportRoutes, RoutedInteraction } from '@/router'
 import { checkForUpdates, update } from '@/commands/plugins/update'
 
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { PermissionFlagsBits } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 

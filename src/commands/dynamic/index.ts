@@ -1,8 +1,7 @@
 import * as Channel from '@/commands/dynamic/channel.cmd'
 
-import { ExportRoutes, RoutedInteraction } from '@/router'
+import { AcceptedResponse, ExportRoutes, RoutedInteraction } from '@/router'
 
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes({

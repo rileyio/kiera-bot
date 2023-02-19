@@ -1,10 +1,10 @@
 import * as Random from 'random'
 import * as XRegExp from 'xregexp'
 
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
+import { AcceptedResponse, RoutedInteraction } from '@/router'
+
 import { ChannelType } from 'discord.js'
 import { ObjectID } from 'bson'
-import { RoutedInteraction } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
 import { decisionFromSaved } from '@/commands/decision/roll.embed'
@@ -113,7 +113,7 @@ export async function runSavedDecision(routed: RoutedInteraction): AcceptedRespo
       )
     }
 
-    const outcomeEmbed = decisionFromSaved(decision, outcome, { avatar: authorAvatar, id: authorID, name: authorName, server: { prefix: routed.prefix } })
+    const outcomeEmbed = decisionFromSaved(decision, outcome, { avatar: authorAvatar, id: authorID, name: authorName })
 
     // Track in log
     await routed.bot.DB.add('decision-log', {

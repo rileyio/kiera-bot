@@ -1,8 +1,6 @@
+import { AcceptedResponse, RoutedInteraction } from '@/router'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageComponentInteraction, TextChannel } from 'discord.js'
 import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
-
-import { AcceptedResponse } from '@/objects/router/routed-interaction'
-import { RoutedInteraction } from '@/router'
 
 export async function disableServerStats(routed: RoutedInteraction): AcceptedResponse {
   // Delete any existing record
