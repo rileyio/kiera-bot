@@ -8,7 +8,7 @@
 - Replaced: `restify-cookies` with `cookies` and custom cookie management utility.
 
 ## 🎁 New Features / Additions
-- Added: Kiera management commands for easier process managemet at server level.
+- Added: Kiera management commands for easier process management at server level.
 
 ---
 
@@ -30,7 +30,7 @@
 - Updated: `discord.js` upgraded from v13 to v14.
 - Updated: Most other Core Dependencies to latest major releases and applied patches.
 - Updated: Improved description for CS lookup.
-- Added: NSFW command router check for command grps designated so.
+- Added: NSFW command router check for command groups designated so.
 - Added: Managed Channel Countdown command to generate and auto update a channel countdown.
 - Added: Plugin System.
 - Added: Raider.io plugin.
@@ -347,7 +347,7 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Updated: CK Stats Locktober command to completely utilize new direction with lookups & verification.
 - Updated: CK Verify command will now replace !register & !ck username UNameHere.
 - Updated: Remaining CK commands converted to require verify.
-- Updated: Lockee and KH stats prints to show Verified checkmark when others lookup where applicable.
+- Updated: Lockee and KH stats prints to show Verified check mark when others lookup where applicable.
 - Removed: CK Set Username command.
 
 4.3.0
@@ -370,12 +370,12 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Fixed: Bugs & Issue with multiple conditions being met and assigning the wrong Experience role.
 
 4.1.1
-- Fixed: CK Update command accidently deleting old Experience role when it should not have been.
+- Fixed: CK Update command accidentally deleting old Experience role when it should not have been.
 
 4.1.0
 - Updated: Kiera to use newer API formatted output
 - Updated: Command router to better handle permissions between Servers and DMs
-- Added: Verify checkmarks for regular CK stats lookups (lockee & kh)
+- Added: Verify check marks for regular CK stats lookups (lockee & kh)
 - Added: ChastiKey command to update various roles (Locked/Unlocked, Experience, Event Specific)
 - Added: ChastiKey Locktober command
 - Removing: " " from CK commands where still present due to issues where users have different lang keyboards
@@ -416,7 +416,7 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Fixed: CK stats lockee average calculation (factors current + past locks)
 
 3.2.3
-- Added: Date first Keyheld to ck stats keyholder
+- Added: Date first Key held to ck stats keyholder
 
 3.2.2
 - Added: Proper yellow card with a ? for remaining cards in CK stats lockee command
@@ -491,7 +491,7 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Updated: CK Lockee stats lookup to block users with stats disabled
 
 2.7.1
-- Fixing: CK Stats lockee lockedBy field presnting issues in newer dataset released
+- Fixing: CK Stats lockee lockedBy field presenting issues in newer dataset released
 - Updated: Legacy permissions middleware
 
 2.7.0
@@ -538,7 +538,7 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Fixed: Issue with non-Nitro Discord accounts not validating for web logins
 - Fixed: Router permissions to once again accept DMs
 - Updated: Removed CK Icon from Stats print to help with smaller screen sizes
-- Updated: Removed excess space before Joined date on wordwrap
+- Updated: Removed excess space before Joined date on word wrap
 
 2.0.0
 - API: Updates to support kierabot.xyz
