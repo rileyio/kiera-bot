@@ -1,5 +1,5 @@
-import * as XRegex from 'xregexp'
 import * as Utils from '@/utils'
+import * as XRegex from 'xregexp'
 
 export const validationRegex = XRegex('(\\/(?<name>[a-z0-9]*)(?<optional>\\?\\:|\\:|\\=|\\?\\=|(?<multi>\\.\\.\\.))(?<type>[a-z\\-]*))', 'img')
 
@@ -20,6 +20,14 @@ export interface ValidationRegexMatch {
   type: string
 }
 
+/**
+ * ## Depreciated
+ *
+ * This was used to validate incoming messages against a regex signature
+ * to parse out the arguments. This was replaced with slash commands
+ * @export
+ * @class Validate
+ */
 export class Validate {
   public readonly validation: Array<ValidationType>
   public readonly validationString: string
