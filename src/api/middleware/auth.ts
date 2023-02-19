@@ -1,7 +1,6 @@
 import * as jwt from 'jsonwebtoken'
 
 import { WebRouted } from '@/api/web-router'
-import { read as getSecret } from '@/secrets'
 
 export async function isAuthenticatedOwner(routed: WebRouted) {
   // User & Token from header
@@ -33,8 +32,9 @@ export async function isAuthenticatedOwner(routed: WebRouted) {
 ////////////////////////////////////////////
 
 export async function validateSession(routed: WebRouted) {
-  const userID = routed.req.cookies['userID'] as string
-  const webToken = routed.req.cookies['webToken'] as string
+  const userID = routed.req.header('userID')
+  const webToken = routed.req.header('webToken')
+  console.log('userID:', userID)
 
   let verifiedSession: { id: string }
 

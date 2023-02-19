@@ -1,4 +1,3 @@
-import * as CookieParser from 'restify-cookies'
 import * as Debug from 'debug'
 import * as SocketIO from 'socket.io'
 import * as SocketStats from '@/api/socket/stats'
@@ -48,7 +47,6 @@ export class WebAPI {
     // API config
     this.server.pre(_cors.preflight)
     this.server.use(_cors.actual)
-    this.server.use(CookieParser.parse)
     this.server.use(restify.plugins.queryParser())
     this.server.use(restify.plugins.bodyParser({ mapParams: true }))
 

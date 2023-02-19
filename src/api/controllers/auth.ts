@@ -5,6 +5,7 @@ import { WebRoute, WebRouted } from '@/api/web-router'
 
 import { TrackedUser } from '@/objects/user'
 import { read as getSecret } from '@/secrets'
+import { setCookie } from '../utils/cookies'
 
 const discClientID = process.env.DISCORD_APP_ID
 const discSecret = getSecret('DISCORD_APP_SECRET')
@@ -85,8 +86,8 @@ export async function authCallback(routed: WebRouted) {
       { atomic: true }
     )
 
-    routed.res.setCookie('userID', user.id, { maxAge: 1000 * 60 * 60 * 3 })
-    routed.res.setCookie('webToken', user.webToken, { maxAge: 1000 * 60 * 60 * 3 })
+    setCookie(routed.res, 'userID', user.id, { maxAge: 1000 * 60 * 60 * 3 })
+    setCookie(routed.res, 'webToken', user.webToken, { maxAge: 1000 * 60 * 60 * 3 })
 
     // return routed.res.json(state.user)
     return routed.res.redirect(portalRedirectURI, routed.next)
