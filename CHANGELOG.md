@@ -5,7 +5,7 @@
 ### 🛠️ Fixes
 
 - Fixed: Permissions assigned when creating managed channel.
-- Fixed: API endpoint `/api/audit-log
+- Fixed: API endpoint `/api/audit-log` not working.
 
 ### 🪄 Updates
 
