@@ -1,35 +1,63 @@
-10.2.0
-## 🛠️ Fixes / Patches
-- Fixed: Permissions assigned when creating managed channel.
+# Change Log
 
-## 🪄 Updates / Modifications
-- Updated: Managed Channel output to use DDHHMM format. 
+## 10.2.0
+
+### 🛠️ Fixes
+
+- Fixed: Permissions assigned when creating managed channel.
+- Fixed: API endpoint `/api/audit-log
+
+### 🪄 Updates
+
+- Updated: Managed Channel output to use DDHHMM format.
 - Updated: Error text and permissions check for Managed Countdown channel creation needing `Connect` and `Manage Channels` permissions at a minimum.
 - Replaced: `restify-cookies` with `cookies` and custom cookie management utility.
 
-## 🎁 New Features / Additions
+### 🌟 Added
+
 - Added: Kiera management commands for easier process management at server level.
 
 ---
 
-10.1.1
+# 10.1.1
+
+### 🛠️ Fixes
+
 - Fixed: Certain Decision Roll outcomes were causing issues with composing a response.
 
 ---
 
-10.1.0
+# 10.1.0
+
+### 🛠️ Fixes
+
 - Fixed: Decision Rollers broken in previous update.
 - Fixed: CS Locktober Event eligibility badge check.
+
+### 🪄 Updates
+
 - Updated: Is Registered check now will reply privately to the user.
+
+### 🌟 New Additions
+
 - Added: Paging buttons to the bottom of the Decision List command output for users with many decision rollers.
 
 ---
 
-10.0.0
+# 10.0.0
+
+### 🛠️ Fixes
+
 - Fixed: API Loading.
+
+### 🪄 Updates
+
 - Updated: `discord.js` upgraded from v13 to v14.
 - Updated: Most other Core Dependencies to latest major releases and applied patches.
 - Updated: Improved description for CS lookup.
+
+### 🌟 New Additions
+
 - Added: NSFW command router check for command groups designated so.
 - Added: Managed Channel Countdown command to generate and auto update a channel countdown.
 - Added: Plugin System.
@@ -40,77 +68,94 @@
 ---
 
 9.3.1
+
 - Fixed: /cs user help text.
 - Fixed: /cs user lookup issue where users with no CK data would not work properly.
 
-9.3.0
+  9.3.0
+
 - Fixed: Stats commands not working.
 - Added: Decision roll outcome type option when adding an outcome.
 - Added: ChastiSafe User Lookup command.
 
-9.2.1
+  9.2.1
+
 - Removed: Message prefix info reply.
 
-9.2.0
+  9.2.0
+
 - Removed: ChastiKey.
 
-9.1.1
+  9.1.1
+
 - Fixed: Register command. Will rework this in the future.
 
-9.1.0
+  9.1.0
+
 - Added: Informational message to explain (while it still works) that commands now must be in Slash Command format.
 - Updated: Docker mapping to once again allow API access.
 - Updated: Dependencies.
 - Removed: References to old prefix system in code.
 - Removed: Reaction handling.
 
-9.0.0
+  9.0.0
+
 - Updated: Converted most core commands to slash commands.
 
-8.0.0-beta-3
+  8.0.0-beta-3
+
 - Added: Support for Kiera to use Slash commands (Work in Progress to migrate certain commands to develop this further)
 - Added: Reply shorthand functionality for commands to reply to command author (Work in Progress with upgrading existing commands)
 - Updated: CK Update will now list all events and lockee updates together instead of just a first match.
 
-8.0.0-beta-2
+  8.0.0-beta-2
+
 - Updated: discord.js from v12 to v13.
 - Updated: CK Update output to no longer contain inline fields.
 - Added: CK Locktober 2021.
 
-8.0.0-beta-1
+  8.0.0-beta-1
+
 - Fixed: CK Update output should not show an x emoji when successful.
 - Fixed: Custom server prefix setting not persisting through restarts.
 - Updated: Stats outputs are now the past 30 days for all types (Server, Channel and User).
 - Added: More scheduled cleanup tasks for various data.
 
-7.4.0
+  7.4.0
+
 - Fixed: Roll command with no params supplied not returning any output.
 - Fixed: CK Update user @ tagging.
 - Updated: CK Debug command to be useable by all users.
 - Updated: CK Update output to an embedded message with an improved layout.
 - Updated: CK Update to now allow specific server owner mapped roles to call this command.
 
-7.3.0
+  7.3.0
+
 - Fixed: CK Service requests not working - Requires removal of BNet commands/functionality until it can be reworked.
 - Updated: Roll command now supports dice rolls formatted like 2d8 (PR #47)
 - Updated: Trimmed/Reduction of Kiera command audit log.
 
-7.2.2
+  7.2.2
+
 - Fixed: Discord API Intents update temporarily as a resolution.
 
-7.2.1
+  7.2.1
+
 - Fixed: CK Update not updating users using the 3rd color role between the 2 highest roles.
 
-7.2.0
+  7.2.0
+
 - Fixed: Help command not working in DMs.
 - Fixed: Server joining and on startup server's database collection information.
 - Added: Shorter Decision roll IDs or an option for custom names. #21
 
-7.1.1
+  7.1.1
+
 - Fixed: English text string for ChastiKey.Customize.MapExpRole to use key names introduced in v7.1.0.
 - Fixed: CK Customize command not able to process values above the previous maximum index, updated for new indexes (105 -> 555).
 
-7.1.0
+  7.1.0
+
 - Fixed: CK Ticker missing note about CK's developer when running type 1 or 2 ticker requests.
 - Fixed: CK Update where unable to process roles that have not been mapped.
 - Fixed: CK Update now able to remove roles regardless if they have the proper role yet or not.
@@ -119,17 +164,21 @@
 - Added: CK Ticker message if user has a ticker override date preference set.
 - Added: CK Update 3rd option for roles and updated names of existing in reference text.
 
-7.0.3
+  7.0.3
+
 - Fixed: Issue with connecting to some existing servers. #45
 - Updated: Dev dependency responsible for audit warnings.
 
-7.0.2
+  7.0.2
+
 - Fixed: Bot unable to reply to DMs due to internal issue trying to find a server for config. #44
 
-7.0.1
+  7.0.1
+
 - Fixed: English string for CK Special Roles text showing the Locked and Unlocked (once mapped) in reverse.
 
-7.0.0
+  7.0.0
+
 - Added: Custom per server prefix support.
 - Added: Command to set bot's presence message.
 - Added: Presence Status rotator task.
@@ -139,35 +188,41 @@
 - Updated: Response renderer to include Prefix from server.
 - Updated: Verify command now will use server's prefix in help text.
 
-6.3.0
+  6.3.0
+
 - Fixed: CK Locktober last updated footer timestamp.
 - Fixed: CK Fanatical role auto update from CK Update command sometimes giving Devoted as well.
 - Updated: CK Role Counts command stats to include the new Fanatical role.
 
-6.2.0
+  6.2.0
+
 - Updated: Dependencies audit and update.
 - Updated: Hopefully improved ck update command's removal step in code for future adjustments.
 - Added: CK Locktober 2020 and adjusted 2019 in all code references.
 - Added: CK Fanatical role for ck update command.
 - Removed: CK Update's role ID lookup on the Kiera Bot Discord server, opting to use the ChastiKey server only for further ck role update testing.
 
-6.1.2
+  6.1.2
+
 - Fixed: CK Lockee History total locks completed where it was counting locks still locked in the total.
 
-6.1.1
+  6.1.1
+
 - Fixed: CK Stats commands embedded footer dates.
 - Updated: Formatting on CK Stats Lockee Lock fields.
 - Updated: ChastiKey.js lib.
 - Added: CK Stats Lockee Sticky cards remaining.
 - Added: Twitter line (if set in CK App) to show on Keyholder stats.
 
-6.1.0
+  6.1.0
+
 - Fixed: Database connections to non-atlas DB provider.
 - Updated: Ping response.
 - Added: Extra error catching to DB Queries to get logging data.
 
-6.0.0
-- Fixed: isCKVerified middleware could sometimes be bypassed causing errors if user used ChastiKey App to link account. 
+  6.0.0
+
+- Fixed: isCKVerified middleware could sometimes be bypassed causing errors if user used ChastiKey App to link account.
 - Fixed: Dutch translation on POEditor.
 - Fixed: CK Stats lockee not working when user is not CK Verified.
 - Fixed: CK Update command's nickname with 🔓 or 🔒 depending if there is an active lock or not.
@@ -187,7 +242,7 @@
 - Updated: Dependencies audit and update.
 - Updated: CK Lockee Stats command to show fewer locks (Max: 5) due to character cap on Discord Embedded messages.
 - Added: Nickname length check as to not run into a too many character issue when users try to CK Update with a long Nickname or Username.
-- Added: API endpoint for fetching number of records from the DB as the owner (By Discord Snowflake) 
+- Added: API endpoint for fetching number of records from the DB as the owner (By Discord Snowflake)
 - Added: ChastiKey Stats Sticky Card.
 - Added: Enabled check for Server Stats, now required enabled state to track stats.
 - Added: CK update command will now change your username to add 🔓 or 🔒 depending on what the setting is set to.
@@ -207,12 +262,13 @@
 - Removed: Command for Ext Web Session (was replaced in a previous release)
 - Removed: "Days ago" text from CK Stats Lockee command in favor of the {i18n}.yml.
 
+  5.1.1
 
-5.1.1
 - Fixed: Decision Roll not working on servers where the roll author is not present #28
 - Fixed: CK Stats Keyholder not working, no response from kiera #26
 
-5.1.0
+  5.1.0
+
 - Fixed: ChastiKey username changes should now properly update on the Kiera record side when a change is detected upon running a command.
 - Fixed: CK stats lockee removing card pick value when lock is of the fixed type.
 - Fixed: CK keyholder lockees command where the username was returning undefined.
@@ -242,13 +298,16 @@
 - Added: API Decision get decision.
 - Added: API Decision consume mode controls.
 
-5.0.2
+  5.0.2
+
 - Fixed: CK Debug Verify check lookup
 
-5.0.1
+  5.0.1
+
 - Fixed: CK Web KH Stats Data
 
-5.0.0
+  5.0.0
+
 - Fixed: #13 CK Stats Lockee and Keyholder no longer working after release of 4.12.0
 - Fixed: CK Verify middleware error message to use proper prefix for env
 - Fixed: CK Help Text
@@ -268,7 +327,8 @@
 - Added: Legacy Task Template for older CK endpoints
 - Added: New on API task fetch fail don't wipe Database but wait for next refresh time unless bot is restarted
 
-4.12.0
+  4.12.0
+
 - Fixed: Text on CK Lockee stats saying: (not greens)
 - Fixed: Moderator Mute to not allow a mute on a user with one already tracked
 - Fixed: Moderator Unmute will now find the appropriate record if there are multiple for one user
@@ -281,56 +341,68 @@
 - Added: CK Established and Renowned KH upgrade checks to !ck update command
 - Added: CK Verified to text line into Lockee and KH stats blocks
 
-4.11.0
+  4.11.0
+
 - Updated: API Decisions
 - Added: Flags for disabling Decisions & their Outcomes (only the former setup presently)
 
-4.10.2
+  4.10.2
+
 - Updated: Kiera+ChastiKey data
 - Updated: `!ck ext session` command to `!ck web`
 - Updated: `!ck update` to improve performance
 
-4.10.1
+  4.10.1
+
 - Added: CK Ext Lockee endpoint.
 
-4.10.0
+  4.10.0
+
 - Added: CK Ext code - used for the ChastiKey-Web app project.
 
-4.9.1
+  4.9.1
+
 - Fixed: CK KH lookup case sensitivity issue in name supplied.
 
-4.9.0
+  4.9.0
+
 - Re-Enabling: Lockee history commands but only in DMs for now.
 - Fixed/Added: More detail to ChastiKey command outputs with regards to requestor & cached timestamp of data.
 - Fixed/Added: Error reasons for failed user stats lookups.
 - Fixed/Added: Performance to Most CK command outputs.
 
-4.8.1
+  4.8.1
+
 - Disabling: Lockee history until rework.
 
-4.8.0
+  4.8.0
+
 - Added: CK Search command to perform searches based on username.
 - Added: CK Lockee Historical stats command.
 - Removed: CK Username command from auto generated help menu.
 - Removed: Secondary API call previously needed to collect all data for CK stats lockee like cumulatives. Should improve performance.
 - Fixed: CK Update query internal DB query error.
 
-4.7.1
-Fixed: Issue with CK Stats Locktober percentage and DB query used to find post data format changes.
+  4.7.1
+  Fixed: Issue with CK Stats Locktober percentage and DB query used to find post data format changes.
 
-4.7.0
+  4.7.0
+
 - Added: Restored select Bot admin commands.
 - Updated: Internal code to align with ChastiKey data feed changes.
 - Fixed: CK Debug command which data feed changes helped resolve as well.
 - Fixed: CK Stats Lockee command only accepting exact case matches.
 
-4.6.0
+  4.6.0
+
 - Added: CK Debug commands for Moderators to assist with Kiera Bot issues.
 
-4.5.1
+  4.5.1
+
 - Fixed: CK Stats Keyholder to query proper data.
 
-4.5.0
+  4.5.0
+
 - Added: All CK commands (except: Verify) will require verification but now will also update a user's verified status & username with kiera automagically.
 - Added: Moderator command set for managing user mute functionality.
 - Added: 🎃 Emoji to users to qualify for Locktober in stats print.
@@ -341,7 +413,8 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Fixed: CK Stats Lockee -or- KH condition where right after verify error is saying to verify, better instructions and a temp way around.
 - Fixed: CK Stats Keyholder query to exclude fakes from totals and calculations.
 
-4.4.0
+  4.4.0
+
 - Updated: CK recover combos command to work only when Verified.
 - Updated: CK isCKVerified middleware to check new dataset, will speed up step.
 - Updated: CK Stats Locktober command to completely utilize new direction with lookups & verification.
@@ -350,13 +423,15 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Updated: Lockee and KH stats prints to show Verified check mark when others lookup where applicable.
 - Removed: CK Set Username command.
 
-4.3.0
+  4.3.0
+
 - Added: More statistics to CK Locktober stats command.
 - Added: CK Update command will now verify if Novice KHs are eligible for the Regular KH role.
 - Updated: CK Update command to account for Role color changes and using IDs now.
 - Fixed/Updated: CK Update command will now check if you have Locked, Unlocked, or a Lockee Color role before assigning Locked -or Unlocked.
 
-4.2.0
+  4.2.0
+
 - GoLive: ChastiKey Locktober 2019 event!
 - Added: Background task to manage Event/Role assignment.
 - Added: Middleware for ChastiKey verification, Implemented on !ck update command.
@@ -366,13 +441,16 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Updated: CK Locktober event to only show stats for those who have verified.
 - Removing: Old unused ChastiKey dataset.
 
-4.1.2
+  4.1.2
+
 - Fixed: Bugs & Issue with multiple conditions being met and assigning the wrong Experience role.
 
-4.1.1
+  4.1.1
+
 - Fixed: CK Update command accidentally deleting old Experience role when it should not have been.
 
-4.1.0
+  4.1.0
+
 - Updated: Kiera to use newer API formatted output
 - Updated: Command router to better handle permissions between Servers and DMs
 - Added: Verify check marks for regular CK stats lookups (lockee & kh)
@@ -380,7 +458,8 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Added: ChastiKey Locktober command
 - Removing: " " from CK commands where still present due to issues where users have different lang keyboards
 
-4.0.0
+  4.0.0
+
 - Removed: Old command permissions system
 - Removed: Large sections of old or disabled command code that was no longer being maintained or developed for several months
 - Added: New command permissions system - now will be by permissions only when set
@@ -388,14 +467,17 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Added: 'Time Since Last Lock' value to CK lockee stats block
 - Updated: Re-enabled DMs on as many commands as possible - will need to monitor for any issues on specific commands
 
-3.5.1
+  3.5.1
+
 - Fixed: CK recover combos command
 - Updating: CK endpoint for verify command
 
-3.5.0
+  3.5.0
+
 - Added: !ck verify to verify Discord account to ChastiKey
 
-3.4.0
+  3.4.0
+
 - Fixed: !util roles show range command to show the range specified
 - Updated: !util role(s) commands, see help menu by typing !help util or !util role
 - Updated: Rearranged !ck stats lockee cards remaining (when not hidden) to show in the same order as the CK app
@@ -404,36 +486,44 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Added: Command to retrieve past CK unlocked combos via !ck recover combos
 - Fixed: Issue in CK Stats lockee calculation in certain situations
 
-3.3.0
+  3.3.0
+
 - Added: More stats + individual lock statistics to the !ck stats keyholder command
 - Added: Command to toggle KH average locked time
 - Added: Commands for Utils, Help menu to come
 
-3.2.5
+  3.2.5
+
 - Updated: CK Stats lockee text to read Longest -> Longest (completed), Average Time Locked -> Average Time Locked (overall)
 
-3.2.4
+  3.2.4
+
 - Fixed: CK stats lockee average calculation (factors current + past locks)
 
-3.2.3
+  3.2.3
+
 - Added: Date first Key held to ck stats keyholder
 
-3.2.2
+  3.2.2
+
 - Added: Proper yellow card with a ? for remaining cards in CK stats lockee command
 - Updated: Keyholder for CK stats keyholder to have defaults for missing counts
 - Updated: CK cards re-uploaded to save character space
 
-3.2.1
+  3.2.1
+
 - Fixed: Average bug in CK stats lockee command
 
-3.2.0
+  3.2.0
+
 - Logging changes for output
 - Updated: CK logging
 - Updated: CK Average is now calculated off of the calculated cumulative
 - Added: CK Lock name
 - Added: CK Lock cards required counts (if info is not hidden)
 
-3.1.0
+  3.1.0
+
 - Improved: Removal of votes from Polls from DB
 - Added: Poll commands to: Stop, Add Option, Remove Option,
 - Added: More poll string responses
@@ -442,47 +532,59 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Permissions check on command routing changed for Server Admins and future commands
 - Adjusted & retired some admin commands
 
-3.0.0
+  3.0.0
+
 - Updated: API to only return available notifications if server Id is present in lookup template
 - Updated: API will now no longer return CK command permissions if server setting 'server.chastikey.enabled' is false (is by default)
 - Updated: All CK commands are now set to default on new servers to disabled
 - Added: First set of Poll commands (Web view coming soon!)
 
-2.12.0
+  2.12.0
+
 - Implemented #8 - Removing tracking of username from TrackedMessage
 - Added: Command to check user and bot permissions (!check permissions)
 - Added: Stats Commands (top 10) lookup command (!stats commands)
 
-2.11.3
+  2.11.3
+
 - Fixed: Extra condition where some CK locks showed status 'ReadyToUnlock' being skipped in calculation
 
-2.11.2
+  2.11.2
+
 - Fixed: Decision rollers to recognize image URLs and show those as the embed block instead of just text
 - Updated: Removed extra logging for 2.11.0-1 for debugging those changes, removing to improve performance
 
-2.11.1
+  2.11.1
+
 - Fixed: !ck stats lockee cumulative accuracy algorithm to exclude locks that were: Locked, Deleted and Completed
 
-2.11.0
+  2.11.0
+
 - Fixed: !ck stats lockee command will now try calculating the cumulative range instead for accuracy
 
-2.10.0
+  2.10.0
+
 - Fixed: Audit log lookup output order
 - Added: 8ball command
 
-2.9.0
+  2.9.0
+
 - Command and Web Auth audit logging added
 
-2.8.3
+  2.8.3
+
 - Fixed: OAuth issue where users who have no avatar set were getting blocked by validation
 
-2.8.2
+  2.8.2
+
 - Fixed: Some commands not returning the correct final status for stats
 
-2.8.1
+  2.8.1
+
 - Fixed: Refresh interval incorrect value
 
-2.8.0
+  2.8.0
+
 - Added: Coin flip command
 - Added: category to router interface & api call for permissions
 - Added: example command into permissions api call
@@ -490,11 +592,13 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Added: CK command to display a keyholder's lockees
 - Updated: CK Lockee stats lookup to block users with stats disabled
 
-2.7.1
+  2.7.1
+
 - Fixing: CK Stats lockee lockedBy field presenting issues in newer dataset released
 - Updated: Legacy permissions middleware
 
-2.7.0
+  2.7.0
+
 - Cleaning up project commands code side
 - Added: API Endpoint for deleting command permissions & updating user properties
 - Added: Task to rebuild command permissions when any are missing
@@ -503,64 +607,78 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Updated: API Permissions now sorted alphabetically by command name
 - Updated: Runtimes on some background tasks
 
-2.6.0
+  2.6.0
+
 - Added: On disabled command the Kiera will now DM the command author and inform
 - Added: Background task to handle new channels missing permissions
 - Changed: Background tasks to run/check every 30 seconds
 
-2.5.0
+  2.5.0
+
 - Improvements to stats tracking and websocket heartbeat
 
-2.4.1
+  2.4.1
+
 - Fixed: When user has > 5 active locks and how to handle card splicing to not hit char limits
 
-2.4.0
+  2.4.0
+
 - Fixed: Server Settings for server owners in API
 - Added: Command to adjust CK Ticker Rating display
 - Updated: Both ck ticker and ck stats will show/hide the rating if set
 
-2.3.1
+  2.3.1
+
 - Fixed: Notification override settings for server owners
 
-2.3.0
+  2.3.0
+
 - Updated: Decision roll text and implementing new properties (author & server) from command
 - Updated: API OAuth guilds that will be acknowledged to only those where Kiera is present
 - Added: API & Server settings for server (guild) owners
 
-2.2.0
+  2.2.0
+
 - Added: API endpoints for managing Decisions
 
-2.1.0
+  2.1.0
+
 - Added: Base notifications support for Discord DMs
 - Added: Notifications to Keyholder lookups
 
-2.0.1
+  2.0.1
+
 - Fixed: Issue with non-Nitro Discord accounts not validating for web logins
 - Fixed: Router permissions to once again accept DMs
 - Updated: Removed CK Icon from Stats print to help with smaller screen sizes
 - Updated: Removed excess space before Joined date on word wrap
 
-2.0.0
+  2.0.0
+
 - API: Updates to support kierabot.xyz
 - Fixed: !ck stats lockee snipping the wrong end of the card pile
 - Fixed: !decision add command to now only allow owner to add items
 - Added: CK Lockee & Keyholder stats Joined date
 
-1.3.3
+  1.3.3
+
 - Updated: Debugging
 - Updated: CK API Caching tasks & with a lower interval
 - Updated: More values to store in DB for better settings controls
 
-1.3.2
+  1.3.2
+
 - Fixed: CK Cache storage not happening
 - Fixed: CK keyholder stats ratings display
 - Added: Admin updates to help with general bot administration
 - Added: CK stats lockee locks completed statistic
 
-1.3.1
+  1.3.1
+
 - Added: new CK stats commands to help menu
 
-1.3.0
+  1.3.0
+
 - Added: CK custom stats blocks for Lockees and Keyholders
 - Added: CK ticker start date option
 - Added: CK data caching added
@@ -568,7 +686,8 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Updated: Help texts to new embedded message format
 - Updated: Database connectivity improvements
 
-1.2.0
+  1.2.0
+
 - Added: Command failed fallback reply in chat to help show examples of command usage
 - Added: Optional args support
 - Added: Command !roll for rolling dice
@@ -576,16 +695,19 @@ Fixed: Issue with CK Stats Locktober percentage and DB query used to find post d
 - Updated Command: !ck ticker to allow for a both type to be set (3) to return both tickers
 - Updated Command: !ck ticker to accept a ticker type when using !ck ticker 2 to return the override type
 
-1.1.1
+  1.1.1
+
 - Fix: new/reuse DB connection handling
 
-1.1.0
+  1.1.0
+
 - Updating start scripts to remove rtail due to memory issue
 - Added: Monitoring system for both the Bot's core functionality + DB Connectivity
 - Preparing command permissions
 - Preparing API endpoints for future kiera web portal
 
-1.0.1
+  1.0.1
+
 - Documentation updates
   - Decision command added
   - Updating general command documentation
