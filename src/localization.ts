@@ -134,7 +134,7 @@ export default class Localization {
    * @returns {string} - Rendered string as output in target locale
    * @memberof Localization
    */
-  public $render<T>(locale: string, key: string, data?: boolean | object | T) {
+  public $render<T>(locale: string, key: string, data?: boolean | object | T): string {
     // Check if locale exists
     if (this.loaded[locale]) {
       const targetString: string = get(this.loaded[locale].strings, key)
