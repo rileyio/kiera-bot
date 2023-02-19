@@ -18,7 +18,8 @@
     "test": "run-s clean build test:n",
     "test:n": "ava --tap --serial | tnyan",
     "test:v": "ava --verbose --serial",
-    "test:verbose": "run-s clean build test:v"
+    "test:verbose": "run-s clean build test:v",
+    "kiera": "./scripts/manage"
   },
   "ava": {
     "failFast": false,
@@ -34,6 +35,7 @@
     "agenda": "^4.3.0",
     "axios": "^0.27.2",
     "blizzard.js": "^4.2.0",
+    "cookie": "^0.5.0",
     "crypto-js": "^4.1.1",
     "discord-api-types": "^0.37.1",
     "discord-oauth2": "^2.10.0",
@@ -53,7 +55,6 @@
     "qrcode": "^1.5.1",
     "random": "^3.0.6",
     "restify": "^8.6.1",
-    "restify-cookies": "^0.2.6",
     "restify-cors-middleware2": "^2.1.2",
     "socket.io": "^4.5.1",
     "winston": "^3.8.1",
@@ -71,7 +72,6 @@
     "@types/qrcode": "^1.4.2",
     "@types/random": "^2.1.1",
     "@types/restify": "^8.5.4",
-    "@types/restify-cookies": "^0.2.8",
     "@types/restify-errors": "^4.3.4",
     "@typescript-eslint/eslint-plugin": "^5.32.0",
     "@typescript-eslint/parser": "^5.32.0",

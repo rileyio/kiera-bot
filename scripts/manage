@@ -1,0 +1,176 @@
+#!/bin/bash
+# Colors
+RED='\033[0;31m'
+SUCCESS='\033[0;32m'
+PRIMARY='\033[0;34m'
+PURPLE='\033[0;35m'
+NONE='\033[0m'
+
+MODE="dev"
+INSPECTEDMODE="unknown"
+
+echo "🪄  kiera-bot management script"
+echo "=============================="
+
+# Check if kiera-bot is running and return 0 if it is, 1 if it isn't
+function isUp() {
+  id=$(docker ps -a | grep "kiera-bot" | cut -d ' ' -f1)
+  if [ -z "$id" ]; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+# Check if kiera-bot's image exists and return 0 if it does, 1 if it doesn't
+function isImageExists() {
+  name=$(docker images | grep "kiera-bot" | cut -d ' ' -f1)
+  if [ -z "$name" ]; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+# Remove kiera-bot's image
+function removeImage() {
+  echo "🗑️  Removing kiera-bot image..."
+  make rm &>/dev/null
+}
+
+# Get kiera-bot's NODE_ENV
+function getMode() {
+  UNPARSEDINSPECTEDMODE=$(docker inspect --format '{{ index (index .Config.Env) 0 }}' $(docker ps -a | grep "kiera-bot" | cut -d ' ' -f1))
+
+  if [ "$UNPARSEDINSPECTEDMODE" == "NODE_ENV=production" ]; then
+    INSPECTEDMODE="prod"
+  else
+    INSPECTEDMODE="dev"
+  fi
+}
+
+# Usage help response if user passes invalid argument, the usage param, or no argument
+function usage() {
+  echo "Usage: $0 [start|stop|restart|status|clean|log|tail] [dev|prod]"
+  exit 0
+}
+
+# Restart kiera-bot
+function restart() {
+  echo "Restarting kiera-bot..."
+  make down &>/dev/null
+  make up &>/dev/null
+}
+
+# Return kiera-bot status in the terminal
+function status() {
+  getMode
+  echo "🔎 Checking kiera-bot status..."
+  id=$(docker ps -a | grep "kiera-bot" | cut -d ' ' -f1)
+  if [ -z "$id" ]; then
+    echo -e "    ${RED}ｘ${NONE} kiera-bot is ${RED}not running"
+  else
+    echo -e "    ${SUCCESS}✓${NONE} kiera-bot is ${SUCCESS}running${NONE} → ${PRIMARY}${id} ${NONE}❖  mode:${PURPLE}${INSPECTEDMODE}"
+  fi
+}
+
+# Start kiera-bot
+function start() {
+  # If mode is prod, then execute the prod script
+  if [ "$MODE" == "prod" ]; then
+    if isUp; then
+      echo -e "    ${SUCCESS}✓${NONE} kiera-bot is ${SUCCESS}already running"
+      exit 0
+    fi
+
+    # Stop Kiera if it's running
+    stop
+
+    # If the image exists, then remove it
+    if isImageExists; then
+      removeImage
+    fi
+
+    echo "💼 Starting kiera-bot in production mode..."
+    make up-prod &>/dev/null
+    status
+    exit 0
+  fi
+
+  echo "👾 Starting kiera-bot in dev mode..."
+  if isUp; then
+    echo -e "    ${SUCCESS}✓${NONE} kiera-bot is ${SUCCESS}already running"
+    exit 0
+  fi
+
+  make up &>/dev/null
+}
+
+function stop() {
+  echo "🛑 Stopping kiera-bot..."
+  if ! isUp; then
+    echo -e " ${RED}ｘ${NONE} kiera-bot is ${RED}not running"
+    exit 0
+  fi
+  make down &>/dev/null
+}
+
+# Perform a clean install of kiera-bot's docker image & container
+function clean() {
+  # If Kiera is running, then stop it
+  if isUp; then
+    stop
+  fi
+
+  # If the image exists, then remove it
+  if isImageExists; then
+    removeImage
+  fi
+
+  # Start Kiera (prod mode)
+  if [ "$MODE" == "prod" ]; then
+    echo "💼 Starting kiera-bot in production mode..."
+    make up-prod &>/dev/null
+    status
+    exit 0
+  fi
+
+  echo "👾 Starting kiera-bot in dev mode..."
+  start &>/dev/null
+
+  # Check if start was successful
+  status
+}
+
+# Start the live logs
+function log() {
+  echo "📺 Live logs for (tail 1000) kiera-bot..."
+  docker logs -f --tail 1000 $(docker ps -a | grep "kiera-bot" | cut -d ' ' -f1)
+}
+
+# Start the live logs (tail)
+function tail() {
+  echo "📺 Live logs (tail 100) for kiera-bot..."
+  docker logs -f --tail 100 $(docker ps -a | grep "kiera-bot" | cut -d ' ' -f1)
+}
+
+# Parse 2nd argument (if passed, for later usage)
+if [ -n "$2" ]; then
+  case "$2" in
+  "dev") MODE="dev" ;;
+  "prod") MODE="prod" ;;
+  *) MODE="dev" ;;
+  esac
+fi
+
+# Parse 1st argument
+case "$1" in
+"start") start ;;
+"stop") stop ;;
+"status") status ;;
+"restart") restart ;;
+"clean") clean ;;
+"log") log ;;
+"tail") tail ;;
+*) usage ;;
+esac

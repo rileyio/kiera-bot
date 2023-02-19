@@ -9,3 +9,6 @@ down:
 
 rm:
 	docker image rm kiera-bot
+
+live-log:
+	docker logs --follow "$(shell docker ps -a | grep "kiera-bot" | cut -d ' ' -f1)"

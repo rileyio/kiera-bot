@@ -40,19 +40,30 @@ src/                - All project code
 1. Make a `secrets/` directory and populate with any relevant secret declared environment values. Notes as to which have moves are listed in the `.env-template`.
 2. Ensure you complete the non-secret declared values and rename/copy `.env-template` to `.env`.
 
+### Kiera Helper Commands
+
+The included Kiera helper tool is located in [scripts/manage](). There are a number of options
+available to manage your Kiera docker container for both production and development.
+
+Running the following will allow you to see the optional available:
+
+`yarn kiera usage`
 
 ### Development Mode (w/Hot Reloading)
 
 To run in development mode with hot reloading simply run:
 
-`make up`
+`yarn kiera start`
 
+If you wish to start with a clean image and container, you can run the `clean` command
+
+`yarn kiera clean`
 
 ### Production Mode
 
 To run in production mode run:
 
-`make up prod`
+`yarn kiera start prod`
 
 ## Web Portal
 
@@ -85,6 +96,8 @@ Current Progress (Languages in focus where translations are being used):
 - Return Type: JSON  
 
 ### Available
+
+> ✋ Notice: The below list of endpoints is out of date - This message will be removed once updated!
 
 - `[post]` `/api/audit`  
 - `[post]` `/api/available/settings`  
