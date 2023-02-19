@@ -5,6 +5,7 @@
 ## 🪄 Updates / Modifications
 - Updated: Managed Channel output to use DDHHMM format. 
 - Updated: Error text and permissions check for Managed Countdown channel creation needing `Connect` and `Manage Channels` permissions at a minimum.
+- Replaced: `restify-cookies` with `cookies` and custom cookie management utility.
 
 ## 🎁 New Features / Additions
 - Added: Kiera management commands for easier process managemet at server level.

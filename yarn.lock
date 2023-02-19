@@ -1114,29 +1114,12 @@
   resolved "https://registry.npmjs.org/@types/random/-/random-2.1.1.tgz"
   integrity sha512-TsVl/iU0dkOAm84OcnDhLXXtSJtlxb6W/Ue1vkETsH3s/xfranVHqqQA2aTB7Xv1snvNiENrA0oH9/KZ0I9UNg==
 
-"@types/restify-cookies@^0.2.8":
-  version "0.2.8"
-  resolved "https://registry.npmjs.org/@types/restify-cookies/-/restify-cookies-0.2.8.tgz"
-  integrity sha512-LBTdB1Tg46COLD4Zr+l5Zcu7UAR57Qjn0qW8MurwefJL8PVSlwNiOgcWExWe3VN0SaZnzqBKH5ZTLsTuxnNKDw==
-  dependencies:
-    "@types/restify" "*"
-
 "@types/restify-errors@^4.3.4":
   version "4.3.5"
   resolved "https://registry.yarnpkg.com/@types/restify-errors/-/restify-errors-4.3.5.tgz#91613a709e6ff6526e661480f1f653a7fce15b62"
   integrity sha512-ug1qw2g/4ZAvETZdJJMxgvLwWblgV3EUs5qXKgBcSnWSw1QLXioakIE9QDZJgYiuyPc9Jc1A4KWSgEUidwSvqg==
   dependencies:
     "@types/verror" "*"
-
-"@types/restify@*":
-  version "8.5.4"
-  resolved "https://registry.npmjs.org/@types/restify/-/restify-8.5.4.tgz"
-  integrity sha512-oWVM0976ZbOXhfxyAeJy8CkBUCIgh9hotNYFs905PTCE/nUUxlUpc67bhVLTSRKRjyEwoCld83nhfZyWlRVyyw==
-  dependencies:
-    "@types/bunyan" "*"
-    "@types/formidable" "^1"
-    "@types/node" "*"
-    "@types/spdy" "*"
 
 "@types/restify@^8.5.4":
   version "8.5.6"
@@ -1912,7 +1895,12 @@ convert-to-spaces@^2.0.1:
   resolved "https://registry.yarnpkg.com/convert-to-spaces/-/convert-to-spaces-2.0.1.tgz#61a6c98f8aa626c16b296b862a91412a33bceb6b"
   integrity sha512-rcQ1bsQO9799wq24uE5AM2tAILy4gXGIK/njFWcVQkGNZ96edlpY+A7bjwvzjYvLDyzmG1MmMLZhpcsb+klNMQ==
 
-cookie@^0.4.0, cookie@~0.4.1:
+cookie@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.5.0.tgz#d1f5d71adec6558c58f389987c366aa47e994f8b"
+  integrity sha512-YZ3GUyn/o8gfKJlnlX7g7xq4gyO6OSuhGPKaaGssGB2qgDUS0gPgtTvoyZLTt9Ab6dC4hfc9dV5arkvc/OCmrw==
+
+cookie@~0.4.1:
   version "0.4.2"
   resolved "https://registry.npmjs.org/cookie/-/cookie-0.4.2.tgz"
   integrity sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==
@@ -4317,13 +4305,6 @@ resolve@^1.0.0, resolve@^1.10.0:
   dependencies:
     is-core-module "^2.2.0"
     path-parse "^1.0.6"
-
-restify-cookies@^0.2.6:
-  version "0.2.6"
-  resolved "https://registry.npmjs.org/restify-cookies/-/restify-cookies-0.2.6.tgz"
-  integrity sha512-Vbm9quG1FE8ETD4Bn8Hzk+OkgyNgS67m8cpL/QR6fRhmLB97QTS/4K7bF9oq8kAF0cZ6+jp3Oe1JaoFCcGkY7Q==
-  dependencies:
-    cookie "^0.4.0"
 
 restify-cors-middleware2@^2.1.2:
   version "2.2.0"
