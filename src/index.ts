@@ -6,7 +6,7 @@ import * as Task from '@/tasks'
 import * as Utils from '@/utils'
 import * as debug from 'debug'
 
-import { CommandRouter, RoutedInteraction, routeLoader } from '@/router'
+import { CommandRouter, Routed, routeLoader } from '@/router'
 import { RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder, SlashCommandSubcommandBuilder } from 'discord.js'
 
 import { Audit } from '@/objects/audit'
@@ -293,4 +293,4 @@ export class Bot {
 }
 
 export { Plugin } from './objects/plugin'
-export { RoutedInteraction }
+export { Routed }

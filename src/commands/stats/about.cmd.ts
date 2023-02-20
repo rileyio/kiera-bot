@@ -1,7 +1,7 @@
-import { RoutedInteraction } from '@/router'
+import { Routed } from '@/router'
 import { StatisticsSettingType } from '@/objects/statistics'
 
-export async function aboutStats(routed: RoutedInteraction) {
+export async function aboutStats(routed: Routed<'discord-chat-interaction'>) {
   // Get states
   const serverStatsEnabled = await routed.bot.DB.verify('stats-settings', {
     serverID: routed.guild.id,

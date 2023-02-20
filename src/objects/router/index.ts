@@ -1,2 +1,2 @@
 export { RouterStats } from './stats'
-export { RoutedInteraction } from '../../router/routed-interaction'
+export { Routed } from '../../router/routed'

@@ -1,6 +1,6 @@
 import * as XRegExp from 'xregexp'
 
-import { AcceptedResponse, RoutedInteraction } from '@/router'
+import { AcceptedResponse, Routed } from '@/router'
 
 import { ObjectId } from 'mongodb'
 import { TrackedDecision } from '@/objects/decision'
@@ -9,9 +9,9 @@ import { TrackedUser } from '@/objects/user/'
 /**
  * Set a nickname
  * @export
- * @param {RoutedInteraction} routed
+ * @param {Routed} routed
  */
-export async function setNickname(routed: RoutedInteraction): AcceptedResponse {
+export async function setNickname(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const id = routed.interaction.options.get('id').value as string
   const nicknameInput = routed.interaction.options.get('nickname').value as string
   const shortRegex = XRegExp('^([a-z0-9\\-]*)$', 'i')

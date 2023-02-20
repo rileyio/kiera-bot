@@ -2,9 +2,9 @@ import * as Utils from '@/utils'
 
 import { ChastiSafeUser } from '@/objects/chastisafe'
 import { EmbedBuilder } from 'discord.js'
-import { RoutedInteraction } from '@/router'
+import { Routed } from '@/router'
 
-export function embed(user: ChastiSafeUser, routed: RoutedInteraction) {
+export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interaction'>) {
   const description = routed.$render(
     'ChastiSafe.Stats.User.MainStats',
     Object.assign(

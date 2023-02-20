@@ -1,4 +1,4 @@
-import { AcceptedResponse, RoutedInteraction } from '@/router'
+import { AcceptedResponse, Routed } from '@/router'
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -16,9 +16,9 @@ import { ObjectID } from 'mongodb'
 /**
  * Delete decision in the DB
  * @export
- * @param {RoutedInteraction} routed
+ * @param {Routed} routed
  */
-export async function deleteDecision(routed: RoutedInteraction): AcceptedResponse {
+export async function deleteDecision(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const decisionsStored = await routed.bot.DB.getMultiple('decision', { authorID: routed.author.id })
   let selectedID = ''
 

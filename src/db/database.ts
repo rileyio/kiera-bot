@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BotStatistics, ServerStatistic } from '@/objects/statistics'
 import { CollectionInsertManyOptions, Db, FilterQuery, MongoClient, MongoClientOptions, MongoError, ObjectId, QuerySelector, UpdateQuery } from 'mongodb'
 import { TrackedDecision, TrackedDecisionLogEntry } from '@/objects/decision'

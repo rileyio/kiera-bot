@@ -1,7 +1,7 @@
 import * as Random from 'random'
 import * as XRegExp from 'xregexp'
 
-import { AcceptedResponse, RoutedInteraction } from '@/router'
+import { AcceptedResponse, Routed } from '@/router'
 
 import { ChannelType } from 'discord.js'
 import { ObjectID } from 'bson'
@@ -9,7 +9,7 @@ import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
 import { decisionFromSaved } from '@/commands/decision/roll.embed'
 
-export async function runSavedDecision(routed: RoutedInteraction): AcceptedResponse {
+export async function runSavedDecision(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const idOrNickname = routed.interaction.options.get('id').value as string
   const shortRegex = XRegExp('^(?<username>[a-z0-9]*):(?<nickname>[a-z0-9-]*)$', 'i')
   const isShort = shortRegex.test(idOrNickname)
@@ -118,11 +118,11 @@ export async function runSavedDecision(routed: RoutedInteraction): AcceptedRespo
     // Track in log
     await routed.bot.DB.add('decision-log', {
       callerID: routed.author.id,
-      channelID: routed.channel.type === ChannelType.DM ? 'DM' : routed.channel.id,
+      channelID: routed.channel.id,
       decisionID: String(decision._id),
       outcomeContent: outcomeEmbed.data.description,
       outcomeID: String(outcome._id),
-      serverID: routed.channel.type === ChannelType.DM ? 'DM' : routed.guild.id
+      serverID: routed?.guild ? routed.guild.id : 'DM'
     })
     return await routed.reply({ embeds: [outcomeEmbed] })
   }

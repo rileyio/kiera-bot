@@ -1,10 +1,10 @@
-import { AcceptedResponse, RoutedInteraction } from '@/router'
+import { AcceptedResponse, Routed } from '@/router'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageComponentInteraction } from 'discord.js'
 import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 
 import { TextChannel } from 'discord.js'
 
-export async function diableUserStats(routed: RoutedInteraction): AcceptedResponse {
+export async function diableUserStats(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   await routed.bot.DB.add(
     'stats-settings',
     new StatisticsSetting({
@@ -16,7 +16,7 @@ export async function diableUserStats(routed: RoutedInteraction): AcceptedRespon
   return await routed.reply(routed.$render('Stats.User.Disabled'))
 }
 
-export async function enableUserStats(routed: RoutedInteraction): AcceptedResponse {
+export async function enableUserStats(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const removed = await routed.bot.DB.remove('stats-settings', {
     setting: StatisticsSettingType.UserDisableStats,
     userID: routed.author.id
@@ -25,7 +25,7 @@ export async function enableUserStats(routed: RoutedInteraction): AcceptedRespon
   if (removed > 0) return await routed.reply(routed.$render('Stats.User.Enabled'))
 }
 
-export async function deleteUserStats(routed: RoutedInteraction): AcceptedResponse {
+export async function deleteUserStats(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   // First check if there's even anything to delete
   const count = await routed.bot.DB.count('stats-servers', { userID: routed.author.id })
 

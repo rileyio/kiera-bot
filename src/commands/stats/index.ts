@@ -6,81 +6,84 @@ import * as StatsServerManage from '@/commands/stats/server-manage.cmd'
 import * as StatsUser from '@/commands/stats/user.cmd'
 import * as StatsUserManage from '@/commands/stats/user-manage.cmd'
 
-import { AcceptedResponse, ExportRoutes, RoutedInteraction } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
+
 import { SlashCommandBuilder } from '@discordjs/builders'
 
-export const Routes = ExportRoutes({
-  category: 'Stats',
-  controller: stats,
-  name: 'stats',
-  permissions: {
-    defaultEnabled: true,
-    serverOnly: true
-  },
-  slash: new SlashCommandBuilder()
-    .setName('stats')
-    .setDescription('Server/Channel/User Stats') // .addSubcommand((subcommand) => subcommand.setName('server').setDescription('Server Stats'))
-    // * /stats about ...
-    .addSubcommand((subcommand) => subcommand.setName('about').setDescription('About Statistics'))
-    // * /stats server ...
-    .addSubcommand((subcommand) => subcommand.setName('server').setDescription('Server Statistics'))
-    // * /stats channel ...
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName('channel')
-        .setDescription('Channel Statistics')
-        .addChannelOption((option) => option.setName('target').setDescription('Target a Different Channel').setRequired(false))
-    )
-    // * /stats user ...
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName('user')
-        .setDescription('User Statistics')
-        .addChannelOption((option) => option.setName('target').setDescription('Target a Different Channel').setRequired(false))
-    )
-    // * /stats delete ...
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName('delete')
-        .setDescription('Delete Stats')
-        .addStringOption((option) =>
-          option
-            .setName('target')
-            .setDescription('For Server | Channel | User')
-            .setRequired(true)
-            .addChoices({ name: 'Server', value: 'server' }, { name: 'Channel', value: 'channel' }, { name: 'User', value: 'user' })
-        )
-    )
-    // * /stats enable ...
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName('enable')
-        .setDescription('Enable Stats')
-        .addStringOption((option) =>
-          option
-            .setName('target')
-            .setDescription('For Server | Channel | User')
-            .setRequired(true)
-            .addChoices({ name: 'Server', value: 'server' }, { name: 'Channel', value: 'channel' }, { name: 'User', value: 'user' })
-        )
-    )
-    // * /stats disable ...
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName('disable')
-        .setDescription('Disable Stats')
-        .addStringOption((option) =>
-          option
-            .setName('target')
-            .setDescription('For Server | Channel | User')
-            .setRequired(true)
-            .addChoices({ name: 'Server', value: 'server' }, { name: 'Channel', value: 'channel' }, { name: 'User', value: 'user' })
-        )
-    ),
-  type: 'interaction'
-})
+export const Routes = ExportRoutes(
+  new RouteConfiguration({
+    category: 'Stats',
+    controller: stats,
+    name: 'stats',
+    permissions: {
+      defaultEnabled: true,
+      serverOnly: true
+    },
+    slash: new SlashCommandBuilder()
+      .setName('stats')
+      .setDescription('Server/Channel/User Stats') // .addSubcommand((subcommand) => subcommand.setName('server').setDescription('Server Stats'))
+      // * /stats about ...
+      .addSubcommand((subcommand) => subcommand.setName('about').setDescription('About Statistics'))
+      // * /stats server ...
+      .addSubcommand((subcommand) => subcommand.setName('server').setDescription('Server Statistics'))
+      // * /stats channel ...
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('channel')
+          .setDescription('Channel Statistics')
+          .addChannelOption((option) => option.setName('target').setDescription('Target a Different Channel').setRequired(false))
+      )
+      // * /stats user ...
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('user')
+          .setDescription('User Statistics')
+          .addChannelOption((option) => option.setName('target').setDescription('Target a Different Channel').setRequired(false))
+      )
+      // * /stats delete ...
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('delete')
+          .setDescription('Delete Stats')
+          .addStringOption((option) =>
+            option
+              .setName('target')
+              .setDescription('For Server | Channel | User')
+              .setRequired(true)
+              .addChoices({ name: 'Server', value: 'server' }, { name: 'Channel', value: 'channel' }, { name: 'User', value: 'user' })
+          )
+      )
+      // * /stats enable ...
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('enable')
+          .setDescription('Enable Stats')
+          .addStringOption((option) =>
+            option
+              .setName('target')
+              .setDescription('For Server | Channel | User')
+              .setRequired(true)
+              .addChoices({ name: 'Server', value: 'server' }, { name: 'Channel', value: 'channel' }, { name: 'User', value: 'user' })
+          )
+      )
+      // * /stats disable ...
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('disable')
+          .setDescription('Disable Stats')
+          .addStringOption((option) =>
+            option
+              .setName('target')
+              .setDescription('For Server | Channel | User')
+              .setRequired(true)
+              .addChoices({ name: 'Server', value: 'server' }, { name: 'Channel', value: 'channel' }, { name: 'User', value: 'user' })
+          )
+      ),
+    type: 'discord-chat-interaction'
+  })
+)
 
-function stats(routed: RoutedInteraction): AcceptedResponse {
+function stats(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const subCommand = routed.options.getSubcommand()
 
   // About

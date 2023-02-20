@@ -1,8 +1,8 @@
-import { AcceptedResponse, RoutedInteraction } from '@/router'
+import { AcceptedResponse, Routed } from '@/router'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageComponentInteraction, TextChannel } from 'discord.js'
 import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
 
-export async function disableChannelStats(routed: RoutedInteraction): AcceptedResponse {
+export async function disableChannelStats(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   await routed.bot.DB.add(
     'stats-settings',
     new StatisticsSetting({
@@ -16,7 +16,7 @@ export async function disableChannelStats(routed: RoutedInteraction): AcceptedRe
   return await routed.reply(routed.$render('Stats.Channel.Disabled'))
 }
 
-export async function enableChannelStats(routed: RoutedInteraction): AcceptedResponse {
+export async function enableChannelStats(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const removed = await routed.bot.DB.remove('stats-settings', {
     channelID: routed.channel.id,
     serverID: routed.guild.id,
@@ -28,7 +28,7 @@ export async function enableChannelStats(routed: RoutedInteraction): AcceptedRes
   return await routed.reply('Channel Should already be Enabled to Collect Stats - As long as Server Stats & Individual Users are not set to Stats: Disabled.')
 }
 
-export async function deleteChannelStats(routed: RoutedInteraction): AcceptedResponse {
+export async function deleteChannelStats(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   // First check if there's even anything to delete
   const count = await routed.bot.DB.count('stats-servers', { serverID: routed.guild.id })
 

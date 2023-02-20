@@ -1,14 +1,14 @@
 import * as Middleware from '@/middleware'
 import * as XRegExp from 'xregexp'
 
-import { AcceptedResponse, ExportRoutes, RoutedInteraction } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
 
 import { ObjectId } from 'mongodb'
 import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
 
 export const Routes = ExportRoutes(
-  {
+  new RouteConfiguration({
     category: 'Fun',
     controller: nicknameDecision,
     description: 'Help.Decision.CustomizeNickname.Description',
@@ -17,8 +17,8 @@ export const Routes = ExportRoutes(
     name: 'decision-set-nickname',
     type: 'message',
     validate: '/decision:string/nickname:string/id=string/nickname?=string'
-  },
-  {
+  }),
+  new RouteConfiguration({
     category: 'Fun',
     controller: customUsername,
     description: 'Help.Decision.CustomizeUserNickname.Description',
@@ -27,15 +27,15 @@ export const Routes = ExportRoutes(
     name: 'decision-set-user-nickname',
     type: 'message',
     validate: '/decision:string/user:string/nickname:string/usernick=string'
-  }
+  })
 )
 
 /**
  * Set a nickname
  * @export
- * @param {RoutedInteraction} routed
+ * @param {Routed} routed
  */
-export async function nicknameDecision(routed: RoutedInteraction): AcceptedResponse {
+export async function nicknameDecision(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const shortRegex = XRegExp('^([a-z0-9\\-]*)$', 'i')
   const userNickname = new TrackedUser(await routed.bot.DB.get('users', { id: routed.author.id }))
   const nickname = routed.interaction.options.get('nickname')?.value ? String(routed.interaction.options.get('nickname').value).replace(' ', '-') : ''
@@ -92,9 +92,9 @@ export async function nicknameDecision(routed: RoutedInteraction): AcceptedRespo
 /**
  * Set a custom username for the first part of decision roll nicknames
  * @export
- * @param {RoutedInteraction} routed
+ * @param {Routed} routed
  */
-export async function customUsername(routed: RoutedInteraction): AcceptedResponse {
+export async function customUsername(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const nickname = routed.interaction.options.get('nickname')?.value as string
   const shortRegex = XRegExp('^([a-z0-9]*)$', 'i')
   const nicknameFixed = nickname.replace(' ', '-')

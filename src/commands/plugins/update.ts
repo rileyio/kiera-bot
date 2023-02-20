@@ -1,8 +1,8 @@
-import { AcceptedResponse, RoutedInteraction } from '@/router'
+import { AcceptedResponse, Routed } from '@/router'
 
 import { EmbedBuilder } from 'discord.js'
 
-export async function checkForUpdates(routed: RoutedInteraction): AcceptedResponse {
+export async function checkForUpdates(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const plugins = routed.bot.Plugin.pluginsActive
   let description = ''
 
@@ -21,7 +21,7 @@ export async function checkForUpdates(routed: RoutedInteraction): AcceptedRespon
   return await routed.reply({ embeds: [new EmbedBuilder().setTitle('Plugin and Updates').setDescription(description)] }, true)
 }
 
-export async function update(routed: RoutedInteraction): AcceptedResponse {
+export async function update(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const name = routed.options.get('name')?.value as string
   const { plugin } = routed.bot.Plugin.getPlugin(name)
 

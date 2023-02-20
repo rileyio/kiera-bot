@@ -1,4 +1,4 @@
-// import { ExportRoutes, RoutedInteraction } from '@/router'
+// import { ExportRoutes, Routed } from '@/router'
 
 // import { AcceptedResponse } from '@/objects/router/routed-interaction'
 // import { SlashCommandBuilder } from '@discordjs/builders'
@@ -37,7 +37,7 @@
 //   type: 'interaction'
 // })
 
-// async function ckStatsRouterSub(routed: RoutedInteraction): AcceptedResponse {
+// async function ckStatsRouterSub(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
 //   const subCommand = routed.options.getSubcommand()
 //   const enable = routed.interaction.options.get('enable')?.value
 //   const disable = routed.interaction.options.get('disable')?.value

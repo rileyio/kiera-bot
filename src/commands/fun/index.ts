@@ -2,12 +2,12 @@ import * as EightBall from '@/commands/fun/8ball.cmd'
 import * as Flip from '@/commands/fun/flip.cmd'
 import * as Roll from '@/commands/fun/roll.cmd'
 
-import { ExportRoutes } from '@/router'
+import { ExportRoutes, RouteConfiguration } from '@/router'
 
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes(
-  {
+  new RouteConfiguration({
     category: 'Fun',
     controller: EightBall.shake,
     name: 'eightball',
@@ -18,9 +18,9 @@ export const Routes = ExportRoutes(
       .setName('8ball')
       .setDescription('Ask the 8ball a question')
       .addStringOption((option) => option.setName('question').setDescription('Enter your question here')),
-    type: 'interaction'
-  },
-  {
+    type: 'discord-chat-interaction'
+  }),
+  new RouteConfiguration({
     category: 'Fun',
     controller: Flip.flip,
     description: 'Help.Fun.Flip.Description',
@@ -29,9 +29,9 @@ export const Routes = ExportRoutes(
       serverOnly: false
     },
     slash: new SlashCommandBuilder().setName('flip').setDescription('Flip a coin'),
-    type: 'interaction'
-  },
-  {
+    type: 'discord-chat-interaction'
+  }),
+  new RouteConfiguration({
     category: 'Fun',
     controller: Roll.roll,
     description: 'Help.Fun.Roll.Description',
@@ -44,6 +44,6 @@ export const Routes = ExportRoutes(
       .setDescription('Roll 1 or more dice')
       .addIntegerOption((option) => option.setName('sides').setDescription('Number of sides for the dice'))
       .addIntegerOption((option) => option.setName('dice').setDescription('Number of dice to roll')),
-    type: 'interaction'
-  }
+    type: 'discord-chat-interaction'
+  })
 )

@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { InteractionResponse, Message } from 'discord.js'
+import { AcceptedResponse, Routed } from '@/router'
+import { CacheType, ChatInputCommandInteraction, CommandInteractionOptionResolver, GuildMember, TextChannel } from 'discord.js'
 
 import { Plugin } from '@/objects/plugin'
-import { RoutedInteraction } from '@/router'
-import { SlashCommandBuilder } from '@discordjs/builders'
 
 export type RouteConfigurationCategory =
   | ''
@@ -44,6 +43,15 @@ export type ProcessedPermissionOutcome =
   | 'FailedManageChannel'
 
 export type RouteActionUserTarget = 'none' | 'author' | 'argument' | 'controller-decision'
+export type RouteConfigurationType = {
+  'discord-chat-interaction': {
+    channel: TextChannel
+    member: GuildMember
+    options: Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getFocused'>
+    type: ChatInputCommandInteraction<CacheType>
+  }
+  'placeolder-type': { channel: any; member: any; options: any; type: any }
+}
 
 /**
  * Discord Command Route
@@ -51,22 +59,27 @@ export type RouteActionUserTarget = 'none' | 'author' | 'argument' | 'controller
  * @export
  * @interface RouteConfiguration
  */
-export class RouteConfiguration {
+export class RouteConfiguration<T extends keyof RouteConfigurationType> {
   public category: RouteConfigurationCategory
-  public controller: (routed: RoutedInteraction | Plugin, routedWhenPlugin?: RoutedInteraction) => Promise<InteractionResponse<boolean> | Message<boolean>>
+  public controller: (routed: Routed<T> | Plugin, routedWhenPlugin?: Routed<T>) => AcceptedResponse
   public description?: string
   public example?: string
   public help?: string
-  public middleware?: Array<(routed: RoutedInteraction) => Promise<RoutedInteraction | void>>
+  public middleware?: Array<(routed: Routed<T>) => Promise<Routed<T> | void>>
   public name: string
   public permissions?: Partial<RouteConfigurationPermissions>
   public plugin?: Plugin
-  public slash?: Partial<SlashCommandBuilder>
-  public type: 'message' | 'reaction' | 'interaction'
+  /**
+   * Discord Slash Command
+   * @type {*}
+   * @memberof RouteConfiguration
+   */
+  public slash?: any
+  public type: keyof RouteConfigurationType
   public validate?: string
   public validateAlias?: Array<string>
 
-  constructor(route: Partial<RouteConfiguration>) {
+  constructor(route: Partial<RouteConfigurationType[T]['type']>) {
     this.category = route.category
     this.controller = route.controller
     this.description = route.description

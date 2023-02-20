@@ -1,4 +1,4 @@
-import { AcceptedResponse, RoutedInteraction } from '@/router'
+import { AcceptedResponse, Routed } from '@/router'
 import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 
 import { ObjectID } from 'mongodb'
@@ -6,9 +6,9 @@ import { ObjectID } from 'mongodb'
 /**
  * Add decision option
  * @export
- * @param {RoutedInteraction} routed
+ * @param {Routed} routed
  */
-export async function addOutcome(routed: RoutedInteraction): AcceptedResponse {
+export async function addOutcome(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const id = routed.interaction.options.get('id')?.value as string
   const outcome = routed.interaction.options.get('value')?.value as string
   const type = routed.interaction.options.get('type')?.value as 'string' | 'image' | 'url' | 'markdown'

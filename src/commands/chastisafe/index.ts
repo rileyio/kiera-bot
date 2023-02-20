@@ -1,35 +1,38 @@
 import * as Update from '@/commands/chastisafe/update.cmd'
 import * as User from '@/commands/chastisafe/user.cmd'
 
-import { AcceptedResponse, ExportRoutes, RoutedInteraction } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
+
 import { SlashCommandBuilder } from '@discordjs/builders'
 
-export const Routes = ExportRoutes({
-  category: 'Fun',
-  controller: csRouterSub,
-  name: 'cs',
-  permissions: {
-    defaultEnabled: false,
-    nsfwRequired: true,
-    serverOnly: false
-  },
-  slash: new SlashCommandBuilder()
-    .setName('cs')
-    .setDescription('ChastiSafe Commands')
-    // * Lookup
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName('lookup')
-        .setDescription('Lookup on ChastiSafe (Omit user or username for self lookup)')
-        .addStringOption((option) => option.setName('username').setDescription('Specify Username like user#1234').setRequired(false))
-        .addUserOption((option) => option.setName('user').setDescription('Specify Username like @User').setRequired(false))
-    )
-    // * Update
-    .addSubcommand((subcommand) => subcommand.setName('update').setDescription('Update ChastiSafe Linked Roles on Discord')),
-  type: 'interaction'
-})
+export const Routes = ExportRoutes(
+  new RouteConfiguration({
+    category: 'Fun',
+    controller: csRouterSub,
+    name: 'cs',
+    permissions: {
+      defaultEnabled: false,
+      nsfwRequired: true,
+      serverOnly: false
+    },
+    slash: new SlashCommandBuilder()
+      .setName('cs')
+      .setDescription('ChastiSafe Commands')
+      // * Lookup
+      .addSubcommand((subcommand) =>
+        subcommand
+          .setName('lookup')
+          .setDescription('Lookup on ChastiSafe (Omit user or username for self lookup)')
+          .addStringOption((option) => option.setName('username').setDescription('Specify Username like user#1234').setRequired(false))
+          .addUserOption((option) => option.setName('user').setDescription('Specify Username like @User').setRequired(false))
+      )
+      // * Update
+      .addSubcommand((subcommand) => subcommand.setName('update').setDescription('Update ChastiSafe Linked Roles on Discord')),
+    type: 'interaction'
+  })
+)
 
-async function csRouterSub(routed: RoutedInteraction): AcceptedResponse {
+async function csRouterSub(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const subCommand = routed.options.getSubcommand() as 'lookup'
   // const username = routed.interaction.options.get('username')?.value
   // const user = routed.interaction.options.getUser('user')

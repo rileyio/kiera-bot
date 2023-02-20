@@ -1,13 +1,13 @@
-import { RoutedInteraction } from '@/router'
+import { Routed } from '@/router'
 
 import { eightBallResult } from '@/commands/fun/8ball.embed'
 
 /**
  * 8 Ball
  * @export
- * @param {RoutedInteraction} routed
+ * @param {Routed} routed
  */
-export async function shake(routed: RoutedInteraction) {
+export async function shake(routed: Routed<'discord-chat-interaction'>) {
   const question = routed.interaction.options.get('question')?.value as string
   const outcomes = [
     'It is certain',

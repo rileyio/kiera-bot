@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EmbedBuilder, GuildMember, Interaction, TextChannel } from 'discord.js'
-import { RouteConfiguration, RoutedInteraction, RouterStats } from '.'
+import { RouteConfiguration, RouteConfigurationType, Routed, RouterStats } from '.'
 
 import { Bot } from '@/index'
 import { CommandPermission } from '@/objects/permission'
@@ -15,10 +15,10 @@ import { TrackedUser } from '@/objects/user/'
  */
 export class CommandRouter {
   public bot: Bot
-  public routes: Array<RouteConfiguration> = []
+  public routes: Array<RouteConfiguration<any>> = []
   private log: Logger.Debug
 
-  constructor(routes: Array<RouteConfiguration>, bot?: Bot) {
+  constructor(routes: Array<RouteConfiguration<'placeolder-type'>>, bot?: Bot) {
     this.bot = bot
     this.log = this.bot.Log.Router
 
@@ -26,14 +26,14 @@ export class CommandRouter {
     routes.forEach((r) => this.addRoute(r))
   }
 
-  public async addRoute(route: RouteConfiguration) {
+  public async addRoute<T extends keyof RouteConfigurationType>(route: RouteConfiguration<T>) {
     if (this.routes.findIndex((r) => r.name === route.name) > -1) return this.bot.Log.Router.log(`!! Duplicate route name detected '${route.name}'`)
-    this.routes.push(new RouteConfiguration(route))
+    this.routes.push(new RouteConfiguration<RouteConfigurationType[T]['type']>(route))
     this.log.verbose(`🚏✔️ Route Added '${route.name}'`)
   }
 
-  public async removeRoute(route: string | RouteConfiguration) {
-    const routeIndex = this.routes.findIndex((r) => r.name === (typeof route === 'string' ? (route as string) : (route as RouteConfiguration).name))
+  public async removeRoute<T extends keyof RouteConfigurationType>(route: string | RouteConfiguration<T>) {
+    const routeIndex = this.routes.findIndex((r) => r.name === (typeof route === 'string' ? (route as string) : route.name))
     const routeFound = routeIndex > -1 ? this.routes[routeIndex] : undefined
     if (routeFound) {
       this.routes.splice(routeIndex, 1)
@@ -50,15 +50,11 @@ export class CommandRouter {
   public async routeInteraction(interaction: Interaction) {
     if (!interaction.isCommand()) return // Hard block
     if (!interaction.isChatInputCommand()) return
-
     this.bot.BotMonitor.LiveStatistics.increment('commands-seen')
-    // if (!interaction.guild) {
-    //   return interaction.reply('Kiera is only currently enabled inside of a Discord Server due to certain command limitations') // Hard block
-    // }
 
     const { channel, commandName, guild, guildId, member, options, type, user } = interaction
     const routerStats = new RouterStats(user)
-    const route = this.routes.find((r) => r.name === commandName)
+    const route = this.routes.find((r) => r.name === commandName) as RouteConfiguration<'discord-chat-interaction'>
 
     // If no route matched, stop here
     if (!route) {
@@ -92,13 +88,12 @@ export class CommandRouter {
     if (!kieraUser.id) kieraUser.__notStored = true
 
     // Normal routed behaviour
-    const routed = new RoutedInteraction({
+    const routed = new Routed<'discord-chat-interaction'>({
       author: user,
       bot: this.bot,
-      channel,
+      channel: channel as TextChannel,
       guild,
       interaction,
-      isInteraction: true,
       member: member as GuildMember,
       options,
       route,
@@ -240,11 +235,11 @@ export class CommandRouter {
    * Perform permissions check
    *
    * @private
-   * @param {RoutedInteraction} routed
+   * @param {Routed} routed
    * @returns
    * @memberof Router
    */
-  private async processPermissions(routed: RoutedInteraction): Promise<ProcessedPermissions> {
+  private async processPermissions(routed: Routed<'discord-chat-interaction'>): Promise<ProcessedPermissions> {
     const checks: ProcessedPermissions = {
       // Permissions of user
       hasAdministrator: !routed.channel.isDMBased() ? routed.member.permissions.has('Administrator') : false,

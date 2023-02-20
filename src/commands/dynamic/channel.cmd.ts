@@ -1,11 +1,11 @@
 import { ChannelType, EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 
-import { RoutedInteraction } from '@/router'
+import { Routed } from '@/router'
 import { calculateHumanTimeDDHHMM } from '@/utils/date'
 
 import moment = require('moment')
 
-export async function create(routed: RoutedInteraction) {
+export async function create(routed: Routed<'discord-chat-interaction'>) {
   try {
     // Verify that user has permissions to create a managed channel
     const user = routed.interaction.guild.members.cache.get(routed.interaction.user.id)

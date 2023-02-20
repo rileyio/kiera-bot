@@ -1,8 +1,9 @@
-import { AcceptedResponse, ExportRoutes, RoutedInteraction } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
+
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes(
-  {
+  new RouteConfiguration({
     category: 'Admin',
     controller: listCommandCategories,
     description: 'Help.Admin.CommandCategories.Description',
@@ -12,9 +13,9 @@ export const Routes = ExportRoutes(
       serverAdminOnly: true
     },
     slash: new SlashCommandBuilder().setName('admin').setDescription('Server Administrator Commands to adjust functionality of Kiera'),
-    type: 'message',
+    type: 'discord-chat-interaction',
     validate: '/admin:string/commands:string'
-  }
+  })
   // {
   //   category: 'Admin',
   //   controller: listCommandCategories,
@@ -73,7 +74,7 @@ export const Routes = ExportRoutes(
  * @param {RouterRouted} routed
  * @returns
  */
-export async function listCommandCategories(routed: RoutedInteraction): AcceptedResponse {
+export async function listCommandCategories(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const categories = {}
   let responseString: string
   let longestName = 0
@@ -119,7 +120,7 @@ export async function listCommandCategories(routed: RoutedInteraction): Accepted
 //  * @param {RouterRouted} routed
 //  * @returns
 //  */
-// export async function listCategoryCommands(routed: RoutedInteraction) {
+// export async function listCategoryCommands(routed: Routed<'discord-chat-interaction'>) {
 //   const commands = []
 //   let responseString: string
 //   let longestName = 0
@@ -164,12 +165,12 @@ export async function listCommandCategories(routed: RoutedInteraction): Accepted
 //   return true // Successful
 // }
 
-// export async function commandRestrict(routed: RoutedInteraction) {
+// export async function commandRestrict(routed: Routed<'discord-chat-interaction'>) {
 //   await routed.reply(routed.$render('Generic.Warn.CommandUnderMaintenance'))
 //   return true // Successful
 // }
 
-// export async function setPrefix(routed: RoutedInteraction) {
+// export async function setPrefix(routed: Routed<'discord-chat-interaction'>) {
 //   try {
 //     const updated = await routed.bot.DB.update('servers', { id: routed.guild.id }, { prefix: routed.v.o.newPrefix })
 //     if (updated) await routed.reply(routed.$render('Admin.PrefixUpdated', { newPrefix: routed.v.o.newPrefix }))

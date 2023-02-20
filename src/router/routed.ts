@@ -1,21 +1,7 @@
 import * as Utils from '@/utils'
 
-import {
-  CacheType,
-  Channel,
-  ChatInputCommandInteraction,
-  CommandInteractionOptionResolver,
-  Guild,
-  GuildMember,
-  GuildTextBasedChannel,
-  InteractionReplyOptions,
-  InteractionResponse,
-  Message,
-  MessagePayload,
-  TextChannel,
-  User
-} from 'discord.js'
-import { ProcessedPermissions, RouteConfiguration, RouterStats } from '.'
+import { CacheType, ChatInputCommandInteraction, Guild, InteractionReplyOptions, InteractionResponse, Message, MessagePayload, User } from 'discord.js'
+import { ProcessedPermissions, RouteConfiguration, RouteConfigurationType, RouterStats } from '.'
 
 import { Bot } from '@/index'
 import { TrackedMessage } from '@/objects/message'
@@ -28,36 +14,34 @@ export type AcceptedResponse = Promise<InteractionResponse<boolean> | Message<bo
 /**
  * Routed Interaction
  * @export
- * @class RoutedInteraction
+ * @class Routed
  * @template InteractionType
  */
-export class RoutedInteraction {
+export class Routed<T extends keyof RouteConfigurationType> {
   private readonly prefix?: string = '/'
 
   public author: User
   public bot: Bot
-  public channel: Channel | TextChannel | GuildTextBasedChannel
-  public guild: Guild
-  public interaction: ChatInputCommandInteraction<CacheType>
+  public channel: RouteConfigurationType[T]['channel']
+  public guild?: Guild
+  public interaction: RouteConfigurationType[T]['type']
   public isChatInputCommand?: boolean
-  public isInteraction: boolean
-  public member: GuildMember
-  public options?: Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getFocused'>
+  public member: RouteConfigurationType[T]['member']
+  public options?: RouteConfigurationType[T]['options']
   public permissions?: ProcessedPermissions
-  public route: RouteConfiguration
+  public route: RouteConfiguration<T>
   public routerStats: RouterStats
   public trackedMessage?: TrackedMessage
   public type?: 'interaction'
   public user: TrackedUser
 
-  constructor(init: Omit<RoutedInteraction, '$render' | '$locales' | '$sb' | '$localeExists' | 'reply' | 'followUp'>) {
+  constructor(init: Omit<Routed<T>, '$render' | '$locales' | '$sb' | '$localeExists' | 'reply' | 'followUp'>) {
     this.author = init.author
     this.bot = init.bot
     this.channel = init.channel
     this.guild = init.guild
     this.interaction = init.interaction
     this.isChatInputCommand = init.isChatInputCommand
-    this.isInteraction = init.isInteraction
     this.member = init.member
     this.options = init.options
     this.permissions = init.permissions
@@ -72,7 +56,7 @@ export class RoutedInteraction {
    * @private
    * @param {string} locale Locale to get contributors of
    * @return {string} Locale contributors string
-   * @memberof RoutedInteraction
+   * @memberof Routed
    */
   private $localeContributors(locale: string): string {
     return (this.bot.Localization.$localeContributors(locale) as string) || ''
@@ -84,7 +68,7 @@ export class RoutedInteraction {
    * @param {string} key String lookup by dot notation (e.g. 'command.ping.description')
    * @param {T} [data] Optional Data to pass to the template
    * @return {string} Rendered string
-   * @memberof RoutedInteraction
+   * @memberof Routed
    */
   public $render<T>(key: string, data?: T): string
   public $render<T>(locale: string, key: string, data?: T): string
@@ -102,7 +86,7 @@ export class RoutedInteraction {
    * Check if a locale exists
    * @param {string} key
    * @return {*}  {boolean}
-   * @memberof RoutedInteraction
+   * @memberof Routed
    */
   public $localeExists(key: string): boolean {
     return this.bot.Localization.$localeExists(key)
@@ -111,7 +95,7 @@ export class RoutedInteraction {
   /**
    * Get the currently available locales
    * @return {string}
-   * @memberof RoutedInteraction
+   * @memberof Routed
    */
   public $locales(): string {
     return this.bot.Localization.$locales()
@@ -137,7 +121,7 @@ export class RoutedInteraction {
    * @param {string} baseString Template string
    * @param {T} [data] Optional data to pass to the template
    * @return {string} Rendered string
-   * @memberof RoutedInteraction
+   * @memberof Routed
    */
   public $sb<T>(baseString: string, data?: T): string {
     return Utils.sb(baseString, Object.assign({}, data, { prefix: this.prefix }))
@@ -148,7 +132,7 @@ export class RoutedInteraction {
    * @param {(string | MessagePayload | InteractionReplyOptions)} response Response to send
    * @param {boolean} [ephemeral] Whether the response should be ephemeral
    * @return {Promise<InteractionResponse<boolean>>}
-   * @memberof RoutedInteraction
+   * @memberof Routed
    */
   public async reply(response: string | MessagePayload | InteractionReplyOptions, ephemeral?: boolean): Promise<InteractionResponse<boolean>> {
     // const isObj = optionsOrPrivate ? typeof optionsOrPrivate === 'object' : false

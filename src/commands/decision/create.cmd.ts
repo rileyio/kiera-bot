@@ -1,12 +1,12 @@
-import { AcceptedResponse, RoutedInteraction } from '@/router'
+import { AcceptedResponse, Routed } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 
 /**
  * Create a new decision in the DB
  * @export
- * @param {RoutedInteraction} routed
+ * @param {Routed} routed
  */
-export async function newDecision(routed: RoutedInteraction): AcceptedResponse {
+export async function newDecision(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const title = routed.interaction.options.get('title')?.value as string
   // Create a new question &
   const decision = new TrackedDecision({

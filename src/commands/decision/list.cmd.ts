@@ -1,10 +1,10 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, TextChannel } from 'discord.js'
 
-import { RoutedInteraction } from '@/router'
+import { Routed } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 import { embed } from '@/commands/decision/list.embed'
 
-export async function list(routed: RoutedInteraction) {
+export async function list(routed: Routed<'discord-chat-interaction'>) {
   const authorID = routed.author.id
   const decisionsStored = (await routed.bot.DB.getMultiple('decision', { authorID })) as Array<TrackedDecision>
 
