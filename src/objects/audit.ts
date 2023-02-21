@@ -11,7 +11,7 @@ export type AuditEntryType =
   | 'bot.command'
   | 'bot.maintenance'
 
-export type AuditEntryWhere = 'Unknown' | 'Discord' | 'API'
+export type AuditEntryWhere = 'Unknown' | 'discord' | 'api'
 
 export class AuditEntry {
   public _id?: ObjectId
