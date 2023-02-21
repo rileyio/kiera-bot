@@ -1,3 +1,5 @@
+export type ChastiSafeUserLevels = 'Novice' | 'Intermediate' | 'Experienced' | 'Devoted' | 'Fanatical'
+
 export class ChastiSafeUser {
   public badges: Array<'LOCKTOBER_ONGOING' | 'LOCKTOBER_2022' | 'LOCKTOBER_2022_SELF' | 'LOCKTOBER_ONGOING_SELF'> = []
 
@@ -40,9 +42,9 @@ export class ChastiSafeUser {
   }
 
   public levels: {
-    bondageLevel: string
-    chastityLevel: string
-    taskLevel: string
+    bondageLevel: ChastiSafeUserLevels
+    chastityLevel: ChastiSafeUserLevels
+    taskLevel: ChastiSafeUserLevels
   }
 
   public lockInfo: {
@@ -101,6 +103,10 @@ export class ChastiSafeUser {
     }
 
     if (typeof this.chastikeystats === 'object') this.hasChastiKeyData = true
+  }
+
+  public getChastityLevel(): ChastiSafeUserLevels {
+    return this.levels?.chastityLevel
   }
 }
 

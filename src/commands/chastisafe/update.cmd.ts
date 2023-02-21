@@ -71,6 +71,8 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
   // Fetch User Profile from CS
   const csUser = await routed.bot.Service.ChastiSafe.fetchProfile(mentionedUser ? mentionedUser.id : routed.author.id)
 
+  console.log('csUser', csUser)
+
   // Find if any locked locks
   const hasLockedLock = csUser.isChastityLocked
 
@@ -285,6 +287,162 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
   // Experienced  =  6
   // Intermediate =  2
   // Novice       =  0
+
+  try {
+    const rolesToRemove = [] as Array<{ role: string }>
+
+    // Devoted
+    if (csUser.getChastityLevel() === 'Fanatical' && userHasPref) {
+      // Add Proper Fanatical role
+      if (!discordUserHasRole.fanaticalLockeeX && prefX) {
+        await discordUser.roles.add(role.fanaticalLockeeX)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.fanaticalLockeeX.name })
+      }
+      if (!discordUserHasRole.fanaticalLockeeY && prefY) {
+        await discordUser.roles.add(role.fanaticalLockeeY)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.fanaticalLockeeY.name })
+      }
+      if (!discordUserHasRole.fanaticalLockeeZ && prefZ) {
+        await discordUser.roles.add(role.fanaticalLockeeZ)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.fanaticalLockeeZ.name })
+      }
+
+      // Remove other roles
+      rolesToRemove.push(
+        { role: 'devotedLockeeX' },
+        { role: 'devotedLockeeY' },
+        { role: 'devotedLockeeZ' },
+        { role: 'experiencedLockeeX' },
+        { role: 'experiencedLockeeY' },
+        { role: 'experiencedLockeeZ' },
+        { role: 'intermediateLockeeX' },
+        { role: 'intermediateLockeeY' },
+        { role: 'intermediateLockeeZ' },
+        { role: 'noviceLockeeX' },
+        { role: 'noviceLockeeY' },
+        { role: 'noviceLockeeZ' }
+      )
+    }
+
+    // Devoted
+    if (csUser.getChastityLevel() === 'Devoted' && userHasPref) {
+      // Add Proper Devoted role
+      if (!discordUserHasRole.devotedLockeeX && prefX) {
+        await discordUser.roles.add(role.devotedLockeeX)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.devotedLockeeX.name })
+      }
+      if (!discordUserHasRole.devotedLockeeY && prefY) {
+        await discordUser.roles.add(role.devotedLockeeY)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.devotedLockeeY.name })
+      }
+      if (!discordUserHasRole.devotedLockeeZ && prefZ) {
+        await discordUser.roles.add(role.devotedLockeeZ)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.devotedLockeeZ.name })
+      }
+
+      // Remove other roles
+      rolesToRemove.push(
+        { role: 'fanaticalLockeeX' },
+        { role: 'fanaticalLockeeY' },
+        { role: 'fanaticalLockeeZ' },
+        { role: 'experiencedLockeeX' },
+        { role: 'experiencedLockeeY' },
+        { role: 'experiencedLockeeZ' },
+        { role: 'intermediateLockeeX' },
+        { role: 'intermediateLockeeY' },
+        { role: 'intermediateLockeeZ' },
+        { role: 'noviceLockeeX' },
+        { role: 'noviceLockeeY' },
+        { role: 'noviceLockeeZ' }
+      )
+    }
+
+    // Experienced
+    if (csUser.getChastityLevel() === 'Experienced' && userHasPref) {
+      // Add Proper Experienced role
+      if (!discordUserHasRole.experiencedLockeeX && prefX) {
+        await discordUser.roles.add(role.experiencedLockeeX)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.experiencedLockeeX.name })
+      }
+      if (!discordUserHasRole.experiencedLockeeY && prefY) {
+        await discordUser.roles.add(role.experiencedLockeeY)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.experiencedLockeeY.name })
+      }
+      if (!discordUserHasRole.experiencedLockeeZ && prefZ) {
+        await discordUser.roles.add(role.experiencedLockeeZ)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.experiencedLockeeZ.name })
+      }
+
+      // Remove other roles
+      rolesToRemove.push(
+        { role: 'fanaticalLockeeX' },
+        { role: 'fanaticalLockeeY' },
+        { role: 'fanaticalLockeeZ' },
+        { role: 'devotedLockeeX' },
+        { role: 'devotedLockeeY' },
+        { role: 'devotedLockeeZ' },
+        { role: 'intermediateLockeeX' },
+        { role: 'intermediateLockeeY' },
+        { role: 'intermediateLockeeZ' },
+        { role: 'noviceLockeeX' },
+        { role: 'noviceLockeeY' },
+        { role: 'noviceLockeeZ' }
+      )
+    }
+
+    // Intermediate
+    if (csUser.getChastityLevel() === 'Intermediate' && userHasPref) {
+      // Add Proper Intermediate role
+      if (!discordUserHasRole.intermediateLockeeX && prefX) {
+        await discordUser.roles.add(role.intermediateLockeeX)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.intermediateLockeeX.name })
+      }
+      if (!discordUserHasRole.intermediateLockeeY && prefY) {
+        await discordUser.roles.add(role.intermediateLockeeY)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.intermediateLockeeY.name })
+      }
+      if (!discordUserHasRole.intermediateLockeeZ && prefZ) {
+        await discordUser.roles.add(role.intermediateLockeeZ)
+        changesImplemented.push({ action: 'added', category: 'lockee', type: 'role', result: role.intermediateLockeeZ.name })
+      }
+
+      // Remove other roles
+      rolesToRemove.push(
+        { role: 'fanaticalLockeeX' },
+        { role: 'fanaticalLockeeY' },
+        { role: 'fanaticalLockeeZ' },
+        { role: 'devotedLockeeX' },
+        { role: 'devotedLockeeY' },
+        { role: 'devotedLockeeZ' },
+        { role: 'experiencedLockeeX' },
+        { role: 'experiencedLockeeY' },
+        { role: 'experiencedLockeeZ' },
+        { role: 'noviceLockeeX' },
+        { role: 'noviceLockeeY' },
+        { role: 'noviceLockeeZ' }
+      )
+    }
+
+    // Removal Step
+    for (let index = 0; index < rolesToRemove.length; index++) {
+      const roleForRemoval = rolesToRemove[index]
+      // Check to be sure all are mapped before trying to process, to prevent any error
+      // console.log('checking role for removal', roleForRemoval.role, role[roleForRemoval.role])
+      if (role[roleForRemoval.role]) {
+        // Ensure user has role before attempting to remove
+        if (discordUserHasRole[roleForRemoval.role]) {
+          console.log('--> Removing Role:', role[roleForRemoval.role].name, 'From:', discordUser.id)
+          await discordUser.roles.remove(role[roleForRemoval.role])
+          changesImplemented.push({ action: 'removed', category: 'lockee', type: 'role', result: role[roleForRemoval.role].name })
+        }
+      } // else console.log('## Role has not been mapped', roleForRemoval)
+    }
+  } catch (e) {
+    console.log('CK Update Error updating Experience role', e)
+  }
+  // * Performance End: Lockee * //
+  updatePerformance.lockee.end = performance.now()
+  changesImplemented.push({ action: 'performance', category: 'n/a', type: 'status', result: Math.round(updatePerformance.lockee.end - updatePerformance.lockee.start) })
 
   /// ? ////////////////////////////////////
   /// ? Role Update: Locktober           ///
