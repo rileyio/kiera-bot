@@ -71,7 +71,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
   // Fetch User Profile from CS
   const csUser = await routed.bot.Service.ChastiSafe.fetchProfile(mentionedUser ? mentionedUser.id : routed.author.id)
 
-  console.log('csUser', csUser)
+  // console.log('csUser', csUser)
 
   // Find if any locked locks
   const hasLockedLock = csUser.isChastityLocked
