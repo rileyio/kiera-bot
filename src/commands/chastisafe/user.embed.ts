@@ -9,19 +9,19 @@ export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interac
     'ChastiSafe.Stats.User.MainStats',
     Object.assign(
       {
-        averageRatingAsKeyholder: user.ratings.averageRatingAsKeyholder || 'n/a',
-        averageRatingAsLockee: user.ratings.averageRatingAsLockee || 'n/a',
-        bondageLevel: user.levels.bondageLevel ? user.levels.bondageLevel : 'n/a',
-        chastityLevel: user.levels.chastityLevel ? user.levels.chastityLevel : 'n/a',
+        averageRatingAsKeyholder: user.ratings.averageRatingAsKeyholder || '--',
+        averageRatingAsLockee: user.ratings.averageRatingAsLockee || '--',
+        bondageLevel: user.levels.bondageLevel ? user.levels.bondageLevel : null,
+        chastityLevel: user.levels.chastityLevel ? user.levels.chastityLevel : null,
         chastityLocks: user.lockInfo.chastityLocks.map((l) => `🔒 **${l.lockName}**\n**Keyholder:** \`${l.keyholder}\`\n**Loaded:** \`${l.loadtime}\``),
         hasActiveChastityLocks: user.lockInfo.chastityLocks.length > 0,
         hasChastiKeyData: user.hasChastiKeyData,
-        keyholderLevelBondage: user.keyholderLevels.bondageLevel ? user.keyholderLevels.bondageLevel : 'n/a',
-        keyholderLevelChastity: user.keyholderLevels.chastityLevel ? user.keyholderLevels.chastityLevel : 'n/a',
-        keyholderLevelTask: user.keyholderLevels.taskLevel ? user.keyholderLevels.taskLevel : 'n/a',
+        keyholderLevelBondage: user.keyholderLevels.bondageLevel ? user.keyholderLevels.bondageLevel : null,
+        keyholderLevelChastity: user.keyholderLevels.chastityLevel ? user.keyholderLevels.chastityLevel : null,
+        keyholderLevelTask: user.keyholderLevels.taskLevel ? user.keyholderLevels.taskLevel : null,
         ratingsAsKeyholderCount: user.ratings.ratingsAsKeyholderCount,
         ratingsAsLockeeCount: user.ratings.ratingsAsLockeeCount,
-        taskLevel: user.levels.taskLevel ? user.levels.taskLevel : 'n/a'
+        taskLevel: user.levels.taskLevel ? user.levels.taskLevel : null
       },
       // Only include this if ChastiKey data is available
       user.hasChastiKeyData

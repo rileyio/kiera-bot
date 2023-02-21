@@ -10,10 +10,11 @@
 ### 🪄 Updates
 
 - Updated: Managed Channel output to use DDHHMM format.
-- Updated: Error text and permissions check for Managed Countdown channel creation needing `Connect` and `Manage Channels` permissions at a minimum.
+- Updated: Error text and permissions check for Managed Countdown channel creation needing `Connect` and `Manage Channels` at minimum.
 - Updated: Multiple class and type names to align better + for upcoming platform(s) plan.
 - Updated: Route Category names to accept dynamic name values.
 - Updated: CS command group to be Opt in - Serer Admins can enable these via a command.
+- Updated: CS less occurrences of `n/a` should be seen in stats now, now conditionally rendered or wills show `--`.
 - Restored: CS Update experience level management functionality.
 - Replaced: Old API cookies middleware with custom cookie management utility.
 
@@ -22,7 +23,8 @@
 - Added: Kiera management commands for easier process management at server level.
 - Added: New Discord command payload generator for registering routes on the backend.
 - Added: NSFW channel support (marked commands will not even show up in non-NSFW channels).
-- Added: Opt in setting for use on some new (and old) command(s) that maybe shouldn't be enabled everywhere. Server Admins can enable these via a command.
+- Added: Opt in setting for use on some new (and old) command(s) that maybe shouldn't be enabled everywhere. 
+- Added: Server Admins can enable `Opt in` specific command categories on a server by server basis via a command.
 - Added: New command to toggle command groups on and off (opt in/out).
 
 ---

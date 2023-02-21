@@ -292,7 +292,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     const rolesToRemove = [] as Array<{ role: string }>
 
     // Devoted
-    if (csUser.getChastityLevel() === 'Fanatical' && userHasPref) {
+    if (csUser.highestLockeeLevel === 'Fanatical' && userHasPref) {
       // Add Proper Fanatical role
       if (!discordUserHasRole.fanaticalLockeeX && prefX) {
         await discordUser.roles.add(role.fanaticalLockeeX)
@@ -325,7 +325,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     }
 
     // Devoted
-    if (csUser.getChastityLevel() === 'Devoted' && userHasPref) {
+    if (csUser.highestLockeeLevel === 'Devoted' && userHasPref) {
       // Add Proper Devoted role
       if (!discordUserHasRole.devotedLockeeX && prefX) {
         await discordUser.roles.add(role.devotedLockeeX)
@@ -358,7 +358,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     }
 
     // Experienced
-    if (csUser.getChastityLevel() === 'Experienced' && userHasPref) {
+    if (csUser.highestLockeeLevel === 'Experienced' && userHasPref) {
       // Add Proper Experienced role
       if (!discordUserHasRole.experiencedLockeeX && prefX) {
         await discordUser.roles.add(role.experiencedLockeeX)
@@ -391,7 +391,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     }
 
     // Intermediate
-    if (csUser.getChastityLevel() === 'Intermediate' && userHasPref) {
+    if (csUser.highestLockeeLevel === 'Intermediate' && userHasPref) {
       // Add Proper Intermediate role
       if (!discordUserHasRole.intermediateLockeeX && prefX) {
         await discordUser.roles.add(role.intermediateLockeeX)
