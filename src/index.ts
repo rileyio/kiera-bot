@@ -20,6 +20,7 @@ import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v10'
 import { ServerStatisticType } from './objects/statistics'
 import { Statistics } from '@/statistics'
+import { StoredServer } from './objects/server'
 import { read as getSecret } from '@/secrets'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
@@ -182,13 +183,14 @@ export class Bot {
         'servers',
         { id: guild.id },
         {
-          $set: {
+          $set: new StoredServer({
             id: guild.id,
             joinedTimestamp: guild.joinedTimestamp,
             lastSeen: Date.now(),
             name: guild.name,
-            ownerID: guild.ownerId
-          }
+            ownerID: guild.ownerId,
+            type: 'discord'
+          })
         },
         { atomic: true, upsert: true }
       )
@@ -217,35 +219,51 @@ export class Bot {
 
     // Register Slash commands on Kiera's Development server
     const commands: RESTPostAPIApplicationCommandsJSONBody[] = []
-    for (const commandRoute of this.Router.routes) commandRoute.slash ? commands.push(commandRoute.slash.toJSON()) : null
-
-    // console.log(
-    //   'commands',
-    //   commands.map((command) => {
-    //     const cmd = command as unknown as SlashCommandBuilder
-    //     if (cmd.options) {
-    //       const subcommand = cmd.options
-    //       console.log(cmd.name, subcommand)
-    //     }
-    //     return {
-    //       description: cmd.description,
-    //       name: cmd.name,
-    //       options: cmd.options.map((option: SlashCommandSubcommandBuilder) => option.name)
-    //     }
-    //   })
-    // )
-
+    for (const command of this.Router.routes.filter((c) => !c.permissions.optInReq)) command.slash ? commands.push(command.slash.toJSON()) : null
     const rest = new REST({ version: '10' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
+
+    // Delete existing commands GLOBAL (Dev Only, should be blocked in production)
+    // if (process.env.BOT_BLOCK_GLOBALSLASH === 'true') {
+    //   try {
+    //     await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID), { body: [] })
+    //     console.log('Successfully deleted all application commands.')
+    //   } catch (error) {
+    //     this.Log.Bot.error('Not Successful in deleting application commands.')
+    //   }
+    // }
+
+    // Delete existing commands LOCAL (Dev Only, should be blocked in production)
+    // if (process.env.BOT_BLOCK_GLOBALSLASH === 'true' && String(process.env.BOT_SERVERS_TO_PUSH || '').length) {
+    //   const guildsToDeleteFrom = process.env.BOT_SERVERS_TO_PUSH.split(',')
+    //   try {
+    //     for (let index = 0; index < guildsToDeleteFrom.length; index++)
+    //       await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, guildsToDeleteFrom[index]), { body: [] })
+    //     console.log('Successfully deleted all application commands.')
+    //   } catch (error) {
+    //     this.Log.Bot.error('Not Successful in deleting application commands.')
+    //   }
+    // }
 
     try {
       this.Log.Bot.verbose('Started refreshing application (/) commands.')
       // ! Disabling ESLINT for the following line of code till shit gets fixed in the source libs
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (process.env.BOT_BLOCK_GLOBALSLASH === 'true') {
-        await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, process.env.DISCORD_BOT_OFFICAL_DISCORD) as any, { body: commands })
-        await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, '473856867768991744') as any, { body: commands })
-      } else await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID) as any, { body: commands })
-      this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
+        // Push manually a set to just Kiera's Development server
+        // To have them available for testing immediately (+ any extra servers that are added)
+        // const guildsToUpdate = process.env.BOT_SERVERS_TO_PUSH.split(',')
+        // for (let index = 0; index < guildsToUpdate.length; index++) {
+        //   const guild = guildsToUpdate[index]
+        //   this.Log.Bot.verbose(`Started refreshing application (/) commands for guild ${guild}.`)
+        //   await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, guild), { body: commands })
+        //   this.Log.Bot.verbose(`Successfully reloaded application (/) commands for guild ${guild}.`)
+        // }
+      }
+      // Push normally
+      else {
+        // To global cache
+        await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID), { body: commands })
+        this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
+      }
     } catch (error) {
       this.Log.Bot.error('Not Successful in updating Slash Commands', error)
     }
@@ -266,13 +284,15 @@ export class Bot {
       'servers',
       { id: guild.id },
       {
-        $set: {
+        $set: new StoredServer({
+          commandGroups: {},
           id: guild.id,
           joinedTimestamp: guild.joinedTimestamp,
           lastSeen: Date.now(),
           name: guild.name,
-          ownerID: guild.ownerId
-        }
+          ownerID: guild.ownerId,
+          type: 'discord'
+        })
       },
       { atomic: true, upsert: true }
     )
