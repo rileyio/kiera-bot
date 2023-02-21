@@ -11,6 +11,7 @@
 
 - Updated: Managed Channel output to use DDHHMM format.
 - Updated: Error text and permissions check for Managed Countdown channel creation needing `Connect` and `Manage Channels` permissions at a minimum.
+- Updated: Multiple class and type names to align better + for upcoming platform(s) plan.
 - Replaced: `restify-cookies` with `cookies` and custom cookie management utility.
 
 ### 🌟 Added
