@@ -1,6 +1,6 @@
 import { ObjectId } from 'bson'
 
-export class TrackedServerSetting {
+export class StoredServerSetting {
   public _id: ObjectId
   public key: string
   public serverID: string
@@ -8,7 +8,7 @@ export class TrackedServerSetting {
   public type: string
   public value: string
 
-  constructor(init?: Partial<TrackedServerSetting>) {
+  constructor(init?: Partial<StoredServerSetting>) {
     Object.assign(this, init || {})
   }
 }
