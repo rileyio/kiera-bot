@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AcceptedResponse, Routed } from '@/router'
-import { CacheType, ChatInputCommandInteraction, CommandInteractionOptionResolver, GuildMember, TextChannel } from 'discord.js'
+import { CacheType, ChatInputCommandInteraction, CommandInteractionOptionResolver, GuildMember, RESTPostAPIApplicationCommandsJSONBody, TextChannel } from 'discord.js'
 
 import { Plugin } from '@/objects/plugin'
 
@@ -11,10 +11,10 @@ export type RouteConfigurationCategory =
   | 'BNet'
   | 'Fun'
   | 'Info'
-  | 'Integration'
+  | `Integration/${string}`
   | 'Managed'
   | 'Moderate'
-  | 'Plugin'
+  | `Plugin/${string}`
   | 'Reddit'
   | 'Root'
   | 'Stats'
@@ -42,7 +42,6 @@ export type ProcessedPermissionOutcome =
   | 'FailedServerOnlyRestriction'
   | 'FailedManageChannel'
 
-export type RouteActionUserTarget = 'none' | 'author' | 'argument' | 'controller-decision'
 export type RouteConfigurationType = {
   'discord-chat-interaction': {
     channel: TextChannel
@@ -79,7 +78,7 @@ export class RouteConfiguration<T extends keyof RouteConfigurationType> {
   public validate?: string
   public validateAlias?: Array<string>
 
-  constructor(route: Partial<RouteConfigurationType[T]['type']>) {
+  constructor(route: Partial<RouteConfiguration<RouteConfigurationType[T]['type']>>) {
     this.category = route.category
     this.controller = route.controller
     this.description = route.description
@@ -97,12 +96,20 @@ export class RouteConfiguration<T extends keyof RouteConfigurationType> {
     // for routing purposes
     this.name = this.slash?.name || this.name
   }
+
+  public discordRegisterPayload() {
+    return {
+      nsfw: this.permissions.nsfwRequired,
+      ...(this.slash.toJSON() as RESTPostAPIApplicationCommandsJSONBody)
+    }
+  }
 }
 
 export class RouteConfigurationPermissions {
   public defaultEnabled?: boolean = true
   public manageChannelReq?: boolean = false
   public nsfwRequired?: boolean = false
+  public optInReq?: boolean = false
   public restricted?: boolean = false
   public restrictedToServer?: Array<string> = []
   public restrictedToUser?: Array<string> = []
@@ -117,6 +124,7 @@ export class RouteConfigurationPermissions {
     this.defaultEnabled = permissions.defaultEnabled === undefined ? this.defaultEnabled : permissions.defaultEnabled
     this.manageChannelReq = permissions.manageChannelReq === undefined ? this.manageChannelReq : permissions.manageChannelReq
     this.nsfwRequired = permissions.nsfwRequired === undefined ? this.nsfwRequired : permissions.nsfwRequired
+    this.optInReq = permissions.optInReq === undefined ? this.optInReq : permissions.optInReq
     this.restricted = permissions.restricted === undefined ? this.restricted : permissions.restricted
     this.restrictedToServer = permissions.restrictedToServer === undefined ? this.restrictedToServer : permissions.restrictedToServer
     this.restrictedToUser = permissions.restrictedToUser === undefined ? this.restrictedToUser : permissions.restrictedToUser

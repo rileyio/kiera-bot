@@ -7,12 +7,13 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({
-    category: 'Fun',
+    category: 'Integration/ChastiSafe',
     controller: csRouterSub,
     name: 'cs',
     permissions: {
       defaultEnabled: false,
       nsfwRequired: true,
+      optInReq: true,
       serverOnly: false
     },
     slash: new SlashCommandBuilder()
@@ -28,7 +29,7 @@ export const Routes = ExportRoutes(
       )
       // * Update
       .addSubcommand((subcommand) => subcommand.setName('update').setDescription('Update ChastiSafe Linked Roles on Discord')),
-    type: 'interaction'
+    type: 'discord-chat-interaction'
   })
 )
 

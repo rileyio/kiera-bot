@@ -12,11 +12,17 @@
 - Updated: Managed Channel output to use DDHHMM format.
 - Updated: Error text and permissions check for Managed Countdown channel creation needing `Connect` and `Manage Channels` permissions at a minimum.
 - Updated: Multiple class and type names to align better + for upcoming platform(s) plan.
-- Replaced: `restify-cookies` with `cookies` and custom cookie management utility.
+- Updated: Route Category names to accept dynamic name values.
+- Updated: CS command group to be Opt in - Serer Admins can enable these via a command.
+- Replaced: Old API cookies middleware with custom cookie management utility.
 
 ### 🌟 Added
 
 - Added: Kiera management commands for easier process management at server level.
+- Added: New Discord command payload generator for registering routes on the backend.
+- Added: NSFW channel support (marked commands will not even show up in non-NSFW channels).
+- Added: Opt in setting for use on some new (and old) command(s) that maybe shouldnt be enabled everywhere. Server Admins can enable these via a command.
+- Added: New command to toggle command groups on and off (opt in/out).
 
 ---
 

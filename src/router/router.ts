@@ -72,11 +72,43 @@ export class CommandRouter {
         runtime: routerStats.performance,
         successful: false,
         type: 'bot.command',
-        where: 'Discord'
+        where: 'discord'
       })
 
       this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
-      return // End here
+      return await interaction.reply({ content: `Unexpected Error, You're able to report this issue on https://github.com/rileyio/kiera-bot.`, ephemeral: true }) // ! End here
+    }
+
+    // Check if route is optInReq - if so, check if server is opted in
+    if (route.permissions.optInReq) {
+      const serverSettings = await this.bot.DB.verify('servers', {
+        commandGroups: { [`command/discord/${route.category}`]: true },
+        id: guildId,
+        type: 'discord'
+      })
+
+      console.log('serverSettings', serverSettings)
+
+      // Command must have been previously enabled and not deleted from cache
+      if (!serverSettings) {
+        // Track in an audit event
+        this.bot.Audit.NewEntry({
+          error: 'Command disabled by optInReq permission in this channel',
+          guild: {
+            channel: interaction.channel.isDMBased() ? 'DM' : interaction.channel.id,
+            id: interaction.channel.isDMBased() ? 'DM' : interaction.guild.id,
+            name: interaction.channel.isDMBased() ? 'DM' : interaction.guild.name
+          },
+          name: route.name,
+          owner: interaction.user.id,
+          runtime: routerStats.performance,
+          successful: false,
+          type: 'bot.command',
+          where: 'discord'
+        })
+        this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
+        return await interaction.reply({ content: 'There must be a settings conflict, because this command should not be available.', ephemeral: true }) // ! End here
+      }
     }
 
     this.bot.Log.Router.log(`Router -> Routing Command name: '${route.name}', type: '${route.type}'`)
@@ -98,7 +130,7 @@ export class CommandRouter {
       options,
       route,
       routerStats,
-      type: 'interaction',
+      type: 'discord',
       user: kieraUser
     })
 
@@ -127,11 +159,10 @@ export class CommandRouter {
           runtime: routerStats.performance,
           successful: false,
           type: 'bot.command',
-          where: 'Discord'
+          where: 'discord'
         })
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
-
-        return // Hard Stop
+        return // ! Hard Stop
       }
 
       // Fallback to generic failure tracking where permision check
@@ -152,10 +183,10 @@ export class CommandRouter {
         runtime: routerStats.performance,
         successful: false,
         type: 'bot.command',
-        where: 'Discord'
+        where: 'discord'
       })
 
-      return // Hard Stop
+      return // ! Hard Stop
     }
 
     // Process Middleware
@@ -201,7 +232,7 @@ export class CommandRouter {
           runtime: routerStats.performance,
           successful: true,
           type: 'bot.command',
-          where: 'Discord'
+          where: 'discord'
         })
 
         this.bot.BotMonitor.LiveStatistics.increment('commands-completed')
@@ -222,7 +253,7 @@ export class CommandRouter {
           runtime: routerStats.performance,
           successful: false,
           type: 'bot.command',
-          where: 'Discord'
+          where: 'discord'
         })
 
         this.bot.BotMonitor.LiveStatistics.increment('commands-invalid')
