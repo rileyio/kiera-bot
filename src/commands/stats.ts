@@ -1,4 +1,4 @@
-import { AcceptedResponse, Routed, ExportRoutes, RouteConfiguration } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({
@@ -10,7 +10,7 @@ export const Routes = ExportRoutes(
     permissions: {
       serverOnly: false
     },
-    type: 'message',
+    type: 'discord-chat-interaction',
     validate: '/stats:string/commands:string'
   })
 )

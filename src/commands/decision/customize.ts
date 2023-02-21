@@ -15,7 +15,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision nickname 5c68835bc5b65b2113c7ac7b "nickname-here"',
     middleware: [Middleware.isUserRegistered],
     name: 'decision-set-nickname',
-    type: 'message',
+    type: 'discord-chat-interaction',
     validate: '/decision:string/nickname:string/id=string/nickname?=string'
   }),
   new RouteConfiguration({
@@ -25,7 +25,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision user nickname NicknameHere',
     middleware: [Middleware.isUserRegistered],
     name: 'decision-set-user-nickname',
-    type: 'message',
+    type: 'discord-chat-interaction',
     validate: '/decision:string/user:string/nickname:string/usernick=string'
   })
 )

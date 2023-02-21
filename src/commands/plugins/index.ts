@@ -6,7 +6,7 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({
-    category: 'Plugin',
+    category: 'Plugin/Admin',
     controller: stats,
     name: 'plugins',
     permissions: {

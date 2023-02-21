@@ -14,7 +14,7 @@ export const Routes = ExportRoutes(
     example: '{{prefix}}decision log id',
     middleware: [Middleware.isUserRegistered],
     name: 'decision-log',
-    type: 'message',
+    type: 'discord-chat-interaction',
     validate: '/decision:string/log:string/id=string'
   })
 )

@@ -2,7 +2,7 @@
  * @name sample-command
  * @pluginURL https://raw.githubusercontent.com/rileyio/sample-command/main/plugin.ts
  * @repo rileyio/sample-command
- * @version 1.0.1
+ * @version 1.0.2
  */
 
 import { RouteConfiguration, Routed } from '../../src/router'
@@ -21,7 +21,7 @@ export class SampleCommandPlugin extends Plugin {
   public async onEnabled() {
     await this.bot.Router.addRoute(
       new RouteConfiguration({
-        category: 'Plugin',
+        category: 'Plugin/Sample',
         controller: this.routeCommand,
         name: 'test',
         permissions: {
