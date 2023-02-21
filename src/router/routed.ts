@@ -32,7 +32,7 @@ export class Routed<T extends keyof RouteConfigurationType> {
   public route: RouteConfiguration<T>
   public routerStats: RouterStats
   public trackedMessage?: TrackedMessage
-  public type?: 'interaction'
+  public type?: 'discord'
   public user: TrackedUser
 
   constructor(init: Omit<Routed<T>, '$render' | '$locales' | '$sb' | '$localeExists' | 'reply' | 'followUp'>) {
@@ -138,8 +138,17 @@ export class Routed<T extends keyof RouteConfigurationType> {
     // const isObj = optionsOrPrivate ? typeof optionsOrPrivate === 'object' : false
     // const ephemeral = isObj ? (optionsOrPrivate as ReplyOptions).ephemeral : (optionsOrPrivate as boolean)
     try {
-      if (typeof response === 'object') return await (this.interaction as ChatInputCommandInteraction<CacheType>).reply(Object.assign(response, { ephemeral }))
-      else return await (this.interaction as ChatInputCommandInteraction<CacheType>).reply({ content: response, ephemeral } as string | MessagePayload | InteractionReplyOptions)
+      // ? Check if emphemeral is set
+      // TODO: Deprecate the old way of doing this in upcoming versions
+      const isLegacyEmphemeralPassed = typeof ephemeral === 'boolean'
+      const ephemeralState = isLegacyEmphemeralPassed ? ephemeral : (response as InteractionReplyOptions).ephemeral
+
+      if (typeof response === 'object') return await (this.interaction as ChatInputCommandInteraction<CacheType>).reply(Object.assign(response, { ephemeral: ephemeralState }))
+      else
+        return await (this.interaction as ChatInputCommandInteraction<CacheType>).reply({ content: response, ephemeral: ephemeralState } as
+          | string
+          | MessagePayload
+          | InteractionReplyOptions)
     } catch (error) {
       this.bot.Log.Router.error('Unable to .reply =>', error, response)
     }
