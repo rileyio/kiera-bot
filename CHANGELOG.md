@@ -1,5 +1,13 @@
 # Change Log
 
+## 10.2.1
+
+## 🛠️ Fixes
+
+- Fixed: [#95](https://github.com/rileyio/kiera-bot/issues/95) A server's `commandGroups` in the DB is reset on Guild Change event.
+
+---
+
 ## 10.2.0
 
 ### 🛠️ Fixes
