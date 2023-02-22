@@ -57,14 +57,18 @@ ChastiSafe:
       Title: |-
         **{{username}}**
       MainStats: |-
-        **User Statistics**
+        **ChastiSafe User Statistics**
+        {{#if hasLevels}}
         Levels
-         ↳ Chastity `{{chastityLevel}}` | Bondage `{{bondageLevel}}` | Task `{{taskLevel}}`
+         ↳ {{#if chastityLevel}} Chastity `{{chastityLevel}}` {{/if}} {{#if bondageLevel}} ● Bondage `{{bondageLevel}}` {{/if}} {{#if taskLevel}} ● Task `{{taskLevel}}` {{/if}}
+        {{/if}}
+        {{#if hasLevel}}
         Keyholder Levels
-         ↳ Chastity `{{keyholderLevelChastity}}` | Bondage `{{keyholderLevelBondage}}` | Task `{{keyholderLevelTask}}`
+         ↳ {{#if keyholderLevelChastity}} Chastity `{{keyholderLevelChastity}}` {{/if}} {{#if keyholderLevelBondage}} ● Bondage `{{keyholderLevelBondage}}` {{/if}} {{#if keyholderLevelTask}} ● Task `{{keyholderLevelTask}}` {{/if}}
+        {{/if}}
         Ratings
-         ↳ Keyholder Avg `{{averageRatingAsKeyholder}}` | Count `{{ratingsAsKeyholderCount}}`
-         ↳ Lockee Avg `{{averageRatingAsLockee}}` | Count `{{ratingsAsLockeeCount}}`
+         ↳ Keyholder Avg `{{averageRatingAsKeyholder}}` ● Count `{{ratingsAsKeyholderCount}}`
+         ↳ Lockee Avg `{{averageRatingAsLockee}}` ● Count `{{ratingsAsLockeeCount}}`
 
         {{#if hasActiveChastityLocks}}
         **Active Locks**
@@ -76,9 +80,9 @@ ChastiSafe:
 
         {{#if hasChastiKeyData}}
         **ChastiKey (Legacy)**
-        Avg Keyholder Rating `{{#if hasKeyholderRatings}}{{averageKeyholderRating}}{{else}}n/a{{/if}}` | # Ratings `{{noOfKeyholderRatings}}`
-        Avg Lockee Rating `{{#if hasLockeeRatings}}{{averageLockeeRating}}{{else}}n/a{{/if}}` | # Ratings `{{numberOfLockeeRatings}}`
-        Locked for `{{cumulativeSecondsLocked}}` months to date | `{{numberOfCompletedLocks}}` locks completed
+        Avg Keyholder Rating `{{#if hasKeyholderRatings}}{{averageKeyholderRating}}{{else}}n/a{{/if}}` ● # Ratings `{{noOfKeyholderRatings}}`
+        Avg Lockee Rating `{{#if hasLockeeRatings}}{{averageLockeeRating}}{{else}}n/a{{/if}}` ● # Ratings `{{numberOfLockeeRatings}}`
+        Locked for `{{cumulativeSecondsLocked}}` months to date ● `{{numberOfCompletedLocks}}` locks completed
         Longest (completed) `{{longestLockCompleted}}`
         Average Time Locked (overall) `{{averageTimeLocked}}`
         Date First Keyheld `{{keyheldStartTimestamp}}`

@@ -1,5 +1,5 @@
-import { performance } from 'perf_hooks'
 import { User } from 'discord.js'
+import { performance } from 'perf_hooks'
 
 export class RouterStats {
   private _performanceStart: number = performance.now()

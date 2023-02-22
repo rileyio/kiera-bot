@@ -19,7 +19,7 @@ export async function webRouteLoader() {
       const _requiredFile = (await import(Path.join('../../../', routeFile.toString()))) as { Routes: Array<WebRoute> }
       // Test if file returns undefined
       if (_requiredFile !== undefined) {
-        console.log(`webRouteLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map((r) => Array.isArray(r)).length}`)
+        // console.log(`webRouteLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map((r) => Array.isArray(r)).length}`)
 
         for (let index = 0; index < _requiredFile.Routes.length; index++) {
           const route = _requiredFile.Routes[index]

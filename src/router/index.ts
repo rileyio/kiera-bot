@@ -1,7 +1,7 @@
 export * from './router'
-export * from './route-categories'
 export * from './route-loader'
-export * from './route-permissions'
+export * from './route-configuration'
+export * from './routed'
 export * from './routes-exporter'
 export * from './validate'
 

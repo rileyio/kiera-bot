@@ -1,15 +1,25 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ComponentType, MessageComponentInteraction, SelectMenuBuilder, SelectMenuInteraction } from 'discord.js'
+import { AcceptedResponse, Routed } from '@/router'
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonInteraction,
+  ButtonStyle,
+  ComponentType,
+  MessageComponentInteraction,
+  SelectMenuBuilder,
+  SelectMenuInteraction,
+  TextChannel
+} from 'discord.js'
 
 import { ObjectID } from 'mongodb'
-import { RoutedInteraction } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 
 /**
  * Delete outcome from Decision Roller
  * @export
- * @param {RoutedInteraction} routed
+ * @param {Routed} routed
  */
-export async function removeOutcome(routed: RoutedInteraction) {
+export async function removeOutcome(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const decisionsStored = await routed.bot.DB.getMultiple('decision', { authorID: routed.author.id })
   const selectedOutcomeIDs: Array<string> = []
   let selectedDecisionRoll: TrackedDecision
@@ -40,7 +50,7 @@ export async function removeOutcome(routed: RoutedInteraction) {
   )
 
   // Collector to recieve interaction (With 15s timeout)
-  const collector = routed.interaction.channel.createMessageComponentCollector({ filter, time: 60000 })
+  const collector = (routed.interaction.channel as TextChannel).createMessageComponentCollector({ filter, time: 60000 })
   collector.on('collect', async (i: SelectMenuInteraction | ButtonInteraction) => {
     console.log('🌟 Interaction Type:', i.componentType, ', customId:', i.customId)
     // When its not the author interacting, skip

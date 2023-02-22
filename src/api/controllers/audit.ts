@@ -7,7 +7,7 @@ export const Routes: Array<WebRoute> = [
     method: 'post',
     middleware: [Middleware.validateSession],
     name: 'audit-log',
-    path: '/api/audit'
+    path: '/api/audit-log'
   }
 ]
 
@@ -15,7 +15,7 @@ export async function getEntries(routed: WebRouted) {
   const auditEntries = await routed.Bot.DB.getLatest(
     'audit-log',
     {
-      owner: routed.session.userID
+      owner: routed.session.id
     },
     { limit: 200 }
   )

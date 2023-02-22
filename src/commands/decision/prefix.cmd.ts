@@ -1,13 +1,13 @@
 import * as XRegExp from 'xregexp'
 
-import { RoutedInteraction } from '@/router'
+import { Routed } from '@/router'
 
 /**
  * Set a custom prefix for the first part of decision roll nicknames
  * @export
- * @param {RoutedInteraction} routed
+ * @param {Routed} routed
  */
-export async function setPrefix(routed: RoutedInteraction) {
+export async function setPrefix(routed: Routed<'discord-chat-interaction'>) {
   const nickname = routed.interaction.options.get('prefix')?.value as string
   const shortRegex = XRegExp('^([a-z0-9]*)$', 'i')
   const nicknameFixed = nickname.replace(' ', '-')

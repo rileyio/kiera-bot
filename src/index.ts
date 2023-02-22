@@ -6,12 +6,8 @@ import * as Task from '@/tasks'
 import * as Utils from '@/utils'
 import * as debug from 'debug'
 
-import { CommandRouter, RoutedInteraction, routeLoader } from '@/router'
-import {
-  RESTPostAPIApplicationCommandsJSONBody,
-  SlashCommandBuilder,
-  SlashCommandSubcommandBuilder
-} from 'discord.js'
+import { CommandRouter, Routed, routeLoader } from '@/router'
+import { RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder, SlashCommandSubcommandBuilder } from 'discord.js'
 
 import { Audit } from '@/objects/audit'
 import { BattleNet } from '@/integrations/BNet'
@@ -24,6 +20,7 @@ import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v10'
 import { ServerStatisticType } from './objects/statistics'
 import { Statistics } from '@/statistics'
+import { StoredServer } from './objects/server'
 import { read as getSecret } from '@/secrets'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
@@ -109,7 +106,7 @@ export class Bot {
     this.Task.start([
       new Task.DBAgeCleanupScheduled(),
       new Task.ManagedUpdateScheduled(),
-      new Task.StatusMessageRotatorScheduled(),
+      new Task.StatusMessageRotatorScheduled()
       // new Task.StatsCleanerScheduled()
     ])
 
@@ -177,15 +174,6 @@ export class Bot {
     this.client.on('guildUpdate', async (guild) => this.onGuildCreate(guild))
     this.client.on('guildMemberAdd', (member) => this.onUserJoined(member))
     this.client.on('guildMemberRemove', (member) => this.onUserLeft(member))
-    ///   Reaction in (Cached)  ///
-    // this.client.on('messageReactionAdd', (react, user) => this.onMessageCachedReactionAdd(react, user))
-    ///  Reaction out (Cached)  ///
-    // this.client.on('messageReactionRemove', (react, user) => this.onMessageCachedReactionRemove(react, user))
-
-    // Since regular commands seem to be possible working as of the time of writing this, adding back
-    // an info response redirecting users to use slash commands.
-    /// Incoming message router ///
-    // this.client.on('message', async (msg) => await this.onMessage(msg))
 
     /// Update guilds info stored ///
     for (const guild of [...this.client.guilds.cache.values()]) {
@@ -195,13 +183,14 @@ export class Bot {
         'servers',
         { id: guild.id },
         {
-          $set: {
+          $set: new StoredServer({
             id: guild.id,
             joinedTimestamp: guild.joinedTimestamp,
             lastSeen: Date.now(),
             name: guild.name,
-            ownerID: guild.ownerId
-          }
+            ownerID: guild.ownerId,
+            type: 'discord'
+          })
         },
         { atomic: true, upsert: true }
       )
@@ -230,52 +219,55 @@ export class Bot {
 
     // Register Slash commands on Kiera's Development server
     const commands: RESTPostAPIApplicationCommandsJSONBody[] = []
-    for (const commandRoute of this.Router.routes) commandRoute.slash ? commands.push(commandRoute.slash.toJSON()) : null
-
-    // console.log(
-    //   'commands',
-    //   commands.map((command) => {
-    //     const cmd = command as unknown as SlashCommandBuilder
-    //     if (cmd.options) {
-    //       const subcommand = cmd.options
-    //       console.log(cmd.name, subcommand)
-    //     }
-    //     return {
-    //       description: cmd.description,
-    //       name: cmd.name,
-    //       options: cmd.options.map((option: SlashCommandSubcommandBuilder) => option.name)
-    //     }
-    //   })
-    // )
-
+    for (const command of this.Router.routes.filter((c) => !c.permissions.optInReq)) command.slash ? commands.push(command.slash.toJSON()) : null
     const rest = new REST({ version: '10' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
+
+    // Delete existing commands GLOBAL (Dev Only, should be blocked in production)
+    // if (process.env.BOT_BLOCK_GLOBALSLASH === 'true') {
+    //   try {
+    //     await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID), { body: [] })
+    //     console.log('Successfully deleted all application commands.')
+    //   } catch (error) {
+    //     this.Log.Bot.error('Not Successful in deleting application commands.')
+    //   }
+    // }
+
+    // Delete existing commands LOCAL (Dev Only, should be blocked in production)
+    // if (process.env.BOT_BLOCK_GLOBALSLASH === 'true' && String(process.env.BOT_SERVERS_TO_PUSH || '').length) {
+    //   const guildsToDeleteFrom = process.env.BOT_SERVERS_TO_PUSH.split(',')
+    //   try {
+    //     for (let index = 0; index < guildsToDeleteFrom.length; index++)
+    //       await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, guildsToDeleteFrom[index]), { body: [] })
+    //     console.log('Successfully deleted all application commands.')
+    //   } catch (error) {
+    //     this.Log.Bot.error('Not Successful in deleting application commands.')
+    //   }
+    // }
 
     try {
       this.Log.Bot.verbose('Started refreshing application (/) commands.')
       // ! Disabling ESLINT for the following line of code till shit gets fixed in the source libs
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (process.env.BOT_BLOCK_GLOBALSLASH === 'true')
-        await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, process.env.DISCORD_BOT_OFFICAL_DISCORD) as any, { body: commands })
-      else await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID) as any, { body: commands })
-      this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
+      if (process.env.BOT_BLOCK_GLOBALSLASH === 'true') {
+        // Push manually a set to just Kiera's Development server
+        // To have them available for testing immediately (+ any extra servers that are added)
+        // const guildsToUpdate = process.env.BOT_SERVERS_TO_PUSH.split(',')
+        // for (let index = 0; index < guildsToUpdate.length; index++) {
+        //   const guild = guildsToUpdate[index]
+        //   this.Log.Bot.verbose(`Started refreshing application (/) commands for guild ${guild}.`)
+        //   await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, guild), { body: commands })
+        //   this.Log.Bot.verbose(`Successfully reloaded application (/) commands for guild ${guild}.`)
+        // }
+      }
+      // Push normally
+      else {
+        // To global cache
+        await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID), { body: commands })
+        this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
+      }
     } catch (error) {
       this.Log.Bot.error('Not Successful in updating Slash Commands', error)
     }
   }
-
-  // private async onMessage(message: Discord.Message) {
-  //   try {
-  //     const containsPrefix = message.content.startsWith('!')
-
-  //     if (containsPrefix)
-  //       await message.reply({
-  //         content:
-  //           '🤖 Kiera now uses (`/`) Slash Commands. Try typing commands as before but instead of starting with `!` replace with `/`. Please also note that shortened commands will no longer work due to redesign limitation.'
-  //       })
-  //   } catch (error) {
-  //     this.Log.Bot.error('Fatal onMessage error caught', error)
-  //   }
-  // }
 
   private async onInteraction(interaction: Discord.Interaction) {
     try {
@@ -285,14 +277,6 @@ export class Bot {
     }
   }
 
-  // private async onMessageCachedReactionAdd(message: Discord.Message, reaction: string, user: Discord.User) {
-  //   this.Router.routeReaction(message, reaction, user, 'added')
-  // }
-
-  // private async onMessageCachedReactionRemove(message: Discord.Message, reaction: string, user: Discord.User) {
-  //   this.Router.routeReaction(message, reaction, user, 'removed')
-  // }
-
   private async onGuildCreate(guild: Discord.Guild) {
     this.Log.Bot.log('Joined a new server: ' + guild.name)
     // Save some info about the server in db
@@ -300,13 +284,15 @@ export class Bot {
       'servers',
       { id: guild.id },
       {
-        $set: {
+        $set: new StoredServer({
+          commandGroups: {},
           id: guild.id,
           joinedTimestamp: guild.joinedTimestamp,
           lastSeen: Date.now(),
           name: guild.name,
-          ownerID: guild.ownerId
-        }
+          ownerID: guild.ownerId,
+          type: 'discord'
+        })
       },
       { atomic: true, upsert: true }
     )
@@ -316,21 +302,6 @@ export class Bot {
     await this.DB.remove('servers', { id: guild.id })
     this.Log.Bot.log('Left a guild: ' + guild.name)
   }
-
-  // private async onMessageNonCachedReact(event: { t: Discord.WSEventType; d: any }) {
-  //   const user = await this.client.users.fetch(event.d.user_id)
-  //   const channel = this.client.channels.cache.get(event.d.channel_id) as Discord.TextChannel
-  //   // Skip firing events for cached messages as these will already be properly handled
-  //   // if ((<Discord.TextChannel>channel).messages.has(event.d.message_id)) return
-  //   // Query channel for message as its not chached
-  //   const message = await channel.messages.fetch(event.d.message_id)
-  //   // Handling for custome/server emoji
-  //   const emojiKey = event.d.emoji.id ? `${event.d.emoji.name}:${event.d.emoji.id}` : event.d.emoji.name
-  //   // Emit to handle in the regular handling used for cached messages
-  //   // this.client.emit(DISCORD_CLIENT_EVENTS[event.t], reaction, user)
-  //   if (event.t === 'MESSAGE_REACTION_ADD') return await this.onMessageCachedReactionAdd(message, emojiKey, user)
-  //   if (event.t === 'MESSAGE_REACTION_REMOVE') return await this.onMessageCachedReactionRemove(message, emojiKey, user)
-  // }
 
   private onUserJoined(member: Discord.GuildMember | Discord.PartialGuildMember) {
     this.Statistics.trackServerStatistic(member.guild.id, null, member.user.id, ServerStatisticType.UserJoined)
@@ -342,4 +313,4 @@ export class Bot {
 }
 
 export { Plugin } from './objects/plugin'
-export { RoutedInteraction }
+export { Routed }

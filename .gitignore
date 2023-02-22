@@ -75,7 +75,5 @@ ca.crt
 secrets/
 
 # Plugins downloaded
-plugins/*
-!plugins/sample-command
-!plugins/sample-command/*
-!plugins/.gitkeep
+plugins/*.zip
+plugins/*.json

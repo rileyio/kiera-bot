@@ -36,7 +36,7 @@ export class WebAPI {
 
     const _cors = cors({
       allowHeaders: ['*'],
-      exposeHeaders: ['API-Token-Expiry'],
+      exposeHeaders: ['*'],
       origins: ['*'],
       preflightMaxAge: 5
     })

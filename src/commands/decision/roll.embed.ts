@@ -2,7 +2,7 @@ import * as Utils from '@/utils'
 import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
 import { EmbedBuilder } from 'discord.js'
 
-export function decisionFromSaved(decision: TrackedDecision, option: TrackedDecisionOption, author: { name: string; avatar: string; id: string; server: { prefix: string } }) {
+export function decisionFromSaved(decision: TrackedDecision, option: TrackedDecisionOption, author: { name: string; avatar: string; id: string }) {
   const embed = new EmbedBuilder()
     .setColor(14553782)
     .setFooter({

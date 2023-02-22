@@ -2,14 +2,14 @@ import * as Random from 'random'
 
 import { rollDice, rollDie } from '@/commands/fun/roll.embed'
 
-import { RoutedInteraction } from '@/router'
+import { Routed } from '@/router'
 
 /**
  * Roll (a die | dice)
  * @export
- * @param {RoutedInteraction} routed
+ * @param {Routed} routed
  */
-export async function roll(routed: RoutedInteraction) {
+export async function roll(routed: Routed<'discord-chat-interaction'>) {
   const sides = (routed.interaction.options.get('sides')?.value as number) || 6
   const dice = (routed.interaction.options.get('dice')?.value as number) || 1
 

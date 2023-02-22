@@ -1,10 +1,10 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, TextChannel } from 'discord.js'
 
-import { RoutedInteraction } from '@/router'
+import { Routed } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 import { embed } from '@/commands/decision/list.embed'
 
-export async function list(routed: RoutedInteraction) {
+export async function list(routed: Routed<'discord-chat-interaction'>) {
   const authorID = routed.author.id
   const decisionsStored = (await routed.bot.DB.getMultiple('decision', { authorID })) as Array<TrackedDecision>
 
@@ -24,7 +24,7 @@ export async function list(routed: RoutedInteraction) {
     // Collector to recieve interaction (With 5m timeout)]
     console.log('Collector Started!')
 
-    const collector = routed.interaction.channel?.createMessageComponentCollector({ time: 5 * (60 * 1000) })
+    const collector = (routed.interaction.channel as TextChannel).createMessageComponentCollector({ time: 5 * (60 * 1000) })
     collector?.on('collect', async (i: ButtonInteraction) => {
       // Disable 'previous' button when going to the first page
       if (i.customId === 'previous' && seek === 3) outputOptions.components[0].setDisabled(true)

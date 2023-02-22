@@ -1,11 +1,11 @@
 import * as Utils from '@/utils'
 
+import { Routed } from '@/router'
 import { ObjectId } from 'bson'
-import { RoutedInteraction } from '@/router'
 import { ServerStatisticType } from '@/objects/statistics'
 import { statsServer } from '@/commands/stats/stats-server.embed'
 
-export async function get(routed: RoutedInteraction) {
+export async function get(routed: Routed<'discord-chat-interaction'>) {
   const topChannelsByMsgCount = await routed.bot.DB.aggregate<{ channelID: string; count: number; name?: string }>('stats-servers', [
     {
       $match: { _id: { $gt: ObjectId.createFromTime(new Date().setDate(new Date().getDate() - 30) / 1000) }, serverID: routed.guild.id, type: ServerStatisticType.Message }

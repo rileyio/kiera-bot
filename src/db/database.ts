@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BotStatistics, ServerStatistic } from '@/objects/statistics'
 import { CollectionInsertManyOptions, Db, FilterQuery, MongoClient, MongoClientOptions, MongoError, ObjectId, QuerySelector, UpdateQuery } from 'mongodb'
 import { TrackedDecision, TrackedDecisionLogEntry } from '@/objects/decision'
@@ -6,9 +7,9 @@ import { TrackedMutedUser, TrackedUser } from '@/objects/user'
 import { AuditEntry } from '@/objects/audit'
 import { Bot } from '../'
 import { ManagedChannel } from '@/objects/managed'
+import { StoredServer } from '@/objects/server'
 import { TrackedMessage } from '@/objects/message'
 import { TrackedPoll } from '@/objects/poll'
-import { TrackedServer } from '@/objects/server'
 import { TrackedSession } from '@/objects/session'
 import { read as getSecret } from '@/secrets'
 import { mongoDot_lvl2 } from 'mongo_dottype'
@@ -29,7 +30,7 @@ export type Collections = {
   polls: TrackedPoll
   'scheduled-jobs': any
   'server-settings': any
-  servers: TrackedServer
+  servers: StoredServer
   settings: any
   sessions: TrackedSession
   'stats-settings': any

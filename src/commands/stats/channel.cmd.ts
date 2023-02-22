@@ -2,12 +2,12 @@ import * as Utils from '@/utils'
 
 import { ServerStatisticType, StatisticsSettingType } from '@/objects/statistics'
 
+import { Routed } from '@/router'
 import { ObjectId } from 'mongodb'
-import { RoutedInteraction } from '@/router'
 import { TextChannel } from 'discord.js'
 import { statsChannel } from '@/commands/stats/channel.embed'
 
-export async function get(routed: RoutedInteraction) {
+export async function get(routed: Routed<'discord-chat-interaction'>) {
   const channelID = routed.interaction.options.get('target').channel.id || routed.interaction.channel.id
 
   // Check for stats disabled setting on channel

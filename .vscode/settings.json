@@ -27,5 +27,24 @@
   "i18n-ally.localesPaths": "locales",
   "i18n-ally.keystyle": "nested",
   "i18n-ally.sourceLanguage": "en",
-  "discord.enabled": true
+  "discord.enabled": true,
+  "cSpell.words": [
+    "automagically",
+    "Chasti",
+    "chastikey",
+    "cumulatives",
+    "DDHHMM",
+    "keyholder",
+    "Keyholder",
+    "Keyholders",
+    "Kiera",
+    "kierabot",
+    "lockees",
+    "Locktober",
+    "restify",
+    "rtail",
+    "Runtimes",
+    "unmanaged",
+    "Unmute"
+  ]
 }

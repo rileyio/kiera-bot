@@ -1,16 +1,17 @@
 import * as XRegExp from 'xregexp'
 
+import { AcceptedResponse, Routed } from '@/router'
+
 import { ObjectId } from 'mongodb'
-import { RoutedInteraction } from '@/router'
 import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
 
 /**
  * Set a nickname
  * @export
- * @param {RoutedInteraction} routed
+ * @param {Routed} routed
  */
-export async function setNickname(routed: RoutedInteraction) {
+export async function setNickname(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const id = routed.interaction.options.get('id').value as string
   const nicknameInput = routed.interaction.options.get('nickname').value as string
   const shortRegex = XRegExp('^([a-z0-9\\-]*)$', 'i')
@@ -18,8 +19,7 @@ export async function setNickname(routed: RoutedInteraction) {
 
   // Stop here if the user has not set a short username yet
   if (!userNickname.Decision.nickname) {
-    await routed.reply(routed.$render('Decision.Customize.UserNicknameNotSet'), true)
-    return true
+    return await routed.reply(routed.$render('Decision.Customize.UserNicknameNotSet'), true)
   }
 
   const nickname: string = nicknameInput ? nicknameInput.replace(' ', '-') : ''
@@ -34,9 +34,8 @@ export async function setNickname(routed: RoutedInteraction) {
     // If empty, unset in decision roll
     if (nickname.length === 0 && decisionFromDB) {
       const removed = await routed.bot.DB.update('decision', { _id: decisionFromDB._id }, { $unset: { nickname: '' } }, { atomic: true })
-      if (removed) await routed.reply(routed.$render('Decision.Customize.NicknameRemoved'), true)
-      else await routed.reply(routed.$render('Decision.Customize.NicknameNotRemoved'), true)
-      return true
+      if (removed) return await routed.reply(routed.$render('Decision.Customize.NicknameRemoved'), true)
+      else return await routed.reply(routed.$render('Decision.Customize.NicknameNotRemoved'), true)
     }
 
     // Ensure only valid characters are present

@@ -12,7 +12,7 @@ export async function routeLoader(logger: Logger.Debug) {
   const _routeFiles = glob.sync(['src/commands/**/*.ts', '!src/commands/**/*.{cmd,embed}.ts', '!src/commands/**/shared.ts'])
 
   // Collection of routes
-  const routes: Array<RouteConfiguration> = []
+  const routes: Array<RouteConfiguration<'placeolder-type'>> = []
 
   // Load each route configured into the routes array
   for (let index = 0; index < _routeFiles.length; index++) {
@@ -22,20 +22,25 @@ export async function routeLoader(logger: Logger.Debug) {
     const start = performance.now()
     //logger.debug('Trying to load', routeFile.toString())
     try {
-      const _requiredFile = (await import(Path.join('../../', routeFile.toString()))) as { Routes: Array<RouteConfiguration> }
+      const _requiredFile = (await import(Path.join('../../', routeFile.toString()))) as { Routes: Array<RouteConfiguration<'placeolder-type'>> }
       // Test if file returns undefined
-      if (_requiredFile !== undefined) {
-        // console.log(`routeLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map(r => Array.isArray(r)).length}`)
+      if (_requiredFile === undefined) continue
+      // console.log(`routeLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map(r => Array.isArray(r)).length}`)
 
-        for (let index = 0; index < _requiredFile.Routes.length; index++) {
-          const route = _requiredFile.Routes[index]
-          routes.push(route)
-        }
-
-        // logger.verbose(`routeLoader() => route [${routeFile.toString()}] loaded (${Math.round(performance.now() - start)}ms)`)
+      // When no array is returned
+      if (Object.keys(_requiredFile).includes('Routes') === false) {
+        // logger.debug(`routeLoader() [WARN] => ${routeFile.toString()}, no Routes array found (${Math.round(performance.now() - start)}ms)`)
+        continue
       }
+
+      for (let index = 0; index < _requiredFile.Routes.length; index++) {
+        const route = _requiredFile.Routes[index]
+        routes.push(route)
+      }
+
+      logger.verbose(`routeLoader() => route [${routeFile.toString()}] loaded (${Math.round(performance.now() - start)}ms)`)
     } catch (e) {
-      logger.error(`routeLoader() [ERROR] => ${routeFile.toString()}, ${e.message}`)
+      logger.error(`routeLoader() [ERROR] => ${routeFile.toString()}, ${e.message} (${Math.round(performance.now() - start)}ms)`)
     }
   }
 

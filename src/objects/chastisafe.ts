@@ -1,3 +1,19 @@
+export type ChastiSafeUserKeyholderLevels = 'Novice' | 'Keyholder' | 'Established' | 'Distinguished' | 'Renowned'
+export type ChastiSafeUserLockeeLevels = 'Novice' | 'Intermediate' | 'Experienced' | 'Devoted' | 'Fanatical'
+export enum ChastiSafeUserKeyholderLevelsEnum {
+  'Novice',
+  'Keyholder',
+  'Established',
+  'Distinguished',
+  'Renowned'
+}
+export enum ChastiSafeUserLockeeLevelsEnum {
+  'Novice',
+  'Intermediate',
+  'Experienced',
+  'Devoted',
+  'Fanatical'
+}
 export class ChastiSafeUser {
   public badges: Array<'LOCKTOBER_ONGOING' | 'LOCKTOBER_2022' | 'LOCKTOBER_2022_SELF' | 'LOCKTOBER_ONGOING_SELF'> = []
 
@@ -18,9 +34,9 @@ export class ChastiSafeUser {
   public hasChastiKeyData = false
 
   public keyholderLevels: {
-    bondageLevel: string
-    chastityLevel: string
-    taskLevel: string
+    bondageLevel: ChastiSafeUserKeyholderLevels
+    chastityLevel: ChastiSafeUserKeyholderLevels
+    taskLevel: ChastiSafeUserKeyholderLevels
   }
 
   public keyholderLockCounts: {
@@ -40,9 +56,9 @@ export class ChastiSafeUser {
   }
 
   public levels: {
-    bondageLevel: string
-    chastityLevel: string
-    taskLevel: string
+    bondageLevel: ChastiSafeUserLockeeLevels
+    chastityLevel: ChastiSafeUserLockeeLevels
+    taskLevel: ChastiSafeUserLockeeLevels
   }
 
   public lockInfo: {
@@ -88,6 +104,18 @@ export class ChastiSafeUser {
 
   public get isChastityLocked() {
     return this.lockInfo.chastityLocks.length > 0
+  }
+
+  public get highestKeyholderLevel(): ChastiSafeUserKeyholderLevels {
+    // const { bondageLevel, taskLevel, chastityLevel } = this.keyholderLevels
+    // const levels = [ChastiSafeUserKeyholderLevelsEnum[bondageLevel], ChastiSafeUserKeyholderLevelsEnum[taskLevel], ChastiSafeUserKeyholderLevelsEnum[chastityLevel]]
+    // console.log(levels)
+    return this.keyholderLevels?.chastityLevel
+  }
+
+  public get highestLockeeLevel(): ChastiSafeUserLockeeLevels {
+    // const { bondageLevel, taskLevel, chastityLevel } = this.levels
+    return this.levels?.chastityLevel
   }
 
   constructor(init: Partial<ChastiSafeUser>) {

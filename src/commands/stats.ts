@@ -1,19 +1,21 @@
-import { ExportRoutes, RoutedInteraction } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
 
-export const Routes = ExportRoutes({
-  category: 'Info',
-  controller: commandUsageStats,
-  description: 'Help.Stats.StatsByCommands.Description',
-  example: '{{prefix}}stats commands',
-  name: 'stats-commands',
-  permissions: {
-    serverOnly: false
-  },
-  type: 'message',
-  validate: '/stats:string/commands:string'
-})
+export const Routes = ExportRoutes(
+  new RouteConfiguration({
+    category: 'Info',
+    controller: commandUsageStats,
+    description: 'Help.Stats.StatsByCommands.Description',
+    example: '{{prefix}}stats commands',
+    name: 'stats-commands',
+    permissions: {
+      serverOnly: false
+    },
+    type: 'discord-chat-interaction',
+    validate: '/stats:string/commands:string'
+  })
+)
 
-export async function commandUsageStats(routed: RoutedInteraction) {
+export async function commandUsageStats(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   // Get Audit trail for commands from DB to run stats on
   let collection = (await routed.bot.DB.aggregate<{ _id: string; count: number }>('audit-log', [
     {
@@ -64,6 +66,5 @@ export async function commandUsageStats(routed: RoutedInteraction) {
   }
 
   // console.log(text)
-  await routed.reply(text + '```')
-  return true
+  return await routed.reply(text + '```')
 }

@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import * as restify from 'restify'
 
 import { Next, Request, Response } from 'restify'
 
 import { Bot } from '@/index'
-import { TrackedSession } from '@/objects/session'
 
 export interface WebRoute {
   controller: Function | void
@@ -21,7 +21,7 @@ export class WebRouted {
   public req: Request
   public res: Response
   public next: Next
-  public session: Partial<TrackedSession>
+  public session: { id: string, userID?: string }
 
   constructor(init: Partial<WebRouted>) {
     Object.assign(this, init)

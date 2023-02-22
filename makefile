@@ -8,4 +8,7 @@ down:
 	docker-compose -f docker-compose.yml -p kiera down
 
 rm:
-	docker image rm kiera_bot
+	docker image rm kiera-bot
+
+live-log:
+	docker logs --follow "$(shell docker ps -a | grep "kiera-bot" | cut -d ' ' -f1)"
