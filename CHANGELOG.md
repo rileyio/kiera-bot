@@ -6,6 +6,8 @@
 
 - Fixed: [#95](https://github.com/rileyio/kiera-bot/issues/95) A server's `commandGroups` in the DB is reset on Guild Change event.
 
+- Updated: Locale renderer to remove double newlines and replace with single newline.
+
 ---
 
 ## 10.2.0
