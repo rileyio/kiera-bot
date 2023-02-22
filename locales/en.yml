@@ -58,10 +58,14 @@ ChastiSafe:
         **{{username}}**
       MainStats: |-
         **ChastiSafe User Statistics**
+        {{#if hasLevels}}
         Levels
          ↳ {{#if chastityLevel}} Chastity `{{chastityLevel}}` {{/if}} {{#if bondageLevel}} ● Bondage `{{bondageLevel}}` {{/if}} {{#if taskLevel}} ● Task `{{taskLevel}}` {{/if}}
+        {{/if}}
+        {{#if hasLevel}}
         Keyholder Levels
          ↳ {{#if keyholderLevelChastity}} Chastity `{{keyholderLevelChastity}}` {{/if}} {{#if keyholderLevelBondage}} ● Bondage `{{keyholderLevelBondage}}` {{/if}} {{#if keyholderLevelTask}} ● Task `{{keyholderLevelTask}}` {{/if}}
+        {{/if}}
         Ratings
          ↳ Keyholder Avg `{{averageRatingAsKeyholder}}` ● Count `{{ratingsAsKeyholderCount}}`
          ↳ Lockee Avg `{{averageRatingAsLockee}}` ● Count `{{ratingsAsLockeeCount}}`
