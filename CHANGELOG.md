@@ -5,6 +5,7 @@
 ## 🛠️ Fixes
 
 - Fixed: [#95](https://github.com/rileyio/kiera-bot/issues/95) A server's `commandGroups` in the DB is reset on Guild Change event.
+- Fixed: [#90](#https://github.com/rileyio/kiera-bot/issues/90) CS Stats output showing inconsistent results compared to 3rd party's (KH).
 
 - Updated: Locale renderer to remove double newlines and replace with single newline.
 

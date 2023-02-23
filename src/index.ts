@@ -300,7 +300,6 @@ export class Bot {
 
   private async onGuildUpdate(old: Discord.Guild, changed: Discord.Guild) {
     this.Log.Bot.log(`Server Update Detected: id: ${old.id}, name: ${changed.name}`)
-    console.log(old, changed)
 
     // Save some info about the server in db
     await this.DB.update(
