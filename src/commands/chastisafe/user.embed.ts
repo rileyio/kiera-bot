@@ -107,11 +107,6 @@ export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interac
       iconURL: 'https://cdn.discordapp.com/app-icons/526039977247899649/41251d23f9bea07f51e895bc3c5c0b6d.png',
       text: `Runtime ${routed.routerStats.performance}ms :: Requested By ${routed.routerStats.user} :: Retrieved by Kiera`
     })
-    .setTitle(
-      routed.$render('ChastiSafe.Stats.User.Title', {
-        username: user.user,
-        verifiedEmoji: '<:verified:625628727820288000> '
-      })
-    )
+    .setTitle(`**${user.user}**`)
     .setTimestamp(Date.now())
 }
