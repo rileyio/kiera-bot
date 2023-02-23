@@ -9,7 +9,7 @@ services:
     volumes:
       - ./locales:/home/node/app/locales
       - ./src:/home/node/app/src
-    container_name: kiera_bot
+    container_name: kiera-bot
     restart: on-failure
     ports:
       - '127.0.0.1:8234:8234'
