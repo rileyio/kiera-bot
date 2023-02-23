@@ -141,7 +141,7 @@ export default class Localization {
       // Check if string is translated - if not: fallback
       if (targetString) {
         const templ = Handlebars.compile(targetString, data as T | object)
-        return templ(data)
+        return templ(data).replace(/([\n]{2})/g, `\n`)
       }
     }
 
@@ -149,7 +149,7 @@ export default class Localization {
     if (typeof data === 'boolean' && data === false) return
     // Fallback
     const templ = Handlebars.compile(get(this.loaded[DEFAULT_LOCALE].strings, key))
-    return templ(data)
+    return templ(data).replace(/([\n]{2})/g, `\n`)
   }
 
   /**

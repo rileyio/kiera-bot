@@ -51,43 +51,6 @@ BattleNet:
   Error:
     CharacterNotFound: Character Not Found!
 
-ChastiSafe:
-  Stats:
-    User:
-      Title: |-
-        **{{username}}**
-      MainStats: |-
-        **ChastiSafe User Statistics**
-        {{#if hasLevels}}
-        Levels
-         ↳ {{#if chastityLevel}} Chastity `{{chastityLevel}}` {{/if}} {{#if bondageLevel}} ● Bondage `{{bondageLevel}}` {{/if}} {{#if taskLevel}} ● Task `{{taskLevel}}` {{/if}}
-        {{/if}}
-        {{#if hasLevel}}
-        Keyholder Levels
-         ↳ {{#if keyholderLevelChastity}} Chastity `{{keyholderLevelChastity}}` {{/if}} {{#if keyholderLevelBondage}} ● Bondage `{{keyholderLevelBondage}}` {{/if}} {{#if keyholderLevelTask}} ● Task `{{keyholderLevelTask}}` {{/if}}
-        {{/if}}
-        Ratings
-         ↳ Keyholder Avg `{{averageRatingAsKeyholder}}` ● Count `{{ratingsAsKeyholderCount}}`
-         ↳ Lockee Avg `{{averageRatingAsLockee}}` ● Count `{{ratingsAsLockeeCount}}`
-
-        {{#if hasActiveChastityLocks}}
-        **Active Locks**
-        {{#each chastityLocks}}
-          {{{this}}}
-          ───────────────
-        {{/each}}
-        {{/if}}
-
-        {{#if hasChastiKeyData}}
-        **ChastiKey (Legacy)**
-        Avg Keyholder Rating `{{#if hasKeyholderRatings}}{{averageKeyholderRating}}{{else}}n/a{{/if}}` ● # Ratings `{{noOfKeyholderRatings}}`
-        Avg Lockee Rating `{{#if hasLockeeRatings}}{{averageLockeeRating}}{{else}}n/a{{/if}}` ● # Ratings `{{numberOfLockeeRatings}}`
-        Locked for `{{cumulativeSecondsLocked}}` months to date ● `{{numberOfCompletedLocks}}` locks completed
-        Longest (completed) `{{longestLockCompleted}}`
-        Average Time Locked (overall) `{{averageTimeLocked}}`
-        Date First Keyheld `{{keyheldStartTimestamp}}`
-        Joined `{{joinTimestamp}}` (`{{joinedDaysAgo}}` days ago)
-        {{/if}}
 
 Help:
   Admin:

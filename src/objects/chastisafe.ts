@@ -14,6 +14,7 @@ export enum ChastiSafeUserLockeeLevelsEnum {
   'Devoted',
   'Fanatical'
 }
+
 export class ChastiSafeUser {
   public badges: Array<'LOCKTOBER_ONGOING' | 'LOCKTOBER_2022' | 'LOCKTOBER_2022_SELF' | 'LOCKTOBER_ONGOING_SELF'> = []
 

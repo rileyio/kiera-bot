@@ -171,7 +171,7 @@ export class Bot {
     ///Server connect/disconnect///
     this.client.on('guildCreate', async (guild) => this.onGuildCreate(guild))
     this.client.on('guildDelete', async (guild) => this.onGuildDelete(guild))
-    this.client.on('guildUpdate', async (guild) => this.onGuildCreate(guild))
+    this.client.on('guildUpdate', async (old: Discord.Guild, changed: Discord.Guild) => this.onGuildUpdate(old, changed))
     this.client.on('guildMemberAdd', (member) => this.onUserJoined(member))
     this.client.on('guildMemberRemove', (member) => this.onUserLeft(member))
 
@@ -278,19 +278,40 @@ export class Bot {
   }
 
   private async onGuildCreate(guild: Discord.Guild) {
-    this.Log.Bot.log('Joined a new server: ' + guild.name)
+    this.Log.Bot.log(`Joined a new server: id: ${guild.id}, name: ${guild.name}`)
+
     // Save some info about the server in db
     await this.DB.update(
       'servers',
       { id: guild.id },
       {
         $set: new StoredServer({
-          commandGroups: {},
           id: guild.id,
           joinedTimestamp: guild.joinedTimestamp,
           lastSeen: Date.now(),
           name: guild.name,
           ownerID: guild.ownerId,
+          type: 'discord'
+        })
+      },
+      { atomic: true, upsert: true }
+    )
+  }
+
+  private async onGuildUpdate(old: Discord.Guild, changed: Discord.Guild) {
+    this.Log.Bot.log(`Server Update Detected: id: ${old.id}, name: ${changed.name}`)
+
+    // Save some info about the server in db
+    await this.DB.update(
+      'servers',
+      { id: old.id },
+      {
+        $set: new StoredServer({
+          id: old.id,
+          joinedTimestamp: old.joinedTimestamp,
+          lastSeen: Date.now(),
+          name: changed.name,
+          ownerID: changed.ownerId,
           type: 'discord'
         })
       },
