@@ -1,5 +1,12 @@
 # Change Log
 
+## 10.2.2
+
+### 🪄 Updates
+
+- Updated: Project dependencies to latest within ranges.
+- Updated: Various project management items.
+
 ## 10.2.1
 
 ### 🛠️ Fixes
