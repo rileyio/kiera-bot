@@ -6,58 +6,57 @@ import { EmbedBuilder } from 'discord.js'
 import { Routed } from '@/router'
 
 export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interaction'>) {
-  const data = Object.assign(
-    {
-      averageRatingAsKeyholder: user.ratings.averageRatingAsKeyholder || '--',
-      averageRatingAsLockee: user.ratings.averageRatingAsLockee || '--',
-      chastityLocks: user.lockInfo.chastityLocks.map((l) => `🔒 **${l.lockName}**\n**Keyholder:** \`${l.keyholder}\`\n**Loaded:** \`${l.loadtime}\``),
-      hasActiveChastityLocks: user.lockInfo.chastityLocks.length > 0,
-      hasChastiKeyData: user.hasChastiKeyData,
-      // Do they have any levels or kh counts (categories)
-      hasKeyholderLevels: user.keyholderLockCounts?.BONDAGE || user.keyholderLockCounts?.CHASTITY || user.keyholderLockCounts?.TASK,
-      hasLevels: user.keyholderLockCounts?.BONDAGE || user.keyholderLockCounts?.CHASTITY || user.keyholderLockCounts?.TASK,
-      hasRatings: user.ratings.averageRatingAsKeyholder || user.ratings.averageRatingAsLockee,
-      // Lockee Level Values (strings)
-      lockeeLevelBondage: user.levels.bondageLevel ? user.levels.bondageLevel : null,
-      lockeeLevelChastity: user.levels.chastityLevel ? user.levels.chastityLevel : null,
-      lockeeLevelTask: user.levels.taskLevel ? user.levels.taskLevel : null,
-      // Lockee Levels (boolean)
-      hasLockeeLevelBondage: 'bondageLevel' in user.levels,
-      hasLockeeLevelChastity: 'chastityLevel' in user.levels,
-      hasLockeeLevelTask: 'taskLevel' in user.levels,
-      // KH Level Values (strings)
-      keyholderLevelBondage: user.keyholderLevels.bondageLevel ? user.keyholderLevels.bondageLevel : null,
-      keyholderLevelChastity: user.keyholderLevels.chastityLevel ? user.keyholderLevels.chastityLevel : null,
-      keyholderLevelTask: user.keyholderLevels.taskLevel ? user.keyholderLevels.taskLevel : null,
-      // KH Levels (boolean)
-      hasKeyholderLevelBondage: !!user.keyholderLockCounts?.BONDAGE,
-      hasKeyholderLevelChastity: !!user.keyholderLockCounts?.CHASTITY,
-      hasKeyholderLevelTask: !!user.keyholderLockCounts?.TASK,
-      // Ratings counts
-      ratingsAsKeyholderCount: user.ratings.ratingsAsKeyholderCount,
-      ratingsAsLockeeCount: user.ratings.ratingsAsLockeeCount
-    },
-    // Only include this if ChastiKey data is available
-    user.hasChastiKeyData
-      ? {
-          averageKeyholderRating: user.chastikeystats.averageKeyholderRating,
-          averageLockeeRating: user.chastikeystats.averageLockeeRating,
-          averageTimeLocked: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.averageTimeLockedInSeconds),
-          cumulativeSecondsLocked: Math.round((user.chastikeystats.cumulativeSecondsLocked / 2592000) * 100) / 100,
-          hasKeyholderRatings: user.chastikeystats.averageKeyholderRating !== 0,
-          hasLockeeRatings: user.chastikeystats.averageLockeeRating > 0,
-          hasManagedLocks: user.chastikeystats.totalLocksManaged > 0,
-          joinTimestamp: user.chastikeystats.joinTimestamp.substring(0, 10),
-          joinedDaysAgo: `${Math.round((Date.now() - new Date(user.chastikeystats.joinTimestamp).getTime()) / 1000 / 60 / 60 / 24)}`,
-          keyheldStartTimestamp: user.chastikeystats.keyheldStartTimestamp ? user.chastikeystats.keyheldStartTimestamp.substring(0, 10) : 'n/a',
-          longestLockCompleted: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.longestCompletedLockInSeconds),
-          noOfKeyholderRatings: user.chastikeystats.noOfKeyholderRatings,
-          numberOfCompletedLocks: user.chastikeystats.numberOfCompletedLocks,
-          numberOfLockeeRatings: user.chastikeystats.numberOfLockeeRatings,
-          totalLocksManaged: user.chastikeystats.totalLocksManaged
-        }
-      : {}
-  )
+  const data = {
+    averageRatingAsKeyholder: user.ratings.averageRatingAsKeyholder || '--',
+    averageRatingAsLockee: user.ratings.averageRatingAsLockee || '--',
+    chastityLocks: user.lockInfo.chastityLocks.map((l) => `🔒 **${l.lockName}**\n**Keyholder:** \`${l.keyholder}\`\n**Loaded:** \`${l.loadtime}\``),
+    hasActiveChastityLocks: user.lockInfo.chastityLocks.length > 0,
+    hasChastiKeyData: user.hasChastiKeyData,
+    // Do they have any levels or kh counts (categories)
+    hasKeyholderLevels: 'bondageLevel' in user.keyholderLevels || 'chastityLevel' in user.keyholderLevels || 'taskLevel' in user.keyholderLevels,
+    hasLevels: 'bondageLevel' in user.levels || 'chastityLevel' in user.levels || 'taskLevel' in user.levels,
+    hasRatings: user.ratings.averageRatingAsKeyholder || user.ratings.averageRatingAsLockee,
+    // Lockee Level Values (strings)
+    lockeeLevelBondage: user.levels.bondageLevel ? user.levels.bondageLevel : null,
+    lockeeLevelChastity: user.levels.chastityLevel ? user.levels.chastityLevel : null,
+    lockeeLevelTask: user.levels.taskLevel ? user.levels.taskLevel : null,
+    // Lockee Levels (boolean)
+    hasLockeeLevelBondage: 'bondageLevel' in user.levels,
+    hasLockeeLevelChastity: 'chastityLevel' in user.levels,
+    hasLockeeLevelTask: 'taskLevel' in user.levels,
+    // KH Level Values (strings)
+    keyholderLevelBondage: user.keyholderLevels.bondageLevel ? user.keyholderLevels.bondageLevel : null,
+    keyholderLevelChastity: user.keyholderLevels.chastityLevel ? user.keyholderLevels.chastityLevel : null,
+    keyholderLevelTask: user.keyholderLevels.taskLevel ? user.keyholderLevels.taskLevel : null,
+    // KH Levels (boolean)
+    hasKeyholderLevelBondage: 'bondageLevel' in user.keyholderLevels,
+    hasKeyholderLevelChastity: 'chastityLevel' in user.keyholderLevels,
+    hasKeyholderLevelTask: 'taskLevel' in user.keyholderLevels,
+    // Ratings counts
+    ratingsAsKeyholderCount: user.ratings.ratingsAsKeyholderCount,
+    ratingsAsLockeeCount: user.ratings.ratingsAsLockeeCount
+  }
+
+  // Only include this if ChastiKey data is available
+  const chastikey = data.hasChastiKeyData
+    ? {
+        averageKeyholderRating: user.chastikeystats.averageKeyholderRating,
+        averageLockeeRating: user.chastikeystats.averageLockeeRating,
+        averageTimeLocked: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.averageTimeLockedInSeconds),
+        cumulativeSecondsLocked: Math.round((user.chastikeystats.cumulativeSecondsLocked / 2592000) * 100) / 100,
+        hasKeyholderRatings: user.chastikeystats.averageKeyholderRating !== 0,
+        hasLockeeRatings: user.chastikeystats.averageLockeeRating > 0,
+        hasManagedLocks: user.chastikeystats.totalLocksManaged > 0,
+        joinTimestamp: user.chastikeystats.joinTimestamp.substring(0, 10),
+        joinedDaysAgo: `${Math.round((Date.now() - new Date(user.chastikeystats.joinTimestamp).getTime()) / 1000 / 60 / 60 / 24)}`,
+        keyheldStartTimestamp: user.chastikeystats.keyheldStartTimestamp ? user.chastikeystats.keyheldStartTimestamp.substring(0, 10) : 'n/a',
+        longestLockCompleted: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.longestCompletedLockInSeconds),
+        noOfKeyholderRatings: user.chastikeystats.noOfKeyholderRatings,
+        numberOfCompletedLocks: user.chastikeystats.numberOfCompletedLocks,
+        numberOfLockeeRatings: user.chastikeystats.numberOfLockeeRatings,
+        totalLocksManaged: user.chastikeystats.totalLocksManaged
+      }
+    : {}
 
   let body = `**ChastiSafe User Statistics**`
 
@@ -70,7 +69,6 @@ export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interac
 
   if (data.hasKeyholderLevels) {
     body += '\n\n**Keyholder Levels**'
-    // OCD Be dammned......
     if (data.hasKeyholderLevelChastity) body += `\n● ${data.keyholderLevelChastity || ''} Keyholder`
     if (data.hasKeyholderLevelBondage) body += `\n● ${data.keyholderLevelBondage || ''} Bondage Puppeteer`
     if (data.hasKeyholderLevelTask) body += `\n● ${data.keyholderLevelTask || ''} Task Director`
@@ -92,13 +90,13 @@ export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interac
 
   if (data.hasChastiKeyData) {
     body += '\n\n**ChastiKey (Legacy)**'
-    body += `\nAvg Keyholder Rating \`${data.hasKeyholderRatings ? data.averageKeyholderRating : '--'}\` ● # Ratings \`${data.noOfKeyholderRatings}\``
-    body += `\nAvg Lockee Rating \`${data.hasLockeeRatings ? data.averageLockeeRating : '--'}\` ● # Ratings \`${data.numberOfLockeeRatings}\``
-    body += `\nLocked for \`${data.cumulativeSecondsLocked}\` months to date ● \`${data.numberOfCompletedLocks}\` locks completed`
-    body += `\nLongest (completed) \`${data.longestLockCompleted}\``
-    body += `\nAverage Time Locked (overall) \`${data.averageTimeLocked}\``
-    body += `\nDate First Keyheld \`${data.keyheldStartTimestamp}\``
-    body += `\nJoined \`${data.joinTimestamp}\``
+    body += `\nAvg Keyholder Rating \`${chastikey.hasKeyholderRatings ? chastikey.averageKeyholderRating : '--'}\` ● # Ratings \`${chastikey.noOfKeyholderRatings}\``
+    body += `\nAvg Lockee Rating \`${chastikey.hasLockeeRatings ? chastikey.averageLockeeRating : '--'}\` ● # Ratings \`${chastikey.numberOfLockeeRatings}\``
+    body += `\nLocked for \`${chastikey.cumulativeSecondsLocked}\` months to date ● \`${chastikey.numberOfCompletedLocks}\` locks completed`
+    body += `\nLongest (completed) \`${chastikey.longestLockCompleted}\``
+    body += `\nAverage Time Locked (overall) \`${chastikey.averageTimeLocked}\``
+    body += `\nDate First Keyheld \`${chastikey.keyheldStartTimestamp}\``
+    body += `\nJoined \`${chastikey.joinTimestamp}\``
   }
 
   return new EmbedBuilder()
