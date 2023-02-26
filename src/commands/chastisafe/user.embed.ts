@@ -63,15 +63,16 @@ export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interac
 
   if (data.hasLevels) {
     body += '\n\n **Lockee Levels**'
-    if (data.hasLockeeLevelBondage) body += `\n● ${data.lockeeLevelBondage || ''} Bondage`
     if (data.hasLockeeLevelChastity) body += `\n● ${data.lockeeLevelChastity || ''} Chastity`
+    if (data.hasLockeeLevelBondage) body += `\n● ${data.lockeeLevelBondage || ''} Bondage`
     if (data.hasLockeeLevelTask) body += `\n● ${data.lockeeLevelTask || ''} Task`
   }
 
   if (data.hasKeyholderLevels) {
     body += '\n\n**Keyholder Levels**'
-    if (data.hasKeyholderLevelBondage) body += `\n● ${data.keyholderLevelBondage || ''} Keyholder`
-    if (data.hasKeyholderLevelChastity) body += `\n● ${data.keyholderLevelChastity || ''} Bondage Puppeteer`
+    // OCD Be dammned......
+    if (data.hasKeyholderLevelChastity) body += `\n● ${data.keyholderLevelChastity || ''} Keyholder`
+    if (data.hasKeyholderLevelBondage) body += `\n● ${data.keyholderLevelBondage || ''} Bondage Puppeteer`
     if (data.hasKeyholderLevelTask) body += `\n● ${data.keyholderLevelTask || ''} Task Director`
   }
 

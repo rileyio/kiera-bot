@@ -2,6 +2,9 @@
 
 ## 10.2.2
 
+### 🛠️ Fixes
+- Fixed: CS Profile stats in the wrong order & mixed values.
+
 ### 🪄 Updates
 
 - Updated: Project dependencies to latest within ranges.
