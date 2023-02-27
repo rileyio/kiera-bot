@@ -14,6 +14,16 @@ export function calculateHumanTimeDDHHMM(seconds: number, options?: { dropZeros?
   const days = Math.floor(hrs / 24)
   hrs = hrs % 24
 
+  // If larger than a year, show years
+  // if (days > 365) {
+  //   const yrs = Math.floor(days / 365.25)
+  //   const mos = Math.floor(days / 30.4375)
+  //   // const ydays = Math.floor(days % 365.25)
+
+  //   return `${yrs}y ${mos}m`
+  // }
+
+  // Else show DD HH MM
   const timeToShowDays = `${days > 9 ? +days : '0' + days}d`
   const timeToShowHours = `${hrs > 9 ? +hrs : '0' + hrs}h`
   const timeToShowMins = `${min > 9 ? +min : '0' + min}m`

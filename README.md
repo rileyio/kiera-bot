@@ -50,23 +50,23 @@ available to manage your Kiera docker container for both production and developm
 
 Running the following will allow you to see the optional available:
 
-`yarn kiera usage`
+`npm run kiera usage`
 
 ### Development Mode (w/Hot Reloading)
 
 To run in development mode with hot reloading simply run:
 
-`yarn kiera start`
+`npm run kiera start`
 
 If you wish to start with a clean image and container, you can run the `clean` command
 
-`yarn kiera clean`
+`npm run kiera clean`
 
 ### Production Mode
 
 To run in production mode run:
 
-`yarn kiera start prod`
+`npm run kiera start prod`
 
 ## Web Portal
 

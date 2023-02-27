@@ -1,5 +1,20 @@
 # Change Log
 
+## 10.2.2
+
+### 🛠️ Fixes
+- Fixed: CS Profile stats in the wrong order & mixed values.
+- Fixed: [#77](https://github.com/rileyio/kiera-bot/issues/77) Return an error to the user when CS profile is not found.
+
+### 🪄 Updates
+
+- Updated: Project dependencies to latest within ranges.
+- Updated: Various project management items.
+
+### 🌟 Added
+
+- Added: New/Expanded CS Profile stats.
+
 ## 10.2.1
 
 ### 🛠️ Fixes
