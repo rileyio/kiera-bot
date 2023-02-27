@@ -1,6 +1,7 @@
 /* eslint-disable sort-keys */
 import * as Utils from '@/utils'
 
+import * as moment from 'moment'
 import { ChastiSafeUser } from '@/objects/chastisafe'
 import { EmbedBuilder } from 'discord.js'
 import { Routed } from '@/router'
@@ -11,7 +12,6 @@ export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interac
   const data = {
     averageRatingAsKeyholder: user.ratings.averageRatingAsKeyholder || '--',
     averageRatingAsLockee: user.ratings.averageRatingAsLockee || '--',
-    chastityLocks: user.lockInfo.chastityLocks.map((l) => `🔒 **${l.lockName}**\n**Keyholder:** \`${l.keyholder}\`\n**Loaded:** \`${l.loadtime}\``),
     hasActiveChastityLocks: user.lockInfo.chastityLocks.length > 0,
     hasChastiKeyData: user.hasChastiKeyData,
     // Do they have any levels or kh counts (categories)
@@ -99,18 +99,22 @@ export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interac
   if (data.hasRatings) {
     body += '\n\n **🌟⠀Ratings**'
     if (data.ratingsAsKeyholderCount > 0) body += `\n⠀●⠀Keyholder Avg \`${data.averageRatingAsKeyholder}\` **|** Count \`${data.ratingsAsKeyholderCount}\``
-    if (data.ratingsAsLockeeCount > 0) body += `\n⠀●⠀ockee Avg \`${data.averageRatingAsLockee}\` **|** Count \`${data.ratingsAsLockeeCount}\``
+    if (data.ratingsAsLockeeCount > 0) body += `\n⠀●⠀Lockee Avg \`${data.averageRatingAsLockee}\` **|** Count \`${data.ratingsAsLockeeCount}\``
   }
 
   if (data.hasActiveChastityLocks) {
-    body += '\n\n**Active Locks**'
-    data.chastityLocks.forEach((lock) => {
-      body += `\n${lock}`
-      body += '\n───────────────'
+    body += '\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯'
+    body += '\n\n**🔐⠀Active Locks**'
+    user.lockInfo.chastityLocks.forEach((lock, i) => {
+      body += `\n⠀**${lock.lockName}**`
+      body += `\n⠀›⠀Keyholder @\`${lock.keyholder}\``
+      body += `\n⠀›⠀Loaded \`${lock.loadtime.substring(0, 10)}\` (${moment(lock.loadtime).fromNow()})`
+      if (user.lockInfo.chastityLocks.length - 1 !== i) body += '\n⠀⠀⠀⠀⎯⎯⎯⎯⎯⎯⠀⠀⠀⠀'
     })
   }
 
   if (data.hasChastiKeyData) {
+    body += '\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯'
     body += '\n\n**ChastiKey (Legacy)**'
     body += `\nAvg Keyholder Rating \`${chastikey.hasKeyholderRatings ? chastikey.averageKeyholderRating : '--'}\` ● # Ratings \`${chastikey.noOfKeyholderRatings}\``
     body += `\nAvg Lockee Rating \`${chastikey.hasLockeeRatings ? chastikey.averageLockeeRating : '--'}\` ● # Ratings \`${chastikey.numberOfLockeeRatings}\``
