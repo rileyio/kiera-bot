@@ -69,12 +69,15 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
   changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Lockee' })
 
   // Fetch User Profile from CS
-  const csUser = await routed.bot.Service.ChastiSafe.fetchProfile(mentionedUser ? mentionedUser.id : routed.author.id)
+  const {data, successful} = await routed.bot.Service.ChastiSafe.fetchProfile(mentionedUser ? mentionedUser.id : routed.author.id)
+
+  // If there's an error, inform the user
+  if (successful === false) return await routed.reply({ content: 'ChastiSafe user not found', ephemeral: true })
 
   // console.log('csUser', csUser)
 
   // Find if any locked locks
-  const hasLockedLock = csUser.isChastityLocked
+  const hasLockedLock = data.isChastityLocked
 
   // Fetch some stuff from Discord & ChastiSafe
   const discordUser = !mentionedUser
@@ -239,7 +242,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
   if (prefY || prefX || prefZ) userHasPref = true
 
   // Cumulative time locked
-  // const cumulativeTimeLockedMonths = Math.round((csUser.cumulativeSecondsLocked / 2592000) * 100) / 100
+  // const cumulativeTimeLockedMonths = Math.round((data.cumulativeSecondsLocked / 2592000) * 100) / 100
 
   /// ? ////////////////////////////////////
   /// ? Role Update: Locked || Unlocked  ///
@@ -292,7 +295,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     const rolesToRemove = [] as Array<{ role: string }>
 
     // Devoted
-    if (csUser.highestLockeeLevel === 'Fanatical' && userHasPref) {
+    if (data.highestLockeeLevel === 'Fanatical' && userHasPref) {
       // Add Proper Fanatical role
       if (!discordUserHasRole.fanaticalLockeeX && prefX) {
         await discordUser.roles.add(role.fanaticalLockeeX)
@@ -325,7 +328,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     }
 
     // Devoted
-    if (csUser.highestLockeeLevel === 'Devoted' && userHasPref) {
+    if (data.highestLockeeLevel === 'Devoted' && userHasPref) {
       // Add Proper Devoted role
       if (!discordUserHasRole.devotedLockeeX && prefX) {
         await discordUser.roles.add(role.devotedLockeeX)
@@ -358,7 +361,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     }
 
     // Experienced
-    if (csUser.highestLockeeLevel === 'Experienced' && userHasPref) {
+    if (data.highestLockeeLevel === 'Experienced' && userHasPref) {
       // Add Proper Experienced role
       if (!discordUserHasRole.experiencedLockeeX && prefX) {
         await discordUser.roles.add(role.experiencedLockeeX)
@@ -391,7 +394,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     }
 
     // Intermediate
-    if (csUser.highestLockeeLevel === 'Intermediate' && userHasPref) {
+    if (data.highestLockeeLevel === 'Intermediate' && userHasPref) {
       // Add Proper Intermediate role
       if (!discordUserHasRole.intermediateLockeeX && prefX) {
         await discordUser.roles.add(role.intermediateLockeeX)
@@ -453,8 +456,8 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
       updatePerformance.locktober.start = performance.now()
       changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Locktober' })
 
-      const isLocktoberParticipant = csUser.isLocktoberOngoingEligible
-      const isLocktober2022Eligible = csUser.isLocktober2022Eligible
+      const isLocktoberParticipant = data.isLocktoberOngoingEligible
+      const isLocktober2022Eligible = data.isLocktober2022Eligible
 
       // * Participant * //
       if (isLocktoberParticipant) {
