@@ -11,10 +11,11 @@ export async function lookupUser(routed: Routed<'discord-chat-interaction'>): Ac
   const user = routed.interaction.options.getUser('user')
   const resp = await routed.bot.Service.ChastiSafe.fetchProfile(user ? user.id : undefined || username || routed.author.id)
 
+  // If there's an error, inform the user
+  if (resp.successful === false) return await routed.reply({ content: 'ChastiSafe user not found', ephemeral: true })
+
   try {
-    if (resp) {
-      return await routed.reply({ embeds: [embed(resp, routed)] })
-    } else return await routed.reply('ChastiSafe user not found', true)
+    return await routed.reply({ embeds: [embed(resp.data, routed)] })
   } catch (error) {
     console.log('Failed to build response', error)
   }

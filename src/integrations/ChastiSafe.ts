@@ -60,9 +60,8 @@ export class ChastiSafe {
   //   }
   // }
 
-  public async fetchProfile(idOrUsername: string) {
+  public async fetchProfile(idOrUsername: string): Promise<{ data?: ChastiSafeUser; successful?: boolean }> {
     try {
-      console.log('idOrUsername', idOrUsername)
       const containsSeparator = typeof idOrUsername === 'string' && idOrUsername !== undefined ? idOrUsername.includes('#') : false
       if (containsSeparator) console.log('Detected written username', `'${idOrUsername}'`)
       console.log('uri', `${this.url}/profile/${containsSeparator ? encodeURIComponent(containsSeparator) : idOrUsername}`)
@@ -72,10 +71,10 @@ export class ChastiSafe {
         }
       })
 
-      return data === 'User not found' ? null : new ChastiSafeUser(data)
+      return data.reason === 'usernotfound' ? { successful: false } : { data: new ChastiSafeUser(data), successful: true }
     } catch (error) {
       this.Bot.Log.Integration.error('Fatal error performing lookup', error)
-      return null
+      return { successful: false }
     }
   }
 }

@@ -4,6 +4,7 @@
 
 ### 🛠️ Fixes
 - Fixed: CS Profile stats in the wrong order & mixed values.
+- Fixed: [#77](https://github.com/rileyio/kiera-bot/issues/77) Return an error to the user when CS profile is not found.
 
 ### 🪄 Updates
 
