@@ -64,18 +64,46 @@ export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interac
 
   if (data.hasLevels) {
     body += '\n\n** 🔒⠀Lockee Stats**'
-    if (data.hasLockeeLevelChastity) body += `\n⠀●⠀${data.lockeeLevelChastity ? data.lockeeLevelChastity + ' ' : ''}Chastity (\`${DDHHMM(user.stats.CHASTITY * 60)}\`)`
-    if (data.hasLockeeLevelBondage) body += `\n⠀●⠀${data.lockeeLevelBondage ? data.lockeeLevelBondage + ' ' : ''}Bondage (\`${DDHHMM(user.stats.BONDAGE * 60)}\`)`
-    if (data.hasLockeeLevelTask) body += `\n⠀●⠀${data.lockeeLevelTask ? data.lockeeLevelTask + ' ' : ''}Task (\`${DDHHMM(user.stats.TASK * 60)}\`)`
+    // Lockee CHASTITY
+    if (data.hasLockeeLevelChastity) {
+      body += `\n⠀●⠀${data.lockeeLevelChastity ? data.lockeeLevelChastity + ' ' : ''}Chastity`
+      // Time if there's any
+      if (user.stats.CHASTITY) body += ` (\`${DDHHMM(user.stats.CHASTITY * 60)}\`)`
+    }
+    // Lockee BONDAGE
+    if (data.hasLockeeLevelBondage) {
+      body += `\n⠀●⠀${data.lockeeLevelBondage ? data.lockeeLevelBondage + ' ' : ''}Bondage`
+      // Time if there's any
+      if (user.stats.BONDAGE) body += ` (\`${DDHHMM(user.stats.BONDAGE * 60)}\`)`
+    }
+    // Lockee TASK
+    if (data.hasLockeeLevelTask) {
+      body += `\n⠀●⠀${data.lockeeLevelTask ? data.lockeeLevelTask + ' ' : ''}Task`
+      // Time if there's any
+      if (user.stats.TASK) body += ` (\`${DDHHMM(user.stats.TASK * 60)}\`) `
+    }
   }
 
   if (data.hasKeyholderLevels) {
     body += '\n\n **🔑⠀Keyholder Stats**'
-    // Levels
-    if (data.hasKeyholderLevelChastity) body += `\n⠀●⠀${data.keyholderLevelChastity ? data.keyholderLevelChastity + ' ' : ''}Keyholder (＃\`${user.keyholderLockCounts.CHASTITY}\`)`
-    if (data.hasKeyholderLevelBondage)
-      body += `\n⠀●⠀${data.keyholderLevelBondage ? data.keyholderLevelBondage + ' ' : ''}Bondage Puppeteer (＃\`${user.keyholderLockCounts.BONDAGE}\`)`
-    if (data.hasKeyholderLevelTask) body += `\n⠀●⠀${data.keyholderLevelTask ? data.keyholderLevelTask + ' ' : ''}Task Director (＃\`${user.keyholderLockCounts.TASK}\`)`
+    // Keyholder CHASTITY
+    if (data.hasKeyholderLevelChastity) {
+      body += `\n⠀●⠀${data.keyholderLevelChastity ? data.keyholderLevelChastity + ' ' : ''}Keyholder`
+      // Count if there's any
+      if (user.keyholderLockCounts.CHASTITY) body += ` (＃\`${user.keyholderLockCounts.CHASTITY}\`)`
+    }
+    // Keyholder BONDAGE
+    if (data.hasKeyholderLevelBondage) {
+      body += `\n⠀●⠀${data.keyholderLevelBondage ? data.keyholderLevelBondage + ' ' : ''}Bondage Puppeteer`
+      // Count if there's any
+      if (user.keyholderLockCounts.BONDAGE) body += ` (＃\`${user.keyholderLockCounts.BONDAGE}\`)`
+    }
+    // Keyholder TASK
+    if (data.hasKeyholderLevelTask) {
+      body += `\n⠀●⠀${data.keyholderLevelTask ? data.keyholderLevelTask + ' ' : ''}Task Director`
+      // Count if there's any
+      body += ` (＃\`${user.keyholderLockCounts.TASK}\`)`
+    }
 
     // Add spacing if the next section is going to be added
     // if (user.keyholderLockCounts.CHASTITY > 0 || user.keyholderLockCounts.BONDAGE > 0 || user.keyholderLockCounts.TASK > 0 || user.keyholderLockCounts.LOYALTY) body += '\n'
