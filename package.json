@@ -48,7 +48,7 @@
     "handlebars": "^4.7.7",
     "import-fresh": "^3.3.0",
     "joi": "^17.8.3",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "module-alias": "^2.2.2",
     "moment": "^2.29.4",
     "mongodb": "^3.7.3",
