@@ -10,6 +10,10 @@
 - Updated: Project dependencies to latest within ranges.
 - Updated: Various project management items.
 
+### 🌟 Added
+
+- Added: New/Expanded CS Profile stats.
+
 ## 10.2.1
 
 ### 🛠️ Fixes

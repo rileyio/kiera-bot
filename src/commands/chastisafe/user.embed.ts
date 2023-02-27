@@ -5,6 +5,8 @@ import { ChastiSafeUser } from '@/objects/chastisafe'
 import { EmbedBuilder } from 'discord.js'
 import { Routed } from '@/router'
 
+const DDHHMM = Utils.Date.calculateHumanTimeDDHHMM
+
 export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interaction'>) {
   const data = {
     averageRatingAsKeyholder: user.ratings.averageRatingAsKeyholder || '--',
@@ -42,7 +44,7 @@ export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interac
     ? {
         averageKeyholderRating: user.chastikeystats.averageKeyholderRating,
         averageLockeeRating: user.chastikeystats.averageLockeeRating,
-        averageTimeLocked: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.averageTimeLockedInSeconds),
+        averageTimeLocked: DDHHMM(user.chastikeystats.averageTimeLockedInSeconds),
         cumulativeSecondsLocked: Math.round((user.chastikeystats.cumulativeSecondsLocked / 2592000) * 100) / 100,
         hasKeyholderRatings: user.chastikeystats.averageKeyholderRating !== 0,
         hasLockeeRatings: user.chastikeystats.averageLockeeRating > 0,
@@ -50,7 +52,7 @@ export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interac
         joinTimestamp: user.chastikeystats.joinTimestamp.substring(0, 10),
         joinedDaysAgo: `${Math.round((Date.now() - new Date(user.chastikeystats.joinTimestamp).getTime()) / 1000 / 60 / 60 / 24)}`,
         keyheldStartTimestamp: user.chastikeystats.keyheldStartTimestamp ? user.chastikeystats.keyheldStartTimestamp.substring(0, 10) : 'n/a',
-        longestLockCompleted: Utils.Date.calculateHumanTimeDDHHMM(user.chastikeystats.longestCompletedLockInSeconds),
+        longestLockCompleted: DDHHMM(user.chastikeystats.longestCompletedLockInSeconds),
         noOfKeyholderRatings: user.chastikeystats.noOfKeyholderRatings,
         numberOfCompletedLocks: user.chastikeystats.numberOfCompletedLocks,
         numberOfLockeeRatings: user.chastikeystats.numberOfLockeeRatings,
@@ -61,23 +63,43 @@ export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interac
   let body = `**ChastiSafe User Statistics**`
 
   if (data.hasLevels) {
-    body += '\n\n **Lockee Levels**'
-    if (data.hasLockeeLevelChastity) body += `\n● ${data.lockeeLevelChastity || ''} Chastity`
-    if (data.hasLockeeLevelBondage) body += `\n● ${data.lockeeLevelBondage || ''} Bondage`
-    if (data.hasLockeeLevelTask) body += `\n● ${data.lockeeLevelTask || ''} Task`
+    body += '\n\n** 🔒⠀Lockee Stats**'
+    if (data.hasLockeeLevelChastity) body += `\n⠀●⠀${data.lockeeLevelChastity ? data.lockeeLevelChastity + ' ' : ''}Chastity (\`${DDHHMM(user.stats.CHASTITY * 60)}\`)`
+    if (data.hasLockeeLevelBondage) body += `\n⠀●⠀${data.lockeeLevelBondage ? data.lockeeLevelBondage + ' ' : ''}Bondage (\`${DDHHMM(user.stats.BONDAGE * 60)}\`)`
+    if (data.hasLockeeLevelTask) body += `\n⠀●⠀${data.lockeeLevelTask ? data.lockeeLevelTask + ' ' : ''}Task (\`${DDHHMM(user.stats.TASK * 60)}\`)`
   }
 
   if (data.hasKeyholderLevels) {
-    body += '\n\n**Keyholder Levels**'
-    if (data.hasKeyholderLevelChastity) body += `\n● ${data.keyholderLevelChastity || ''} Keyholder`
-    if (data.hasKeyholderLevelBondage) body += `\n● ${data.keyholderLevelBondage || ''} Bondage Puppeteer`
-    if (data.hasKeyholderLevelTask) body += `\n● ${data.keyholderLevelTask || ''} Task Director`
+    body += '\n\n **🔑⠀Keyholder Stats**'
+    // Levels
+    if (data.hasKeyholderLevelChastity) body += `\n⠀●⠀${data.keyholderLevelChastity ? data.keyholderLevelChastity + ' ' : ''}Keyholder (＃\`${user.keyholderLockCounts.CHASTITY}\`)`
+    if (data.hasKeyholderLevelBondage)
+      body += `\n⠀●⠀${data.keyholderLevelBondage ? data.keyholderLevelBondage + ' ' : ''}Bondage Puppeteer (＃\`${user.keyholderLockCounts.BONDAGE}\`)`
+    if (data.hasKeyholderLevelTask) body += `\n⠀●⠀${data.keyholderLevelTask ? data.keyholderLevelTask + ' ' : ''}Task Director (＃\`${user.keyholderLockCounts.TASK}\`)`
+
+    // Add spacing if the next section is going to be added
+    // if (user.keyholderLockCounts.CHASTITY > 0 || user.keyholderLockCounts.BONDAGE > 0 || user.keyholderLockCounts.TASK > 0 || user.keyholderLockCounts.LOYALTY) body += '\n'
+
+    // // Counts
+    // if (user.keyholderLockCounts.CHASTITY > 0)
+    //   body += `\n＃ Chastity Locks \`${user.keyholderLockCounts.CHASTITY}\` | ⏱ \`${DDHHMM(user.keyholderStats.CHASTITY, { dropMinutes: true })}\``
+    // if (user.keyholderLockCounts.BONDAGE > 0)
+    //   body += `\n＃ Bondage Locks \`${user.keyholderLockCounts.BONDAGE}\` | ⏱ \`${DDHHMM(user.keyholderStats.BONDAGE, { dropMinutes: true })}\``
+    // if (user.keyholderLockCounts.TASK > 0) body += `\n＃ Task Locks \`${user.keyholderLockCounts.TASK}\` | ⏱ \`${DDHHMM(user.keyholderStats.TASK, { dropMinutes: true })}\``
+    // if (user.keyholderLockCounts.LOYALTY > 0)
+    //   body += `\n＃ Loyalty Locks \`${user.keyholderLockCounts.LOYALTY}\` | ⏱ \`${DDHHMM(user.keyholderStats.LOYALTY, { dropMinutes: true })}\``
+
+    // Counts
+    // if (user.keyholderLockCounts.CHASTITY > 0) body += `\n＃ Chastity Locks \`${user.keyholderLockCounts.CHASTITY}\``
+    // if (user.keyholderLockCounts.BONDAGE > 0) body += `\n＃ Bondage Locks \`${user.keyholderLockCounts.BONDAGE}\``
+    // if (user.keyholderLockCounts.TASK > 0) body += `\n＃ Task Locks \`${user.keyholderLockCounts.TASK}\``
+    // if (user.keyholderLockCounts.LOYALTY > 0) body += `\n＃ Loyalty Locks \`${user.keyholderLockCounts.LOYALTY}\``
   }
 
   if (data.hasRatings) {
-    body += '\n\n**Ratings**'
-    if (data.ratingsAsKeyholderCount > 0) body += `\nKeyholder Avg \`${data.averageRatingAsKeyholder}\` | Count \`${data.ratingsAsKeyholderCount}\``
-    if (data.ratingsAsLockeeCount > 0) body += `\nLockee Avg \`${data.averageRatingAsLockee}\` | Count \`${data.ratingsAsLockeeCount}\``
+    body += '\n\n **🌟⠀Ratings**'
+    if (data.ratingsAsKeyholderCount > 0) body += `\n⠀●⠀Keyholder Avg \`${data.averageRatingAsKeyholder}\` **|** Count \`${data.ratingsAsKeyholderCount}\``
+    if (data.ratingsAsLockeeCount > 0) body += `\n⠀●⠀ockee Avg \`${data.averageRatingAsLockee}\` **|** Count \`${data.ratingsAsLockeeCount}\``
   }
 
   if (data.hasActiveChastityLocks) {
