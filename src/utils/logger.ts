@@ -68,6 +68,6 @@ export class Debug {
   }
 
   public warn(...args: Array<string | boolean | number | object>) {
-    this.winston.warn('', args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
+    this.winston.warn(args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : a)).join(' '))
   }
 }

@@ -6,6 +6,7 @@
 
 ### 11.0.0-beta-1
 
+- Fixed: Logger `.warn` not working properly.
 - Updated: Node from v16 to v18.
 
 ---
