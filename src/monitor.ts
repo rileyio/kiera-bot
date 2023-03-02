@@ -146,19 +146,19 @@ export class BotMonitor extends EventEmitter {
     // Waiting for Discord.js Ready Event to fire...
     this.Bot.Log.Bot.debug('waiting for discord.js ready event...')
     return new Promise<boolean>(async (r) => {
-      /// Client ready ///
-
-      this.Bot.client.on('ready',  () => {
+      // * Client ready * //
+      this.Bot.client.once(Discord.Events.ClientReady, () => {
         this.Bot.Log.Bot.debug('discord.js ready!')
         this.Bot.onReady()
         r(true)
       })
 
-      this.Bot.client.on('error', () => {
-        this.Bot.Log.Bot.warn('discord.js NOT ready!')
+      // ! Client error ! //
+      this.Bot.client.on(Discord.Events.Error, (error) => {
+        this.Bot.Log.Bot.warn('discord.js NOT ready!', error)
       })
-      /// Connect account ///
 
+      // ? Connect account ? //
       await this.Bot.client.login(getSecret('DISCORD_APP_TOKEN', this.Bot.Log.Bot))
     })
   }
