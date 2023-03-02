@@ -1,5 +1,5 @@
 # Development
-FROM node:16 as base
+FROM node:18.14.2 as base
 WORKDIR /home/node/app
 COPY package*.json ./
 RUN npm i

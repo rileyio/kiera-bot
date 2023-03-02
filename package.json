@@ -1,12 +1,16 @@
 {
   "name": "kiera-bot",
-  "version": "10.2.2",
+  "version": "11.0-beta",
   "main": "app/index.js",
   "repository": "https://github.com/rileyio/kiera-bot.git",
   "author": "Emma (RileyIO)",
   "contributors": [],
   "license": "MIT",
   "private": true,
+  "engines": {
+    "node": ">=18.14.2",
+    "npm": ">=8.15.0"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "trash app",

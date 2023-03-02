@@ -1,8 +1,19 @@
 # Change Log
 
+## v11
+
+> ⚠️ The changes in v11 are not final. Once the beta period is over, the changelog will be updated with the final changes.
+
+### 11.0.0-beta-1
+
+- Updated: Node from v16 to v18.
+
+---
+
 ## 10.2.2
 
 ### 🛠️ Fixes
+
 - Fixed: CS Profile stats in the wrong order & mixed values.
 - Fixed: [#77](https://github.com/rileyio/kiera-bot/issues/77) Return an error to the user when CS profile is not found.
 
@@ -15,6 +26,8 @@
 
 - Added: New/Expanded CS Profile stats.
 
+---
+
 ## 10.2.1
 
 ### 🛠️ Fixes
@@ -24,6 +37,7 @@
 - Fixed: [#87](https://github.com/rileyio/kiera-bot/issues/87) Newly introduced (v10.2) management script not fully working due to names.
 
 ### 🪄 Updates
+
 - Updated: Locale renderer to remove double newlines and replace with single newline.
 
 ---
@@ -51,7 +65,7 @@
 - Added: Kiera management commands for easier process management at server level.
 - Added: New Discord command payload generator for registering routes on the backend.
 - Added: NSFW channel support (marked commands will not even show up in non-NSFW channels).
-- Added: Opt in setting for use on some new (and old) command(s) that maybe shouldn't be enabled everywhere. 
+- Added: Opt in setting for use on some new (and old) command(s) that maybe shouldn't be enabled everywhere.
 - Added: Server Admins can enable `Opt in` specific command categories on a server by server basis via a command.
 - Added: New command to toggle command groups on and off (opt in/out).
 
