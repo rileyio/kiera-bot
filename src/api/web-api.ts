@@ -2,8 +2,6 @@ import * as Debug from 'debug'
 import * as SocketIO from 'socket.io'
 import * as SocketStats from '@/api/socket/stats'
 import * as cors from 'restify-cors-middleware2'
-import * as fs from 'fs'
-import * as path from 'path'
 import * as restify from 'restify'
 
 import { WebRoute, WebRouter } from '@/api/web-router'
@@ -12,16 +10,6 @@ import { Bot } from '@/index'
 import { webRouteLoader } from '@/api/router/route-loader'
 
 export class WebAPI {
-  // As of 6.0.0 as a reverse proxy is in use and HTTPS managed there in prod
-  // HTTPS Certs are optional for the bot's API
-  protected readonly isHTTPSSet =
-    process.env.API_HTTPS_KEY && process.env.API_HTTPS_CRT && fs.existsSync(path.join(process.env.API_HTTPS_KEY)) && fs.readFileSync(path.join(process.env.API_HTTPS_CRT))
-  protected readonly https = this.isHTTPSSet
-    ? {
-        certificate: fs.readFileSync(path.join(process.env.API_HTTPS_CRT)),
-        key: fs.readFileSync(path.join(process.env.API_HTTPS_KEY))
-      }
-    : null
   protected readonly port: number = Number(process.env.API_PORT || 8234)
   protected readonly prefix: string = '/api'
   protected Bot: Bot
@@ -42,7 +30,7 @@ export class WebAPI {
     })
 
     // Start Node Web server
-    this.server = restify.createServer(this.isHTTPSSet ? this.https : {})
+    this.server = restify.createServer()
 
     // API config
     this.server.pre(_cors.preflight)
