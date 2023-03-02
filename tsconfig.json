@@ -5,7 +5,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "inlineSourceMap": true,
-    "lib": ["es6", "es2016"],
+    "lib": ["ES2022"],
     "module": "commonjs",
     "outDir": "./app",
     "paths": {
@@ -14,7 +14,7 @@
     "preserveConstEnums": true,
     "removeComments": true,
     "skipLibCheck": true,
-    "target": "es6",
+    "target": "ES2022",
     "typeRoots": ["src/typings", "./node_modules/@types/"]
   },
   "exclude": ["node_modules", "app", "plugins"],
