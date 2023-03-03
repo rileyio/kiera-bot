@@ -142,6 +142,7 @@ export class Bot {
         commands: this.Router.routes.length,
         guilds: this.client.guilds.cache.size,
         langs: this.Localization.langs,
+        nodeVersion: process.version,
         ping: this.BotMonitor.DBMonitor.pingTotalLatency / this.BotMonitor.DBMonitor.pingCount,
         routes: this.BotMonitor.WebAPI.configuredRoutes.length,
         strings: this.Localization.stringsCount,
@@ -154,17 +155,6 @@ export class Bot {
     // ==========================================================================================
     // => Start allowing incoming command routing from here down
     // ==========================================================================================
-
-    ////////////////////////////////////////
-    // Discord Event Monitor / Routing /////
-    ////////////////////////////////////////
-    /// Event handling for non-cached (messages from prior to restart) ///
-    // this.client.on('raw' as any, async (event) => {
-    //   if (event.t === null) return
-    //   // Skip event types that are not mapped
-    //   if (!Utils.DISCORD_CLIENT_EVENTS.hasOwnProperty(event.t)) return
-    //   await this.onMessageNonCachedReact(event)
-    // })
 
     /// Incoming message router (v8.0-beta-3 and newer commands) ///
     this.client.on('interactionCreate', async (int) => await this.onInteraction(int))
@@ -271,7 +261,7 @@ export class Bot {
 
   private async onInteraction(interaction: Discord.Interaction) {
     try {
-      await this.Router.routeInteraction(interaction)
+      await this.Router.routeDiscordInteraction(interaction)
     } catch (error) {
       this.Log.Bot.error('Fatal onInteration error caught', error, interaction)
     }

@@ -488,7 +488,7 @@ System:
     --------------> Kiera Bot <--------------
     :::::::::::::::::::::::::::::::::::::::::
        
-    Version: {{version}}
+    Version: {{version}} (node: {{nodeVersion}})
     Discord Bot: {{user}}
        
     Localization Languages: {{langs}}
