@@ -9,7 +9,7 @@
     "module": "commonjs",
     "outDir": "./app",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
     },
     "preserveConstEnums": true,
     "removeComments": true,
@@ -17,6 +17,6 @@
     "target": "ES2022",
     "typeRoots": ["src/typings", "./node_modules/@types/"]
   },
-  "exclude": ["node_modules", "app", "plugins"],
-  "include": ["src/**/*.ts"]
+  "exclude": ["node_modules", "app"],
+  "include": ["src/**/*.ts", "plugins/**/*.ts"]
 }
