@@ -2,6 +2,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
+import { RouteConfiguration, RouteConfigurationType } from '@/router'
+
 import { Bot } from '..'
 
 export const PluginRegexPatterns = {
@@ -12,9 +14,7 @@ export const PluginRegexPatterns = {
   version: /@version\s([0-9]+\.[0-9]+\.[0-9]+)/i
 }
 
-export class Plugin {
-  protected bot: Bot
-
+export class Plugin<T extends keyof RouteConfigurationType> {
   public autoCheckForUpdate?: boolean = true
   public config: {
     [key: string]: boolean | number | string | object
@@ -30,20 +30,21 @@ export class Plugin {
   public pluginBodyString: string
   public pluginURL?: string
   public repo?: string
+  public routes?: Array<RouteConfiguration<T>>
   public updateAvailable?: boolean = false
   public updateVersion?: string
   public verified?: boolean = false
   public version: string
 
   // Lifecycle points end plugin can set
-  //public onDisabled?: void
-  //public onEnabled?: void
+  public onDisabled?: () => void
+  public onEnabled?: () => void
 
   public get isEnabled() {
     return this.enabled
   }
 
-  constructor(init?: Partial<Plugin>) {
+  constructor(init?: Partial<Plugin<T>>) {
     if (init) {
       this.name = init.name
       this.version = init.version
@@ -104,12 +105,19 @@ export class Plugin {
     this.version = (this.pluginBodyString.match(PluginRegexPatterns.version) || [])[1]
 
     // Prep Plugin
-    this.bot = bot
     this.verified = verified
     this.enabled = enabled
     this.loadConfig(pluginsDir)
 
-    if ((this as any).onEnabled) await (this as any).onEnabled()
+    console.log(`🧩 Plugin '${this.name}'`, this.onEnabled && typeof this.onEnabled === 'function' ? 'with' : 'without', 'onEnabled hook,', typeof this.onEnabled)
+    try {
+      // Execute onEnabled hook (if any)
+      if (this.onEnabled && typeof this.onEnabled === 'function') await (this as any).onEnabled()
+    } catch (error) {
+      console.error(`🧩 Unable to process .onEnabled for '${this.name}'`, error)
+    } finally {
+      console.log(`🧩 Plugin '${this.name}' registered`)
+    }
   }
 
   public async unRegister() {
@@ -121,6 +129,5 @@ export class Plugin {
 
     this.saveConfigToFile()
     this.enabled = false
-    this.bot = undefined
   }
 }

@@ -21,7 +21,7 @@ enum UpdateType {
 type PluginLoaded = {
   name: string
   path: string
-  plugin: Plugin
+  plugin: Plugin<'placeolder-type'>
   reloadRequested?: boolean
 }
 
@@ -63,6 +63,7 @@ export class PluginManager {
     this.log = this.bot.Log.Plugin
 
     // Configure the PluginManager
+    console.log(path.resolve(path.join(`${__dirname}/../plugins`)))
     this.folder = path.resolve(path.join(`${__dirname}/../plugins`))
   }
 
@@ -89,10 +90,10 @@ export class PluginManager {
         if (this.plugins.find((p) => p.name === pluginName)) continue
 
         // Check if plugin is on the verified list
-        const pluginVerified = this.verified.findIndex((p) => p.name === pluginName && p.repo === pluginRepo) > -1
+        const pluginVerified = this.verified?.findIndex((p) => p.name === pluginName && p.repo === pluginRepo) > -1
 
         // Load file
-        const requiredFile = importFresh(pluginFile) as { default: () => Plugin }
+        const requiredFile = importFresh(pluginFile) as { default: () => Plugin<'placeolder-type'> }
         // Test if file returns undefined
         if (requiredFile !== undefined) {
           const loaded = requiredFile.default()
@@ -100,6 +101,9 @@ export class PluginManager {
           // Try to register the Bot instance with the plugin
           await loaded.register(this.bot, this.folder, pluginBodyString, true, pluginVerified)
           this.log.verbose(`🧩 Plugin Loaded ${pluginVerified ? '(✔)' : ''}: ${loaded.name}@${loaded.version}`)
+
+          // Load any routes for the plugin
+          if (loaded.routes && loaded.routes.length) loaded.routes.forEach((route) => this.bot.Router.addRoute(route))
 
           // If Auto Updating is enabled
           if (loaded.autoCheckForUpdate) this.checkForUpdate(loaded)
@@ -143,7 +147,7 @@ export class PluginManager {
     }
   }
 
-  public async checkForUpdate(plugin: Plugin, download?: boolean) {
+  public async checkForUpdate(plugin: Plugin<'placeolder-type'>, download?: boolean) {
     this.log.verbose(`🧩 Checking for update for '${plugin.name}@${plugin.version}' at ${plugin.pluginURL}`)
 
     try {
@@ -163,7 +167,7 @@ export class PluginManager {
     }
   }
 
-  public async downloadUpdate(plugin: Plugin, newPluginData?: string) {
+  public async downloadUpdate(plugin: Plugin<'placeolder-type'>, newPluginData?: string) {
     this.log.log(`🧩 Fetching Update '${plugin.name}@${plugin.updateVersion}'...`)
     try {
       // Verified plugins can download the entire repo
@@ -220,8 +224,8 @@ export class PluginManager {
     }
   }
 
-  public async unloadPlugin(plugin: string | Plugin) {
-    const pluginIndex = this.plugins.findIndex((p) => p.name === (typeof plugin === 'string' ? (plugin as string) : (plugin as Plugin).name))
+  public async unloadPlugin(plugin: string | Plugin<'placeolder-type'>) {
+    const pluginIndex = this.plugins.findIndex((p) => p.name === (typeof plugin === 'string' ? (plugin as string) : (plugin as Plugin<'placeolder-type'>).name))
     const pluginFound = pluginIndex > -1 ? this.plugins[pluginIndex] : undefined
 
     // Prevent race condition and ensure plugin could still be found in collection
@@ -249,7 +253,7 @@ export class PluginManager {
     await this.loader()
   }
 
-  public getPlugin(plugin: string | Plugin) {
-    return this.plugins.find((p) => p.name === (typeof plugin === 'string' ? (plugin as string) : (plugin as Plugin).name))
+  public getPlugin(plugin: string | Plugin<'placeolder-type'>) {
+    return this.plugins.find((p) => p.name === (typeof plugin === 'string' ? (plugin as string) : (plugin as Plugin<'placeolder-type'>).name))
   }
 }
