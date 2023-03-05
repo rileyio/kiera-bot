@@ -60,14 +60,14 @@ export type RouteConfigurationType = {
  */
 export class RouteConfiguration<T extends keyof RouteConfigurationType> {
   public category: RouteConfigurationCategory
-  public controller: (routed: Routed<T> | Plugin<T>, routedWhenPlugin?: Routed<T>) => AcceptedResponse
+  public controller: (routed: Routed<T> | Plugin, routedWhenPlugin?: Routed<T>) => AcceptedResponse
   public description?: string
   public example?: string
   public help?: string
   public middleware?: Array<(routed: Routed<T>) => Promise<Routed<T> | void>>
   public name: string
   public permissions?: Partial<RouteConfigurationPermissions>
-  public plugin?: Plugin<T>
+  public plugin?: Plugin
   /**
    * Discord Slash Command
    * @type {*}

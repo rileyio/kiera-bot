@@ -14,7 +14,7 @@ export const PluginRegexPatterns = {
   version: /@version\s([0-9]+\.[0-9]+\.[0-9]+)/i
 }
 
-export class Plugin<T extends keyof RouteConfigurationType> {
+export class Plugin {
   public autoCheckForUpdate?: boolean = true
   public config: {
     [key: string]: boolean | number | string | object
@@ -30,7 +30,7 @@ export class Plugin<T extends keyof RouteConfigurationType> {
   public pluginBodyString: string
   public pluginURL?: string
   public repo?: string
-  public routes?: Array<RouteConfiguration<T>>
+  public routes?: Array<RouteConfiguration<keyof RouteConfigurationType>>
   public updateAvailable?: boolean = false
   public updateVersion?: string
   public verified?: boolean = false
@@ -44,7 +44,7 @@ export class Plugin<T extends keyof RouteConfigurationType> {
     return this.enabled
   }
 
-  constructor(init?: Partial<Plugin<T>>) {
+  constructor(init?: Partial<Plugin>) {
     if (init) {
       this.name = init.name
       this.version = init.version

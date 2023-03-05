@@ -21,7 +21,7 @@ enum UpdateType {
 type PluginLoaded = {
   name: string
   path: string
-  plugin: Plugin<'placeolder-type'>
+  plugin: Plugin
   reloadRequested?: boolean
 }
 
@@ -93,7 +93,7 @@ export class PluginManager {
         const pluginVerified = this.verified?.findIndex((p) => p.name === pluginName && p.repo === pluginRepo) > -1
 
         // Load file
-        const requiredFile = importFresh(pluginFile) as { default: () => Plugin<'placeolder-type'> }
+        const requiredFile = importFresh(pluginFile) as { default: () => Plugin }
         // Test if file returns undefined
         if (requiredFile !== undefined) {
           const loaded = requiredFile.default()
@@ -147,7 +147,7 @@ export class PluginManager {
     }
   }
 
-  public async checkForUpdate(plugin: Plugin<'placeolder-type'>, download?: boolean) {
+  public async checkForUpdate(plugin: Plugin, download?: boolean) {
     this.log.verbose(`🧩 Checking for update for '${plugin.name}@${plugin.version}' at ${plugin.pluginURL}`)
 
     try {
@@ -167,7 +167,7 @@ export class PluginManager {
     }
   }
 
-  public async downloadUpdate(plugin: Plugin<'placeolder-type'>, newPluginData?: string) {
+  public async downloadUpdate(plugin: Plugin, newPluginData?: string) {
     this.log.log(`🧩 Fetching Update '${plugin.name}@${plugin.updateVersion}'...`)
     try {
       // Verified plugins can download the entire repo
@@ -224,8 +224,8 @@ export class PluginManager {
     }
   }
 
-  public async unloadPlugin(plugin: string | Plugin<'placeolder-type'>) {
-    const pluginIndex = this.plugins.findIndex((p) => p.name === (typeof plugin === 'string' ? (plugin as string) : (plugin as Plugin<'placeolder-type'>).name))
+  public async unloadPlugin(plugin: string | Plugin) {
+    const pluginIndex = this.plugins.findIndex((p) => p.name === (typeof plugin === 'string' ? (plugin as string) : (plugin as Plugin).name))
     const pluginFound = pluginIndex > -1 ? this.plugins[pluginIndex] : undefined
 
     // Prevent race condition and ensure plugin could still be found in collection
@@ -253,7 +253,7 @@ export class PluginManager {
     await this.loader()
   }
 
-  public getPlugin(plugin: string | Plugin<'placeolder-type'>) {
-    return this.plugins.find((p) => p.name === (typeof plugin === 'string' ? (plugin as string) : (plugin as Plugin<'placeolder-type'>).name))
+  public getPlugin(plugin: string | Plugin) {
+    return this.plugins.find((p) => p.name === (typeof plugin === 'string' ? (plugin as string) : (plugin as Plugin).name))
   }
 }
