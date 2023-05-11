@@ -10,7 +10,7 @@ export const Routes = ExportRoutes(
   new RouteConfiguration({
     category: 'Fun',
     controller: EightBall.shake,
-    name: 'eightball',
+    name: '8ball',
     permissions: {
       serverOnly: false
     },
