@@ -12,6 +12,7 @@
 - Updated: Rework of Router's add/remove command procedures.
 - Updated: Router's Discord command route add and removal within Router's route manage procedures.
 - Updated: Startup's console output to include current node version.
+- Updated: Router's ability to unload a specific route.
 
 ---
 

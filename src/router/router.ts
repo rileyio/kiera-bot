@@ -48,7 +48,7 @@ export class CommandRouter {
 
   public async removeRoute<T extends keyof RouteConfigurationType>(route: string | RouteConfiguration<T>) {
     console.log('removing route', route)
-    if (typeof route === 'string') this.log.warn(`[Deprecated] Router.removeRoute(string) is deprecated, use Router.removeRoute(RouteConfiguration) instead.`)
+    if (typeof route === 'string') this.log.warn(`[Deprecated] Router.removeRoute( string ) is deprecated, use Router.removeRoute( RouteConfiguration ) instead.`)
     const routeIndex = this.routes.findIndex((r) => (typeof route === 'string' ? r.name === route : r.name === route.name && r.type === route.type))
     const routeFound = routeIndex > -1 ? this.routes[routeIndex] : undefined
 
@@ -68,7 +68,7 @@ export class CommandRouter {
     // Autocomplete handling
     if (interaction.isAutocomplete()) {
       const { commandName } = interaction
-      console.log('Routing interaction autocomplete', commandName)
+      this.log.verbose('Routing interaction autocomplete', commandName)
 
       // Find command route
       const route = this.routes.find((r) => r.name === commandName) as RouteConfiguration<'discord-chat-interaction'>
@@ -78,7 +78,7 @@ export class CommandRouter {
 
       // Ensure it has autocomplete options set for entire route
       if (route.autocomplete?.options === undefined) {
-        console.warn('Route has no autocomplete options set')
+        this.log.warn('Route has no autocomplete options set')
         return // Stop here
       }
 
@@ -460,24 +460,25 @@ export class CommandRouter {
       // --------------------------------------------------
       // Clone the route for removal processing
       // const routeFound = new RouteConfiguration(JSON.parse(JSON.stringify(route)))
-      const routeFound = new RouteConfiguration(JSON.parse(JSON.stringify(route)))
-      if (routeFound.type === 'discord-chat-interaction') {
+      const { name, type } = route
+      if (type === 'discord-chat-interaction') {
         // Get some things ready
         const rest = new REST({ version: '10' }).setToken(getSecret('DISCORD_APP_TOKEN', this.bot.Log.Bot))
         // Get Global command ID
         const commands = await this.bot.client.application.commands.fetch()
-        const commandID = commands?.find((c) => c.name === routeFound.name)?.id
+        const commandID = commands?.find((c) => c.name === name)?.id
         // Remove global command
         await rest.delete(DiscRoutes.applicationCommand(process.env.DISCORD_APP_ID, commandID))
         // Remove route from router array
         this.routes.splice(
-          this.routes.findIndex((r) => r.name === routeFound.name && r.type === routeFound.type),
+          this.routes.findIndex((r) => r.name === name && r.type === type),
           1
         )
-        this.log.log(`🚏🗑 Unloaded Discord Global Route '${routeFound.name}'`)
+        this.log.log(`🚏🗑 Unloaded Discord Global Route '${name}'`)
       }
     } catch (error) {
-      this.log.error(`🚏❌ Failed to unload Discord Global Command: '${route.name}'`, error)
+      console.log(error)
+      this.log.error(`🚏❌ Failed to unload Discord Global Command: '${route.name}'`)
     }
   }
 }
