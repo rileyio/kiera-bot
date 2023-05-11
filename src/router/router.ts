@@ -65,8 +65,42 @@ export class CommandRouter {
    * @returns
    */
   public async routeDiscordInteraction(interaction: Interaction) {
+    // Autocomplete handling
+    if (interaction.isAutocomplete()) {
+      const { commandName } = interaction
+      console.log('Routing interaction autocomplete', commandName)
+
+      // Find command route
+      const route = this.routes.find((r) => r.name === commandName) as RouteConfiguration<'discord-chat-interaction'>
+
+      // Missing route
+      if (!route) return // Stop here
+
+      // Ensure it has autocomplete options set for entire route
+      if (route.autocomplete?.options === undefined) {
+        console.warn('Route has no autocomplete options set')
+        return // Stop here
+      }
+
+      // Get the focused option
+      const focusedOption = interaction.options.getFocused(true)
+
+      // Ensure the focused option has something defined
+      if (route.autocomplete.options[focusedOption.name] === undefined) return // Stop here
+
+      // Respond with autocomplete options
+      const filtered = focusedOption.value
+        ? route.autocomplete.options[focusedOption.name].filter((options) => options.name.toLowerCase().startsWith(focusedOption.value.toLowerCase()))
+        : route.autocomplete.options[focusedOption.name]
+      console.log('filtered', filtered.length)
+      return await interaction.respond(
+        filtered.length > 20 ? [...filtered.slice(0, 20), { name: `...${filtered.length - 20} more, keep typing to refine results`, value: '...' }] : filtered
+      )
+    }
+
     if (!interaction.isCommand()) return // Hard block
     if (!interaction.isChatInputCommand()) return
+
     this.bot.BotMonitor.LiveStatistics.increment('commands-seen')
 
     const { channel, commandName, guild, guildId, member, options, type, user } = interaction
@@ -302,7 +336,7 @@ export class CommandRouter {
       return checks // Hard stop here
     }
 
-    if (routed.route.permissions.nsfwRequired === true && routed.channel.isTextBased()) {
+    if (routed.route.permissions.nsfwRequired === true) {
       // [IF: nsfwRequired is set] Command can only respond in NSFW channels
       const channel = routed.channel as TextChannel
       if (!channel.nsfw) {

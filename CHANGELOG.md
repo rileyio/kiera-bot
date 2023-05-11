@@ -7,6 +7,7 @@
 ### 11.0.0-beta-1
 
 - Fixed: Logger `.warn` not working properly.
+- Added: Router support for autocomplete values with Discord slash commands.
 - Updated: Node from v16 to v18.
 - Updated: Rework of Router's add/remove command procedures.
 - Updated: Router's Discord command route add and removal within Router's route manage procedures.

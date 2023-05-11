@@ -52,6 +52,12 @@ export type RouteConfigurationType = {
   'placeolder-type': { channel: any; member: any; options: any; type: any }
 }
 
+export type RouteConfigurationAutocomplete = {
+  options: {
+    [key: string]: Array<{ name: string; value: string }>
+  }
+}
+
 /**
  * Discord Command Route
  *
@@ -59,6 +65,7 @@ export type RouteConfigurationType = {
  * @interface RouteConfiguration
  */
 export class RouteConfiguration<T extends keyof RouteConfigurationType> {
+  public autocomplete?: RouteConfigurationAutocomplete
   public category: RouteConfigurationCategory
   public controller: (routed: Routed<T> | Plugin, routedWhenPlugin?: Routed<T>) => AcceptedResponse
   public description?: string
@@ -79,6 +86,7 @@ export class RouteConfiguration<T extends keyof RouteConfigurationType> {
   public validateAlias?: Array<string>
 
   constructor(route: Partial<RouteConfiguration<RouteConfigurationType[T]['type']>>) {
+    this.autocomplete = route.autocomplete
     this.category = route.category
     this.controller = route.controller
     this.description = route.description
