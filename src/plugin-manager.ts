@@ -137,6 +137,18 @@ export class PluginManager {
     return { type: UpdateType.None }
   }
 
+  private async loadExisting(plugin: Plugin) {
+    // Try to register the Bot instance with the plugin
+    await plugin.register(this.bot, this.folder, plugin.pluginBodyString, true, plugin.verified)
+    this.log.verbose(`🧩 Plugin Loaded ${plugin.verified ? '(✔)' : ''}: ${plugin.name}@${plugin.version}`)
+
+    // Load any routes for the plugin
+    if (plugin.routes && plugin.routes.length) plugin.routes.forEach((route) => this.bot.Router.addRoute(route))
+
+    // If Auto Updating is enabled
+    if (plugin.autoCheckForUpdate) this.checkForUpdate(plugin)
+  }
+
   public async checkForUpdates() {
     console.log('checking for updates')
     for (let index = 0; index < this.plugins.length; index++) {
@@ -255,5 +267,15 @@ export class PluginManager {
 
   public getPlugin(plugin: string | Plugin) {
     return this.plugins.find((p) => p.name === (typeof plugin === 'string' ? (plugin as string) : (plugin as Plugin).name))
+  }
+
+  public async reloadPlugin(plugin: string | Plugin) {
+    const pluginFound = this.getPlugin(plugin)
+    console.log('pluginFound', pluginFound)
+
+    if (!pluginFound) return { error: 'Plugin not found', successful: false }
+    await this.unloadPlugin(pluginFound.plugin)
+    await this.loadExisting(pluginFound.plugin)
+    return { error: undefined, successful: true }
   }
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { EmbedBuilder, GuildMember, Interaction, TextChannel } from 'discord.js'
+import { AutocompleteInteraction, CacheType, EmbedBuilder, GuildMember, Interaction, TextChannel } from 'discord.js'
 import { RouteConfiguration, RouteConfigurationType, Routed, RouterStats } from '.'
 
 import { Bot } from '@/index'
@@ -60,44 +60,76 @@ export class CommandRouter {
   }
 
   /**
+   * Process Routed Slash Command Auto Complete
+   * @param interaction
+   * @returns
+   */
+  public async routeDiscordInteractionAutocomplete(interaction: AutocompleteInteraction<CacheType>) {
+    const { channel, commandName, guild, member, options, user } = interaction
+    this.log.verbose('Routing interaction autocomplete', commandName)
+
+    // Find command route
+    const route = this.routes.find((r) => r.name === commandName) as RouteConfiguration<'discord-chat-interaction-autocomplete'>
+
+    // Missing route
+    if (!route) return // Stop here
+
+    // Ensure it has autocomplete options set for entire route
+    if (route.autocomplete?.options === undefined && route.autocomplete?.optionsFn === undefined) {
+      this.log.warn('Route has no autocomplete options set')
+      return // Stop here
+    }
+
+    // Lookup Kiera User in DB
+    const kieraUser = new TrackedUser(await this.bot.DB.get('users', { id: user.id }))
+    const routerStats = new RouterStats(user)
+
+    // Create a routed object
+    const routed = new Routed<'discord-chat-interaction-autocomplete'>({
+      author: user,
+      bot: this.bot,
+      channel: channel as TextChannel,
+      guild,
+      interaction,
+      member: member as GuildMember,
+      options,
+      route,
+      routerStats,
+      type: 'discord',
+      user: kieraUser
+    })
+
+    // Get the focused option
+    const focusedOption = interaction.options.getFocused(true)
+
+    // Does this autocomplete have optionsFn?
+    if (route.autocomplete.optionsFn) {
+      route.autocomplete.options = await route.autocomplete.optionsFn(routed)
+    }
+
+    console.log('Autocomplete name:', focusedOption.name)
+
+    // Ensure the focused option has something defined ( >> Predefined array of values << )
+    if (route.autocomplete.options[focusedOption.name] === undefined) return // Stop here
+
+    // Respond with autocomplete options
+    const filtered = focusedOption.value
+      ? route.autocomplete.options[focusedOption.name].filter((options) => options.name.toLowerCase().startsWith(focusedOption.value.toLowerCase()))
+      : route.autocomplete.options[focusedOption.name]
+    console.log('filtered', filtered.length)
+    return await interaction.respond(
+      filtered.length > 20 ? [...filtered.slice(0, 20), { name: `...${filtered.length - 20} more, keep typing to refine results`, value: '...' }] : filtered
+    )
+  }
+
+  /**
    * Process Routed Slash Command
    * @param interaction
    * @returns
    */
   public async routeDiscordInteraction(interaction: Interaction) {
     // Autocomplete handling
-    if (interaction.isAutocomplete()) {
-      const { commandName } = interaction
-      this.log.verbose('Routing interaction autocomplete', commandName)
-
-      // Find command route
-      const route = this.routes.find((r) => r.name === commandName) as RouteConfiguration<'discord-chat-interaction'>
-
-      // Missing route
-      if (!route) return // Stop here
-
-      // Ensure it has autocomplete options set for entire route
-      if (route.autocomplete?.options === undefined) {
-        this.log.warn('Route has no autocomplete options set')
-        return // Stop here
-      }
-
-      // Get the focused option
-      const focusedOption = interaction.options.getFocused(true)
-
-      // Ensure the focused option has something defined
-      if (route.autocomplete.options[focusedOption.name] === undefined) return // Stop here
-
-      // Respond with autocomplete options
-      const filtered = focusedOption.value
-        ? route.autocomplete.options[focusedOption.name].filter((options) => options.name.toLowerCase().startsWith(focusedOption.value.toLowerCase()))
-        : route.autocomplete.options[focusedOption.name]
-      console.log('filtered', filtered.length)
-      return await interaction.respond(
-        filtered.length > 20 ? [...filtered.slice(0, 20), { name: `...${filtered.length - 20} more, keep typing to refine results`, value: '...' }] : filtered
-      )
-    }
-
+    if (interaction.isAutocomplete()) return await this.routeDiscordInteractionAutocomplete(interaction)
     if (!interaction.isCommand()) return // Hard block
     if (!interaction.isChatInputCommand()) return
 

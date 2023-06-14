@@ -12,31 +12,32 @@ import { SlashCommandBuilder } from 'discord.js'
 
 export class SampleCommandPlugin extends Plugin {
   config = { testProp: false }
+  routes = [
+    new RouteConfiguration({
+      category: 'Plugin/Sample',
+      controller: this.routeCommand,
+      name: 'test',
+      permissions: {
+        defaultEnabled: false,
+        serverOnly: false
+      },
+      plugin: this,
+      slash: new SlashCommandBuilder().setName('test').setDescription('Testing Plugin'),
+      type: 'discord-chat-interaction'
+    })
+  ]
 
   constructor() {
     super()
     console.log('SampleCommand Plugin Loaded')
   }
 
-  public async onEnabled() {
-    await this.bot.Router.addRoute(
-      new RouteConfiguration({
-        category: 'Plugin/Sample',
-        controller: this.routeCommand,
-        name: 'test',
-        permissions: {
-          defaultEnabled: false,
-          serverOnly: false
-        },
-        plugin: this,
-        slash: new SlashCommandBuilder().setName('test').setDescription('Testing Plugin'),
-        type: 'discord-chat-interaction'
-      })
-    )
+  onEnabled = async () => {
+    console.log('test loaded')
   }
 
-  public async onDisabled() {
-    await this.bot.Router.removeRoute('test')
+  onDisabled = async () => {
+    console.log('test unloaded')
   }
 
   public async routeCommand(plugin: SampleCommandPlugin, routed: Routed<'discord-chat-interaction'>) {

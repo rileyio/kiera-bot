@@ -1,7 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AcceptedResponse, Routed } from '@/router'
-import { CacheType, ChatInputCommandInteraction, CommandInteractionOptionResolver, GuildMember, RESTPostAPIApplicationCommandsJSONBody, TextChannel } from 'discord.js'
+import {
+  AutocompleteInteraction,
+  CacheType,
+  ChatInputCommandInteraction,
+  CommandInteractionOptionResolver,
+  GuildMember,
+  RESTPostAPIApplicationCommandsJSONBody,
+  TextChannel
+} from 'discord.js'
 
 import { Plugin } from '@/objects/plugin'
 
@@ -49,13 +57,22 @@ export type RouteConfigurationType = {
     options: Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getFocused'>
     type: ChatInputCommandInteraction<CacheType>
   }
+  'discord-chat-interaction-autocomplete': {
+    channel: TextChannel
+    member: GuildMember
+    options: Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getUser' | 'getAttachment' | 'getChannel' | 'getMember' | 'getMentionable' | 'getRole'>
+    type: AutocompleteInteraction<CacheType>
+  }
   'placeolder-type': { channel: any; member: any; options: any; type: any }
 }
 
 export type RouteConfigurationAutocomplete = {
-  options: {
-    [key: string]: Array<{ name: string; value: string }>
-  }
+  options?: RouteConfigurationAutocompleteOptions
+  optionsFn?: (routed: Routed<'discord-chat-interaction-autocomplete'>) => Promise<RouteConfigurationAutocompleteOptions>
+}
+
+export type RouteConfigurationAutocompleteOptions = {
+  [key: string]: Array<{ name: string; value: string }> //((routed: Routed<'discord-chat-interaction-autocomplete'>) => Array<{ name: string; value: string }>)
 }
 
 /**
