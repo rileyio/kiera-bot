@@ -120,6 +120,8 @@ function clean() {
   # If Kiera is running, then stop it
   if isUp; then
     stop
+  else
+    echo -e " ${RED}ｘ${NONE} kiera-bot is ${RED}not running${NONE}"
   fi
 
   # If the image exists, then remove it
