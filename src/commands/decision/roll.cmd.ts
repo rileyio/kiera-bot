@@ -4,7 +4,7 @@ import * as XRegExp from 'xregexp'
 import { AcceptedResponse, Routed } from '@/router'
 
 import { ChannelType } from 'discord.js'
-import { ObjectID } from 'bson'
+import { ObjectId } from 'bson'
 import { TrackedDecision } from '@/objects/decision'
 import { TrackedUser } from '@/objects/user/'
 import { decisionFromSaved } from '@/commands/decision/roll.embed'
@@ -20,7 +20,7 @@ export async function runSavedDecision(routed: Routed<'discord-chat-interaction'
   const userByNickname = new TrackedUser(isShort ? await routed.bot.DB.get('users', { 'Decision.nickname': new RegExp(`^${userNickname}$`, 'i') }) : {})
   const decisionFromDB = isShort
     ? await routed.bot.DB.get('decision', { authorID: userByNickname.id, nickname: new RegExp(`^${decisionNickname}$`, 'i') })
-    : await routed.bot.DB.get('decision', { _id: new ObjectID(idOrNickname) })
+    : await routed.bot.DB.get('decision', { _id: new ObjectId(idOrNickname) })
 
   if (decisionFromDB) {
     const decision = new TrackedDecision(decisionFromDB)
