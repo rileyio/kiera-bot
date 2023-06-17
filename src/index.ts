@@ -240,13 +240,13 @@ export class Bot {
       if (process.env.BOT_BLOCK_GLOBALSLASH === 'true') {
         // Push manually a set to just Kiera's Development server
         // To have them available for testing immediately (+ any extra servers that are added)
-        // const guildsToUpdate = process.env.BOT_SERVERS_TO_PUSH.split(',')
-        // for (let index = 0; index < guildsToUpdate.length; index++) {
-        //   const guild = guildsToUpdate[index]
-        //   this.Log.Bot.verbose(`Started refreshing application (/) commands for guild ${guild}.`)
-        //   await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, guild), { body: commands })
-        //   this.Log.Bot.verbose(`Successfully reloaded application (/) commands for guild ${guild}.`)
-        // }
+        const guildsToUpdate = process.env.BOT_SERVERS_TO_PUSH.split(',')
+        for (let index = 0; index < guildsToUpdate.length; index++) {
+          const guild = guildsToUpdate[index]
+          this.Log.Bot.verbose(`Started refreshing application (/) commands for guild ${guild}.`)
+          await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, guild), { body: commands })
+          this.Log.Bot.verbose(`Successfully reloaded application (/) commands for guild ${guild}.`)
+        }
       }
       // Push normally
       else {
@@ -255,7 +255,7 @@ export class Bot {
         this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
       }
     } catch (error) {
-      this.Log.Bot.error('Not Successful in updating Slash Commands', error)
+      this.Log.Bot.error('Not Successful in updating Slash Commands', error.message)
     }
   }
 
