@@ -1,10 +1,9 @@
-import * as XRegExp from 'xregexp'
-
 import { AcceptedResponse, Routed } from '#router/index'
 
 import { ObjectId } from 'mongodb'
 import { TrackedDecision } from '#objects/decision'
 import { TrackedUser } from '#objects/user/index'
+import XRegExp from 'xregexp'
 
 /**
  * Set a nickname

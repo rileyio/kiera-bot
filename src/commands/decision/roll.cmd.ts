@@ -1,12 +1,10 @@
-import * as Random from 'random'
-import * as XRegExp from 'xregexp'
-
 import { AcceptedResponse, Routed } from '#router/index'
 
-import { ChannelType } from 'discord.js'
 import { ObjectId } from 'bson'
+import Random from 'random'
 import { TrackedDecision } from '#objects/decision'
 import { TrackedUser } from '#objects/user/index'
+import XRegExp from 'xregexp'
 import { decisionFromSaved } from '#commands/decision/roll.embed'
 
 export async function runSavedDecision(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
@@ -100,7 +98,7 @@ export async function runSavedDecision(routed: Routed<'discord-chat-interaction'
       if (decision.consumeMode === 'Consume') return await routed.reply(`This decision roll has limiting enabled. There are no outcomes available anymore.`)
     }
 
-    const random = (Random as any).int(0, optionsPool.length - 1)
+    const random = Random.int(0, optionsPool.length - 1)
     const outcome = optionsPool[random]
 
     // Update Decision's Outcome to track consumed state (If something other than 'Basic' is set for the mode)

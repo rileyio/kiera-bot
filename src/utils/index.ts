@@ -19,9 +19,9 @@ export * from './client-event-handler.ts'
 export * from './date.ts'
 export * from '../localization.ts'
 export * from './string-builder.ts'
-export * from './types.ts'
-export * from './user.ts'
-export * from './url.ts'
+export * as Types from './types.ts'
+export * as User from './user.ts'
+export * as URL from './url.ts'
 
 export { Channel }
 export { Logger }

@@ -1,4 +1,4 @@
-import * as Utils from '#utils'
+import { User } from '#utils'
 import XRegex from 'xregexp'
 
 export const validationRegex = XRegex('(\\/(?<name>[a-z0-9]*)(?<optional>\\?\\:|\\:|\\=|\\?\\=|(?<multi>\\.\\.\\.))(?<type>[a-z\\-]*))', 'img')
@@ -114,7 +114,7 @@ export class Validate {
         // Check if type matches
         v.valid = this.validateType(v.type, _tempVal)
 
-        if (v.type === 'user') v.value = Utils.User.extractUserIdFromString(args[i])
+        if (v.type === 'user') v.value = User.extractUserIdFromString(args[i])
         if (v.type === 'string') v.value = _tempVal
 
         // Fix: If expected type is valid and is a number but for this type convert it back to a string
