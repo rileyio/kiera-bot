@@ -1,10 +1,10 @@
-import * as Utils from '@/utils'
+import * as Utils from '#utils'
 
-import { ServerStatisticType, StatisticsSettingType } from '@/objects/statistics'
+import { ServerStatisticType, StatisticsSettingType } from '#objects/statistics'
 
-import { Routed } from '@/router'
+import { Routed } from '#router/index'
 import { ObjectId } from 'mongodb'
-import { statsUser } from '@/commands/stats/stats-user'
+import { statsUser } from '#commands/stats/stats-user'
 
 export async function get(routed: Routed<'discord-chat-interaction'>) {
   const userID = routed.interaction.options.getUser('target')?.id || routed.author.id

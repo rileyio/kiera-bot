@@ -1,5 +1,5 @@
 import * as Discord from 'discord.js'
-import { Logger } from '@/utils'
+import { Logger } from '#utils'
 
 /**
  * Deletes all messages in a given channel

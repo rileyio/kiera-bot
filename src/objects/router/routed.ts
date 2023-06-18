@@ -1,11 +1,11 @@
-// import * as Utils from '@/utils'
+// import * as Utils from '#utils'
 
 // import { Channel, ChatInputCommandInteraction, CommandInteraction, Guild, GuildMember, InteractionReplyOptions, Message, MessagePayload, TextChannel, User } from 'discord.js'
-// import { ProcessedPermissions, RouteConfiguration, RouterStats, Validate, ValidationType } from '@/router'
+// import { ProcessedPermissions, RouteConfiguration, RouterStats, Validate, ValidationType } from '#router/index'
 
-// import { Bot } from '@/index'
-// import { TrackedMessage } from '@/objects/message'
-// import { TrackedUser } from '@/objects/user/'
+// import { Bot } from '#/index'
+// import { TrackedMessage } from '#objects/message'
+// import { TrackedUser } from '#objects/user/index'
 
 // const DEFAULT_LOCALE = process.env.BOT_LOCALE
 

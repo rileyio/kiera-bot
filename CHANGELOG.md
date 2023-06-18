@@ -4,6 +4,17 @@
 
 > ⚠️ The changes in v11 are not final. Once the beta period is over, the changelog will be updated with the final changes.
 
+### 11.0.0-beta-2
+
+- Added: New libraries for project changes (see below + some supporting extensions).
+- Added: Detection lib for detecting if running inside docker container - more support around this coming.
+- Updated: API `restify` being replaced with `express`.
+- Updated: Project from `commonjs` to `esm`.
+- Updated: Imports aliases, maps and general cleaning.
+- Updated: Mongodb driver from v3 to v5.
+- Updated: Replaced `ts-node-dev` with `nodemon`.
+- Updated: Various dependencies `agenda`, `random`, `typescript`.
+
 ### 11.0.0-beta-1
 
 - Fixed: Logger `.warn` not working properly.

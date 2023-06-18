@@ -1,4 +1,4 @@
-import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '#router/index'
 
 import { SlashCommandBuilder } from '@discordjs/builders'
 

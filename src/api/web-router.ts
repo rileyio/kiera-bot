@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-types */
-import * as restify from 'restify'
+import * as express from 'express'
 
-import { Next, Request, Response } from 'restify'
-
-import { Bot } from '@/index'
+import { Bot } from '#/index'
 
 export interface WebRoute {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   controller: Function | void
   method: 'get' | 'post' | 'delete' | 'put' | 'patch'
   middleware?: Array<(routed: WebRouted) => Promise<WebRouted | void>>
@@ -17,10 +15,10 @@ export class WebRouted {
   public Bot: Bot
   public route: WebRoute
   public controller: (routed: WebRouted) => Promise<boolean>
-  // Restify args
-  public req: Request
-  public res: Response
-  public next: Next
+  // Express args
+  public req: express.Request
+  public res: express.Response
+  public next: express.NextFunction
   public session: { id: string, userID?: string }
 
   constructor(init: Partial<WebRouted>) {
@@ -30,10 +28,10 @@ export class WebRouted {
 
 export class WebRouter {
   public Bot: Bot
-  public server: restify.Server
+  public server: express.Application
   public routes: Array<WebRoute> = []
 
-  constructor(bot: Bot, server: restify.Server, routes: Array<WebRoute>) {
+  constructor(bot: Bot, server: express.Application, routes: Array<WebRoute>) {
     this.Bot = bot
     this.server = server
     this.routes = routes
@@ -67,7 +65,7 @@ export class WebRouter {
         )
       }
       if (route.method === 'delete') {
-        this.server.del(route.path, async (req, res, next) =>
+        this.server.delete(route.path, async (req, res, next) =>
           middlewareHandler(
             new WebRouted({
               Bot: this.Bot,

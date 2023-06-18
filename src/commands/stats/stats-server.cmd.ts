@@ -1,9 +1,9 @@
-import * as Utils from '@/utils'
+import * as Utils from '#utils'
 
-import { Routed } from '@/router'
+import { Routed } from '#router/index'
 import { ObjectId } from 'bson'
-import { ServerStatisticType } from '@/objects/statistics'
-import { statsServer } from '@/commands/stats/stats-server.embed'
+import { ServerStatisticType } from '#objects/statistics'
+import { statsServer } from '#commands/stats/stats-server.embed'
 
 export async function get(routed: Routed<'discord-chat-interaction'>) {
   const topChannelsByMsgCount = await routed.bot.DB.aggregate<{ channelID: string; count: number; name?: string }>('stats-servers', [

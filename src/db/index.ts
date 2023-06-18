@@ -1,3 +1,3 @@
-export * from './database'
-export * from './monitor'
-export * from './promise'
+export * from './database.ts'
+export * from './monitor.ts'
+export * from './promise.ts'

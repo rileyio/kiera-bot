@@ -1,6 +1,6 @@
 // import Snoowrap = require('snoowrap');
 // import * as Middleware from '@/middleware';
-// import { RouterRouted, ExportRoutes } from '@/router'
+// import { RouterRouted, ExportRoutes } from '#router/index'
 // // import { eightBallResult } from '@/embedded/8ball-embed';
 // import got = require('got');
 

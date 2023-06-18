@@ -1,4 +1,4 @@
-import { AcceptedResponse, Routed } from '@/router'
+import { AcceptedResponse, Routed } from '#router/index'
 
 export async function reload(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const name = routed.options.get('name')?.value as string

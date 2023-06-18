@@ -1,27 +1,25 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { version } = require('../package.json')
-
 import * as Discord from 'discord.js'
-import * as Task from '@/tasks'
-import * as Utils from '@/utils'
-import * as debug from 'debug'
+import * as Task from './tasks/index.ts'
+import * as Utils from '#utils'
 
-import { CommandRouter, Routed, routeLoader } from '@/router'
+import { CommandRouter, Routed, routeLoader } from '#router/index'
 import { RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder, SlashCommandSubcommandBuilder } from 'discord.js'
 
-import { Audit } from '@/objects/audit'
-import { BattleNet } from '@/integrations/BNet'
-import { BotMonitor } from '@/monitor'
-import { ChastiSafe } from '@/integrations/ChastiSafe'
-import Localization from '@/localization'
-import { MongoDB } from '@/db'
-import { PluginManager } from '@/plugin-manager'
+import { Audit } from '#objects/audit'
+import { BattleNet } from '#integrations/BNet'
+import { BotMonitor } from './monitor.ts'
+import { ChastiSafe } from '#integrations/ChastiSafe'
+import Localization from './localization.ts'
+import { MongoDB } from '#db'
+import { PluginManager } from './plugin-manager.ts'
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v10'
-import { ServerStatisticType } from './objects/statistics'
-import { Statistics } from '@/statistics'
-import { StoredServer } from './objects/server'
-import { read as getSecret } from '@/secrets'
+import { ServerStatisticType } from '#objects/statistics'
+import { Statistics } from './statistics.ts'
+import { StoredServer } from '#objects/server'
+import debug from 'debug'
+import { read as getSecret } from './secrets.ts'
+import { readFile } from 'fs/promises'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
 const Debugger = debug('kiera-bot')
@@ -73,6 +71,8 @@ export class Bot {
   public Localization: Localization
 
   public async start() {
+    const { version } = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')) as { version: string }
+
     this.version = version
     this.Log.Bot.log(`initializing kiera-bot (${this.version})...`)
 
@@ -144,7 +144,7 @@ export class Bot {
         langs: this.Localization.langs,
         nodeVersion: process.version,
         ping: this.BotMonitor.DBMonitor.pingTotalLatency / this.BotMonitor.DBMonitor.pingCount,
-        routes: this.BotMonitor.WebAPI.configuredRoutes.length,
+        routes: 0, //this.BotMonitor.WebAPI.configuredRoutes.length,
         strings: this.Localization.stringsCount,
         user: this.client.user.tag,
         users: await this.DB.count('users', {}),
@@ -323,5 +323,5 @@ export class Bot {
   }
 }
 
-export { Plugin } from './objects/plugin'
+export { Plugin } from '#objects/plugin'
 export { Routed }

@@ -1,8 +1,7 @@
-import * as Random from 'random'
-
-import { Task } from '@/objects/task'
-import { TrackedBotSetting } from '@/objects/setting'
-import { sb } from '@/utils'
+import Random from 'random'
+import { Task } from '#objects/task'
+import { TrackedBotSetting } from '#objects/setting'
+import { sb } from '#utils'
 
 export class StatusMessageRotator extends Task {
   private stock = ['{{size}} Servers', 'kierabot.xyz']
@@ -24,7 +23,7 @@ export class StatusMessageRotator extends Task {
       if (hasStoredStatus) options.push(hasStoredStatus.value)
 
       // Get a random message
-      const random = (Random as any).int(0, options.length - 1)
+      const random = Random.int(0, options.length - 1)
       const outcome = options[random]
 
       // console.log('sb', sb(outcome, { size: this.Bot.client.guilds.cache.size }) || hasStoredStatus ? storedStatus.value : '')

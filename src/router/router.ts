@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AutocompleteInteraction, CacheType, EmbedBuilder, GuildMember, Interaction, TextChannel } from 'discord.js'
-import { RouteConfiguration, RouteConfigurationType, Routed, RouterStats } from '.'
+import { RouteConfiguration, RouteConfigurationType, Routed, RouterStats } from './index.ts'
 
-import { Bot } from '@/index'
-import { CommandPermission } from '@/objects/permission'
+import { Bot } from '#/index'
+import { CommandPermission } from '#objects/permission'
 import { Routes as DiscRoutes } from 'discord-api-types/v10'
-import { Logger } from '@/utils'
+import { Logger } from '#utils'
 import { ProcessedPermissions } from '.'
 import { REST } from '@discordjs/rest'
-import { TrackedUser } from '@/objects/user/'
-import { read as getSecret } from '@/secrets'
+import { TrackedUser } from '#objects/user/index'
+import { read as getSecret } from '#secrets'
 
 /**
  * The almighty incoming commands router!

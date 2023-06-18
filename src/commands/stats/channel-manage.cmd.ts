@@ -1,6 +1,6 @@
-import { AcceptedResponse, Routed } from '@/router'
+import { AcceptedResponse, Routed } from '#router/index'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageComponentInteraction, TextChannel } from 'discord.js'
-import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
+import { StatisticsSetting, StatisticsSettingType } from '#objects/statistics'
 
 export async function disableChannelStats(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   await routed.bot.DB.add(

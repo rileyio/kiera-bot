@@ -1,13 +1,13 @@
 import * as Random from 'random'
 import * as XRegExp from 'xregexp'
 
-import { AcceptedResponse, Routed } from '@/router'
+import { AcceptedResponse, Routed } from '#router/index'
 
 import { ChannelType } from 'discord.js'
 import { ObjectId } from 'bson'
-import { TrackedDecision } from '@/objects/decision'
-import { TrackedUser } from '@/objects/user/'
-import { decisionFromSaved } from '@/commands/decision/roll.embed'
+import { TrackedDecision } from '#objects/decision'
+import { TrackedUser } from '#objects/user/index'
+import { decisionFromSaved } from '#commands/decision/roll.embed'
 
 export async function runSavedDecision(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const idOrNickname = routed.interaction.options.get('id').value as string

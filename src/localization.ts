@@ -1,12 +1,12 @@
-import * as Handlebars from 'handlebars'
 import * as YAML from 'yaml'
 import * as fs from 'fs'
-import * as glob from 'fast-glob'
 
-import { Logger } from '@/utils'
+import Handlebars from 'handlebars'
+import { Logger } from '#utils'
 import { get } from 'dot-prop'
+import glob from 'fast-glob'
 
-const DEFAULT_LOCALE = process.env.BOT_LOCALE
+const DEFAULT_LOCALE = process.env.BOT_LOCALE || 'en'
 
 export default class Localization {
   private loaded: {

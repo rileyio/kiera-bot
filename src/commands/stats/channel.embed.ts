@@ -1,4 +1,4 @@
-import * as Utils from '@/utils'
+import * as Utils from '#utils'
 import { EmbedBuilder } from 'discord.js'
 
 interface StatsChannelsData {
@@ -17,7 +17,7 @@ interface StatsChannelsData {
 
 export function statsChannel(stats: StatsChannelsData) {
   let descriptionBuilt = `\nStats are collected using the UTC timezone. Stats shown are from the last 30 days.\n\n`
-  descriptionBuilt += `Channel Created: \`${new Date(stats.created).toLocaleDateString()}\` (\`${Utils.Date.calculateHumanTimeDDHHMM(
+  descriptionBuilt += `Channel Created: \`${new Date(stats.created).toLocaleDateString()}\` (\`${Utils.calculateHumanTimeDDHHMM(
     Date.now() / 1000 - stats.created / 1000
   )} ago\`)\n`
   descriptionBuilt += `Members: \`${stats.members}\`\n`

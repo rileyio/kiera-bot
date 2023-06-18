@@ -45,5 +45,3 @@ function roll(str: string) {
 
   return value
 }
-
-export * from '../lang'

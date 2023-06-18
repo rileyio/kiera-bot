@@ -1,10 +1,9 @@
-import * as Middleware from '@/middleware'
+import * as Middleware from '#middleware'
 
-import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '#router/index'
 
-import { ObjectId } from 'bson'
-import { TrackedDecision } from '@/objects/decision'
-import { decisionLogLast5 } from '@/embedded/decision-log'
+import { TrackedDecision } from '#objects/decision'
+import { decisionLogLast5 } from '../../embedded/decision-log.ts'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({

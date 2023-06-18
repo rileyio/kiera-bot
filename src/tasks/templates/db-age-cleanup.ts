@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { Task } from '@/objects/task'
+import { Task } from '#objects/task'
 
 export class DBAgeCleanup extends Task {
   // Config for this task

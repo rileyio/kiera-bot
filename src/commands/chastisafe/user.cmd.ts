@@ -1,5 +1,5 @@
-import { AcceptedResponse, Routed } from '@/router'
-import { embed } from './user.embed'
+import { AcceptedResponse, Routed } from '#router/index'
+import { embed } from './user.embed.ts'
 
 /**
  * Lookup ChastiSafe User

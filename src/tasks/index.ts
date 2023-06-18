@@ -1,3 +1,3 @@
-export * from './bot'
-export * from './task-manager'
+export * from './bot.ts'
+export * from './task-manager.ts'
 // export * from './stats'

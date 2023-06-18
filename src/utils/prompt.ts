@@ -1,8 +1,8 @@
-// import * as Utils from '@/utils'
+// import * as Utils from '#utils'
 
 // import { Collection, Message, TextChannel } from 'discord.js'
 
-// import { RouterRouted } from '@/router'
+// import { RouterRouted } from '#router/index'
 
 // export interface PromptUserInput {
 //   expectedTerminator?: string

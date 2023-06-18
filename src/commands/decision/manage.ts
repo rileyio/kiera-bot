@@ -1,9 +1,9 @@
 // import * as Middleware from '@/middleware'
-// import * as Utils from '@/utils'
+// import * as Utils from '#utils'
 
-// import { ExportRoutes, RouterRouted } from '@/router'
+// import { ExportRoutes, RouterRouted } from '#router/index'
 // import { Message, TextChannel } from 'discord.js'
-// import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
+// import { TrackedDecision, TrackedDecisionOption } from '#objects/decision'
 
 // import { ObjectId } from 'bson'
 

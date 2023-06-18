@@ -3,7 +3,7 @@ import * as Validation from '@/api/validations'
 import * as errors from 'restify-errors'
 
 import { Guild, User } from 'discord.js'
-import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
+import { TrackedDecision, TrackedDecisionOption } from '#objects/decision'
 import { WebRoute, WebRouted } from '@/api/web-router'
 
 import { ObjectId } from 'bson'

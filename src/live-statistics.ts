@@ -1,8 +1,8 @@
-import * as Helper from './utils/stats'
+import * as Helper from './utils/stats.ts'
 
-import { BotStatistic, BotStatistics } from './objects/statistics'
+import { BotStatistic, BotStatistics } from './objects/statistics.ts'
 
-import { Bot } from '@/index'
+import { Bot } from '#/index'
 import { EventEmitter } from 'events'
 
 export class LiveStatistics extends EventEmitter {

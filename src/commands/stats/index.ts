@@ -1,12 +1,12 @@
-import * as About from '@/commands/stats/about.cmd'
-import * as StatsChannel from '@/commands/stats/channel.cmd'
-import * as StatsChannelManage from '@/commands/stats/channel-manage.cmd'
-import * as StatsServer from '@/commands/stats/stats-server.cmd'
-import * as StatsServerManage from '@/commands/stats/server-manage.cmd'
-import * as StatsUser from '@/commands/stats/user.cmd'
-import * as StatsUserManage from '@/commands/stats/user-manage.cmd'
+import * as About from '#commands/stats/about.cmd'
+import * as StatsChannel from '#commands/stats/channel.cmd'
+import * as StatsChannelManage from '#commands/stats/channel-manage.cmd'
+import * as StatsServer from '#commands/stats/stats-server.cmd'
+import * as StatsServerManage from '#commands/stats/server-manage.cmd'
+import * as StatsUser from '#commands/stats/user.cmd'
+import * as StatsUserManage from '#commands/stats/user-manage.cmd'
 
-import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '#router/index'
 
 import { SlashCommandBuilder } from '@discordjs/builders'
 

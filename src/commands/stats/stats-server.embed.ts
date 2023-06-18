@@ -1,4 +1,4 @@
-import * as Utils from '@/utils'
+import * as Utils from '#utils'
 
 import { EmbedBuilder, EmbedField } from 'discord.js'
 
@@ -59,7 +59,7 @@ export function statsServer(stats: StatsServerData): EmbedBuilder {
   const fields = [] as Array<EmbedField>
   let descriptionBuilt = `Stats are collected using the UTC timezone. Stats shown are from the last 30 days.\n\n`
   // Add Server Age
-  descriptionBuilt += `Server Created: \`${new Date(stats.serverAgeTimestamp).toLocaleDateString()}\` (\`${Utils.Date.calculateHumanTimeDDHHMM(
+  descriptionBuilt += `Server Created: \`${new Date(stats.serverAgeTimestamp).toLocaleDateString()}\` (\`${Utils.calculateHumanTimeDDHHMM(
     Date.now() / 1000 - stats.serverAgeTimestamp / 1000
   )} ago\`)\n`
   // Add Server Member Count

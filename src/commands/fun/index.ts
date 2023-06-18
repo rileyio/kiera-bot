@@ -1,8 +1,8 @@
-import * as EightBall from '@/commands/fun/8ball.cmd'
-import * as Flip from '@/commands/fun/flip.cmd'
-import * as Roll from '@/commands/fun/roll.cmd'
+import * as EightBall from '#commands/fun/8ball.cmd'
+import * as Flip from '#commands/fun/flip.cmd'
+import * as Roll from '#commands/fun/roll.cmd'
 
-import { ExportRoutes, RouteConfiguration } from '@/router'
+import { ExportRoutes, RouteConfiguration } from '#router/index'
 
 import { SlashCommandBuilder } from '@discordjs/builders'
 

@@ -1,5 +1,5 @@
 /* eslint-disable sort-keys */
-import { AcceptedResponse, Routed } from '@/router'
+import { AcceptedResponse, Routed } from '#router/index'
 import { EmbedBuilder, GuildMember, Role } from 'discord.js'
 
 import { performance } from 'perf_hooks'

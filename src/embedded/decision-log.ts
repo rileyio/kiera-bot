@@ -1,6 +1,6 @@
 import { EmbedBuilder, User } from 'discord.js'
 
-import { TrackedDecision } from '@/objects/decision'
+import { TrackedDecision } from '#objects/decision'
 
 export function decisionLogLast5(decision: TrackedDecision, user: User) {
   return new EmbedBuilder()

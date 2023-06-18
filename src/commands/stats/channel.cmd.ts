@@ -1,11 +1,11 @@
-import * as Utils from '@/utils'
+import * as Utils from '#utils'
 
-import { ServerStatisticType, StatisticsSettingType } from '@/objects/statistics'
+import { ServerStatisticType, StatisticsSettingType } from '#objects/statistics'
 
-import { Routed } from '@/router'
+import { Routed } from '#router/index'
 import { ObjectId } from 'mongodb'
 import { TextChannel } from 'discord.js'
-import { statsChannel } from '@/commands/stats/channel.embed'
+import { statsChannel } from '#commands/stats/channel.embed'
 
 export async function get(routed: Routed<'discord-chat-interaction'>) {
   const channelID = routed.interaction.options.get('target').channel.id || routed.interaction.channel.id

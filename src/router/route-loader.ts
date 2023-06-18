@@ -1,8 +1,8 @@
 import * as Path from 'path'
-import * as glob from 'fast-glob'
 
-import { Logger } from '@/utils'
-import { RouteConfiguration } from '@/router'
+import { Logger } from '#utils'
+import { RouteConfiguration } from '#/router'
+import glob from 'fast-glob'
 import { performance } from 'perf_hooks'
 
 export async function routeLoader(logger: Logger.Debug) {

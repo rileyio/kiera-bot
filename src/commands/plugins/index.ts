@@ -1,9 +1,9 @@
-import { AcceptedResponse, ExportRoutes, RouteConfiguration, RouteConfigurationAutocompleteOptions, Routed } from '@/router'
-import { checkForUpdates, update } from '@/commands/plugins/update'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, RouteConfigurationAutocompleteOptions, Routed } from '#router/index'
+import { checkForUpdates, update } from '#commands/plugins/update'
 
 import { PermissionFlagsBits } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { reload } from './reload'
+import { reload } from './reload.ts'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({

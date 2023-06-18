@@ -1,6 +1,6 @@
-import { Bot } from '@/index'
+import { Bot } from '#/index'
 import { EventEmitter } from 'events'
-import { MongoDBLoader } from '@/db'
+import { MongoDBLoader } from '#db'
 import { performance } from 'perf_hooks'
 
 export class DatabaseMonitor extends EventEmitter {

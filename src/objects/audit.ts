@@ -1,4 +1,4 @@
-import { Bot } from '@/index'
+import { Bot } from '#/index'
 import { ObjectId } from 'bson'
 
 export type AuditEntryType =

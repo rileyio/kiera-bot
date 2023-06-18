@@ -1,2 +1,2 @@
-export { RouterStats } from './stats'
-export { Routed } from '../../router/routed'
+export { RouterStats } from './stats.ts'
+export { Routed } from '../../router/routed.ts'

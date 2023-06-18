@@ -1,7 +1,7 @@
 import * as XRegex from 'xregexp'
 
 import { GuildMember } from 'discord.js'
-import { TrackedUserQuery } from '@/objects/user/'
+import { TrackedUserQuery } from '#objects/user/index'
 
 export namespace User {
   export enum UserRefType {

@@ -1,8 +1,8 @@
-import Agenda from 'agenda/es'
+import Agenda from 'agenda'
 
-import { Bot } from '@/index'
-import { Task } from '@/objects/task'
-import { read as getSecret } from '@/secrets'
+import { Bot } from '#/index'
+import { Task } from '#objects/task'
+import { read as getSecret } from '#secrets'
 
 export class TaskManager {
   protected Bot: Bot

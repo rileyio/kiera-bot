@@ -1,4 +1,4 @@
-import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '#router/index'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({

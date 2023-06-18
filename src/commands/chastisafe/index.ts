@@ -1,7 +1,7 @@
-import * as Update from '@/commands/chastisafe/update.cmd'
-import * as User from '@/commands/chastisafe/user.cmd'
+import * as Update from '#commands/chastisafe/update.cmd'
+import * as User from '#commands/chastisafe/user.cmd'
 
-import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '#router/index'
 
 import { SlashCommandBuilder } from '@discordjs/builders'
 

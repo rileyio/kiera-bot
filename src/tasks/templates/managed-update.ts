@@ -1,9 +1,9 @@
 import * as moment from 'moment'
 
-import { ManagedChannel } from '@/objects/managed'
-import { Task } from '@/objects/task'
+import { ManagedChannel } from '#objects/managed'
+import { Task } from '#objects/task'
 import { VoiceChannel } from 'discord.js'
-import { calculateHumanTimeDDHHMM } from '@/utils/date'
+import { calculateHumanTimeDDHHMM } from '#utils'
 
 export class ManagedUpdate extends Task {
   // Config for this task

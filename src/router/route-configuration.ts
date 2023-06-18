@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AcceptedResponse, Routed } from '@/router'
+import { AcceptedResponse, Routed } from '#/router'
 import {
   AutocompleteInteraction,
   CacheType,
@@ -11,7 +11,7 @@ import {
   TextChannel
 } from 'discord.js'
 
-import { Plugin } from '@/objects/plugin'
+import { Plugin } from '#objects/plugin'
 
 export type RouteConfigurationCategory =
   | ''

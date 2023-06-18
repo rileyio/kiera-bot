@@ -1,8 +1,8 @@
 import * as Random from 'random'
 
-import { rollDice, rollDie } from '@/commands/fun/roll.embed'
+import { rollDice, rollDie } from '#commands/fun/roll.embed'
 
-import { Routed } from '@/router'
+import { Routed } from '#router/index'
 
 /**
  * Roll (a die | dice)

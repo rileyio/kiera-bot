@@ -1,4 +1,4 @@
-import { Bot } from '@/index'
+import { Bot } from '#/index'
 
 export async function fetchUserCounts(Bot: Bot) {
   var totalUsers = 0

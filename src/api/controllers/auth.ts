@@ -3,8 +3,8 @@ import * as crypto from 'crypto'
 
 import { WebRoute, WebRouted } from '@/api/web-router'
 
-import { TrackedUser } from '@/objects/user'
-import { read as getSecret } from '@/secrets'
+import { TrackedUser } from '#objects/user/index'
+import { read as getSecret } from '#secrets'
 import { setCookie } from '../utils/cookies'
 
 const discClientID = process.env.DISCORD_APP_ID

@@ -1,5 +1,5 @@
-import * as Channel from './channel'
-import * as Logger from './logger'
+import * as Channel from './channel.ts'
+import * as Logger from './logger.ts'
 import * as XRegex from 'xregexp'
 /**
  * Splits args at spaces
@@ -14,14 +14,14 @@ export function getArgs(msg: string) {
   return msg.replace(XRegex(`/(?!["][^"]\B)\s+(?![^"]+["]\B)/`, 'g'), ' ').split(/(?!["][^"]\B)\s+(?![^"]+["]\B)/g)
 }
 
-export * from './client-event-handler'
-export * as Date from './date'
+export * from './client-event-handler.ts'
 // export * from './prompt'
-export * from '../localization'
-export * from './string-builder'
-export * from './types'
-export * from './user'
-export * from './url'
+export * from './date.ts'
+export * from '../localization.ts'
+export * from './string-builder.ts'
+export * from './types.ts'
+export * from './user.ts'
+export * from './url.ts'
 
 export { Channel }
 export { Logger }

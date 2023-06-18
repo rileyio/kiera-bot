@@ -1,11 +1,11 @@
-import * as Utils from '@/utils'
+import * as Utils from '#utils'
 
 import { CacheType, ChatInputCommandInteraction, Guild, InteractionReplyOptions, InteractionResponse, Message, MessagePayload, User } from 'discord.js'
 import { ProcessedPermissions, RouteConfiguration, RouteConfigurationType, RouterStats } from '.'
 
-import { Bot } from '@/index'
-import { TrackedMessage } from '@/objects/message'
-import { TrackedUser } from '@/objects/user/'
+import { Bot } from '#/index'
+import { TrackedMessage } from '#objects/message'
+import { TrackedUser } from '#objects/user/index'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
 

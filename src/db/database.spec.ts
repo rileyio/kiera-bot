@@ -2,7 +2,7 @@
 
 // import test from 'ava'
 // import { MongoDB } from '@/db'
-// import { TrackedUser } from '@/objects/user/'
+// import { TrackedUser } from '#objects/user/index'
 
 // const db = new MongoDB()
 // const newUser = new TrackedUser({

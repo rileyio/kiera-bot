@@ -1,7 +1,7 @@
-import { Bot } from '@/index'
-import { ChastiSafeUser } from '@/objects/chastisafe'
+import { Bot } from '#/index'
+import { ChastiSafeUser } from '#objects/chastisafe'
 import axios from 'axios'
-import { read as getSecret } from '@/secrets'
+import { read as getSecret } from '#secrets'
 
 /**
  * ChastiSafe API Helper service

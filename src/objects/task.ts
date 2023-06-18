@@ -1,7 +1,6 @@
-import * as Agenda from 'agenda/es'
-
-import { Bot } from '@/index'
-import { TrackedBotSetting } from './setting'
+import { Agenda } from 'agenda'
+import { Bot } from '#/index'
+import { TrackedBotSetting } from './setting.ts'
 
 export class Task {
   public Agenda: Agenda

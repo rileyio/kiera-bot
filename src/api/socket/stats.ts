@@ -1,6 +1,6 @@
 import * as SocketIO from 'socket.io'
 
-import { Bot } from '@/index'
+import { Bot } from '#/index'
 
 export function stats(Bot: Bot, socket: SocketIO.Server) {
   // Emit stats periodically

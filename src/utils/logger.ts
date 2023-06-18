@@ -1,6 +1,6 @@
 import * as Winston from 'winston'
 
-import { Types } from '@/utils'
+import { Types } from '#utils'
 
 export class Debug {
   public readonly name: string

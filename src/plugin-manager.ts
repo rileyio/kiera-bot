@@ -1,15 +1,16 @@
 import * as fs from 'fs'
-import * as glob from 'fast-glob'
 import * as path from 'path'
+import * as url from 'url'
 
-import { Plugin, PluginRegexPatterns } from '@/objects/plugin'
+import { Plugin, PluginRegexPatterns } from '#objects/plugin'
 
 import { Bot } from '.'
-import { Logger } from '@/utils'
+import { Logger } from '#utils'
 import axios from 'axios'
 import gitly from 'gitly'
+import glob from 'fast-glob'
 
-import importFresh = require('import-fresh')
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 enum UpdateType {
   None,
@@ -85,6 +86,7 @@ export class PluginManager {
         const pluginBodyString = fs.readFileSync(pluginFile, 'utf-8')
         const pluginName = (pluginBodyString.match(PluginRegexPatterns.name) || [])[1]
         const pluginRepo = (pluginBodyString.match(PluginRegexPatterns.repo) || [])[1]
+        const pluginVersion = (pluginBodyString.match(PluginRegexPatterns.version) || [])[1]
 
         // If plugin file/folder  is renamed but is a duplicate by name, stop it from loading
         if (this.plugins.find((p) => p.name === pluginName)) continue
@@ -93,7 +95,8 @@ export class PluginManager {
         const pluginVerified = this.verified?.findIndex((p) => p.name === pluginName && p.repo === pluginRepo) > -1
 
         // Load file
-        const requiredFile = importFresh(pluginFile) as { default: () => Plugin }
+        const requiredFile = (await import(`${pluginFile}?version=${pluginVersion || Date.now()}`)) as { default: () => Plugin }
+
         // Test if file returns undefined
         if (requiredFile !== undefined) {
           const loaded = requiredFile.default()

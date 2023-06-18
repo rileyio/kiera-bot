@@ -2,7 +2,7 @@ import * as Middleware from '@/api/middleware';
 
 import { WebRoute, WebRouted } from '@/api/web-router';
 
-import { TrackedUser } from '@/objects/user/';
+import { TrackedUser } from '#objects/user/index';
 
 export const Routes: Array<WebRoute> = [
   {

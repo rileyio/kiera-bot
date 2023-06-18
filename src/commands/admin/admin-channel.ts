@@ -1,6 +1,6 @@
-// import * as Utils from '@/utils'
+// import * as Utils from '#utils'
 
-// import { ExportRoutes, Routed } from '@/router'
+// import { ExportRoutes, Routed } from '#router/index'
 // import { TextChannel } from 'discord.js'
 
 // export const Routes = ExportRoutes({

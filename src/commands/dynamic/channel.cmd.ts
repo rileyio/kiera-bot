@@ -1,9 +1,8 @@
 import { ChannelType, EmbedBuilder, PermissionFlagsBits } from 'discord.js'
 
-import { Routed } from '@/router'
-import { calculateHumanTimeDDHHMM } from '@/utils/date'
-
-import moment = require('moment')
+import { Routed } from '#router/index'
+import { calculateHumanTimeDDHHMM } from '#utils'
+import moment from 'moment'
 
 export async function create(routed: Routed<'discord-chat-interaction'>) {
   try {
@@ -87,7 +86,7 @@ export async function create(routed: Routed<'discord-chat-interaction'>) {
       enabled: true,
       name,
       serverID: routed.interaction.guild.id,
-      type,
+      type: 'countdown',
       updated: moment.now(),
       value
     })

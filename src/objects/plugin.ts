@@ -2,7 +2,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
-import { RouteConfiguration, RouteConfigurationType } from '@/router'
+import { RouteConfiguration, RouteConfigurationType } from '#router/index'
 
 import { Bot } from '..'
 

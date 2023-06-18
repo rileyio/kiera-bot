@@ -1,11 +1,11 @@
 import * as Discord from 'discord.js'
 
-import { Bot } from '@/index'
-import { DatabaseMonitor } from './db/monitor'
+import { Bot } from '#/index'
+import { DatabaseMonitor } from './db/monitor.ts'
 import { EventEmitter } from 'events'
-import { LiveStatistics } from './live-statistics'
-import { WebAPI } from './api/web-api'
-import { read as getSecret } from '@/secrets'
+import { LiveStatistics } from './live-statistics.ts'
+import { WebAPI } from './api/web-api.ts'
+import { read as getSecret } from '#secrets'
 
 export class BotMonitor extends EventEmitter {
   private Bot: Bot
@@ -30,7 +30,7 @@ export class BotMonitor extends EventEmitter {
     this.Bot = bot
     this.DBMonitor = new DatabaseMonitor(this.Bot)
     this.LiveStatistics = new LiveStatistics(this.Bot)
-    this.WebAPI = new WebAPI(this.Bot)
+    // this.WebAPI = new WebAPI(this.Bot)
 
     this.setEventListeners()
   }
@@ -45,9 +45,9 @@ export class BotMonitor extends EventEmitter {
     this.status.db = await this.DBMonitor.start()
     this.status.discord = await this.discordAPIReady()
     this.status.stats = await this.LiveStatistics.start()
-    this.status.api = await this.WebAPI.start()
+    // this.status.api = await this.WebAPI.start()
 
-    if (this.status.db && this.status.stats && this.status.api) this.unhealthyStartup = false
+    if (this.status.db && this.status.stats /**&& this.status.api*/) this.unhealthyStartup = false
     else this.unhealthyStartup = true
 
     // Not a complete loss yet, try recovering myself (at least has discord available to alert someone)
@@ -93,20 +93,20 @@ export class BotMonitor extends EventEmitter {
 
     this.Bot.Log.Bot.warn('------ trying an unhealty recovery of services - since most rely on the db')
     // Close the WebAPI if it was listening
-    if (this.status.api) this.WebAPI.close()
+    // if (this.status.api) this.WebAPI.close()
     // Some will need to be re-initalized
     this.DBMonitor.destroy() // Destroy interval tickers
     this.LiveStatistics.destroy() // Destroy interval tickers
     this.DBMonitor = new DatabaseMonitor(this.Bot)
-    this.WebAPI = new WebAPI(this.Bot)
+    //this.WebAPI = new WebAPI(this.Bot)
     this.setEventListeners() // Recreate event listeners
 
     // Try again
     this.status.db = await this.DBMonitor.start()
     this.status.stats = await this.LiveStatistics.start()
-    this.status.api = await this.WebAPI.start()
+    // this.status.api = await this.WebAPI.start()
 
-    if (this.status.db && this.status.stats && this.status.api) {
+    if (this.status.db && this.status.stats /**&& this.status.api*/) {
       this.unhealthyRecovered = true
       if (this.Bot.channel.announcementsChannel)
         await this.Bot.channel.announcementsChannel.send(`:hammer_pick: **Services Auto Restored:** I've successfully recovered myself :blush:`)
