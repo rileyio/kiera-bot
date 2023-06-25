@@ -65,10 +65,7 @@ app/
 # ignore databases folder contents
 db/*.db
 
-# Dev Certs
-server.key
-server.crt
-ca.crt
+# MacOS items
 .DS_Store
 
 # ignore docker secrets
@@ -77,3 +74,6 @@ secrets/
 # Plugins downloaded
 plugins/*.zip
 plugins/*.json
+
+# API (Submodule)
+api/*
