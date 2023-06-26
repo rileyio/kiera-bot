@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import * as Utils from '#utils'
+
 import { BotStatistics, ServerStatistic } from '#objects/statistics'
 import { BulkWriteOptions, Db, Filter, MongoClient, MongoClientOptions, MongoError, ObjectId, UpdateFilter } from 'mongodb'
 import { TrackedDecision, TrackedDecisionLogEntry } from '#objects/decision'
 import { TrackedMutedUser, TrackedUser } from '#objects/user/index'
 
 import { AuditEntry } from '#objects/audit'
-import { Bot } from '#/index.ts'
 import { ManagedChannel } from '#objects/managed'
 import { StoredServer } from '#objects/server'
 import { TrackedMessage } from '#objects/message'
@@ -14,8 +15,6 @@ import { TrackedSession } from '#objects/session'
 import { read as getSecret } from '#secrets'
 import { mongoDot_lvl2 } from 'mongo_dottype'
 import { performance } from 'perf_hooks'
-
-export * from './promise.ts'
 
 export type Collections = {
   'audit-log': AuditEntry
@@ -39,14 +38,14 @@ export type Collections = {
   users: TrackedUser
 }
 
-export async function MongoDBLoader(bot: Bot) {
+export async function MongoDBLoader(logger: Utils.Logger.Debug) {
   return new Promise<MongoDB>(async (ret) => {
-    return ret(new MongoDB(bot || undefined))
+    return ret(new MongoDB(logger || undefined))
   })
 }
 
 export class MongoDB {
-  private Bot: Partial<Bot>
+  private log: Utils.Logger.Debug
   private connection: {
     db: Db
     client: MongoClient
@@ -57,8 +56,8 @@ export class MongoDB {
     readPreference: 'primary'
   }
 
-  constructor(bot: Bot) {
-    this.Bot = bot
+  constructor(logger: Utils.Logger.Debug) {
+    this.log = logger
   }
 
   public async connect() {
@@ -66,7 +65,7 @@ export class MongoDB {
       // Test if connection already exists, no need to open a new one if so
       if (!this.connection) {
         // console.log('new db connection on', targetCollection)
-        this.Bot.Log.Database.log('new db connection required!')
+        this.log.log('new db connection required!')
         await this.newConnection()
       } else {
         // Check if connection client is set
@@ -75,7 +74,7 @@ export class MongoDB {
           // console.log('reuse db connection on', targetCollection)
         } else {
           // console.log('new db connection on', targetCollection)
-          this.Bot.Log.Database.log('new db connection required!')
+          this.log.log('new db connection required!')
           await this.newConnection()
         }
       }
@@ -89,7 +88,7 @@ export class MongoDB {
 
   private async newConnection() {
     const client = new MongoClient(
-      getSecret('DB_STRING', this.Bot.Log.Bot),
+      getSecret('DB_STRING', this.log),
       Object.assign(this.dbOpts, {
         readPreference: process.env.DB_READ_PREFERENCE ? process.env.DB_READ_PREFERENCE : undefined,
         useNewUrlParser: String(process.env.DB_USE_NEWURLPARSER || '').toLowerCase() === 'true',
@@ -104,10 +103,10 @@ export class MongoDB {
         db: client.db(this.dbName),
         error: undefined
       }
-      this.Bot.Log.Database.log('new db connection: database connected!')
+      this.log.log('new db connection: database connected!')
       return true
     } catch (error) {
-      this.Bot.Log.Database.error('>>> failed to connect to Database!')
+      this.log.error('>>> failed to connect to Database!')
       this.connection.error = error
       return false
     }
@@ -119,9 +118,9 @@ export class MongoDB {
       const connection = await this.connect()
       const pingStatus = await connection.db.command({ ping: 1 })
       status = pingStatus ? true : false
-      this.Bot.Log.Database.debug(`ping success!`)
+      this.log.debug(`ping success!`)
     } catch (error) {
-      this.Bot.Log.Database.error(`ping failed!`, error)
+      this.log.error(`ping failed!`, error)
       status = false
     }
     return status
@@ -135,17 +134,15 @@ export class MongoDB {
    */
   public async add<T extends keyof Collections>(targetCollection: T, record: Filter<Collections[T]>): Promise<ObjectId> {
     const performanceStart = performance.now()
-    this.Bot.Log.Database.debug(`[${targetCollection}].add =>`, targetCollection)
+    this.log.debug(`[${targetCollection}].add =>`, targetCollection)
     try {
       const connection = await this.connect()
       const collection = connection.db.collection(targetCollection)
       const results = await collection.insertOne(record)
-      this.Bot.Log.Database.debug(
-        `[${targetCollection}].add results [${Math.round(performance.now() - performanceStart)}ms] => inserted: ${results.acknowledged}, id: ${results.insertedId}`
-      )
+      this.log.debug(`[${targetCollection}].add results [${Math.round(performance.now() - performanceStart)}ms] => inserted: ${results.acknowledged}, id: ${results.insertedId}`)
       return results.acknowledged ? results.insertedId : null
     } catch (error) {
-      this.Bot.Log.Database.warn(`[${targetCollection}].add error`, error)
+      this.log.warn(`[${targetCollection}].add error`, error)
       return null
     }
   }
@@ -158,15 +155,15 @@ export class MongoDB {
    */
   public async addMany<T extends keyof Collections>(targetCollection: T, record: Array<Partial<Collections[T]>>, opts?: BulkWriteOptions): Promise<number> {
     const performanceStart = performance.now()
-    this.Bot.Log.Database.debug(`[${targetCollection}].addMany =>`, targetCollection)
+    this.log.debug(`[${targetCollection}].addMany =>`, targetCollection)
     try {
       const connection = await this.connect()
       const collection = connection.db.collection(targetCollection)
       const results = await collection.insertMany(record, opts)
-      this.Bot.Log.Database.debug(`[${targetCollection}].addMany results [${Math.round(performance.now() - performanceStart)}ms] => inserted: ${results.insertedCount}`)
+      this.log.debug(`[${targetCollection}].addMany results [${Math.round(performance.now() - performanceStart)}ms] => inserted: ${results.insertedCount}`)
       return results.insertedCount === 1 ? results.insertedCount : null
     } catch (error) {
-      this.Bot.Log.Database.error(`[${targetCollection}].addMany error`, error)
+      this.log.error(`[${targetCollection}].addMany error`, error)
       return null
     }
   }
@@ -179,15 +176,15 @@ export class MongoDB {
    */
   public async verify<T extends keyof Collections>(targetCollection: T, query: Filter<Collections[T]>): Promise<boolean> {
     const performanceStart = performance.now()
-    this.Bot.Log.Database.debug(`.verify =>`, targetCollection)
+    this.log.debug(`.verify =>`, targetCollection)
     try {
       const connection = await this.connect()
       const collection = connection.db.collection(targetCollection)
       const results = collection.find(query as any)
-      this.Bot.Log.Database.debug(`[${targetCollection}].verify [${Math.round(performance.now() - performanceStart)}ms] => ${results.count()}`, query)
+      this.log.debug(`[${targetCollection}].verify [${Math.round(performance.now() - performanceStart)}ms] => ${results.count()}`, query)
       return (await results.count()) > 0
     } catch (error) {
-      this.Bot.Log.Database.error(`[${targetCollection}].verify error`, error)
+      this.log.error(`[${targetCollection}].verify error`, error)
       return null
     }
   }
@@ -200,17 +197,17 @@ export class MongoDB {
    */
   public async remove<T extends keyof Collections>(targetCollection: T, query: Filter<Collections[T]>, opts?: { deleteOne?: boolean }): Promise<number> {
     const performanceStart = performance.now()
-    this.Bot.Log.Database.debug(`.remove =>`, targetCollection)
+    this.log.debug(`.remove =>`, targetCollection)
     try {
       const deleteOptions = Object.assign({ deleteOne: true }, opts)
       const connection = await this.connect()
       const collection = connection.db.collection(targetCollection)
       const deletionMethod = deleteOptions.deleteOne ? 'deleteOne' : 'deleteMany'
       const result = await collection[deletionMethod](query as any)
-      this.Bot.Log.Database.debug(`[${targetCollection}].update results [${Math.round(performance.now() - performanceStart)}ms] => removed: ${result.deletedCount}`)
+      this.log.debug(`[${targetCollection}].update results [${Math.round(performance.now() - performanceStart)}ms] => removed: ${result.deletedCount}`)
       return result.deletedCount
     } catch (error) {
-      this.Bot.Log.Database.error(`[${targetCollection}].remove error`, error)
+      this.log.error(`[${targetCollection}].remove error`, error)
       return null
     }
   }
@@ -230,7 +227,7 @@ export class MongoDB {
     opts?: { upsert?: boolean; updateOne?: boolean; atomic?: boolean }
   ): Promise<number> {
     const performanceStart = performance.now()
-    this.Bot.Log.Database.debug(`.update =>`, targetCollection)
+    this.log.debug(`.update =>`, targetCollection)
     try {
       const uopts = Object.assign(
         {
@@ -245,11 +242,11 @@ export class MongoDB {
       const result = uopts.updateOne
         ? await collection.updateOne(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
         : await collection.updateMany(query, uopts.atomic ? update : { $set: update }, { upsert: uopts.upsert })
-      this.Bot.Log.Database.debug(`[${targetCollection}].update results [${Math.round(performance.now() - performanceStart)}ms] =>`, result.modifiedCount)
+      this.log.debug(`[${targetCollection}].update results [${Math.round(performance.now() - performanceStart)}ms] =>`, result.modifiedCount)
       // connection.client.close()
       return result.modifiedCount
     } catch (error) {
-      this.Bot.Log.Database.error(`[${targetCollection}].update error`, error)
+      this.log.error(`[${targetCollection}].update error`, error)
       return null
     }
   }
@@ -270,15 +267,15 @@ export class MongoDB {
     returnFields?: { [key in keyof Collections[T]]: number }
   ): Promise<Collections[T]> {
     const performanceStart = performance.now()
-    this.Bot.Log.Database.debug(`[${targetCollection}].get => ${targetCollection}`)
+    this.log.debug(`[${targetCollection}].get => ${targetCollection}`)
     try {
       const connection = await this.connect()
       const collection = connection.db.collection(targetCollection)
       const result = await collection.findOne<Collections[T]>(query, returnFields ? { projection: returnFields } : undefined)
-      this.Bot.Log.Database.debug(`[${targetCollection}].get [${Math.round(performance.now() - performanceStart)}ms] =>`, result ? true : false)
+      this.log.debug(`[${targetCollection}].get [${Math.round(performance.now() - performanceStart)}ms] =>`, result ? true : false)
       return result
     } catch (error) {
-      this.Bot.Log.Database.error(`[${targetCollection}].get error`, error)
+      this.log.error(`[${targetCollection}].get error`, error)
       return null
     }
   }
@@ -299,7 +296,7 @@ export class MongoDB {
     opts: { returnFields?: { [key: string]: number }; limit?: number } = {}
   ): Promise<Array<Collections[T]>> {
     const performanceStart = performance.now()
-    this.Bot.Log.Database.debug(`[${targetCollection}].getLatest => ${targetCollection}`)
+    this.log.debug(`[${targetCollection}].getLatest => ${targetCollection}`)
     try {
       const connection = await this.connect()
       const collection = connection.db.collection(targetCollection)
@@ -308,11 +305,11 @@ export class MongoDB {
         .sort({ _id: -1 })
         .limit(opts.hasOwnProperty('limit') ? opts.limit : 1)
         .project(opts.hasOwnProperty('returnFields') ? opts.returnFields : undefined)
-      this.Bot.Log.Database.debug(`[${targetCollection}].get [${Math.round(performance.now() - performanceStart)}ms] =>`, result ? true : false)
+      this.log.debug(`[${targetCollection}].get [${Math.round(performance.now() - performanceStart)}ms] =>`, result ? true : false)
       // connection.client.close()
       return await result.toArray()
     } catch (error) {
-      this.Bot.Log.Database.error(`[${targetCollection}].getLatest error`, error)
+      this.log.error(`[${targetCollection}].getLatest error`, error)
       return []
     }
   }
@@ -333,64 +330,64 @@ export class MongoDB {
     returnFields?: { [key: string]: number }
   ) {
     const performanceStart = performance.now()
-    this.Bot.Log.Database.debug(`[${targetCollection}].getMultiple => ${targetCollection}`)
+    this.log.debug(`[${targetCollection}].getMultiple => ${targetCollection}`)
     try {
       const connection = await this.connect()
       const collection = connection.db.collection(targetCollection)
       const result = collection.find<Collections[T]>(query, returnFields ? { projection: returnFields } : undefined)
-      this.Bot.Log.Database.debug(`[${targetCollection}].getMultiple [${Math.round(performance.now() - performanceStart)}ms] =>`, await result.count())
+      this.log.debug(`[${targetCollection}].getMultiple [${Math.round(performance.now() - performanceStart)}ms] =>`, await result.count())
       // connection.client.close()
       return result.toArray()
     } catch (error) {
-      this.Bot.Log.Database.error(`[${targetCollection}].getMultiple error`, error)
+      this.log.error(`[${targetCollection}].getMultiple error`, error)
       return []
     }
   }
 
   public async count<T extends keyof Collections>(targetCollection: T, query: Omit<mongoDot_lvl2<Collections[T] & Filter<Collections[T]>>, '_id'>, options?: any) {
     const performanceStart = performance.now()
-    this.Bot.Log.Database.debug(`[${targetCollection}].count => ${targetCollection}`)
+    this.log.debug(`[${targetCollection}].count => ${targetCollection}`)
     try {
       const connection = await this.connect()
       const collection = connection.db.collection(targetCollection, options)
       const result = await collection.countDocuments(query)
-      this.Bot.Log.Database.debug(`[${targetCollection}].count [${Math.round(performance.now() - performanceStart)}ms] =>`, result)
+      this.log.debug(`[${targetCollection}].count [${Math.round(performance.now() - performanceStart)}ms] =>`, result)
       // connection.client.close()
       return <number>result
     } catch (error) {
-      this.Bot.Log.Database.error(`[${targetCollection}].count error`, error)
+      this.log.error(`[${targetCollection}].count error`, error)
       return null
     }
   }
 
   public async aggregate<T>(targetCollection: keyof Collections, query: Array<object>) {
     const performanceStart = performance.now()
-    this.Bot.Log.Database.debug(`[${targetCollection}].aggregate => ${targetCollection}`)
+    this.log.debug(`[${targetCollection}].aggregate => ${targetCollection}`)
     try {
       const connection = await this.connect()
       const collection = connection.db.collection(targetCollection)
       const result = collection.aggregate(query)
-      this.Bot.Log.Database.debug(`.aggregate results [${Math.round(performance.now() - performanceStart)}ms] =>`, result.batchSize)
+      this.log.debug(`.aggregate results [${Math.round(performance.now() - performanceStart)}ms] =>`, result.batchSize)
       // connection.client.close()
       return (await result.toArray()) as Array<T>
     } catch (error) {
-      this.Bot.Log.Database.error(`[${targetCollection}].aggregate error`, error)
+      this.log.error(`[${targetCollection}].aggregate error`, error)
       return null
     }
   }
 
   public async distinct<T extends keyof Collections>(targetCollection: T, field: string): Promise<Array<string>> {
     const performanceStart = performance.now()
-    this.Bot.Log.Database.debug(`[${targetCollection}].distinct => ${targetCollection}`)
+    this.log.debug(`[${targetCollection}].distinct => ${targetCollection}`)
     try {
       const connection = await this.connect()
       const collection = connection.db.collection(targetCollection)
       const result = await collection.distinct(field)
-      this.Bot.Log.Database.debug(`[${targetCollection}].distinct [${Math.round(performance.now() - performanceStart)}ms] =>`, result ? true : false)
+      this.log.debug(`[${targetCollection}].distinct [${Math.round(performance.now() - performanceStart)}ms] =>`, result ? true : false)
       // connection.client.close()
       return result
     } catch (error) {
-      this.Bot.Log.Database.error(`[${targetCollection}].distinct error`, error)
+      this.log.error(`[${targetCollection}].distinct error`, error)
       return null
     }
   }

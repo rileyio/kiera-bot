@@ -1,6 +1,6 @@
-import * as Helper from './utils/stats.ts'
+import * as Helper from './common/utils/stats.ts'
 
-import { BotStatistic, BotStatistics } from './objects/statistics.ts'
+import { BotStatistic, BotStatistics } from './common/objects/statistics.ts'
 
 import { Bot } from '#/index'
 import { EventEmitter } from 'events'

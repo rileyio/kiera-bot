@@ -74,6 +74,3 @@ secrets/
 # Plugins downloaded
 plugins/*.zip
 plugins/*.json
-
-# API (Submodule)
-api/*

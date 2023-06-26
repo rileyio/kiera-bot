@@ -14,14 +14,13 @@
       "#/*": ["./src/*"],
       "#api/*": ["./src/api/*.ts"],
       "#commands/*": ["./src/commands/*.ts"],
-      "#db": ["./src/db/index.ts"],
+      "#db": ["src/common/db/index.ts"],
       "#integrations/*": ["./src/integrations/*.ts"],
       "#middleware": ["./src/middleware/index.ts"],
-      "#objects/*": ["./src/objects/*.ts"],
+      "#objects/*": ["src/common/objects/*.ts"],
       "#router/*": ["./src/router/*.ts"],
       "#secrets": ["./src/secrets.ts"],
-      "#utils": ["./src/utils/index.ts"]
-      // "#*": ["./src/*"],
+      "#utils": ["src/common/utils/index.ts"]
     },
     "preserveConstEnums": true,
     "removeComments": true,
@@ -31,6 +30,6 @@
     "target": "ES2022",
     "typeRoots": ["src/typings", "./node_modules/@types/"]
   },
-  "exclude": ["node_modules", "app"],
+  "exclude": ["node_modules", "app", "api"],
   "include": ["src/**/*.ts", "plugins/**/*.ts"]
 }

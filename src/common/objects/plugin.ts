@@ -4,7 +4,7 @@ import * as path from 'path'
 
 import { RouteConfiguration, RouteConfigurationType } from '#router/index'
 
-import { Bot } from '..'
+import { Bot } from '../..'
 
 export const PluginRegexPatterns = {
   author: /@author\s([a-z0-9\-]+)/i,

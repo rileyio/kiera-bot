@@ -7,4 +7,4 @@ export * from './validate.ts'
 
 // Export the Router Objects to keep things simple
 // !Keep full path below
-export * from '../objects/router/index.ts'
+export * from '../common/objects/router/index.ts'

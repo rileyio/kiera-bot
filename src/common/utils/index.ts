@@ -1,6 +1,6 @@
 import * as Channel from './channel.ts'
 import * as Logger from './logger.ts'
-import * as XRegex from 'xregexp'
+import XRegex from 'xregexp'
 /**
  * Splits args at spaces
  *
@@ -17,7 +17,7 @@ export function getArgs(msg: string) {
 export * from './client-event-handler.ts'
 // export * from './prompt'
 export * from './date.ts'
-export * from '../localization.ts'
+export * from '../../localization.ts'
 export * from './string-builder.ts'
 export * as Types from './types.ts'
 export * as User from './user.ts'

@@ -23,10 +23,6 @@ services:
       - ./plugins:/home/node/app/plugins
       - ./src:/home/node/app/src
     container_name: kiera-bot
-    ports:
-      - '127.0.0.1:8234:8234'
-    # expose:
-    #   - '8234'
     command: npm run dev
     restart: on-failure
     secrets:
