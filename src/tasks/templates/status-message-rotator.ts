@@ -1,5 +1,5 @@
 import Random from 'random'
-import { Task } from '#objects/task'
+import { Task } from '../task.ts'
 import { TrackedBotSetting } from '#objects/setting'
 import { sb } from '#utils'
 
