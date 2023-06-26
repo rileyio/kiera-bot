@@ -14,11 +14,11 @@ import { MongoDB } from '#db'
 import { PluginManager } from './plugin-manager.ts'
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v10'
+import { Secrets } from '#utils'
 import { ServerStatisticType } from '#objects/statistics'
 import { Statistics } from './statistics.ts'
 import { StoredServer } from '#objects/server'
 import debug from 'debug'
-import { read as getSecret } from './secrets.ts'
 import { readFile } from 'fs/promises'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
@@ -81,6 +81,7 @@ export class Bot {
     ////////////////////////////////////////
     this.Audit = new Audit(this)
     this.BotMonitor = new BotMonitor(this)
+    this.DB = new MongoDB(this.Log.Database)
     this.Router = new CommandRouter(await routeLoader(this.Log.Router), this)
     this.Task = new Task.TaskManager(this)
 
@@ -210,7 +211,7 @@ export class Bot {
     // Register Slash commands on Kiera's Development server
     const commands: RESTPostAPIApplicationCommandsJSONBody[] = []
     for (const command of this.Router.routes.filter((c) => !c.permissions.optInReq)) command.slash ? commands.push(command.slash.toJSON()) : null
-    const rest = new REST({ version: '10' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
+    const rest = new REST({ version: '10' }).setToken(Secrets.read('DISCORD_APP_TOKEN', this.Log.Bot))
 
     // Delete existing commands GLOBAL (Dev Only, should be blocked in production)
     // if (process.env.BOT_BLOCK_GLOBALSLASH === 'true') {

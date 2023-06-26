@@ -19,7 +19,7 @@
       "#middleware": ["./src/middleware/index.ts"],
       "#objects/*": ["src/common/objects/*.ts"],
       "#router/*": ["./src/router/*.ts"],
-      "#secrets": ["./src/secrets.ts"],
+      "#secrets": ["src/common/utils/secrets.ts"],
       "#utils": ["src/common/utils/index.ts"]
     },
     "preserveConstEnums": true,

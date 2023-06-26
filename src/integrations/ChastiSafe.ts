@@ -1,7 +1,7 @@
 import { Bot } from '#/index'
 import { ChastiSafeUser } from '#objects/chastisafe'
 import axios from 'axios'
-import { read as getSecret } from '#secrets'
+import { Secrets } from '#utils'
 
 /**
  * ChastiSafe API Helper service
@@ -18,7 +18,7 @@ export class ChastiSafe {
 
   constructor(bot: Bot) {
     this.Bot = bot
-    this.BotSecret = getSecret('CS_SECRET', this.Bot.Log.Integration)
+    this.BotSecret = Secrets.read('CS_SECRET', this.Bot.Log.Integration)
   }
 
   private trackUsage() {

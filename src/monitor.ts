@@ -4,7 +4,7 @@ import { Bot } from '#/index'
 import { DatabaseMonitor } from './common/db/monitor.ts'
 import { EventEmitter } from 'events'
 import { LiveStatistics } from './live-statistics.ts'
-import { read as getSecret } from '#secrets'
+import { Secrets } from '#utils'
 
 export class BotMonitor extends EventEmitter {
   private Bot: Bot
@@ -25,7 +25,7 @@ export class BotMonitor extends EventEmitter {
   constructor(bot: Bot) {
     super()
     this.Bot = bot
-    this.DBMonitor = new DatabaseMonitor(this.Bot)
+    this.DBMonitor = new DatabaseMonitor(this.Bot.DB, this.Bot.Log.Database)
     this.LiveStatistics = new LiveStatistics(this.Bot)
 
     this.setEventListeners()
@@ -90,7 +90,7 @@ export class BotMonitor extends EventEmitter {
     // Some will need to be re-initalized
     this.DBMonitor.destroy() // Destroy interval tickers
     this.LiveStatistics.destroy() // Destroy interval tickers
-    this.DBMonitor = new DatabaseMonitor(this.Bot)
+    this.DBMonitor = new DatabaseMonitor(this.Bot.DB, this.Bot.Log.Database)
     this.setEventListeners() // Recreate event listeners
 
     // Try again
@@ -150,7 +150,7 @@ export class BotMonitor extends EventEmitter {
       })
 
       // ? Connect account ? //
-      await this.Bot.client.login(getSecret('DISCORD_APP_TOKEN', this.Bot.Log.Bot))
+      await this.Bot.client.login(Secrets.read('DISCORD_APP_TOKEN', this.Bot.Log.Bot))
     })
   }
 

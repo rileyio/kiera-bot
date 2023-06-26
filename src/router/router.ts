@@ -8,8 +8,8 @@ import { Routes as DiscRoutes } from 'discord-api-types/v10'
 import { Logger } from '#utils'
 import { ProcessedPermissions } from '.'
 import { REST } from '@discordjs/rest'
+import { Secrets } from '#utils'
 import { TrackedUser } from '#objects/user/index'
-import { read as getSecret } from '#secrets'
 
 /**
  * The almighty incoming commands router!
@@ -474,7 +474,7 @@ export class CommandRouter {
       // --------------------------------------------------
       if (route.type === 'discord-chat-interaction' && loadNow) {
         // Get some things ready
-        const rest = new REST({ version: '10' }).setToken(getSecret('DISCORD_APP_TOKEN', this.bot.Log.Bot))
+        const rest = new REST({ version: '10' }).setToken(Secrets.read('DISCORD_APP_TOKEN', this.bot.Log.Bot))
         // Add global command
         await rest.post(DiscRoutes.applicationCommands(process.env.DISCORD_APP_ID), { body: route.discordRegisterPayload() })
       }
@@ -495,7 +495,7 @@ export class CommandRouter {
       const { name, type } = route
       if (type === 'discord-chat-interaction') {
         // Get some things ready
-        const rest = new REST({ version: '10' }).setToken(getSecret('DISCORD_APP_TOKEN', this.bot.Log.Bot))
+        const rest = new REST({ version: '10' }).setToken(Secrets.read('DISCORD_APP_TOKEN', this.bot.Log.Bot))
         // Get Global command ID
         const commands = await this.bot.client.application.commands.fetch()
         const commandID = commands?.find((c) => c.name === name)?.id
