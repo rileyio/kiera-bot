@@ -102,7 +102,7 @@ export class PluginManager {
           const loaded = requiredFile.default()
 
           // Try to register the Bot instance with the plugin
-          await loaded.register(this.bot, this.folder, pluginBodyString, true, pluginVerified)
+          await loaded.register(this.folder, pluginBodyString, true, pluginVerified)
           this.log.verbose(`🧩 Plugin Loaded ${pluginVerified ? '(✔)' : ''}: ${loaded.name}@${loaded.version}`)
 
           // Load any routes for the plugin
@@ -142,7 +142,7 @@ export class PluginManager {
 
   private async loadExisting(plugin: Plugin) {
     // Try to register the Bot instance with the plugin
-    await plugin.register(this.bot, this.folder, plugin.pluginBodyString, true, plugin.verified)
+    await plugin.register(this.folder, plugin.pluginBodyString, true, plugin.verified)
     this.log.verbose(`🧩 Plugin Loaded ${plugin.verified ? '(✔)' : ''}: ${plugin.name}@${plugin.version}`)
 
     // Load any routes for the plugin
