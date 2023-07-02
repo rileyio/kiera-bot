@@ -58,7 +58,7 @@
     "dot-prop": "^6.0.1",
     "dotenv": "^16.0.3",
     "esm": "^3.2.25",
-    "fast-glob": "^3.2.12",
+    "fast-glob": "^3.3.0",
     "gitly": "^2.4.0",
     "handlebars": "^4.7.7",
     "is-docker": "^3.0.0",
