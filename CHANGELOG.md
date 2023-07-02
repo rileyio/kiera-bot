@@ -9,7 +9,6 @@
 - Added: New libraries for project changes (see below + some supporting extensions).
 - Added: Detection lib for detecting if running inside docker container - more support around this coming.
 - Added: Autocomplete to Decision Roll command for selecting a decision roll more easily.
-- Updated: API `restify` being replaced with `express`.
 - Updated: Project from `commonjs` to `esm`.
 - Updated: Imports aliases, maps and general cleaning.
 - Updated: Mongodb driver from v3 to v5.
