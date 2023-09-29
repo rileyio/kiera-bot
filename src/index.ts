@@ -79,11 +79,11 @@ export class Bot {
     ////////////////////////////////////////
     // Register bot services ///////////////
     ////////////////////////////////////////
-    this.Audit = new Audit(this.DB)
-    this.BotMonitor = new BotMonitor(this)
     this.DB = new MongoDB(this.Log.Database)
+    this.BotMonitor = new BotMonitor(this)
     this.Router = new CommandRouter(await routeLoader(this.Log.Router), this)
     this.Task = new Task.TaskManager(this)
+    this.Audit = new Audit(this.DB)
 
     ////////////////////////////////////////
     // Plugin Manager //////////////////////
