@@ -1,6 +1,6 @@
 import { Agenda } from 'agenda'
 import { Bot } from '#/index'
-import { TrackedBotSetting } from '#objects/setting'
+import { TrackedBotSettingSchema } from '#objects/setting'
 
 export class Task {
   public Agenda: Agenda
@@ -23,7 +23,7 @@ export class Task {
     if (dbSchedule) this.schedule = dbSchedule.value
     // When no Schedule is configured in the DB, make one to have
     else {
-      dbSchedule = new TrackedBotSetting({
+      dbSchedule = TrackedBotSettingSchema.parse({
         added: Date.now(),
         author: 'kiera-bot',
         env: '*',
