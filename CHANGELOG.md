@@ -15,6 +15,7 @@
 - Updated: Replaced `ts-node-dev` with `nodemon`.
 - Updated: Various dependencies `agenda`, `random`, `typescript`.
 - Updated: Utils removing old namespaces.
+- Updated: CS Integration update command to include 2023 event.
 
 ### 11.0.0-beta-1
 
