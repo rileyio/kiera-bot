@@ -47,16 +47,20 @@ export class CommandRouter {
   }
 
   public async removeRoute<T extends keyof RouteConfigurationType>(route: string | RouteConfiguration<T>) {
-    console.log('removing route', route)
-    if (typeof route === 'string') this.log.warn(`[Deprecated] Router.removeRoute( string ) is deprecated, use Router.removeRoute( RouteConfiguration ) instead.`)
-    const routeIndex = this.routes.findIndex((r) => (typeof route === 'string' ? r.name === route : r.name === route.name && r.type === route.type))
-    const routeFound = routeIndex > -1 ? this.routes[routeIndex] : undefined
+    try {
+      console.log('removing route', route)
+      if (typeof route === 'string') this.log.warn(`[Deprecated] Router.removeRoute( string ) is deprecated, use Router.removeRoute( RouteConfiguration ) instead.`)
+      const routeIndex = this.routes.findIndex((r) => (typeof route === 'string' ? r.name === route : r.name === route.name && r.type === route.type))
+      const routeFound = routeIndex > -1 ? this.routes[routeIndex] : undefined
 
-    // When route is not found, stop here
-    if (!routeFound) return this.log.warn(`⚠ Route '${route}' not found, skipping removal...`)
+      // When route is not found, stop here
+      if (!routeFound) return this.log.warn(`⚠ Route '${route}' not found, skipping removal...`)
 
-    // Process route removal
-    await this.processRouteRemove(routeFound)
+      // Process route removal
+      await this.processRouteRemove(routeFound)
+    } catch (error) {
+      this.log.error(`Unable to .removeRoute(${typeof route === 'string' ? route : route.name})`)
+    }
   }
 
   /**
