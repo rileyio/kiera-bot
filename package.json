@@ -26,7 +26,7 @@
   "scripts": {
     "build": "tsc",
     "dev:live": "tsc -w",
-    "dev": "DEBUG='kiera-bot:*' nodemon --exec node --loader ts-node/esm src/start.ts",
+    "dev": "DEBUG='kiera-bot:*' nodemon --exec node --ignore '**/cache/**' --loader ts-node/esm src/start.ts",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "start": " DEBUG='kiera-bot:*' nodemon src/start.ts",
     "start:nodebug": "node ./app/start.js",
