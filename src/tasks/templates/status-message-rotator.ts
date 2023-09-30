@@ -1,6 +1,6 @@
 import Random from 'random'
 import { Task } from '../task.ts'
-import { TrackedBotSetting } from '#objects/setting'
+import { TrackedBotSettingSchema } from '#objects/setting'
 import { sb } from '#utils'
 
 export class StatusMessageRotator extends Task {
@@ -15,8 +15,9 @@ export class StatusMessageRotator extends Task {
     // Perform the scheduled task/job
     try {
       // Get any stored status message(s)
-      const storedStatus = new TrackedBotSetting(await this.Bot.DB.get('settings', { key: 'bot.status.message' }))
-      const hasStoredStatus = !!storedStatus._id && storedStatus.value
+      const storedSetting = await this.Bot.DB.get('settings', { key: 'bot.status.message' })
+      const setting = storedSetting ? TrackedBotSettingSchema.parse(storedSetting) : null
+      const hasStoredStatus = !!setting ? !!setting._id && setting.value : null
 
       // Available messages
       const options = [...this.stock]
@@ -35,7 +36,7 @@ export class StatusMessageRotator extends Task {
 
       // Set the status
       this.Bot.client.user.setPresence({
-        activities: [{ name: hasStoredStatus ? storedStatus.value : '' || sb(outcome, { size: this.Bot.client.guilds.cache.size }) }],
+        activities: [{ name: hasStoredStatus ? storedSetting.value : '' || sb(outcome, { size: this.Bot.client.guilds.cache.size }) }],
         status: 'online'
       })
 
