@@ -3,8 +3,8 @@ import { ExportRoutes, RouteConfiguration, Routed } from '#router/index'
 import { AcceptedResponse } from '#router/index'
 import { Routes as DiscRoutes } from 'discord-api-types/v10'
 import { REST } from '@discordjs/rest'
-import { SlashCommandBuilder } from '@discordjs/builders'
 import { Secrets } from '#utils'
+import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({
