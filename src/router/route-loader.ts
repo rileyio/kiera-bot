@@ -25,11 +25,11 @@ export async function routeLoader(logger: Logger.Debug) {
       const _requiredFile = (await import(Path.join('../../', routeFile.toString()))) as { Routes: Array<RouteConfiguration<'placeolder-type'>> }
       // Test if file returns undefined
       if (_requiredFile === undefined) continue
-      // console.log(`routeLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map(r => Array.isArray(r)).length}`)
+      logger.log(`routeLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map((r) => Array.isArray(r)).length}`)
 
       // When no array is returned
       if (Object.keys(_requiredFile).includes('Routes') === false) {
-        // logger.debug(`routeLoader() [WARN] => ${routeFile.toString()}, no Routes array found (${Math.round(performance.now() - start)}ms)`)
+        logger.debug(`routeLoader() [WARN] => ${routeFile.toString()}, no Routes array found (${Math.round(performance.now() - start)}ms)`)
         continue
       }
 
