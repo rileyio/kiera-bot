@@ -33,10 +33,8 @@ export async function routeLoader(logger: Logger.Debug) {
         continue
       }
 
-      for (let index = 0; index < _requiredFile.Routes.length; index++) {
-        const route = _requiredFile.Routes[index]
-        routes.push(route)
-      }
+      // Add route to routes array
+      for (let index = 0; index < _requiredFile.Routes.length; index++) routes.push(_requiredFile.Routes[index])
 
       logger.verbose(`routeLoader() => route [${routeFile.toString()}] loaded (${Math.round(performance.now() - start)}ms)`)
     } catch (e) {
