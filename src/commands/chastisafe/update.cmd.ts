@@ -456,7 +456,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
   /// ? Role Update: Locktober           ///
   /// ? ////////////////////////////////////
   try {
-    if (role.locktoberOngoing || role.locktober2022) {
+    if (role.locktoberOngoing || role.locktober2022 || role.locktober2023) {
       // * Performance Start: Locktober * //
       updatePerformance.locktober.start = performance.now()
       changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Locktober' })
