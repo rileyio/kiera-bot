@@ -70,7 +70,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
   changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Lockee' })
 
   // Fetch User Profile from CS
-  const {data, successful} = await routed.bot.Service.ChastiSafe.fetchProfile(mentionedUser ? mentionedUser.id : routed.author.id)
+  const { data, successful } = await routed.bot.Service.ChastiSafe.fetchProfile(mentionedUser ? mentionedUser.id : routed.author.id)
 
   // If there's an error, inform the user
   if (successful === false) return await routed.reply({ content: 'ChastiSafe user not found', ephemeral: true })
@@ -490,14 +490,14 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
           changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: role.locktober2022.name })
         }
       }
-            // * 2023 * //
-            if (isLocktober2022Eligible) {
-              // User has earned Locktober 2022, is missing the role, add the role
-              if (!discordUserHasRole.locktober2023) {
-                await discordUser.roles.add(role.locktober2023)
-                changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: role.locktober2023.name })
-              }
-            }
+      // * 2023 * //
+      if (isLocktober2023Eligible) {
+        // User has earned Locktober 2022, is missing the role, add the role
+        if (!discordUserHasRole.locktober2023) {
+          await discordUser.roles.add(role.locktober2023)
+          changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: role.locktober2023.name })
+        }
+      }
       // Else: remove the role, they should not have it
       else {
         // User is NOT found participating or was assigned it manually, remove the role
