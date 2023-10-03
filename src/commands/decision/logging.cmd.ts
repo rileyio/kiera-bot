@@ -3,7 +3,7 @@ import * as Middleware from '#middleware'
 import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '#router/index'
 
 import { TrackedDecision } from '#objects/decision'
-import { decisionLogLast5 } from '../../embedded/decision-log.ts'
+import { decisionLogLast5 } from './logging.embed.js'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({
