@@ -23,7 +23,7 @@ export const Routes = ExportRoutes(
  */
 async function versionCheck(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   await routed.reply(`Running on version \`${routed.bot.version}\``)
-  await routed.bot.Router.removeRoute('rio')
+  // await routed.bot.Router.removeRoute('rio')
 
   return
 }
