@@ -28,7 +28,7 @@
     "dev:live": "tsc -w",
     "dev": "DEBUG='kiera-bot:*' nodemon --exec node --ignore '**/cache/**' --loader ts-node/esm src/start.ts",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
-    "start": " DEBUG='kiera-bot:*' nodemon src/start.ts",
+    "start": " DEBUG='kiera-bot:*' nodemon --exec node --ignore '**/cache/**' --loader ts-node/esm src/start.ts",
     "start:nodebug": "node ./app/start.js",
     "test": "run-s clean build test:n",
     "test:n": "ava --tap --serial | tnyan",
