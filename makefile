@@ -1,5 +1,5 @@
 up:
-	docker-compose -p kiera up -d
+	docker-compose -p kiera up -d --build
 
 up-prod:
 	docker-compose -f docker-compose.yml -f docker-compose.prod.yml -p kiera up --build -d
