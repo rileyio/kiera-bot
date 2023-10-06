@@ -169,19 +169,18 @@ export class Bot {
     /// Update guilds info stored ///
     for (const guild of [...this.client.guilds.cache.values()]) {
       // Check if Guild info is cached
-      this.Log.Bot.verbose('Guild Connection/Update in Servers Collection', guild.id)
       await this.DB.update(
         'servers',
         { id: guild.id },
         {
-          $set: new StoredServer({
+          $set: {
             id: guild.id,
             joinedTimestamp: guild.joinedTimestamp,
             lastSeen: Date.now(),
             name: guild.name,
             ownerID: guild.ownerId,
             type: 'discord'
-          })
+          }
         },
         { atomic: true, upsert: true }
       )
@@ -276,14 +275,14 @@ export class Bot {
       'servers',
       { id: guild.id },
       {
-        $set: new StoredServer({
+        $set: {
           id: guild.id,
           joinedTimestamp: guild.joinedTimestamp,
           lastSeen: Date.now(),
           name: guild.name,
           ownerID: guild.ownerId,
           type: 'discord'
-        })
+        }
       },
       { atomic: true, upsert: true }
     )
@@ -297,14 +296,14 @@ export class Bot {
       'servers',
       { id: old.id },
       {
-        $set: new StoredServer({
+        $set: {
           id: old.id,
           joinedTimestamp: old.joinedTimestamp,
           lastSeen: Date.now(),
           name: changed.name,
           ownerID: changed.ownerId,
           type: 'discord'
-        })
+        }
       },
       { atomic: true, upsert: true }
     )
