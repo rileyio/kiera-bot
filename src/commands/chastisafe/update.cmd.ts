@@ -482,30 +482,30 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
         }
       }
 
-      // * 2022 * //
-      if (isLocktober2022Eligible) {
+      if (isLocktober2022Eligible || isLocktober2023Eligible) {
+        // * 2022 * //
         // User has earned Locktober 2022, is missing the role, add the role
-        if (!discordUserHasRole.locktober2022) {
+        if (!discordUserHasRole.locktober2022 && isLocktober2022Eligible) {
           await discordUser.roles.add(role.locktober2022)
           changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: role.locktober2022.name })
         }
-      }
-      // * 2023 * //
-      if (isLocktober2023Eligible) {
-        // User has earned Locktober 2022, is missing the role, add the role
-        if (!discordUserHasRole.locktober2023) {
-          await discordUser.roles.add(role.locktober2023)
-          changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: role.locktober2023.name })
+        // * 2023 * //
+        if (isLocktober2023Eligible && isLocktober2023Eligible) {
+          // User has earned Locktober 2022, is missing the role, add the role
+          if (!discordUserHasRole.locktober2023) {
+            await discordUser.roles.add(role.locktober2023)
+            changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: role.locktober2023.name })
+          }
         }
       }
       // Else: remove the role, they should not have it
       else {
         // User is NOT found participating or was assigned it manually, remove the role
-        if (discordUserHasRole.locktober2022) {
+        if (discordUserHasRole.locktober2022 && !isLocktober2022Eligible) {
           await discordUser.roles.remove(role.locktober2022)
           changesImplemented.push({ action: 'removed', category: 'locktober', type: 'role', result: role.locktober2022.name })
         }
-        if (discordUserHasRole.locktober2023) {
+        if (discordUserHasRole.locktober2023 && !isLocktober2023Eligible) {
           await discordUser.roles.remove(role.locktober2023)
           changesImplemented.push({ action: 'removed', category: 'locktober', type: 'role', result: role.locktober2023.name })
         }
