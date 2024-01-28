@@ -1,30 +1,74 @@
-#!/bin/bash
+#!/bin/bash -i
 # Colors
 RED='\033[0;31m'
 SUCCESS='\033[0;32m'
 PRIMARY='\033[0;34m'
 PURPLE='\033[0;35m'
+YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
 NONE='\033[0m'
 
 MODE="dev"
 INSPECTEDMODE="unknown"
 
+FIRSTPROMPT=true
+
+# Kiera Pod Variables
+#  -1 = Unknown
+#   0 = Checking..
+#   1 = Running
+#   2 = Not Running
+#   3 = No Container Found
+#   4 = Errored
+PODSTATUS=-1
+# When Running
+# Pod ID
+PODID=""
+# Status Indicator Dot
+PODSTATUSDOT=""
+
 echo "🪄  kiera-bot management script"
 echo "=============================="
 
-# Check if kiera-bot is running and return 0 if it is, 1 if it isn't
-function isUp() {
-  id=$(docker ps -a | grep "kiera-bot" | cut -d ' ' -f1)
-  if [ -z "$id" ]; then
-    return 1
+function statusDot() {
+  if [ $PODSTATUS == 0 ]; then PODSTATUSDOT="${NONE}⦿${NONE}"; fi
+  if [ $PODSTATUS == 1 ]; then PODSTATUSDOT="${SUCCESS}⦿${NONE}"; fi
+  if [ $PODSTATUS == 2 ]; then PODSTATUSDOT="${YELLOW}⦿${NONE}"; fi
+  if [ $PODSTATUS == 3 ]; then PODSTATUSDOT="${CYAN}⦿${NONE}"; fi
+  if [ $PODSTATUS == 4 ]; then PODSTATUSDOT="${RED}⦿${NONE}"; fi
+}
+
+# Check Status of Container and set corresponding variables
+function getStatus() {
+  # Use -a to get all containers including stopped
+  PODID="$(podman ps -a | grep "kiera-bot" | cut -d ' ' -f1)"
+
+  # Exists check
+  if [ -z "$PODID" ]; then
+    # No container from check
+    PODSTATUS=3
   else
-    return 0
+    PODSTATUS=0
   fi
+
+  # echo "$(podman inspect ${PODID} -f {{.State.Status}}) ${PODSTATUS}"
+
+  # Check if pod is running
+  if [ $PODSTATUS == 0 ]; then
+    if [ "$(podman inspect ${PODID} -f {{.State.Status}})" == "running" ]; then
+      PODSTATUS=1
+    fi
+  else
+    PODSTATUS=3
+  fi
+
+  # Set Status Dot for Prompts
+  statusDot
 }
 
 # Check if kiera-bot's image exists and return 0 if it does, 1 if it doesn't
 function isImageExists() {
-  name=$(docker images | grep "kiera-bot" | cut -d ' ' -f1)
+  name=$(podman images | grep "kiera-bot" | cut -d ' ' -f1)
   if [ -z "$name" ]; then
     return 1
   else
@@ -34,15 +78,21 @@ function isImageExists() {
 
 # Remove kiera-bot's image
 function removeImage() {
-  echo "🗑️  Removing kiera-bot image..."
-  make rm # &>/dev/null
+  echo "  🗑️  Removing kiera-bot image..."
+  make rm | sed 's/^/  /'
 }
 
 # Get kiera-bot's NODE_ENV
 function getMode() {
-  UNPARSEDINSPECTEDMODE=$(docker inspect --format '{{ index (index .Config.Env) 0 }}' $(docker ps -a | grep "kiera-bot" | cut -d ' ' -f1))
+  # Don't check mode if no container exists
+  if [ $PODSTATUS == 3 ]; then return; fi
 
-  if [ "$UNPARSEDINSPECTEDMODE" == "NODE_ENV=production" ]; then
+  UNPARSEDINSPECTEDMODE=$(
+    podman inspect $(podman ps -a | grep "kiera-bot" | cut -d ' ' -f1) -f {{.Config.Env}} | grep -q "NODE_ENV=production"
+    echo $?
+  )
+
+  if [ $UNPARSEDINSPECTEDMODE == 0 ]; then
     INSPECTEDMODE="prod"
   else
     INSPECTEDMODE="dev"
@@ -51,37 +101,72 @@ function getMode() {
 
 # Usage help response if user passes invalid argument, the usage param, or no argument
 function usage() {
-  echo "Usage: $0 [start|stop|restart|status|clean|log|tail] [dev|prod]"
-  exit 0
+  clear
+  echo "🪄  kiera-bot management script"
+  echo "=============================="
+  echo -e "${NONE}Usage: [start|stop|restart|status|clean|log|tail] [dev|prod]"
+  # exit 0
+  prompt
+}
+
+function prompt() {
+  getStatus
+
+  # Clear screen if first prompt is `false`
+  echo -e "${PURPLE}------------------------------------------------------------"
+
+  echo -e -n "  ${PODSTATUSDOT} ${PURPLE}Kiera ${PRIMARY}>${YELLOW} "
+  read a
+  echo -e "${NONE}"
+
+  case $a in
+  "start") start ;;
+  "stop") stop ;;
+  "status") status ;;
+  "restart") restart ;;
+  "clean") clean ;;
+  "log") log ;;
+  "tail") tail ;;
+  "exit") exit ;;
+  *) echo "  $ Not Valid" ;;
+  esac
+
+  # if [ $FIRSTPROMPT == false ]; then echo -e "${NONE}"; fi
+
+  # Set first promopt to false to clear after each command afterwards
+  FIRSTPROMPT=false
+  prompt
 }
 
 # Restart kiera-bot
 function restart() {
-  echo "Restarting kiera-bot..."
-  make down # &>/dev/null
-  make up # &>/dev/null
+  echo "  Restarting kiera-bot..."
+  make down | sed 's/^/  /'
+  make up | sed 's/^/  /'
 }
 
 # Return kiera-bot status in the terminal
 function status() {
+  # Check current running mode
   getMode
-  echo "🔎 Checking kiera-bot status..."
-  id=$(docker ps -a | grep "kiera-bot" | cut -d ' ' -f1)
-  if [ -z "$id" ]; then
-    echo -e "    ${RED}ｘ${NONE} kiera-bot is ${RED}not running"
-  else
-    echo -e "    ${SUCCESS}✓${NONE} kiera-bot is ${SUCCESS}running${NONE} → ${PRIMARY}${id} ${NONE}❖  mode:${PURPLE}${INSPECTEDMODE}"
-  fi
+  getStatus
+
+  echo "  🔎 Checking kiera-bot status..."
+
+  if [ $PODSTATUS == 3 ]; then echo -e "  ${CYAN}- ${NONE} kiera-bot container does ${RED}not ${NONE}exist"; fi
+  if [ $PODSTATUS == 2 ]; then echo -e "  ${RED}ｘ${NONE} kiera-bot is ${RED}not running"; fi
+  if [ $PODSTATUS == 1 ]; then echo -e "  ${SUCCESS}✓${NONE} kiera-bot is ${SUCCESS}running${NONE} → ${PRIMARY}${id} ${NONE}❖  mode:${PURPLE}${INSPECTEDMODE}"; fi
 }
 
 # Start kiera-bot
 function start() {
+  # Check current running mode
+  getMode
+  getStatus
+
   # If mode is prod, then execute the prod script
   if [ "$MODE" == "prod" ]; then
-    if isUp; then
-      echo -e "    ${SUCCESS}✓${NONE} kiera-bot is ${SUCCESS}already running"
-      exit 0
-    fi
+    if [ $PODSTATUS == 1 ]; then echo -e "    ${SUCCESS}✓${NONE} kiera-bot is ${SUCCESS}already running"; fi
 
     # Stop Kiera if it's running
     stop
@@ -91,37 +176,31 @@ function start() {
       removeImage
     fi
 
-    echo "💼 Starting kiera-bot in production mode..."
-    make up-prod # &>/dev/null
+    echo "  💼 Starting kiera-bot in production mode..."
+    make up-prod | sed 's/^/  /'
     status
-    exit 0
   fi
 
-  echo "👾 Starting kiera-bot in dev mode..."
-  if isUp; then
-    echo -e "    ${SUCCESS}✓${NONE} kiera-bot is ${SUCCESS}already running"
-    exit 0
-  fi
+  echo "  👾 Starting kiera-bot in dev mode..."
+  if [ $PODSTATUS == 1 ]; then echo -e "    ${SUCCESS}✓${NONE} kiera-bot is ${SUCCESS}already running"; fi
 
-  make up # &>/dev/null
+  make up | sed 's/^/  /'
 }
 
 function stop() {
-  echo "🛑 Stopping kiera-bot..."
-  if ! isUp; then
-    echo -e " ${RED}ｘ${NONE} kiera-bot is ${RED}not running"
-    exit 0
+  if [ $PODSTATUS != 1 ]; then
+    echo -e "  ${RED}ｘ${NONE} kiera-bot is ${RED}not running"
+  else
+    echo "  🛑 Stopping kiera-bot..."
+    make down | sed 's/^/  /'
   fi
-  make down # &>/dev/null
 }
 
-# Perform a clean install of kiera-bot's docker image & container
+# Perform a clean install of kiera-bot's image & container
 function clean() {
   # If Kiera is running, then stop it
-  if isUp; then
+  if [ $PODSTATUS == 1 ]; then
     stop
-  else
-    echo -e " ${RED}ｘ${NONE} kiera-bot is ${RED}not running${NONE}"
   fi
 
   # If the image exists, then remove it
@@ -132,13 +211,13 @@ function clean() {
   # Start Kiera (prod mode)
   if [ "$MODE" == "prod" ]; then
     echo "💼 Starting kiera-bot in production mode..."
-    make up-prod # &>/dev/null
+    make up-prod | sed 's/^/  /'
     status
     exit 0
   fi
 
   echo "👾 Starting kiera-bot in dev mode..."
-  start # &>/dev/null
+  start | sed 's/^/  /'
 
   # Check if start was successful
   status
@@ -146,14 +225,14 @@ function clean() {
 
 # Start the live logs
 function log() {
-  echo "📺 Live logs for (tail 1000) kiera-bot..."
-  docker logs -f --tail 1000 $(docker ps -a | grep "kiera-bot" | cut -d ' ' -f1)
+  echo "  📺 Live logs for (tail 1000) kiera-bot..."
+  podman logs -f --tail 1000 $(podman ps -a | grep "kiera-bot" | cut -d ' ' -f1)
 }
 
 # Start the live logs (tail)
 function tail() {
-  echo "📺 Live logs (tail 100) for kiera-bot..."
-  docker logs -f --tail 100 $(docker ps -a | grep "kiera-bot" | cut -d ' ' -f1)
+  echo "  📺 Live logs (tail 100) for kiera-bot..."
+  podman logs -f --tail 100 $(podman ps -a | grep "kiera-bot" | cut -d ' ' -f1)
 }
 
 # Parse 2nd argument (if passed, for later usage)

@@ -1,14 +1,26 @@
+s:
+	eval ./scripts/manage
+
 up:
-	docker-compose -p kiera up -d --build
+	podman compose -p kiera up -d --build
 
 up-prod:
-	docker-compose -f docker-compose.yml -f docker-compose.prod.yml -p kiera up --build -d
+	podman-compose -f docker-compose.yml -f docker-compose.prod.yml -p kiera up --build -d
 
-down: 
-	docker-compose -f docker-compose.yml -p kiera down
+down:
+	podman stop "$(shell podman ps -a | grep "kiera-bot" | cut -d ' ' -f1)"
+
+start:
+	podman start "$(shell podman container list -a | grep "kiera-bot" | cut -d ' ' -f1)"
+
+stop:
+	podman stop "$(shell podman ps -a | grep "kiera-bot" | cut -d ' ' -f1)"
+
+restart:
+	podman restart "$(shell podman ps -a | grep "kiera-bot" | cut -d ' ' -f1)"
 
 rm:
-	docker image rm "kiera_bot"
+	podman rm "$(shell podman ps -a | grep "kiera-bot" | cut -d ' ' -f1)"
 
 live-log:
-	docker logs --follow "$(shell docker ps -a | grep "kiera-bot" | cut -d ' ' -f1)"
+	podman logs --follow "$(shell podman ps -a | grep "kiera-bot" | cut -d ' ' -f1)"

@@ -22,7 +22,8 @@ services:
       - ./locales:/home/node/app/locales
       - ./plugins:/home/node/app/plugins
       - ./src:/home/node/app/src
-    container_name: kiera-bot
+    # container_name: kiera-bot
+    # image-name: kiera:latest
     command: npm run dev
     restart: on-failure
     secrets:
