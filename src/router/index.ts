@@ -1,10 +1,7 @@
-export * from './router'
-export * from './route-loader'
-export * from './route-configuration'
-export * from './routed'
-export * from './routes-exporter'
-export * from './validate'
-
-// Export the Router Objects to keep things simple
-// !Keep full path below
-export * from '../objects/router/'
+export * from './router.ts'
+export * from './route-loader.ts'
+export * from './route-configuration.ts'
+export * from './routed.ts'
+export * from './routes-exporter.ts'
+export * from './stats.ts'
+export * from './validate.ts'

@@ -2,7 +2,7 @@
 require('dotenv').config()
 
 import { Validate } from '@/router/validate'
-import { getArgs } from '@/utils'
+import { getArgs } from '#utils'
 import test from 'ava'
 
 let validate: Validate

@@ -1,11 +1,11 @@
-import * as Middleware from '@/middleware'
-import * as XRegExp from 'xregexp'
+import * as Middleware from '#middleware'
 
-import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '#router/index'
 
 import { ObjectId } from 'mongodb'
-import { TrackedDecision } from '@/objects/decision'
-import { TrackedUser } from '@/objects/user/'
+import { TrackedDecision } from '#objects/decision'
+import { TrackedUser } from '#objects/user/index'
+import XRegExp from 'xregexp'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({

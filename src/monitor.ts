@@ -1,19 +1,16 @@
 import * as Discord from 'discord.js'
 
-import { Bot } from '@/index'
-import { DatabaseMonitor } from './db/monitor'
+import { Bot } from '#/index'
+import { DatabaseMonitor } from './common/db/monitor.ts'
 import { EventEmitter } from 'events'
-import { LiveStatistics } from './live-statistics'
-import { WebAPI } from './api/web-api'
-import { read as getSecret } from '@/secrets'
+import { LiveStatistics } from './live-statistics.ts'
+import { Secrets } from '#utils'
 
 export class BotMonitor extends EventEmitter {
   private Bot: Bot
   public DBMonitor: DatabaseMonitor
-  public WebAPI: WebAPI
   public LiveStatistics: LiveStatistics
   public status = {
-    api: false,
     db: false,
     discord: false,
     stats: false
@@ -28,9 +25,8 @@ export class BotMonitor extends EventEmitter {
   constructor(bot: Bot) {
     super()
     this.Bot = bot
-    this.DBMonitor = new DatabaseMonitor(this.Bot)
+    this.DBMonitor = new DatabaseMonitor(this.Bot.DB, this.Bot.Log.Database)
     this.LiveStatistics = new LiveStatistics(this.Bot)
-    this.WebAPI = new WebAPI(this.Bot)
 
     this.setEventListeners()
   }
@@ -45,9 +41,8 @@ export class BotMonitor extends EventEmitter {
     this.status.db = await this.DBMonitor.start()
     this.status.discord = await this.discordAPIReady()
     this.status.stats = await this.LiveStatistics.start()
-    this.status.api = await this.WebAPI.start()
 
-    if (this.status.db && this.status.stats && this.status.api) this.unhealthyStartup = false
+    if (this.status.db && this.status.stats) this.unhealthyStartup = false
     else this.unhealthyStartup = true
 
     // Not a complete loss yet, try recovering myself (at least has discord available to alert someone)
@@ -92,21 +87,17 @@ export class BotMonitor extends EventEmitter {
     this.unhealthyRecovering = true
 
     this.Bot.Log.Bot.warn('------ trying an unhealty recovery of services - since most rely on the db')
-    // Close the WebAPI if it was listening
-    if (this.status.api) this.WebAPI.close()
     // Some will need to be re-initalized
     this.DBMonitor.destroy() // Destroy interval tickers
     this.LiveStatistics.destroy() // Destroy interval tickers
-    this.DBMonitor = new DatabaseMonitor(this.Bot)
-    this.WebAPI = new WebAPI(this.Bot)
+    this.DBMonitor = new DatabaseMonitor(this.Bot.DB, this.Bot.Log.Database)
     this.setEventListeners() // Recreate event listeners
 
     // Try again
     this.status.db = await this.DBMonitor.start()
     this.status.stats = await this.LiveStatistics.start()
-    this.status.api = await this.WebAPI.start()
 
-    if (this.status.db && this.status.stats && this.status.api) {
+    if (this.status.db && this.status.stats) {
       this.unhealthyRecovered = true
       if (this.Bot.channel.announcementsChannel)
         await this.Bot.channel.announcementsChannel.send(`:hammer_pick: **Services Auto Restored:** I've successfully recovered myself :blush:`)
@@ -146,20 +137,20 @@ export class BotMonitor extends EventEmitter {
     // Waiting for Discord.js Ready Event to fire...
     this.Bot.Log.Bot.debug('waiting for discord.js ready event...')
     return new Promise<boolean>(async (r) => {
-      /// Client ready ///
-
-      this.Bot.client.on('ready',  () => {
+      // * Client ready * //
+      this.Bot.client.once(Discord.Events.ClientReady, () => {
         this.Bot.Log.Bot.debug('discord.js ready!')
         this.Bot.onReady()
         r(true)
       })
 
-      this.Bot.client.on('error', () => {
-        this.Bot.Log.Bot.warn('discord.js NOT ready!')
+      // ! Client error ! //
+      this.Bot.client.on(Discord.Events.Error, (error) => {
+        this.Bot.Log.Bot.warn('discord.js NOT ready!', error)
       })
-      /// Connect account ///
 
-      await this.Bot.client.login(getSecret('DISCORD_APP_TOKEN', this.Bot.Log.Bot))
+      // ? Connect account ? //
+      await this.Bot.client.login(Secrets.read('DISCORD_APP_TOKEN', this.Bot.Log.Bot))
     })
   }
 
@@ -182,7 +173,6 @@ Depending on which services are struggling some to all bot functionality may be 
 \`\`\`
 Help! I've fallen, and I can't get up..
 
-API ............... ${this.status.api ? '✓ Started' : '✕ Down'}
 Database: ......... ${this.status.db ? '✓ Connected' : '✕ Disconnected'}
 Discord ........... ✓ If it wasn't how would you be seeing this 😉
 Stats ............. ${this.status.stats ? '✓ Started' : '✕ Down'}\`\`\``)

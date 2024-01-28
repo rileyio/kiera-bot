@@ -1,6 +1,6 @@
-import { AcceptedResponse, Routed } from '@/router'
+import { AcceptedResponse, Routed } from '#router/index'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageComponentInteraction } from 'discord.js'
-import { StatisticsSetting, StatisticsSettingType } from '@/objects/statistics'
+import { StatisticsSetting, StatisticsSettingType } from '#objects/statistics'
 
 import { TextChannel } from 'discord.js'
 

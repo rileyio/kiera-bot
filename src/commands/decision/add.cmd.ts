@@ -1,7 +1,7 @@
-import { AcceptedResponse, Routed } from '@/router'
-import { TrackedDecision, TrackedDecisionOption } from '@/objects/decision'
+import { AcceptedResponse, Routed } from '#router/index'
+import { TrackedDecision, TrackedDecisionOption } from '#objects/decision'
 
-import { ObjectID } from 'mongodb'
+import { ObjectId } from 'mongodb'
 
 /**
  * Add decision option
@@ -16,7 +16,7 @@ export async function addOutcome(routed: Routed<'discord-chat-interaction'>): Ac
   // Get the saved decision from the db (Only the creator can edit)
   const decisionFromDB = await routed.bot.DB.get('decision', {
     $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }],
-    _id: new ObjectID(id)
+    _id: new ObjectId(id)
   })
 
   if (decisionFromDB) {

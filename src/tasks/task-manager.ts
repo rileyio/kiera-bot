@@ -1,8 +1,7 @@
-import Agenda from 'agenda/es'
-
-import { Bot } from '@/index'
-import { Task } from '@/objects/task'
-import { read as getSecret } from '@/secrets'
+import Agenda from 'agenda'
+import { Bot } from '#/index'
+import { Secrets } from '#utils'
+import { Task } from './task.ts'
 
 export class TaskManager {
   protected Bot: Bot
@@ -15,7 +14,7 @@ export class TaskManager {
     // bot.Log.Bot.log('db url', getSecret('DB_STRING', this.Bot.Log.Bot))
     this.Agenda = new Agenda({
       db: {
-        address: getSecret('DB_STRING', this.Bot.Log.Bot),
+        address: Secrets.read('DB_STRING', this.Bot.Log.Bot),
         collection: 'scheduled-jobs'
       }
     })

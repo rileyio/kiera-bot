@@ -1,15 +1,16 @@
 import * as fs from 'fs'
-import * as glob from 'fast-glob'
 import * as path from 'path'
+import * as url from 'url'
 
-import { Plugin, PluginRegexPatterns } from '@/objects/plugin'
+import { Plugin, PluginRegexPatterns } from '#objects/plugin'
 
 import { Bot } from '.'
-import { Logger } from '@/utils'
+import { Logger } from '#utils'
 import axios from 'axios'
 import gitly from 'gitly'
+import glob from 'fast-glob'
 
-import importFresh = require('import-fresh')
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 enum UpdateType {
   None,
@@ -63,6 +64,7 @@ export class PluginManager {
     this.log = this.bot.Log.Plugin
 
     // Configure the PluginManager
+    console.log(path.resolve(path.join(`${__dirname}/../plugins`)))
     this.folder = path.resolve(path.join(`${__dirname}/../plugins`))
   }
 
@@ -84,22 +86,27 @@ export class PluginManager {
         const pluginBodyString = fs.readFileSync(pluginFile, 'utf-8')
         const pluginName = (pluginBodyString.match(PluginRegexPatterns.name) || [])[1]
         const pluginRepo = (pluginBodyString.match(PluginRegexPatterns.repo) || [])[1]
+        const pluginVersion = (pluginBodyString.match(PluginRegexPatterns.version) || [])[1]
 
         // If plugin file/folder  is renamed but is a duplicate by name, stop it from loading
         if (this.plugins.find((p) => p.name === pluginName)) continue
 
         // Check if plugin is on the verified list
-        const pluginVerified = this.verified.findIndex((p) => p.name === pluginName && p.repo === pluginRepo) > -1
+        const pluginVerified = this.verified?.findIndex((p) => p.name === pluginName && p.repo === pluginRepo) > -1
 
         // Load file
-        const requiredFile = importFresh(pluginFile) as { default: () => Plugin }
+        const requiredFile = (await import(`${pluginFile}?version=${pluginVersion || Date.now()}`)) as { default: () => Plugin }
+
         // Test if file returns undefined
         if (requiredFile !== undefined) {
           const loaded = requiredFile.default()
 
           // Try to register the Bot instance with the plugin
-          await loaded.register(this.bot, this.folder, pluginBodyString, true, pluginVerified)
+          await loaded.register(this.folder, pluginBodyString, true, pluginVerified)
           this.log.verbose(`🧩 Plugin Loaded ${pluginVerified ? '(✔)' : ''}: ${loaded.name}@${loaded.version}`)
+
+          // Load any routes for the plugin
+          if (loaded.routes && loaded.routes.length) loaded.routes.forEach((route) => this.bot.Router.addRoute(route))
 
           // If Auto Updating is enabled
           if (loaded.autoCheckForUpdate) this.checkForUpdate(loaded)
@@ -131,6 +138,18 @@ export class PluginManager {
     if (minor && newVersionSplit[0] >= oldVersionSplit[0]) return { type: UpdateType.Minor }
     if (patch && newVersionSplit[0] >= oldVersionSplit[0] && newVersionSplit[1] >= oldVersionSplit[1]) return { type: UpdateType.Patch }
     return { type: UpdateType.None }
+  }
+
+  private async loadExisting(plugin: Plugin) {
+    // Try to register the Bot instance with the plugin
+    await plugin.register(this.folder, plugin.pluginBodyString, true, plugin.verified)
+    this.log.verbose(`🧩 Plugin Loaded ${plugin.verified ? '(✔)' : ''}: ${plugin.name}@${plugin.version}`)
+
+    // Load any routes for the plugin
+    if (plugin.routes && plugin.routes.length) plugin.routes.forEach((route) => this.bot.Router.addRoute(route))
+
+    // If Auto Updating is enabled
+    if (plugin.autoCheckForUpdate) this.checkForUpdate(plugin)
   }
 
   public async checkForUpdates() {
@@ -251,5 +270,15 @@ export class PluginManager {
 
   public getPlugin(plugin: string | Plugin) {
     return this.plugins.find((p) => p.name === (typeof plugin === 'string' ? (plugin as string) : (plugin as Plugin).name))
+  }
+
+  public async reloadPlugin(plugin: string | Plugin) {
+    const pluginFound = this.getPlugin(plugin)
+    console.log('pluginFound', pluginFound)
+
+    if (!pluginFound) return { error: 'Plugin not found', successful: false }
+    await this.unloadPlugin(pluginFound.plugin)
+    await this.loadExisting(pluginFound.plugin)
+    return { error: undefined, successful: true }
   }
 }

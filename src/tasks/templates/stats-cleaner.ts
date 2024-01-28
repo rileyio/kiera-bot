@@ -1,7 +1,7 @@
-// import { Task } from '@/objects/task'
+// import { Task } from '#objects/task'
 // import { Collections } from '@/db'
 // import { ObjectId } from 'bson'
-// import { ServerStatistic, StatisticsSetting } from '@/objects/statistics'
+// import { ServerStatistic, StatisticsSetting } from '#objects/statistics'
 
 // export class StatsCleaner extends Task {
 //   public collection: Collections = 'stats-servers'

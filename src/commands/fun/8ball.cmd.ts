@@ -1,6 +1,6 @@
-import { Routed } from '@/router'
+import { Routed } from '#router/index'
 
-import { eightBallResult } from '@/commands/fun/8ball.embed'
+import { eightBallResult } from '#commands/fun/8ball.embed'
 
 /**
  * 8 Ball

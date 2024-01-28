@@ -1,5 +1,5 @@
-import * as Utils from '@/utils'
-import * as XRegex from 'xregexp'
+import { User } from '#utils'
+import XRegex from 'xregexp'
 
 export const validationRegex = XRegex('(\\/(?<name>[a-z0-9]*)(?<optional>\\?\\:|\\:|\\=|\\?\\=|(?<multi>\\.\\.\\.))(?<type>[a-z\\-]*))', 'img')
 
@@ -54,7 +54,7 @@ export class Validate {
    * @memberof Validate
    */
   public validateFromStringParser(str: string) {
-    var matches = []
+    const matches = []
     XRegex.forEach(str, validationRegex, (match: any, i: number) => {
       matches.push(this.createValidationType(match))
     })
@@ -96,10 +96,10 @@ export class Validate {
    * @returns
    */
   public validateArgs(args: Array<string>) {
-    var allValid = true
-    var ret: any = {}
-    var validationMap = JSON.parse(JSON.stringify(this.validation))
-    var validated = validationMap.map((v: ValidationType, i: number) => {
+    let allValid = true
+    const ret: any = {}
+    const validationMap = JSON.parse(JSON.stringify(this.validation))
+    const validated = validationMap.map((v: ValidationType, i: number) => {
       const singleStrRegexp = /^["]([^"].+)["]\s?$/im
       const multiStrRegexp = /^["]([^"].+)["]\s?$/gim
       const isMulti = v.multi
@@ -114,7 +114,7 @@ export class Validate {
         // Check if type matches
         v.valid = this.validateType(v.type, _tempVal)
 
-        if (v.type === 'user') v.value = Utils.User.extractUserIdFromString(args[i])
+        if (v.type === 'user') v.value = User.extractUserIdFromString(args[i])
         if (v.type === 'string') v.value = _tempVal
 
         // Fix: If expected type is valid and is a number but for this type convert it back to a string
@@ -148,12 +148,16 @@ export class Validate {
       }
     })
 
-    return { valid: allValid, validated: validated, o: ret }
+    return {
+      o: ret,
+      valid: allValid,
+      validated: validated
+    }
   }
 
   public routeSignatureFromStr(str: string) {
     let sig = `^`
-    let parts = [] as Array<{ name: string; optional: string }>
+    const parts = [] as Array<{ name: string; optional: string }>
 
     XRegex.forEach(str, validationRegex, (match: any, i: number) => parts.push(match))
     parts.forEach((match: any, i: number) => {

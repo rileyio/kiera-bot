@@ -1,5 +1,5 @@
-import { Routed } from '@/router'
-import { StatisticsSettingType } from '@/objects/statistics'
+import { Routed } from '#router/index'
+import { StatisticsSettingType } from '#objects/statistics'
 
 export async function aboutStats(routed: Routed<'discord-chat-interaction'>) {
   // Get states

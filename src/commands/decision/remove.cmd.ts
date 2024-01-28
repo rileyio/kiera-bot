@@ -1,4 +1,4 @@
-import { AcceptedResponse, Routed } from '@/router'
+import { AcceptedResponse, Routed } from '#router/index'
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -11,8 +11,8 @@ import {
   TextChannel
 } from 'discord.js'
 
-import { ObjectID } from 'mongodb'
-import { TrackedDecision } from '@/objects/decision'
+import { ObjectId } from 'mongodb'
+import { TrackedDecision } from '#objects/decision'
 
 /**
  * Delete outcome from Decision Roller
@@ -102,8 +102,8 @@ export async function removeOutcome(routed: Routed<'discord-chat-interaction'>):
         // Remove from DB
         const removedCount = await routed.bot.DB.update(
           'decision',
-          { $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }], 'options._id': new ObjectID(selectedOutcomeIDs[index]) },
-          { $pull: { options: { _id: new ObjectID(selectedOutcomeIDs[index]) } } },
+          { $or: [{ authorID: routed.author.id }, { managers: { $in: [routed.author.id] } }], 'options._id': new ObjectId(selectedOutcomeIDs[index]) },
+          { $pull: { options: { _id: new ObjectId(selectedOutcomeIDs[index]) } } },
           { atomic: true }
         )
 

@@ -1,6 +1,5 @@
-import * as XRegExp from 'xregexp'
-
-import { Routed } from '@/router'
+import { Routed } from '#router/index'
+import XRegExp from 'xregexp'
 
 /**
  * Set a custom prefix for the first part of decision roll nicknames

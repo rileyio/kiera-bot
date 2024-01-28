@@ -1,13 +1,11 @@
-import * as Random from 'random'
-import * as XRegExp from 'xregexp'
+import { AcceptedResponse, Routed } from '#router/index'
 
-import { AcceptedResponse, Routed } from '@/router'
-
-import { ChannelType } from 'discord.js'
-import { ObjectID } from 'bson'
-import { TrackedDecision } from '@/objects/decision'
-import { TrackedUser } from '@/objects/user/'
-import { decisionFromSaved } from '@/commands/decision/roll.embed'
+import { ObjectId } from 'bson'
+import Random from 'random'
+import { TrackedDecision } from '#objects/decision'
+import { TrackedUser } from '#objects/user/index'
+import XRegExp from 'xregexp'
+import { decisionFromSaved } from '#commands/decision/roll.embed'
 
 export async function runSavedDecision(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
   const idOrNickname = routed.interaction.options.get('id').value as string
@@ -20,7 +18,7 @@ export async function runSavedDecision(routed: Routed<'discord-chat-interaction'
   const userByNickname = new TrackedUser(isShort ? await routed.bot.DB.get('users', { 'Decision.nickname': new RegExp(`^${userNickname}$`, 'i') }) : {})
   const decisionFromDB = isShort
     ? await routed.bot.DB.get('decision', { authorID: userByNickname.id, nickname: new RegExp(`^${decisionNickname}$`, 'i') })
-    : await routed.bot.DB.get('decision', { _id: new ObjectID(idOrNickname) })
+    : await routed.bot.DB.get('decision', { _id: new ObjectId(idOrNickname) })
 
   if (decisionFromDB) {
     const decision = new TrackedDecision(decisionFromDB)
@@ -100,7 +98,7 @@ export async function runSavedDecision(routed: Routed<'discord-chat-interaction'
       if (decision.consumeMode === 'Consume') return await routed.reply(`This decision roll has limiting enabled. There are no outcomes available anymore.`)
     }
 
-    const random = (Random as any).int(0, optionsPool.length - 1)
+    const random = Random.int(0, optionsPool.length - 1)
     const outcome = optionsPool[random]
 
     // Update Decision's Outcome to track consumed state (If something other than 'Basic' is set for the mode)

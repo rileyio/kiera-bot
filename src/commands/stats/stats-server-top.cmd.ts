@@ -1,9 +1,9 @@
-// import * as Utils from '@/utils'
+// import * as Utils from '#utils'
 
-// import { ExportRoutes, RouterRouted } from '@/router'
+// import { ExportRoutes, RouterRouted } from '#router/index'
 
-// import { ServerStatisticType } from '@/objects/statistics'
-// import { statsTopServerChannels } from '@/commands/stats/stats-server.embed'
+// import { ServerStatisticType } from '#objects/statistics'
+// import { statsTopServerChannels } from '#commands/stats/stats-server.embed'
 
 // export const Routes = ExportRoutes({
 //   category: 'Stats',

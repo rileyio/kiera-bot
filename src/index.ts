@@ -1,27 +1,25 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { version } = require('../package.json')
-
 import * as Discord from 'discord.js'
-import * as Task from '@/tasks'
-import * as Utils from '@/utils'
-import * as debug from 'debug'
+import * as Task from './tasks/index.ts'
+import * as Utils from '#utils'
 
-import { CommandRouter, Routed, routeLoader } from '@/router'
+import { CommandRouter, Routed, routeLoader } from '#router/index'
 import { RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder, SlashCommandSubcommandBuilder } from 'discord.js'
 
-import { Audit } from '@/objects/audit'
-import { BattleNet } from '@/integrations/BNet'
-import { BotMonitor } from '@/monitor'
-import { ChastiSafe } from '@/integrations/ChastiSafe'
-import Localization from '@/localization'
-import { MongoDB } from '@/db'
-import { PluginManager } from '@/plugin-manager'
+import { Audit } from '#objects/audit'
+import { BattleNet } from '#integrations/BNet'
+import { BotMonitor } from './monitor.ts'
+import { ChastiSafe } from '#integrations/ChastiSafe'
+import Localization from './localization.ts'
+import { MongoDB } from '#db'
+import { PluginManager } from './plugin-manager.ts'
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v10'
-import { ServerStatisticType } from './objects/statistics'
-import { Statistics } from '@/statistics'
-import { StoredServer } from './objects/server'
-import { read as getSecret } from '@/secrets'
+import { Secrets } from '#utils'
+import { ServerStatisticType } from '#objects/statistics'
+import { Statistics } from './statistics.ts'
+import { StoredServer } from '#objects/server'
+import debug from 'debug'
+import { readFile } from 'fs/promises'
 
 const DEFAULT_LOCALE = process.env.BOT_LOCALE
 const Debugger = debug('kiera-bot')
@@ -73,16 +71,19 @@ export class Bot {
   public Localization: Localization
 
   public async start() {
+    const { version } = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8')) as { version: string }
+
     this.version = version
     this.Log.Bot.log(`initializing kiera-bot (${this.version})...`)
 
     ////////////////////////////////////////
     // Register bot services ///////////////
     ////////////////////////////////////////
-    this.Audit = new Audit(this)
+    this.DB = new MongoDB(this.Log.Database)
     this.BotMonitor = new BotMonitor(this)
     this.Router = new CommandRouter(await routeLoader(this.Log.Router), this)
     this.Task = new Task.TaskManager(this)
+    this.Audit = new Audit(this.DB)
 
     ////////////////////////////////////////
     // Plugin Manager //////////////////////
@@ -142,8 +143,9 @@ export class Bot {
         commands: this.Router.routes.length,
         guilds: this.client.guilds.cache.size,
         langs: this.Localization.langs,
+        nodeVersion: process.version,
         ping: this.BotMonitor.DBMonitor.pingTotalLatency / this.BotMonitor.DBMonitor.pingCount,
-        routes: this.BotMonitor.WebAPI.configuredRoutes.length,
+        routes: 0, //this.BotMonitor.WebAPI.configuredRoutes.length,
         strings: this.Localization.stringsCount,
         user: this.client.user.tag,
         users: await this.DB.count('users', {}),
@@ -154,17 +156,6 @@ export class Bot {
     // ==========================================================================================
     // => Start allowing incoming command routing from here down
     // ==========================================================================================
-
-    ////////////////////////////////////////
-    // Discord Event Monitor / Routing /////
-    ////////////////////////////////////////
-    /// Event handling for non-cached (messages from prior to restart) ///
-    // this.client.on('raw' as any, async (event) => {
-    //   if (event.t === null) return
-    //   // Skip event types that are not mapped
-    //   if (!Utils.DISCORD_CLIENT_EVENTS.hasOwnProperty(event.t)) return
-    //   await this.onMessageNonCachedReact(event)
-    // })
 
     /// Incoming message router (v8.0-beta-3 and newer commands) ///
     this.client.on('interactionCreate', async (int) => await this.onInteraction(int))
@@ -178,19 +169,18 @@ export class Bot {
     /// Update guilds info stored ///
     for (const guild of [...this.client.guilds.cache.values()]) {
       // Check if Guild info is cached
-      this.Log.Bot.verbose('Guild Connection/Update in Servers Collection', guild.id)
       await this.DB.update(
         'servers',
         { id: guild.id },
         {
-          $set: new StoredServer({
+          $set: {
             id: guild.id,
             joinedTimestamp: guild.joinedTimestamp,
             lastSeen: Date.now(),
             name: guild.name,
             ownerID: guild.ownerId,
             type: 'discord'
-          })
+          }
         },
         { atomic: true, upsert: true }
       )
@@ -220,7 +210,7 @@ export class Bot {
     // Register Slash commands on Kiera's Development server
     const commands: RESTPostAPIApplicationCommandsJSONBody[] = []
     for (const command of this.Router.routes.filter((c) => !c.permissions.optInReq)) command.slash ? commands.push(command.slash.toJSON()) : null
-    const rest = new REST({ version: '10' }).setToken(getSecret('DISCORD_APP_TOKEN', this.Log.Bot))
+    const rest = new REST({ version: '10' }).setToken(Secrets.read('DISCORD_APP_TOKEN', this.Log.Bot))
 
     // Delete existing commands GLOBAL (Dev Only, should be blocked in production)
     // if (process.env.BOT_BLOCK_GLOBALSLASH === 'true') {
@@ -250,13 +240,13 @@ export class Bot {
       if (process.env.BOT_BLOCK_GLOBALSLASH === 'true') {
         // Push manually a set to just Kiera's Development server
         // To have them available for testing immediately (+ any extra servers that are added)
-        // const guildsToUpdate = process.env.BOT_SERVERS_TO_PUSH.split(',')
-        // for (let index = 0; index < guildsToUpdate.length; index++) {
-        //   const guild = guildsToUpdate[index]
-        //   this.Log.Bot.verbose(`Started refreshing application (/) commands for guild ${guild}.`)
-        //   await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, guild), { body: commands })
-        //   this.Log.Bot.verbose(`Successfully reloaded application (/) commands for guild ${guild}.`)
-        // }
+        const guildsToUpdate = process.env.BOT_SERVERS_TO_PUSH.split(',')
+        for (let index = 0; index < guildsToUpdate.length; index++) {
+          const guild = guildsToUpdate[index]
+          this.Log.Bot.verbose(`Started refreshing application (/) commands for guild ${guild}.`)
+          await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_APP_ID, guild), { body: commands })
+          this.Log.Bot.verbose(`Successfully reloaded application (/) commands for guild ${guild}.`)
+        }
       }
       // Push normally
       else {
@@ -265,13 +255,13 @@ export class Bot {
         this.Log.Bot.verbose('Successfully reloaded application (/) commands.')
       }
     } catch (error) {
-      this.Log.Bot.error('Not Successful in updating Slash Commands', error)
+      this.Log.Bot.error('Not Successful in updating Slash Commands', error.message)
     }
   }
 
   private async onInteraction(interaction: Discord.Interaction) {
     try {
-      await this.Router.routeInteraction(interaction)
+      await this.Router.routeDiscordInteraction(interaction)
     } catch (error) {
       this.Log.Bot.error('Fatal onInteration error caught', error, interaction)
     }
@@ -285,14 +275,14 @@ export class Bot {
       'servers',
       { id: guild.id },
       {
-        $set: new StoredServer({
+        $set: {
           id: guild.id,
           joinedTimestamp: guild.joinedTimestamp,
           lastSeen: Date.now(),
           name: guild.name,
           ownerID: guild.ownerId,
           type: 'discord'
-        })
+        }
       },
       { atomic: true, upsert: true }
     )
@@ -306,14 +296,14 @@ export class Bot {
       'servers',
       { id: old.id },
       {
-        $set: new StoredServer({
+        $set: {
           id: old.id,
           joinedTimestamp: old.joinedTimestamp,
           lastSeen: Date.now(),
           name: changed.name,
           ownerID: changed.ownerId,
           type: 'discord'
-        })
+        }
       },
       { atomic: true, upsert: true }
     )
@@ -333,5 +323,5 @@ export class Bot {
   }
 }
 
-export { Plugin } from './objects/plugin'
+export { Plugin } from '#objects/plugin'
 export { Routed }

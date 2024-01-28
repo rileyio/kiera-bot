@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, TextChannel } from 'discord.js'
 
-import { Routed } from '@/router'
-import { TrackedDecision } from '@/objects/decision'
-import { embed } from '@/commands/decision/list.embed'
+import { Routed } from '#router/index'
+import { TrackedDecision } from '#objects/decision'
+import { embed } from '#commands/decision/list.embed'
 
 export async function list(routed: Routed<'discord-chat-interaction'>) {
   const authorID = routed.author.id

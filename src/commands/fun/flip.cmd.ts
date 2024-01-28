@@ -1,5 +1,5 @@
-import { AcceptedResponse, Routed } from '@/router'
-import { flipCoin } from '@/commands/fun/flip.embed'
+import { AcceptedResponse, Routed } from '#router/index'
+import { flipCoin } from '#commands/fun/flip.embed'
 
 /**
  * Flip a coin

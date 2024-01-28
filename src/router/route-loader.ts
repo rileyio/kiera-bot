@@ -1,8 +1,8 @@
 import * as Path from 'path'
-import * as glob from 'fast-glob'
 
-import { Logger } from '@/utils'
-import { RouteConfiguration } from '@/router'
+import { Logger } from '#utils'
+import { RouteConfiguration } from '#/router'
+import glob from 'fast-glob'
 import { performance } from 'perf_hooks'
 
 export async function routeLoader(logger: Logger.Debug) {
@@ -25,18 +25,16 @@ export async function routeLoader(logger: Logger.Debug) {
       const _requiredFile = (await import(Path.join('../../', routeFile.toString()))) as { Routes: Array<RouteConfiguration<'placeolder-type'>> }
       // Test if file returns undefined
       if (_requiredFile === undefined) continue
-      // console.log(`routeLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map(r => Array.isArray(r)).length}`)
+      logger.log(`routeLoader() => ${routeFile.toString()}, ${_requiredFile.Routes.map((r) => Array.isArray(r)).length}`)
 
       // When no array is returned
       if (Object.keys(_requiredFile).includes('Routes') === false) {
-        // logger.debug(`routeLoader() [WARN] => ${routeFile.toString()}, no Routes array found (${Math.round(performance.now() - start)}ms)`)
+        logger.debug(`routeLoader() [WARN] => ${routeFile.toString()}, no Routes array found (${Math.round(performance.now() - start)}ms)`)
         continue
       }
 
-      for (let index = 0; index < _requiredFile.Routes.length; index++) {
-        const route = _requiredFile.Routes[index]
-        routes.push(route)
-      }
+      // Add route to routes array
+      for (let index = 0; index < _requiredFile.Routes.length; index++) routes.push(_requiredFile.Routes[index])
 
       logger.verbose(`routeLoader() => route [${routeFile.toString()}] loaded (${Math.round(performance.now() - start)}ms)`)
     } catch (e) {

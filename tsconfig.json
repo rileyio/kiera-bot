@@ -1,22 +1,35 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "inlineSourceMap": true,
-    "lib": ["es6", "es2016"],
-    "module": "commonjs",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "node",
     "outDir": "./app",
+    "resolveJsonModule": true,
     "paths": {
-      "@/*": ["src/*"]
+      "#/*": ["./src/*"],
+      "#api/*": ["./src/api/*.ts"],
+      "#commands/*": ["./src/commands/*.ts"],
+      "#db": ["src/common/db/index.ts"],
+      "#integrations/*": ["./src/integrations/*.ts"],
+      "#middleware": ["./src/middleware/index.ts"],
+      "#objects/*": ["src/common/objects/*.ts"],
+      "#router/*": ["./src/router/*.ts"],
+      "#secrets": ["src/common/utils/secrets.ts"],
+      "#utils": ["src/common/utils/index.ts"]
     },
     "preserveConstEnums": true,
     "removeComments": true,
     "skipLibCheck": true,
-    "target": "es6",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "target": "ES2022",
     "typeRoots": ["src/typings", "./node_modules/@types/"]
   },
-  "exclude": ["node_modules", "app", "plugins"],
-  "include": ["src/**/*.ts"]
+  "exclude": ["node_modules", "app", "api"],
+  "include": ["src/**/*.ts", "plugins/**/*.ts"]
 }

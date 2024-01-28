@@ -1,6 +1,6 @@
-// import { ExportRoutes, RouterRouted } from '@/router'
+// import { ExportRoutes, RouterRouted } from '#router/index'
 
-// import { TrackedBotSetting } from '@/objects/setting'
+// import { TrackedBotSetting } from '#objects/setting'
 // import { pongResponse } from '@/embedded/ping-pong'
 
 // export const Routes = ExportRoutes(

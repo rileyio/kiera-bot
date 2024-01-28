@@ -1,4 +1,4 @@
-import { AcceptedResponse, Routed } from '@/router'
+import { AcceptedResponse, Routed } from '#router/index'
 
 import { EmbedBuilder } from 'discord.js'
 

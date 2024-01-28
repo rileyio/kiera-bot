@@ -35,7 +35,7 @@ function isImageExists() {
 # Remove kiera-bot's image
 function removeImage() {
   echo "🗑️  Removing kiera-bot image..."
-  make rm &>/dev/null
+  make rm # &>/dev/null
 }
 
 # Get kiera-bot's NODE_ENV
@@ -58,8 +58,8 @@ function usage() {
 # Restart kiera-bot
 function restart() {
   echo "Restarting kiera-bot..."
-  make down &>/dev/null
-  make up &>/dev/null
+  make down # &>/dev/null
+  make up # &>/dev/null
 }
 
 # Return kiera-bot status in the terminal
@@ -92,7 +92,7 @@ function start() {
     fi
 
     echo "💼 Starting kiera-bot in production mode..."
-    make up-prod &>/dev/null
+    make up-prod # &>/dev/null
     status
     exit 0
   fi
@@ -103,7 +103,7 @@ function start() {
     exit 0
   fi
 
-  make up &>/dev/null
+  make up # &>/dev/null
 }
 
 function stop() {
@@ -112,7 +112,7 @@ function stop() {
     echo -e " ${RED}ｘ${NONE} kiera-bot is ${RED}not running"
     exit 0
   fi
-  make down &>/dev/null
+  make down # &>/dev/null
 }
 
 # Perform a clean install of kiera-bot's docker image & container
@@ -120,6 +120,8 @@ function clean() {
   # If Kiera is running, then stop it
   if isUp; then
     stop
+  else
+    echo -e " ${RED}ｘ${NONE} kiera-bot is ${RED}not running${NONE}"
   fi
 
   # If the image exists, then remove it
@@ -130,13 +132,13 @@ function clean() {
   # Start Kiera (prod mode)
   if [ "$MODE" == "prod" ]; then
     echo "💼 Starting kiera-bot in production mode..."
-    make up-prod &>/dev/null
+    make up-prod # &>/dev/null
     status
     exit 0
   fi
 
   echo "👾 Starting kiera-bot in dev mode..."
-  start &>/dev/null
+  start # &>/dev/null
 
   # Check if start was successful
   status

@@ -2,41 +2,42 @@
  * @name sample-command
  * @pluginURL https://raw.githubusercontent.com/rileyio/sample-command/main/plugin.ts
  * @repo rileyio/sample-command
- * @version 1.0.2
+ * @version 1.0.3
  */
 
-import { RouteConfiguration, Routed } from '../../src/router'
+import { RouteConfiguration, Routed } from '../../src/router/index.ts'
 
-import { Plugin } from '../../src/index'
+import { Plugin } from '../../src/index.ts'
 import { SlashCommandBuilder } from 'discord.js'
 
 export class SampleCommandPlugin extends Plugin {
   config = { testProp: false }
+  routes = [
+    new RouteConfiguration({
+      category: 'Plugin/Sample',
+      controller: this.routeCommand,
+      name: 'test',
+      permissions: {
+        defaultEnabled: false,
+        serverOnly: false
+      },
+      plugin: this,
+      slash: new SlashCommandBuilder().setName('test').setDescription('Testing Plugin'),
+      type: 'discord-chat-interaction'
+    })
+  ]
 
   constructor() {
     super()
     console.log('SampleCommand Plugin Loaded')
   }
 
-  public async onEnabled() {
-    await this.bot.Router.addRoute(
-      new RouteConfiguration({
-        category: 'Plugin/Sample',
-        controller: this.routeCommand,
-        name: 'test',
-        permissions: {
-          defaultEnabled: false,
-          serverOnly: false
-        },
-        plugin: this,
-        slash: new SlashCommandBuilder().setName('test').setDescription('Testing Plugin'),
-        type: 'discord-chat-interaction'
-      })
-    )
+  onEnabled = async () => {
+    console.log('test loaded')
   }
 
-  public async onDisabled() {
-    await this.bot.Router.removeRoute('test')
+  onDisabled = async () => {
+    console.log('test unloaded')
   }
 
   public async routeCommand(plugin: SampleCommandPlugin, routed: Routed<'discord-chat-interaction'>) {

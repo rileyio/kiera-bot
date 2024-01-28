@@ -1,12 +1,12 @@
 /* eslint-disable sort-keys */
-import * as Utils from '@/utils'
+import * as Utils from '#utils'
 
-import * as moment from 'moment'
-import { ChastiSafeUser } from '@/objects/chastisafe'
+import { ChastiSafeUser } from '#/integrations/ChastiSafe.ts'
 import { EmbedBuilder } from 'discord.js'
-import { Routed } from '@/router'
+import { Routed } from '#router/index'
+import  moment from 'moment'
 
-const DDHHMM = Utils.Date.calculateHumanTimeDDHHMM
+const DDHHMM = Utils.calculateHumanTimeDDHHMM
 
 export function embed(user: ChastiSafeUser, routed: Routed<'discord-chat-interaction'>) {
   const data = {

@@ -1,4 +1,4 @@
-import * as Utils from '@/utils'
+import * as Utils from '#utils'
 import { EmbedBuilder } from 'discord.js'
 
 interface StatsUsersData {
@@ -25,10 +25,10 @@ export function statsUser(stats: StatsUsersData) {
   descriptionBuilt += `Messages on server: \`${stats.messages}\`\n`
   descriptionBuilt += `Reactions on server: \`${stats.reactions}\`\n`
   descriptionBuilt += `Total channels reached: \`${stats.channelsReached}\`\n`
-  descriptionBuilt += `Joined Server: \`${new Date(stats.joinedTimestamp).toLocaleDateString()}\` (\`${Utils.Date.calculateHumanTimeDDHHMM(
+  descriptionBuilt += `Joined Server: \`${new Date(stats.joinedTimestamp).toLocaleDateString()}\` (\`${Utils.calculateHumanTimeDDHHMM(
     Date.now() / 1000 - stats.joinedTimestamp / 1000
   )} ago\`)\n`
-  descriptionBuilt += `User Created: \`${new Date(stats.created).toLocaleDateString()}\` (\`${Utils.Date.calculateHumanTimeDDHHMM(
+  descriptionBuilt += `User Created: \`${new Date(stats.created).toLocaleDateString()}\` (\`${Utils.calculateHumanTimeDDHHMM(
     Date.now() / 1000 - stats.created / 1000
   )} ago\`)\n\n`
 

@@ -1,10 +1,10 @@
-import { ExportRoutes, RouteConfiguration, Routed } from '@/router'
+import { ExportRoutes, RouteConfiguration, Routed } from '#router/index'
 
-import { AcceptedResponse } from '@/router'
+import { AcceptedResponse } from '#router/index'
 import { Routes as DiscRoutes } from 'discord-api-types/v10'
 import { REST } from '@discordjs/rest'
+import { Secrets } from '#utils'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { read as getSecret } from '@/secrets'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({
@@ -75,7 +75,7 @@ async function command(routed: Routed<'discord-chat-interaction'>): AcceptedResp
     if (!commandExists) return await routed.reply({ content: `I can\'t find that command group`, ephemeral: true })
 
     // Get some things ready
-    const rest = new REST({ version: '10' }).setToken(getSecret('DISCORD_APP_TOKEN', routed.bot.Log.Bot))
+    const rest = new REST({ version: '10' }).setToken(Secrets.read('DISCORD_APP_TOKEN', routed.bot.Log.Bot))
 
     // Update command category on server
     if (subCommand === 'enable') {

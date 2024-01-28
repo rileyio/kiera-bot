@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js'
-import { TrackedDecision } from '@/objects/decision'
+import { TrackedDecision } from '#objects/decision'
 
 export function embed(authorID: string, decisions: Array<TrackedDecision>) {
   const asOwner = decisions.filter((d) => d.authorID === authorID)

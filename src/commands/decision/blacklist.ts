@@ -1,9 +1,9 @@
 // import * as Middleware from '@/middleware'
 
-// import { ExportRoutes, RouterRouted } from '@/router'
+// import { ExportRoutes, RouterRouted } from '#router/index'
 
 // import { ObjectId } from 'bson'
-// import { TrackedDecision } from '@/objects/decision'
+// import { TrackedDecision } from '#objects/decision'
 // import { User } from 'discord.js'
 
 // export const Routes = ExportRoutes(

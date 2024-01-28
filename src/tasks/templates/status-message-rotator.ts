@@ -1,8 +1,7 @@
-import * as Random from 'random'
-
-import { Task } from '@/objects/task'
-import { TrackedBotSetting } from '@/objects/setting'
-import { sb } from '@/utils'
+import Random from 'random'
+import { Task } from '../task.ts'
+import { TrackedBotSettingSchema } from '#objects/setting'
+import { sb } from '#utils'
 
 export class StatusMessageRotator extends Task {
   private stock = ['{{size}} Servers', 'kierabot.xyz']
@@ -16,15 +15,16 @@ export class StatusMessageRotator extends Task {
     // Perform the scheduled task/job
     try {
       // Get any stored status message(s)
-      const storedStatus = new TrackedBotSetting(await this.Bot.DB.get('settings', { key: 'bot.status.message' }))
-      const hasStoredStatus = !!storedStatus._id && storedStatus.value
+      const storedSetting = await this.Bot.DB.get('settings', { key: 'bot.status.message' })
+      const setting = storedSetting ? TrackedBotSettingSchema.parse(storedSetting) : null
+      const hasStoredStatus = !!setting ? !!setting._id && setting.value : null
 
       // Available messages
       const options = [...this.stock]
       if (hasStoredStatus) options.push(hasStoredStatus.value)
 
       // Get a random message
-      const random = (Random as any).int(0, options.length - 1)
+      const random = Random.int(0, options.length - 1)
       const outcome = options[random]
 
       // console.log('sb', sb(outcome, { size: this.Bot.client.guilds.cache.size }) || hasStoredStatus ? storedStatus.value : '')
@@ -36,7 +36,7 @@ export class StatusMessageRotator extends Task {
 
       // Set the status
       this.Bot.client.user.setPresence({
-        activities: [{ name: hasStoredStatus ? storedStatus.value : '' || sb(outcome, { size: this.Bot.client.guilds.cache.size }) }],
+        activities: [{ name: hasStoredStatus ? storedSetting.value : '' || sb(outcome, { size: this.Bot.client.guilds.cache.size }) }],
         status: 'online'
       })
 

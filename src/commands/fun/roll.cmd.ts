@@ -1,8 +1,7 @@
-import * as Random from 'random'
+import { rollDice, rollDie } from '#commands/fun/roll.embed'
 
-import { rollDice, rollDie } from '@/commands/fun/roll.embed'
-
-import { Routed } from '@/router'
+import Random from 'random'
+import { Routed } from '#router/index'
 
 /**
  * Roll (a die | dice)
@@ -16,12 +15,12 @@ export async function roll(routed: Routed<'discord-chat-interaction'>) {
   if (dice !== 1) {
     const set = []
     for (let index = 0; index < dice; index++) {
-      set.push((Random as any).int(1, sides))
+      set.push(Random.int(1, sides))
     }
 
     return await routed.reply({ embeds: [rollDice(sides, dice, set)] })
   }
 
-  const set: Array<number> = [(Random as any).int(1, sides)]
+  const set: Array<number> = [Random.int(1, sides)]
   return await routed.reply({ embeds: [rollDie(Number(sides), set)] })
 }

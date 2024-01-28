@@ -1,5 +1,5 @@
 /* eslint-disable sort-keys */
-import { AcceptedResponse, Routed } from '@/router'
+import { AcceptedResponse, Routed } from '#router/index'
 import { EmbedBuilder, GuildMember, Role } from 'discord.js'
 
 import { performance } from 'perf_hooks'
@@ -54,7 +54,8 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     // locktober2020: alreadyMapped.find((saved) => saved.key === `server.cs.roles.special.4`),
     // locktober2021: alreadyMapped.find((saved) => saved.key === `server.cs.roles.special.5`),
     locktoberOngoing: alreadyMapped.find((saved) => saved.key === `server.cs.roles.special.6`),
-    locktober2022: alreadyMapped.find((saved) => saved.key === `server.cs.roles.special.7`)
+    locktober2022: alreadyMapped.find((saved) => saved.key === `server.cs.roles.special.7`),
+    locktober2023: alreadyMapped.find((saved) => saved.key === `server.cs.roles.special.8`)
   }
 
   // Track changes made later - if any
@@ -69,7 +70,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
   changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Lockee' })
 
   // Fetch User Profile from CS
-  const {data, successful} = await routed.bot.Service.ChastiSafe.fetchProfile(mentionedUser ? mentionedUser.id : routed.author.id)
+  const { data, successful } = await routed.bot.Service.ChastiSafe.fetchProfile(mentionedUser ? mentionedUser.id : routed.author.id)
 
   // If there's an error, inform the user
   if (successful === false) return await routed.reply({ content: 'ChastiSafe user not found', ephemeral: true })
@@ -96,6 +97,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     locktober2020: undefined,
     locktober2021: undefined,
     locktober2022: undefined,
+    locktober2023: undefined,
     locktoberOngoing: undefined,
     renownedKeyholder: undefined,
     distinguishedKeyholder: undefined,
@@ -127,6 +129,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     locktober2020: false,
     locktober2021: false,
     locktober2022: false,
+    locktober2023: false,
     locktoberOngoing: false,
     renownedKeyholder: false,
     distinguishedKeyholder: false,
@@ -159,6 +162,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     // if (alreadyMappedIDs.locktober2021) if (r.id === alreadyMappedIDs.locktober2021.value) role.locktober2021 = r
     if (alreadyMappedIDs.locktoberOngoing) if (r.id === alreadyMappedIDs.locktoberOngoing.value) role.locktoberOngoing = r
     if (alreadyMappedIDs.locktober2022) if (r.id === alreadyMappedIDs.locktober2022.value) role.locktober2022 = r
+    if (alreadyMappedIDs.locktober2023) if (r.id === alreadyMappedIDs.locktober2023.value) role.locktober2023 = r
     // Keyholder
     if (alreadyMappedIDs.renownedKeyholder) if (r.id === alreadyMappedIDs.renownedKeyholder.value) role.renownedKeyholder = r
     if (alreadyMappedIDs.distinguishedKeyholder) if (r.id === alreadyMappedIDs.distinguishedKeyholder.value) role.distinguishedKeyholder = r
@@ -192,6 +196,7 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
     // if (alreadyMappedIDs.locktober2021) if (r.id === alreadyMappedIDs.locktober2021.value) discordUserHasRole.locktober2021 = true
     if (alreadyMappedIDs.locktoberOngoing) if (r.id === alreadyMappedIDs.locktoberOngoing.value) discordUserHasRole.locktoberOngoing = true
     if (alreadyMappedIDs.locktober2022) if (r.id === alreadyMappedIDs.locktober2022.value) discordUserHasRole.locktober2022 = true
+    if (alreadyMappedIDs.locktober2023) if (r.id === alreadyMappedIDs.locktober2023.value) discordUserHasRole.locktober2023 = true
     // Keyholder
     if (alreadyMappedIDs.renownedKeyholder) if (r.id === alreadyMappedIDs.renownedKeyholder.value) discordUserHasRole.renownedKeyholder = true
     if (alreadyMappedIDs.distinguishedKeyholder) if (r.id === alreadyMappedIDs.distinguishedKeyholder.value) discordUserHasRole.distinguishedKeyholder = true
@@ -451,13 +456,14 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
   /// ? Role Update: Locktober           ///
   /// ? ////////////////////////////////////
   try {
-    if (role.locktoberOngoing || role.locktober2022) {
+    if (role.locktoberOngoing || role.locktober2022 || role.locktober2023) {
       // * Performance Start: Locktober * //
       updatePerformance.locktober.start = performance.now()
       changesImplemented.push({ action: 'header', category: 'n/a', type: 'status', result: 'Locktober' })
 
       const isLocktoberParticipant = data.isLocktoberOngoingEligible
       const isLocktober2022Eligible = data.isLocktober2022Eligible
+      const isLocktober2023Eligible = data.isLocktober2023Eligible
 
       // * Participant * //
       if (isLocktoberParticipant) {
@@ -476,20 +482,32 @@ export async function update(routed: Routed<'discord-chat-interaction'>): Accept
         }
       }
 
-      // * 2022 * //
-      if (isLocktober2022Eligible) {
+      if (isLocktober2022Eligible || isLocktober2023Eligible) {
+        // * 2022 * //
         // User has earned Locktober 2022, is missing the role, add the role
-        if (!discordUserHasRole.locktober2022) {
+        if (!discordUserHasRole.locktober2022 && isLocktober2022Eligible) {
           await discordUser.roles.add(role.locktober2022)
           changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: role.locktober2022.name })
+        }
+        // * 2023 * //
+        if (isLocktober2023Eligible && isLocktober2023Eligible) {
+          // User has earned Locktober 2022, is missing the role, add the role
+          if (!discordUserHasRole.locktober2023) {
+            await discordUser.roles.add(role.locktober2023)
+            changesImplemented.push({ action: 'added', category: 'locktober', type: 'role', result: role.locktober2023.name })
+          }
         }
       }
       // Else: remove the role, they should not have it
       else {
         // User is NOT found participating or was assigned it manually, remove the role
-        if (discordUserHasRole.locktober2022) {
+        if (discordUserHasRole.locktober2022 && !isLocktober2022Eligible) {
           await discordUser.roles.remove(role.locktober2022)
           changesImplemented.push({ action: 'removed', category: 'locktober', type: 'role', result: role.locktober2022.name })
+        }
+        if (discordUserHasRole.locktober2023 && !isLocktober2023Eligible) {
+          await discordUser.roles.remove(role.locktober2023)
+          changesImplemented.push({ action: 'removed', category: 'locktober', type: 'role', result: role.locktober2023.name })
         }
       }
     }

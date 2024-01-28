@@ -1,7 +1,7 @@
-import { ExportRoutes, RouteConfiguration, Routed } from '@/router'
+import { ExportRoutes, RouteConfiguration, Routed } from '#router/index'
 
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { TrackedUser } from '@/objects/user'
+import { TrackedUser } from '#objects/user/index'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({

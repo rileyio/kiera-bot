@@ -1,3 +1,6 @@
 [submodule "plugins/raider-io"]
 	path = plugins/raider-io
 	url = git@github.com:rileyio/raider-io.git
+[submodule "src/common"]
+	path = src/common
+	url = git@github.com:rileyio/kiera-common.git

@@ -1,4 +1,4 @@
-import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '#router/index'
 
 import { SlashCommandBuilder } from '@discordjs/builders'
 
@@ -7,7 +7,7 @@ export const Routes = ExportRoutes(
     category: 'Info',
     controller: versionCheck,
     description: 'Help.Admin.BotVersion.Description',
-    name: 'admin-version',
+    name: 'version',
     permissions: {
       serverOnly: false
     },
@@ -21,6 +21,9 @@ export const Routes = ExportRoutes(
  * @export
  * @param {Routed} routed
  */
-function versionCheck(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
-  return routed.reply(`Running on version \`${routed.bot.version}\``)
+async function versionCheck(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
+  await routed.reply(`Running on version \`${routed.bot.version}\``)
+  // await routed.bot.Router.removeRoute('rio')
+
+  return
 }

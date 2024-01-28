@@ -1,8 +1,8 @@
-import * as Helper from './utils/stats'
+import * as Helper from './common/utils/stats.ts'
 
-import { BotStatistic, BotStatistics } from './objects/statistics'
+import { BotStatistic, BotStatistics, BotStatisticsSchema } from './common/objects/statistics.ts'
 
-import { Bot } from '@/index'
+import { Bot } from '#/index'
 import { EventEmitter } from 'events'
 
 export class LiveStatistics extends EventEmitter {
@@ -18,7 +18,9 @@ export class LiveStatistics extends EventEmitter {
   constructor(bot: Bot) {
     super()
     this.Bot = bot
-    this.BotStatistics = new BotStatistics({ version: this.Bot.version })
+    this.BotStatistics = {
+      version: this.Bot.version
+    }
   }
 
   public async start() {
@@ -62,9 +64,7 @@ export class LiveStatistics extends EventEmitter {
     }
 
     // Get existing stats from DB
-    const botStats = Object.assign({}, await this.Bot.DB.get('stats-bot', {}), { version: this.Bot.version })
-    // Init stats
-    this.BotStatistics.startup(botStats)
+    this.BotStatistics = Object.assign({}, await this.Bot.DB.get('stats-bot', {}), { version: this.Bot.version })
 
     // Start tickers
     this.uptimeTicker()

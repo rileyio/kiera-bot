@@ -1,5 +1,5 @@
-import { AcceptedResponse, Routed } from '@/router'
-import { TrackedDecision } from '@/objects/decision'
+import { AcceptedResponse, Routed } from '#router/index'
+import { TrackedDecision } from '#objects/decision'
 
 /**
  * Create a new decision in the DB

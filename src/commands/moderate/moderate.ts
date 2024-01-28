@@ -1,10 +1,10 @@
 // import * as Middleware from '@/middleware'
-// import * as Utils from '@/utils'
+// import * as Utils from '#utils'
 
-// import { ExportRoutes, RouterRouted } from '@/router'
+// import { ExportRoutes, RouterRouted } from '#router/index'
 
 // import { GuildMember } from 'discord.js'
-// import { TrackedMutedUser } from '@/objects/user/'
+// import { TrackedMutedUser } from '#objects/user/index'
 
 // export const Routes = ExportRoutes(
 //   {

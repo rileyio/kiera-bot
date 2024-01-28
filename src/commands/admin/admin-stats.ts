@@ -1,4 +1,4 @@
-// import { ExportRoutes, RouterRouted } from '@/router'
+// import { ExportRoutes, RouterRouted } from '#router/index'
 // import { EmbedBuilder } from 'discord.js'
 
 // export const Routes = ExportRoutes({

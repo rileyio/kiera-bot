@@ -1,8 +1,38 @@
 # Change Log
 
+## v11
+
+> ⚠️ The changes in v11 are not final. Once the beta period is over, the changelog will be updated with the final changes.
+
+### 11.0.0-beta-2
+
+- Added: New libraries for project changes (see below + some supporting extensions).
+- Added: Detection lib for detecting if running inside docker container - more support around this coming.
+- Added: Autocomplete to Decision Roll command for selecting a decision roll more easily.
+- Updated: Project from `commonjs` to `esm`.
+- Updated: Imports aliases, maps and general cleaning.
+- Updated: Mongodb driver from v3 to v5.
+- Updated: Replaced `ts-node-dev` with `nodemon`.
+- Updated: Various dependencies `agenda`, `random`, `typescript`.
+- Updated: Utils removing old namespaces.
+- Updated: CS Integration update command to include 2023 event.
+
+### 11.0.0-beta-1
+
+- Fixed: Logger `.warn` not working properly.
+- Added: Router support for autocomplete values with Discord slash commands.
+- Updated: Node from v16 to v18.
+- Updated: Rework of Router's add/remove command procedures.
+- Updated: Router's Discord command route add and removal within Router's route manage procedures.
+- Updated: Startup's console output to include current node version.
+- Updated: Router's ability to unload a specific route.
+
+---
+
 ## 10.2.2
 
 ### 🛠️ Fixes
+
 - Fixed: CS Profile stats in the wrong order & mixed values.
 - Fixed: [#77](https://github.com/rileyio/kiera-bot/issues/77) Return an error to the user when CS profile is not found.
 
@@ -15,6 +45,8 @@
 
 - Added: New/Expanded CS Profile stats.
 
+---
+
 ## 10.2.1
 
 ### 🛠️ Fixes
@@ -24,6 +56,7 @@
 - Fixed: [#87](https://github.com/rileyio/kiera-bot/issues/87) Newly introduced (v10.2) management script not fully working due to names.
 
 ### 🪄 Updates
+
 - Updated: Locale renderer to remove double newlines and replace with single newline.
 
 ---
@@ -51,7 +84,7 @@
 - Added: Kiera management commands for easier process management at server level.
 - Added: New Discord command payload generator for registering routes on the backend.
 - Added: NSFW channel support (marked commands will not even show up in non-NSFW channels).
-- Added: Opt in setting for use on some new (and old) command(s) that maybe shouldn't be enabled everywhere. 
+- Added: Opt in setting for use on some new (and old) command(s) that maybe shouldn't be enabled everywhere.
 - Added: Server Admins can enable `Opt in` specific command categories on a server by server basis via a command.
 - Added: New command to toggle command groups on and off (opt in/out).
 

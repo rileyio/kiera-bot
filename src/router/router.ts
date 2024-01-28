@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { EmbedBuilder, GuildMember, Interaction, TextChannel } from 'discord.js'
-import { RouteConfiguration, RouteConfigurationType, Routed, RouterStats } from '.'
+import { AutocompleteInteraction, CacheType, EmbedBuilder, GuildMember, Interaction, TextChannel } from 'discord.js'
+import { RouteConfiguration, RouteConfigurationType, Routed, RouterStats } from './index.ts'
 
-import { Bot } from '@/index'
-import { CommandPermission } from '@/objects/permission'
-import { Logger } from '@/utils'
+import { Bot } from '#/index'
+import { CommandPermission } from '#objects/permission'
+import { Routes as DiscRoutes } from 'discord-api-types/v10'
+import { Logger } from '#utils'
 import { ProcessedPermissions } from '.'
-import { TrackedUser } from '@/objects/user/'
+import { REST } from '@discordjs/rest'
+import { Secrets } from '#utils'
+import { TrackedUser } from '#objects/user/index'
 
 /**
  * The almighty incoming commands router!
@@ -23,23 +26,104 @@ export class CommandRouter {
     this.log = this.bot.Log.Router
 
     // Add routes that were loaded
-    routes.forEach((r) => this.addRoute(r))
+    routes.forEach(async (r) => await this.addRoute(r))
   }
 
-  public async addRoute<T extends keyof RouteConfigurationType>(route: RouteConfiguration<T>) {
-    if (this.routes.findIndex((r) => r.name === route.name) > -1) return this.bot.Log.Router.log(`!! Duplicate route name detected '${route.name}'`)
-    this.routes.push(new RouteConfiguration<RouteConfigurationType[T]['type']>(route))
-    this.log.verbose(`🚏✔️ Route Added '${route.name}'`)
+  public async addRoute<T extends keyof RouteConfigurationType>(route: RouteConfiguration<T>, options?: { force?: boolean; loadNow?: boolean }) {
+    const opts = Object.assign({ force: false, now: false }, options || {})
+
+    // Watch for duplicate route names
+    const foundIndex = this.routes.findIndex((r) => r.name === route.name)
+    const foundDuplicate = foundIndex > -1
+
+    // Duplicate route found, skip adding, warn, and stop here
+    if (foundDuplicate && !opts.force) return this.log.warn(`!! Duplicate route name detected '${route.name}', skipping...`)
+
+    // When Force is passed, remove the existig route
+    if (foundDuplicate && opts.force) await this.removeRoute(this.routes[foundIndex])
+
+    // Process route into its proper array
+    this.processRouteAdd(route, opts.loadNow)
   }
 
   public async removeRoute<T extends keyof RouteConfigurationType>(route: string | RouteConfiguration<T>) {
-    const routeIndex = this.routes.findIndex((r) => r.name === (typeof route === 'string' ? (route as string) : route.name))
-    const routeFound = routeIndex > -1 ? this.routes[routeIndex] : undefined
-    if (routeFound) {
-      this.routes.splice(routeIndex, 1)
-      await this.bot.reloadSlashCommands()
+    try {
+      console.log('removing route', route)
+      if (typeof route === 'string') this.log.warn(`[Deprecated] Router.removeRoute( string ) is deprecated, use Router.removeRoute( RouteConfiguration ) instead.`)
+      const routeIndex = this.routes.findIndex((r) => (typeof route === 'string' ? r.name === route : r.name === route.name && r.type === route.type))
+      const routeFound = routeIndex > -1 ? this.routes[routeIndex] : undefined
+
+      // When route is not found, stop here
+      if (!routeFound) return this.log.warn(`⚠ Route '${route}' not found, skipping removal...`)
+
+      // Process route removal
+      await this.processRouteRemove(routeFound)
+    } catch (error) {
+      this.log.error(`Unable to .removeRoute(${typeof route === 'string' ? route : route.name})`)
     }
-    this.log.log(`🚏❌ Unloaded Route '${routeFound.name}'`)
+  }
+
+  /**
+   * Process Routed Slash Command Auto Complete
+   * @param interaction
+   * @returns
+   */
+  public async routeDiscordInteractionAutocomplete(interaction: AutocompleteInteraction<CacheType>) {
+    const { channel, commandName, guild, member, options, user } = interaction
+    this.log.verbose('Routing interaction autocomplete', commandName)
+
+    // Find command route
+    const route = this.routes.find((r) => r.name === commandName) as RouteConfiguration<'discord-chat-interaction-autocomplete'>
+
+    // Missing route
+    if (!route) return // Stop here
+
+    // Ensure it has autocomplete options set for entire route
+    if (route.autocomplete?.options === undefined && route.autocomplete?.optionsFn === undefined) {
+      this.log.warn('Route has no autocomplete options set')
+      return // Stop here
+    }
+
+    // Lookup Kiera User in DB
+    const kieraUser = new TrackedUser(await this.bot.DB.get('users', { id: user.id }))
+    const routerStats = new RouterStats(user)
+
+    // Create a routed object
+    const routed = new Routed<'discord-chat-interaction-autocomplete'>({
+      author: user,
+      bot: this.bot,
+      channel: channel as TextChannel,
+      guild,
+      interaction,
+      member: member as GuildMember,
+      options,
+      route,
+      routerStats,
+      type: 'discord',
+      user: kieraUser
+    })
+
+    // Get the focused option
+    const focusedOption = interaction.options.getFocused(true)
+
+    // Does this autocomplete have optionsFn?
+    if (route.autocomplete.optionsFn) {
+      route.autocomplete.options = await route.autocomplete.optionsFn(routed)
+    }
+
+    console.log('Autocomplete name:', focusedOption.name)
+
+    // Ensure the focused option has something defined ( >> Predefined array of values << )
+    if (route.autocomplete.options[focusedOption.name] === undefined) return // Stop here
+
+    // Respond with autocomplete options
+    const filtered = focusedOption.value
+      ? route.autocomplete.options[focusedOption.name].filter((options) => options.name.toLowerCase().startsWith(focusedOption.value.toLowerCase()))
+      : route.autocomplete.options[focusedOption.name]
+    console.log('filtered', filtered.length)
+    return await interaction.respond(
+      filtered.length > 20 ? [...filtered.slice(0, 20), { name: `...${filtered.length - 20} more, keep typing to refine results`, value: '...' }] : filtered
+    )
   }
 
   /**
@@ -47,9 +131,12 @@ export class CommandRouter {
    * @param interaction
    * @returns
    */
-  public async routeInteraction(interaction: Interaction) {
+  public async routeDiscordInteraction(interaction: Interaction) {
+    // Autocomplete handling
+    if (interaction.isAutocomplete()) return await this.routeDiscordInteractionAutocomplete(interaction)
     if (!interaction.isCommand()) return // Hard block
     if (!interaction.isChatInputCommand()) return
+
     this.bot.BotMonitor.LiveStatistics.increment('commands-seen')
 
     const { channel, commandName, guild, guildId, member, options, type, user } = interaction
@@ -111,7 +198,7 @@ export class CommandRouter {
       }
     }
 
-    this.bot.Log.Router.log(`Router -> Routing Command name: '${route.name}', type: '${route.type}'`)
+    this.log.log(`Router -> Routing Command name: '${route.name}', type: '${route.type}'`)
 
     // Lookup Kiera User in DB
     const kieraUser = new TrackedUser(await this.bot.DB.get('users', { id: user.id }))
@@ -136,7 +223,7 @@ export class CommandRouter {
 
     // Process Permissions
     routed.permissions = await this.processPermissions(routed)
-    this.bot.Log.Router.log('Router -> Permissions Check Results:', routed.permissions)
+    this.log.log('Router -> Permissions Check Results:', routed.permissions)
 
     // Check if permissions check failed
     if (!routed.permissions.pass) {
@@ -205,7 +292,7 @@ export class CommandRouter {
         mwareProcessed += 1
       }
 
-    this.bot.Log.Router.log(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
+    this.log.log(`Router -> Route middleware processed: ${mwareProcessed}/${mwareCount}`)
 
     // Stop execution of route if middleware is completed
     if (mwareProcessed === mwareCount) {
@@ -285,7 +372,7 @@ export class CommandRouter {
       return checks // Hard stop here
     }
 
-    if (routed.route.permissions.nsfwRequired === true && routed.channel.isTextBased()) {
+    if (routed.route.permissions.nsfwRequired === true) {
       // [IF: nsfwRequired is set] Command can only respond in NSFW channels
       const channel = routed.channel as TextChannel
       if (!channel.nsfw) {
@@ -379,5 +466,55 @@ export class CommandRouter {
     checks.outcome = 'FailedPermissionsCheck'
     checks.pass = false
     return checks
+  }
+
+  private async processRouteAdd(route: RouteConfiguration<any>, loadNow?: boolean) {
+    try {
+      // Add to router array
+      this.routes.push(new RouteConfiguration(route))
+
+      // --------------------------------------------------
+      // [IF: Route is for discord] do Discord things
+      // --------------------------------------------------
+      if (route.type === 'discord-chat-interaction' && loadNow) {
+        // Get some things ready
+        const rest = new REST({ version: '10' }).setToken(Secrets.read('DISCORD_APP_TOKEN', this.bot.Log.Bot))
+        // Add global command
+        await rest.post(DiscRoutes.applicationCommands(process.env.DISCORD_APP_ID), { body: route.discordRegisterPayload() })
+      }
+
+      this.log.verbose(`🚏✔️ Route Added '${route.name}'`)
+    } catch (error) {
+      this.log.error(`🚏❌ Failed to add route '${route.name}'`, error)
+    }
+  }
+
+  private async processRouteRemove(route: RouteConfiguration<any>) {
+    try {
+      // --------------------------------------------------
+      // [IF: Route is for discord] do Discord things
+      // --------------------------------------------------
+      // Clone the route for removal processing
+      // const routeFound = new RouteConfiguration(JSON.parse(JSON.stringify(route)))
+      const { name, type } = route
+      if (type === 'discord-chat-interaction') {
+        // Get some things ready
+        const rest = new REST({ version: '10' }).setToken(Secrets.read('DISCORD_APP_TOKEN', this.bot.Log.Bot))
+        // Get Global command ID
+        const commands = await this.bot.client.application.commands.fetch()
+        const commandID = commands?.find((c) => c.name === name)?.id
+        // Remove global command
+        await rest.delete(DiscRoutes.applicationCommand(process.env.DISCORD_APP_ID, commandID))
+        // Remove route from router array
+        this.routes.splice(
+          this.routes.findIndex((r) => r.name === name && r.type === type),
+          1
+        )
+        this.log.log(`🚏🗑 Unloaded Discord Global Route '${name}'`)
+      }
+    } catch (error) {
+      console.log(error)
+      this.log.error(`🚏❌ Failed to unload Discord Global Command: '${route.name}'`)
+    }
   }
 }

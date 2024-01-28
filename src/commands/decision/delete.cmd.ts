@@ -1,4 +1,4 @@
-import { AcceptedResponse, Routed } from '@/router'
+import { AcceptedResponse, Routed } from '#router/index'
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -11,7 +11,7 @@ import {
   TextChannel
 } from 'discord.js'
 
-import { ObjectID } from 'mongodb'
+import { ObjectId } from 'mongodb'
 
 /**
  * Delete decision in the DB
@@ -59,7 +59,7 @@ export async function deleteDecision(routed: Routed<'discord-chat-interaction'>)
     }
 
     if (i.componentType === ComponentType.Button && i.customId === 'yes') {
-      const deleted = await routed.bot.DB.remove('decision', { _id: new ObjectID(selectedID) })
+      const deleted = await routed.bot.DB.remove('decision', { _id: new ObjectId(selectedID) })
       if (deleted) {
         await i.update({ components: [], content: 'Decision Roll Deleted!', embeds: [] })
         collector.stop()

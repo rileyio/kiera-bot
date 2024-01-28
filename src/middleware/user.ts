@@ -1,7 +1,7 @@
-import { Routed } from '@/router'
+import { Routed } from '#router/index'
 
 export async function isUserRegistered(routed: Routed<'placeolder-type'>) {
-  const isRegistered = await routed.bot.DB.verify('users', routed.author.id)
+  const isRegistered = await routed.bot.DB.verify('users', { id: routed.author.id })
   if (isRegistered) return routed // No need to hault if this passes
   // Fallback, user not yet registered
   await routed.reply(routed.$render('Generic.Info.UserNotRegistered'), true)

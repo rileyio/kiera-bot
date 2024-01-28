@@ -1,10 +1,10 @@
-import * as Utils from '@/utils'
+import * as Utils from '#utils'
 
-import { ExportRoutes, RouterRouted } from '@/router'
+import { ExportRoutes, RouterRouted } from '#router/index'
 
 import { Message } from 'discord.js'
 import { ObjectId } from 'bson'
-import { TrackedPoll } from '@/objects/poll'
+import { TrackedPoll } from '#objects/poll'
 import { poll } from '@/embedded/poll'
 
 export const Routes = ExportRoutes(

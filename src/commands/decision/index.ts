@@ -1,20 +1,23 @@
-import * as DecisionAdd from './add.cmd'
-import * as DecisionCreation from './create.cmd'
-import * as DecisionDelete from './delete.cmd'
-import * as DecisionNickname from '@/commands/decision/nickname.cmd'
-import * as DecisionPrefix from '@/commands/decision/prefix.cmd'
-import * as DecisionRemove from '@/commands/decision/remove.cmd'
-import * as DecisionRoll from '@/commands/decision/roll.cmd'
-import * as DecisionRollCustomize from '@/commands/decision/customize'
-import * as DecisionRollList from '@/commands/decision/list.cmd'
-import * as Middleware from '@/middleware'
+import * as DecisionAdd from './add.cmd.ts'
+import * as DecisionCreation from './create.cmd.ts'
+import * as DecisionDelete from './delete.cmd.ts'
+import * as DecisionNickname from '#commands/decision/nickname.cmd'
+import * as DecisionPrefix from '#commands/decision/prefix.cmd'
+import * as DecisionRemove from '#commands/decision/remove.cmd'
+import * as DecisionRoll from '#commands/decision/roll.cmd'
+import * as DecisionRollCustomize from '#commands/decision/customize'
+import * as DecisionRollList from '#commands/decision/list.cmd'
+import * as Middleware from '#middleware'
 
-import { AcceptedResponse, ExportRoutes, RouteConfiguration, Routed } from '@/router'
+import { AcceptedResponse, ExportRoutes, RouteConfiguration, RouteConfigurationAutocompleteOptions, Routed } from '#router/index'
 
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({
+    autocomplete: {
+      optionsFn: rollerNamesAutocomplete
+    },
     category: 'Fun',
     controller: decisionRouterSub,
     middleware: [Middleware.isUserRegistered],
@@ -61,7 +64,7 @@ export const Routes = ExportRoutes(
         subcommand
           .setName('roll')
           .setDescription('Roll User Generated Decision')
-          .addStringOption((option) => option.setName('id').setDescription('Specify the ID or Nickname of the Decision Roller').setRequired(true))
+          .addStringOption((option) => option.setName('id').setDescription('Specify the ID or Nickname of the Decision Roller').setRequired(true).setAutocomplete(true))
       )
       // * Set Nickname for Decision Roller
       .addSubcommand((subcommand) =>
@@ -90,56 +93,73 @@ export const Routes = ExportRoutes(
 )
 
 async function decisionRouterSub(routed: Routed<'discord-chat-interaction'>): AcceptedResponse {
-  const subCommand = routed.options.getSubcommand() as 'add' | 'create' | 'delete' | 'nickname' | 'prefix' | 'remove' | 'roll' | 'manage' | 'list'
-  const idOrNickname = routed.interaction.options.get('id')?.value
-  // const interactionType = routed.interaction.options.get('type')?.value
+  try {
+    console.log('decisionRouterSub')
+    const subCommand = routed.options.getSubcommand() as 'add' | 'create' | 'delete' | 'nickname' | 'prefix' | 'remove' | 'roll' | 'manage' | 'list'
+    const idOrNickname = routed.interaction.options.get('id')?.value
+    // const interactionType = routed.interaction.options.get('type')?.value
 
-  // Roll w/ID or Nickname is specified
-  if (subCommand === 'roll' && idOrNickname) {
-    return await DecisionRoll.runSavedDecision(routed)
+    // Roll w/ID or Nickname is specified
+    if (subCommand === 'roll' && idOrNickname) {
+      return await DecisionRoll.runSavedDecision(routed)
+    }
+
+    // Customize Roller
+    if (subCommand === 'manage' && idOrNickname) {
+      return await DecisionRollCustomize.customUsername(routed)
+    }
+
+    // List Decisions
+    if (subCommand === 'list') {
+      return await DecisionRollList.list(routed)
+    }
+
+    // New Decision
+    if (subCommand === 'create') {
+      return await DecisionCreation.newDecision(routed)
+    }
+
+    // New Decision Outcome
+    if (subCommand === 'add') {
+      const interactionTarget = routed.interaction.options.get('target')?.value
+      if (interactionTarget === 'outcome') return await DecisionAdd.addOutcome(routed)
+    }
+
+    // Delete Decision Roller
+    if (subCommand === 'delete') {
+      return await DecisionDelete.deleteDecision(routed)
+    }
+
+    // Remove Outcome from Decision Roller
+    if (subCommand === 'remove') {
+      return await DecisionRemove.removeOutcome(routed)
+    }
+
+    // Set Decision Roll Nickname
+    if (subCommand === 'nickname') {
+      return await DecisionNickname.setNickname(routed)
+    }
+
+    // Set Decision Roller Nickname Prefix
+    if (subCommand === 'prefix') {
+      return await DecisionPrefix.setPrefix(routed)
+    }
+
+    // Nothing has been specified
+    return await routed.reply('A Decision Menu Option Must be Selected.')
+  } catch (error) {
+    console.log(error)
   }
+}
 
-  // Customize Roller
-  if (subCommand === 'manage' && idOrNickname) {
-    return await DecisionRollCustomize.customUsername(routed)
+async function rollerNamesAutocomplete(routed: Routed<'discord-chat-interaction-autocomplete'>): Promise<RouteConfigurationAutocompleteOptions> {
+  const decisions = await routed.bot.DB.getMultiple('decision', { authorID: routed.author.id })
+  return {
+    id: decisions.map((decision) => {
+      return {
+        name: decision.name,
+        value: decision._id.toString()
+      }
+    })
   }
-
-  // List Decisions
-  if (subCommand === 'list') {
-    return await DecisionRollList.list(routed)
-  }
-
-  // New Decision
-  if (subCommand === 'create') {
-    return await DecisionCreation.newDecision(routed)
-  }
-
-  // New Decision Outcome
-  if (subCommand === 'add') {
-    const interactionTarget = routed.interaction.options.get('target')?.value
-    if (interactionTarget === 'outcome') return await DecisionAdd.addOutcome(routed)
-  }
-
-  // Delete Decision Roller
-  if (subCommand === 'delete') {
-    return await DecisionDelete.deleteDecision(routed)
-  }
-
-  // Remove Outcome from Decision Roller
-  if (subCommand === 'remove') {
-    return await DecisionRemove.removeOutcome(routed)
-  }
-
-  // Set Decision Roll Nickname
-  if (subCommand === 'nickname') {
-    return await DecisionNickname.setNickname(routed)
-  }
-
-  // Set Decision Roller Nickname Prefix
-  if (subCommand === 'prefix') {
-    return await DecisionPrefix.setPrefix(routed)
-  }
-
-  // Nothing has been specified
-  return await routed.reply('A Decision Menu Option Must be Selected.')
 }
