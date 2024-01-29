@@ -116,8 +116,17 @@ function prompt() {
   echo -e "${PURPLE}------------------------------------------------------------"
 
   echo -e -n "  ${PODSTATUSDOT} ${PURPLE}Kiera ${PRIMARY}>${YELLOW} "
-  read a
+  read -a a
   echo -e "${NONE}"
+
+  # Parse 2nd argument (if passed, for later usage)
+  if [ -n "$a[1]" ]; then
+    case "${a[1]}" in
+    "dev") MODE="dev" ;;
+    "prod") MODE="prod" ;;
+    *) MODE="dev" ;;
+    esac
+  fi
 
   case $a in
   "start") start ;;
@@ -160,8 +169,7 @@ function status() {
 
 # Start kiera-bot
 function start() {
-  # Check current running mode
-  getMode
+  # Check current running status
   getStatus
 
   # If mode is prod, then execute the prod script
@@ -179,6 +187,8 @@ function start() {
     echo "  💼 Starting kiera-bot in production mode..."
     make up-prod | sed 's/^/  /'
     status
+
+    return
   fi
 
   echo "  👾 Starting kiera-bot in dev mode..."
