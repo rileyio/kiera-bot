@@ -1,6 +1,6 @@
-import { DBAgeCleanup } from './templates/db-age-cleanup.ts'
-import { ManagedUpdate } from './templates/managed-update.ts'
-import { StatusMessageRotator } from './templates/status-message-rotator.ts'
+import { DBAgeCleanup } from './templates/db-age-cleanup'
+import { ManagedUpdate } from './templates/managed-update'
+import { StatusMessageRotator } from './templates/status-message-rotator'
 
 export class DBAgeCleanupScheduled extends DBAgeCleanup {
   // Setting the props for this Task

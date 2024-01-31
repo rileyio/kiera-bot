@@ -1,5 +1,5 @@
 import { ManagedChannel } from '#objects/managed'
-import { Task } from '../task.ts'
+import { Task } from '../task'
 import { VoiceChannel } from 'discord.js'
 import { calculateHumanTimeDDHHMM } from '#utils'
 import moment from 'moment'

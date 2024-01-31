@@ -7,7 +7,7 @@ import 'dotenv/config'
 // modAlias.addAlias('@', __dirname + '/../src')
 
 // Bot Import MUST come after Alias setting
-import { Bot } from './index.ts' // Stop From Sorting
+import { Bot } from './index.js' // Stop From Sorting
 
 // Start bot (may be moved elsewhere later)
 const bot = new Bot()

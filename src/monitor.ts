@@ -1,9 +1,9 @@
 import * as Discord from 'discord.js'
 
 import { Bot } from '#/index'
-import { DatabaseMonitor } from './common/db/monitor.ts'
+import { DatabaseMonitor } from './common/db/monitor'
 import { EventEmitter } from 'events'
-import { LiveStatistics } from './live-statistics.ts'
+import { LiveStatistics } from './live-statistics'
 import { Secrets } from '#utils'
 
 export class BotMonitor extends EventEmitter {

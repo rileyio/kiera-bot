@@ -3,7 +3,7 @@ import { checkForUpdates, update } from '#commands/plugins/update'
 
 import { PermissionFlagsBits } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { reload } from './reload.ts'
+import { reload } from './reload'
 
 export const Routes = ExportRoutes(
   new RouteConfiguration({

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AutocompleteInteraction, CacheType, EmbedBuilder, GuildMember, Interaction, TextChannel } from 'discord.js'
-import { RouteConfiguration, RouteConfigurationType, Routed, RouterStats } from './index.ts'
+import { RouteConfiguration, RouteConfigurationType, Routed, RouterStats } from './index'
 
 import { Bot } from '#/index'
 import { CommandPermission } from '#objects/permission'

@@ -5,9 +5,9 @@
  * @version 1.0.3
  */
 
-import { RouteConfiguration, Routed } from '../../src/router/index.ts'
+import { RouteConfiguration, Routed } from '../../src/router/index'
 
-import { Plugin } from '../../src/index.ts'
+import { Plugin } from '../../src/index'
 import { SlashCommandBuilder } from 'discord.js'
 
 export class SampleCommandPlugin extends Plugin {

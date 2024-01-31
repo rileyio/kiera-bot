@@ -1,7 +1,7 @@
 import Agenda from 'agenda'
 import { Bot } from '#/index'
 import { Secrets } from '#utils'
-import { Task } from './task.ts'
+import { Task } from './task'
 
 export class TaskManager {
   protected Bot: Bot

@@ -1,7 +1,7 @@
 /* eslint-disable sort-keys */
 import * as Utils from '#utils'
 
-import { ChastiSafeUser } from '#/integrations/ChastiSafe.ts'
+import { ChastiSafeUser } from '#/integrations/ChastiSafe'
 import { EmbedBuilder } from 'discord.js'
 import { Routed } from '#router/index'
 import  moment from 'moment'
