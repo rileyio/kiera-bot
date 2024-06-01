@@ -2,11 +2,16 @@
 
 ## v12.0.0
 
-> ⚠️ The changes in v12 are not final. Once the beta period is over, the changelog will be updated with the final changes.
+> ⛔️ The changes in v12 are not final. Once the beta period is over, the changelog will be updated with the final changes.
 
+> ℹ Some v11 changes not fully declared complete during the v11 beta releases may be listed under v12.
+
+- Added: `tsx` lib.
 - Updated: Reduced command route loader's processing time by further limiting command files included.
+- Updated: Minimum Node version required moved to `>=v21`.
+- Removed: `nodemon` & `ts-node` libs.
 
-## v11 (beta only releases)
+## v11 (beta only releases - further development contined in v12)
 
 ### 11.0.0-beta-2
 

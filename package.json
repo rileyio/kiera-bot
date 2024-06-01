@@ -21,7 +21,7 @@
     "#utils": "./src/common/utils/index.ts"
   },
   "engines": {
-    "node": ">=18.7.0"
+    "node": ">=21.5.0"
   },
   "scripts": {
     "build": "tsc",
