@@ -1,8 +1,12 @@
 # Change Log
 
-## v11
+## v12.0.0
 
-> ⚠️ The changes in v11 are not final. Once the beta period is over, the changelog will be updated with the final changes.
+> ⚠️ The changes in v12 are not final. Once the beta period is over, the changelog will be updated with the final changes.
+
+- Updated: Reduced command route loader's processing time by further limiting command files included.
+
+## v11 (beta only releases)
 
 ### 11.0.0-beta-2
 
