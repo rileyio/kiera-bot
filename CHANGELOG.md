@@ -9,7 +9,9 @@
 - Added: `tsx` lib.
 - Updated: Reduced command route loader's processing time by further limiting command files included.
 - Updated: Minimum Node version required moved to `>=v21`.
+- Updated: Secrets loader name searching and response value cleaning.
 - Removed: `nodemon` & `ts-node` libs.
+
 
 ## v11 (beta only releases - further development contined in v12)
 
